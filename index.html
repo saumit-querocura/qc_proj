@@ -4,6 +4,19 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>QueroCura — Personalized Care</title>
+<meta name="description" content="Personalized care, right at home. From understanding your symptoms to remembering your next dose, QueroCura keeps your health story in one trusted place.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="QueroCura">
+<meta property="og:title" content="QueroCura — Personalized Care">
+<meta property="og:description" content="Personalized care, right at home. From understanding your symptoms to remembering your next dose, QueroCura keeps your health story in one trusted place.">
+<meta property="og:image" content="https://querocura.com/assets/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:url" content="https://querocura.com/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="QueroCura — Personalized Care">
+<meta name="twitter:description" content="Personalized care, right at home. From understanding your symptoms to remembering your next dose, QueroCura keeps your health story in one trusted place.">
+<meta name="twitter:image" content="https://querocura.com/assets/og-image.png">
 <link rel="icon" type="image/x-icon" href="icons/favicon.ico">
 <link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16x16.png">
 <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32x32.png">
@@ -114,6 +127,13 @@
   .wl-input:focus { outline: none; border-color: #0e8f83; box-shadow: 0 0 0 3px rgba(14,143,131,0.15); }
   .wl-input::placeholder { color: #a9a6bb; }
   #wl-submit-btn:disabled { opacity: 0.7; cursor: default; }
+
+  /* ---- About tiles ---- */
+  .about-tile { transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease; }
+  .about-tile:hover { background: #211c4d; border-color: rgba(126,224,212,0.3) !important; transform: translateY(-2px); }
+  .about-tile.open { background: #211c4d; border-color: rgba(126,224,212,0.4) !important; }
+  @media (max-width: 900px) { .about-tile-grid { grid-template-columns: repeat(2, 1fr) !important; } }
+  @media (max-width: 520px) { .about-tile-grid { grid-template-columns: 1fr !important; } }
 </style>
 </head>
 <body>
@@ -134,6 +154,7 @@
       <a class="navlink" href="#services" style="color: #100e2a; font-size: 15px; font-weight: 600;">Our platform</a>
       <a class="navlink" href="#team" style="color: #100e2a; font-size: 15px; font-weight: 600;">Our team</a>
       <a class="navlink" href="#reviews" style="color: #100e2a; font-size: 15px; font-weight: 600;">Reviews</a>
+      <a class="navlink" href="blog/" style="color: #100e2a; font-size: 15px; font-weight: 600;">Blog</a>
       <a class="navlink" href="#waitlist" style="color: #100e2a; font-size: 15px; font-weight: 600;">Waitlist</a>
       <a class="navlink" href="#contact" style="color: #100e2a; font-size: 15px; font-weight: 600;">Contact</a>
     </div>
@@ -148,6 +169,7 @@
       <a onclick="closeMobileMenu()" href="#services" style="color:#100e2a; font-size:16px; font-weight:600; padding:12px 0; border-bottom:1px solid rgba(16,14,42,0.08);">Our platform</a>
       <a onclick="closeMobileMenu()" href="#team" style="color:#100e2a; font-size:16px; font-weight:600; padding:12px 0; border-bottom:1px solid rgba(16,14,42,0.08);">Our team</a>
       <a onclick="closeMobileMenu()" href="#reviews" style="color:#100e2a; font-size:16px; font-weight:600; padding:12px 0; border-bottom:1px solid rgba(16,14,42,0.08);">Reviews</a>
+      <a onclick="closeMobileMenu()" href="blog/" style="color:#100e2a; font-size:16px; font-weight:600; padding:12px 0; border-bottom:1px solid rgba(16,14,42,0.08);">Blog</a>
       <a onclick="closeMobileMenu()" href="#waitlist" style="color:#100e2a; font-size:16px; font-weight:600; padding:12px 0; border-bottom:1px solid rgba(16,14,42,0.08);">Waitlist</a>
       <a onclick="closeMobileMenu()" href="#contact" style="color:#100e2a; font-size:16px; font-weight:600; padding:12px 0;">Contact</a>
       <a onclick="closeMobileMenu()" href="#contact" class="cta" style="margin-top:14px; text-align:center; background: #0e8f83; color: #fff; font-size: 15px; font-weight: 700; padding: 13px 22px; border-radius: 999px;">Get in touch</a>
@@ -242,6 +264,77 @@
         <p style="margin: 0; font-size: 18px; line-height: 1.6; color: #c8c6de;">
           From a first symptom to an emergency room, we're built to close the gap between what's known about you and what's in reach.
         </p>
+      </div>
+    </div>
+
+    <div style="max-width: 1180px; margin: 56px auto 0;">
+      <div class="about-tile-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;">
+
+        <div class="about-tile" id="about-tile-0" onclick="toggleAboutTile(0)" style="background: #1a1740; border: 1.5px solid rgba(255,255,255,0.08); border-radius: 18px; padding: 22px; cursor: pointer;">
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <div style="width: 38px; height: 38px; border-radius: 11px; background: rgba(126,224,212,0.12); display: flex; align-items: center; justify-content: center; flex: 0 0 auto;">
+                <svg width="19" height="19" viewBox="0 0 24 24" fill="none"><path d="M12 2l2.9 6.6L22 9.3l-5 4.9 1.2 7-6.2-3.4L5.8 21.2 7 14.2l-5-4.9 7.1-.7L12 2z" stroke="#7ee0d4" stroke-width="1.7" stroke-linejoin="round"/></svg>
+              </div>
+              <div style="font-size: 16px; font-weight: 700; color: #fff;">Mission</div>
+            </div>
+            <svg id="about-chevron-0" width="16" height="16" viewBox="0 0 24 24" fill="none" style="transition: transform 0.25s ease; flex: 0 0 auto;"><path d="M6 9l6 6 6-6" stroke="#7ee0d4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="about-tile-body" id="about-body-0" style="max-height: 0; overflow: hidden; transition: max-height 0.35s ease;">
+            <p style="margin: 0; padding-top: 16px; font-size: 14.5px; line-height: 1.65; color: #c8c6de;">To close the gap between what's known about a patient and what's in reach — putting the right health information in the right hands, at the moment it matters most.</p>
+          </div>
+        </div>
+
+        <div class="about-tile" id="about-tile-1" onclick="toggleAboutTile(1)" style="background: #1a1740; border: 1.5px solid rgba(255,255,255,0.08); border-radius: 18px; padding: 22px; cursor: pointer;">
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <div style="width: 38px; height: 38px; border-radius: 11px; background: rgba(126,224,212,0.12); display: flex; align-items: center; justify-content: center; flex: 0 0 auto;">
+                <svg width="19" height="19" viewBox="0 0 24 24" fill="none"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z" stroke="#7ee0d4" stroke-width="1.7" stroke-linejoin="round"/><circle cx="12" cy="12" r="3.2" stroke="#7ee0d4" stroke-width="1.7"/></svg>
+              </div>
+              <div style="font-size: 16px; font-weight: 700; color: #fff;">Vision</div>
+            </div>
+            <svg id="about-chevron-1" width="16" height="16" viewBox="0 0 24 24" fill="none" style="transition: transform 0.25s ease; flex: 0 0 auto;"><path d="M6 9l6 6 6-6" stroke="#7ee0d4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="about-tile-body" id="about-body-1" style="max-height: 0; overflow: hidden; transition: max-height 0.35s ease;">
+            <p style="margin: 0; padding-top: 16px; font-size: 14.5px; line-height: 1.65; color: #c8c6de;">A world where no patient's history is a mystery to the people trying to save them — and where staying on top of your own health is as simple as checking your phone.</p>
+          </div>
+        </div>
+
+        <div class="about-tile" id="about-tile-2" onclick="toggleAboutTile(2)" style="background: #1a1740; border: 1.5px solid rgba(255,255,255,0.08); border-radius: 18px; padding: 22px; cursor: pointer;">
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <div style="width: 38px; height: 38px; border-radius: 11px; background: rgba(126,224,212,0.12); display: flex; align-items: center; justify-content: center; flex: 0 0 auto;">
+                <svg width="19" height="19" viewBox="0 0 24 24" fill="none"><path d="M12 8v5l3.5 2" stroke="#7ee0d4" stroke-width="1.7" stroke-linecap="round"/><circle cx="12" cy="13" r="8" stroke="#7ee0d4" stroke-width="1.7"/><path d="M9 2h6M12 2v2" stroke="#7ee0d4" stroke-width="1.7" stroke-linecap="round"/></svg>
+              </div>
+              <div style="font-size: 16px; font-weight: 700; color: #fff;">Background</div>
+            </div>
+            <svg id="about-chevron-2" width="16" height="16" viewBox="0 0 24 24" fill="none" style="transition: transform 0.25s ease; flex: 0 0 auto;"><path d="M6 9l6 6 6-6" stroke="#7ee0d4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="about-tile-body" id="about-body-2" style="max-height: 0; overflow: hidden; transition: max-height 0.35s ease;">
+            <p style="margin: 0; padding-top: 16px; font-size: 14.5px; line-height: 1.65; color: #c8c6de;">QueroCura started with a simple observation: how much time it takes for doctors to even begin treatment, and how much hassle it takes just to retrieve a patient's information before care can start at all. We built QueroCura to close that gap.</p>
+          </div>
+        </div>
+
+        <div class="about-tile" id="about-tile-3" onclick="toggleAboutTile(3)" style="background: #1a1740; border: 1.5px solid rgba(255,255,255,0.08); border-radius: 18px; padding: 22px; cursor: pointer;">
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <div style="width: 38px; height: 38px; border-radius: 11px; background: rgba(126,224,212,0.12); display: flex; align-items: center; justify-content: center; flex: 0 0 auto;">
+                <svg width="19" height="19" viewBox="0 0 24 24" fill="none"><path d="M12 21s-7-4.35-9.5-8.5C.8 8.8 2.4 5 6 5c2 0 3.5 1.2 4 2.4C10.5 6.2 12 5 14 5c3.6 0 5.2 3.8 3.5 7.5C19 16.65 12 21 12 21z" stroke="#7ee0d4" stroke-width="1.7" stroke-linejoin="round"/></svg>
+              </div>
+              <div style="font-size: 16px; font-weight: 700; color: #fff;">Values</div>
+            </div>
+            <svg id="about-chevron-3" width="16" height="16" viewBox="0 0 24 24" fill="none" style="transition: transform 0.25s ease; flex: 0 0 auto;"><path d="M6 9l6 6 6-6" stroke="#7ee0d4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="about-tile-body" id="about-body-3" style="max-height: 0; overflow: hidden; transition: max-height 0.35s ease;">
+            <div style="padding-top: 16px; display: flex; flex-direction: column; gap: 8px;">
+              <p style="margin: 0; font-size: 14.5px; line-height: 1.5; color: #c8c6de;"><strong style="color:#fff;">Privacy first.</strong> Your data is yours — encrypted, and shown only when it needs to be.</p>
+              <p style="margin: 0; font-size: 14.5px; line-height: 1.5; color: #c8c6de;"><strong style="color:#fff;">Clarity over jargon.</strong> Health information should make sense to the person it's about.</p>
+              <p style="margin: 0; font-size: 14.5px; line-height: 1.5; color: #c8c6de;"><strong style="color:#fff;">Built with clinicians.</strong> Not guessed at — shaped by the people who treat patients every day.</p>
+              <p style="margin: 0; font-size: 14.5px; line-height: 1.5; color: #c8c6de;"><strong style="color:#fff;">Seconds matter.</strong> In an emergency, speed isn't a feature — it's the whole point.</p>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>
@@ -839,6 +932,23 @@ function openMail(e) {
     window.location.href = 'mailto:' + to + '?subject=' + encodeURIComponent(subject);
   } else {
     window.open('https://mail.google.com/mail/?view=cm&fs=1&to=' + to + '&su=' + encodeURIComponent(subject), '_blank', 'noopener');
+  }
+}
+
+// About page tiles: expand/collapse on click, independent of each other.
+function toggleAboutTile(n) {
+  const tile = document.getElementById('about-tile-' + n);
+  const body = document.getElementById('about-body-' + n);
+  const chevron = document.getElementById('about-chevron-' + n);
+  const isOpen = tile.classList.contains('open');
+  if (isOpen) {
+    body.style.maxHeight = '0px';
+    tile.classList.remove('open');
+    chevron.style.transform = 'rotate(0deg)';
+  } else {
+    body.style.maxHeight = body.scrollHeight + 'px';
+    tile.classList.add('open');
+    chevron.style.transform = 'rotate(180deg)';
   }
 }
 
