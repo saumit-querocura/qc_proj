@@ -1,0 +1,866 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>QueroCura — Personalized Care</title>
+<link rel="icon" type="image/x-icon" href="icons/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="48x48" href="icons/favicon-48x48.png">
+<link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/android-chrome-192x192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icons/android-chrome-512x512.png">
+<meta name="theme-color" content="#0e8f83">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  html { scroll-behavior: smooth; }
+  body { margin: 0; font-family: 'Manrope', sans-serif; background: #f6f5f1; color: #100e2a; }
+  h1, h2, h3, .display { font-family: 'Space Grotesk', sans-serif; }
+  a { color: #0e8f83; text-decoration: none; }
+  a:hover { color: #0b6f66; }
+  .navlink { position: relative; transition: color 0.2s ease; }
+  .navlink:hover { color: #0e8f83 !important; }
+  .navlink::after { content: ''; position: absolute; left: 0; right: 100%; bottom: -4px; height: 2px; background: #0e8f83; transition: right 0.25s ease; }
+  .navlink:hover::after { right: 0; }
+  .cta, .ghost { position: relative; overflow: hidden; transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease; }
+  .cta:hover { background: #0b6f66 !important; transform: translateY(-2px); box-shadow: 0 12px 24px -8px rgba(14,143,131,0.45); }
+  .cta-dark:hover { background: #241f52 !important; transform: translateY(-2px); box-shadow: 0 12px 24px -8px rgba(16,14,42,0.35); }
+  .ghost:hover { background: rgba(16,14,42,0.06) !important; transform: translateY(-2px); }
+  .cta::after { content: ''; position: absolute; top: 0; left: -60%; width: 40%; height: 100%; background: linear-gradient(115deg, transparent, rgba(255,255,255,0.35), transparent); transform: skewX(-20deg); transition: left 0.6s ease; pointer-events: none; }
+  .cta:hover::after { left: 140%; }
+  .gradient-text { background: linear-gradient(95deg, #0e8f83, #2f8fd1); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .step-card, .flow-card, .fact-card, .info-card, .mosaic-tile { transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease; }
+  .step-card:hover, .fact-card:hover, .info-card:hover { transform: translateY(-6px); box-shadow: 0 24px 40px -20px rgba(16,14,42,0.22); border-color: rgba(14,143,131,0.35) !important; }
+  .mosaic-tile:hover { transform: translateY(-4px) scale(1.06) rotate(-2deg); box-shadow: 0 18px 30px -16px rgba(16,14,42,0.28); }
+  .tab-icon-wrap { transition: transform 0.2s ease; }
+  .tab-btn:hover .tab-icon-wrap { transform: scale(1.12) rotate(-4deg); }
+  @keyframes floatSlow {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+  }
+  .floaty { animation: floatSlow 5s ease-in-out infinite; }
+  @keyframes drawLine {
+    from { stroke-dashoffset: 340; }
+    to { stroke-dashoffset: 0; }
+  }
+  .heartbeat-path { stroke-dasharray: 340; animation: drawLine 2.4s ease-out forwards; }
+  @keyframes glowPulse {
+    0%, 100% { opacity: 0.55; }
+    50% { opacity: 0.9; }
+  }
+  .brand-glow { animation: glowPulse 4s ease-in-out infinite; }
+  .team-card { transition: transform 0.25s ease, box-shadow 0.25s ease; }
+  .team-card:hover { transform: rotate(0deg) translateY(-6px) !important; box-shadow: 0 26px 44px -18px rgba(0,0,0,0.45); }
+  .team-photo-inner img { transition: transform 0.4s ease; }
+  .team-card:hover .team-photo-inner img { transform: scale(1.4); }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(14px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .fade-in { animation: fadeUp 0.4s ease-out both; }
+
+  .tab-btn { cursor: pointer; border: 1.5px solid rgba(16,14,42,0.12); background: #fff; transition: all 0.2s ease; }
+  .tab-btn:hover { border-color: rgba(14,143,131,0.5); transform: translateY(-2px); }
+  .tab-btn.active { background: #100e2a; border-color: #100e2a; }
+  .tab-btn.active .tab-label { color: #fff !important; }
+  .tab-btn.active .tab-icon-wrap { background: rgba(255,255,255,0.12) !important; }
+  .email-pill { transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease; }
+  .email-pill:hover { transform: translateY(-2px); }
+
+  .flow-connector { width: 3px; height: 44px; position: relative; overflow: hidden; background: rgba(255,255,255,0.08); }
+  .flow-connector::after { content: ''; position: absolute; left: 0; top: -30px; width: 100%; height: calc(100% + 30px); background: repeating-linear-gradient(180deg, #7ee0d4 0px, #7ee0d4 6px, transparent 6px, transparent 16px); animation: flowMove 0.9s linear infinite; }
+  @keyframes flowMove { from { transform: translateY(-16px); } to { transform: translateY(0); } }
+  .flow-step { transition: transform 0.2s ease; }
+  .flow-step:hover { transform: translateX(4px); }
+  .flow-step:hover .flow-icon-ring { border-color: rgba(126,224,212,0.6); box-shadow: 0 0 0 6px rgba(126,224,212,0.1); }
+  .flow-yes-card { transition: transform 0.25s ease; }
+  .flow-yes-card:hover { transform: translateY(-4px) scale(1.02); }
+
+  .contact-card { transition: transform 0.22s cubic-bezier(0.2,0.9,0.3,1.3), box-shadow 0.22s ease, border-color 0.22s ease; }
+  .contact-card:hover { transform: translateY(-6px) scale(1.02); box-shadow: 0 24px 44px -20px rgba(14,143,131,0.35); border-color: rgba(14,143,131,0.4) !important; }
+  .contact-card:hover .contact-avatar { border-color: #0e8f83 !important; transform: scale(1.08); }
+  .contact-card:hover .contact-arrow { transform: translateX(4px); }
+  .contact-avatar, .contact-arrow { transition: all 0.22s ease; }
+
+  .mosaic-tile { cursor: default; }
+  .step-card, .info-card { cursor: default; }
+
+  /* ---- Mobile responsiveness ---- */
+  @media (max-width: 860px) {
+    .nav-links-desktop, .nav-cta-desktop { display: none !important; }
+    .nav-hamburger { display: flex !important; }
+  }
+  .platform-tab-grid { grid-template-columns: repeat(6, 1fr); }
+  @media (max-width: 760px) {
+    .platform-tab-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+  @media (max-width: 420px) {
+    .platform-tab-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 640px) {
+    .team-card { width: 100% !important; max-width: 260px; }
+  }
+  body { overflow-x: hidden; }
+
+  /* ---- Waitlist form ---- */
+  .wl-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 560px) { .wl-grid { grid-template-columns: 1fr; } }
+  .wl-label { display: block; font-size: 13px; font-weight: 700; color: #100e2a; margin-bottom: 6px; }
+  .wl-optional { font-weight: 500; color: #8a879c; }
+  .wl-input { width: 100%; box-sizing: border-box; padding: 13px 16px; border-radius: 12px; border: 1.5px solid rgba(16,14,42,0.14); font-family: 'Manrope', sans-serif; font-size: 15px; color: #100e2a; background: #fff; transition: border-color 0.2s ease, box-shadow 0.2s ease; }
+  .wl-input:focus { outline: none; border-color: #0e8f83; box-shadow: 0 0 0 3px rgba(14,143,131,0.15); }
+  .wl-input::placeholder { color: #a9a6bb; }
+  #wl-submit-btn:disabled { opacity: 0.7; cursor: default; }
+</style>
+</head>
+<body>
+
+
+<div style="width: 100%; min-height: 100vh; background: #f6f5f1; overflow-x: hidden;">
+
+  <!-- NAV -->
+  <div style="width: 100%; box-sizing: border-box; padding: 16px clamp(16px, 4vw, 48px); display: flex; align-items: center; justify-content: space-between; background: rgba(246,245,241,0.85); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 30; border-bottom: 1px solid rgba(16,14,42,0.08);">
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <img src="assets/d4f7acc01b9438e998c9e7b9676584b0.png" alt="QueroCura" style="width: 42px; height: 39px; object-fit: contain;">
+      <div style="font-size: 20px; font-weight: 700; letter-spacing: -0.02em;">
+        <span style="color: #100e2a;">Quero</span><span style="color: #0e8f83;">Cura</span>
+      </div>
+    </div>
+    <div class="nav-links-desktop" style="display: flex; align-items: center; gap: 30px;">
+      <a class="navlink" href="#about" style="color: #100e2a; font-size: 15px; font-weight: 600;">About</a>
+      <a class="navlink" href="#services" style="color: #100e2a; font-size: 15px; font-weight: 600;">Our platform</a>
+      <a class="navlink" href="#team" style="color: #100e2a; font-size: 15px; font-weight: 600;">Our team</a>
+      <a class="navlink" href="#reviews" style="color: #100e2a; font-size: 15px; font-weight: 600;">Reviews</a>
+      <a class="navlink" href="#waitlist" style="color: #100e2a; font-size: 15px; font-weight: 600;">Waitlist</a>
+      <a class="navlink" href="#contact" style="color: #100e2a; font-size: 15px; font-weight: 600;">Contact</a>
+    </div>
+    <a href="#contact" class="cta nav-cta-desktop" style="background: #0e8f83; color: #fff; font-size: 14px; font-weight: 700; padding: 11px 22px; border-radius: 999px;">Get in touch</a>
+    <button class="nav-hamburger" onclick="toggleMobileMenu()" aria-label="Open menu" style="display:none; align-items:center; justify-content:center; width:40px; height:40px; border-radius:10px; border:1.5px solid rgba(16,14,42,0.14); background:#fff; cursor:pointer; padding:0;">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4 6h16M4 12h16M4 18h16" stroke="#100e2a" stroke-width="2" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+  <div id="mobile-menu" class="mobile-menu" style="display:none; position: sticky; top: 73px; z-index: 29; width: 100%; box-sizing: border-box; background: #f6f5f1; border-bottom: 1px solid rgba(16,14,42,0.08); box-shadow: 0 14px 24px -18px rgba(16,14,42,0.25);">
+    <div style="display:flex; flex-direction:column; padding: 8px clamp(16px,4vw,48px) 20px;">
+      <a onclick="closeMobileMenu()" href="#about" style="color:#100e2a; font-size:16px; font-weight:600; padding:12px 0; border-bottom:1px solid rgba(16,14,42,0.08);">About</a>
+      <a onclick="closeMobileMenu()" href="#services" style="color:#100e2a; font-size:16px; font-weight:600; padding:12px 0; border-bottom:1px solid rgba(16,14,42,0.08);">Our platform</a>
+      <a onclick="closeMobileMenu()" href="#team" style="color:#100e2a; font-size:16px; font-weight:600; padding:12px 0; border-bottom:1px solid rgba(16,14,42,0.08);">Our team</a>
+      <a onclick="closeMobileMenu()" href="#reviews" style="color:#100e2a; font-size:16px; font-weight:600; padding:12px 0; border-bottom:1px solid rgba(16,14,42,0.08);">Reviews</a>
+      <a onclick="closeMobileMenu()" href="#waitlist" style="color:#100e2a; font-size:16px; font-weight:600; padding:12px 0; border-bottom:1px solid rgba(16,14,42,0.08);">Waitlist</a>
+      <a onclick="closeMobileMenu()" href="#contact" style="color:#100e2a; font-size:16px; font-weight:600; padding:12px 0;">Contact</a>
+      <a onclick="closeMobileMenu()" href="#contact" class="cta" style="margin-top:14px; text-align:center; background: #0e8f83; color: #fff; font-size: 15px; font-weight: 700; padding: 13px 22px; border-radius: 999px;">Get in touch</a>
+    </div>
+  </div>
+
+  <!-- HERO -->
+  <div onmousemove="heroMove(event)" id="hero-wrap" style="width: 100%; box-sizing: border-box; padding: clamp(48px,10vw,84px) clamp(16px,4vw,48px) clamp(40px,8vw,76px); max-width: 1200px; margin: 0 auto; position: relative;">
+    <svg style="position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0.5; pointer-events: none;" preserveAspectRatio="none">
+      <pattern id="dotgrid" width="28" height="28" patternUnits="userSpaceOnUse">
+        <circle cx="1.5" cy="1.5" r="1.5" fill="#100e2a" opacity="0.06"/>
+      </pattern>
+      <rect x="60%" y="0" width="40%" height="100%" fill="url(#dotgrid)"/>
+    </svg>
+    <div id="hero-glow" style="position: absolute; inset: 0; background: radial-gradient(500px circle at 72% 35%, rgba(14,143,131,0.13), transparent 45%); pointer-events: none; transition: background 0.15s ease;"></div>
+    <div style="display: flex; gap: 48px; align-items: center; flex-wrap: wrap; position: relative;">
+      <div style="flex: 1 1 520px; min-width: 300px;">
+        <div style="display: inline-flex; align-items: center; gap: 8px; background: #fff; border: 1px solid rgba(16,14,42,0.1); border-radius: 999px; padding: 7px 16px; font-size: 13px; font-weight: 700; color: #0e8f83; letter-spacing: 0.02em; margin-bottom: 26px;">
+          A COMPLETE HEALTH PLATFORM
+        </div>
+        <h1 style="margin: 0 0 20px; font-size: clamp(34px, 9vw, 60px); line-height: 1.06; font-weight: 700; letter-spacing: -0.03em;">
+          Caring for you<br>is our <span class="gradient-text">priority</span>.
+        </h1>
+        <img src="assets/30ddfbda2b273df5d62e25adbb87a67e.png" alt="" style="width: 220px; max-width: 50%; height: auto; display: block; margin: 2px 0 26px;">
+        <p style="margin: 0 0 34px; font-size: 19px; line-height: 1.55; color: #34324a; max-width: 460px;">
+          Personalized care, right at home. From understanding your symptoms to remembering your next dose, QueroCura keeps your health story in one trusted place.
+        </p>
+        <div style="display: flex; gap: 16px; flex-wrap: wrap;">
+          <a href="#contact" class="cta" style="background: #100e2a; color: #fff; font-size: 16px; font-weight: 700; padding: 15px 30px; border-radius: 999px;">Contact us</a>
+          <a href="#services" class="ghost" style="background: transparent; color: #100e2a; font-size: 16px; font-weight: 700; padding: 15px 30px; border-radius: 999px; border: 1.5px solid rgba(16,14,42,0.18);">Explore the platform</a>
+        </div>
+      </div>
+
+      <div style="flex: 1 1 400px; min-width: 300px;">
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px;">
+          <div class="mosaic-tile floaty" style="background: #fff; border-radius: 18px; padding: 20px 14px; text-align: center; border: 1px solid rgba(16,14,42,0.06);">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" style="margin: 0 auto 10px;"><circle cx="10.5" cy="10.5" r="6.5" stroke="#0e8f83" stroke-width="1.8"/><path d="M15.5 15.5L21 21" stroke="#0e8f83" stroke-width="1.8" stroke-linecap="round"/><path d="M6.5 10.5H9L10 8L12 13L13 10.5H14.5" stroke="#0e8f83" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <div style="font-size: 12px; font-weight: 700; color: #100e2a; line-height: 1.3;">Symptom Intelligence</div>
+          </div>
+          <div class="mosaic-tile floaty" style="background: #fff; border-radius: 18px; padding: 20px 14px; text-align: center; border: 1px solid rgba(16,14,42,0.06); animation-delay: -1s;">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" style="margin: 0 auto 10px;"><path d="M4 10a8 8 0 1 1 3 6.2L4 20l1.2-3.6A7.96 7.96 0 0 1 4 10z" stroke="#7c6fdb" stroke-width="1.8" stroke-linejoin="round"/><path d="M12 7.5v3.5M12 14v.01" stroke="#7c6fdb" stroke-width="1.8" stroke-linecap="round"/></svg>
+            <div style="font-size: 12px; font-weight: 700; color: #100e2a; line-height: 1.3;">Clinical Interview</div>
+          </div>
+          <div class="mosaic-tile floaty" style="background: #fff; border-radius: 18px; padding: 20px 14px; text-align: center; border: 1px solid rgba(16,14,42,0.06); animation-delay: -2s;">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" style="margin: 0 auto 10px;"><path d="M4 17l4.5-5 3.5 3 5.5-7" stroke="#f0765a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M14 8h4v4" stroke="#f0765a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 20h16" stroke="#100e2a" stroke-width="1.5" stroke-linecap="round" opacity="0.3"/></svg>
+            <div style="font-size: 12px; font-weight: 700; color: #100e2a; line-height: 1.3;">Specialized Insights</div>
+          </div>
+          <div class="mosaic-tile floaty" style="background: #fff; border-radius: 18px; padding: 20px 14px; text-align: center; border: 1px solid rgba(16,14,42,0.06); animation-delay: -3s;">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" style="margin: 0 auto 10px;"><path d="M12 3l7 3v5c0 4.6-3 7.9-7 10-4-2.1-7-5.4-7-10V6l7-3z" stroke="#2f8fd1" stroke-width="1.8" stroke-linejoin="round"/><circle cx="12" cy="11" r="2" stroke="#2f8fd1" stroke-width="1.6"/><path d="M12 13v3" stroke="#2f8fd1" stroke-width="1.6" stroke-linecap="round"/></svg>
+            <div style="font-size: 12px; font-weight: 700; color: #100e2a; line-height: 1.3;">CuraVault</div>
+          </div>
+          <div class="mosaic-tile floaty" style="background: #fff; border-radius: 18px; padding: 20px 14px; text-align: center; border: 1px solid rgba(16,14,42,0.06); animation-delay: -1.5s;">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" style="margin: 0 auto 10px;"><path d="M18 8a6 6 0 1 0-12 0c0 3.5-1 5.5-1.8 6.6a1 1 0 0 0 .8 1.6h14a1 1 0 0 0 .8-1.6C18.9 13.5 18 11.5 18 8z" stroke="#e0a52c" stroke-width="1.7" stroke-linejoin="round"/><path d="M9.5 18.5a2.5 2.5 0 0 0 5 0" stroke="#e0a52c" stroke-width="1.7" stroke-linecap="round"/></svg>
+            <div style="font-size: 12px; font-weight: 700; color: #100e2a; line-height: 1.3;">Medicine Reminders</div>
+          </div>
+          <div class="mosaic-tile floaty" style="background: #100e2a; border-radius: 18px; padding: 20px 14px; text-align: center; border: 1px solid transparent; animation-delay: -2.5s;">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" style="margin: 0 auto 10px;"><path d="M12 2L4 5v6c0 5 3.4 8.7 8 9 4.6-.3 8-4 8-9V5l-8-3z" stroke="#5fc9bd" stroke-width="1.7" stroke-linejoin="round"/><path d="M9 12l2 2 4-4.5" stroke="#5fc9bd" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <div style="font-size: 12px; font-weight: 700; color: #fff; line-height: 1.3;">Emergency Glass Door</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ABOUT -->
+  <div id="about" style="width: 100%; background: #100e2a; box-sizing: border-box; padding: clamp(48px,10vw,88px) clamp(16px,4vw,48px);">
+    <div style="max-width: 1180px; margin: 0 auto; display: flex; gap: 64px; align-items: center; flex-wrap: wrap;">
+      <div style="flex: 1 1 340px; min-width: 300px;">
+        <div class="floaty" style="width: 100%; max-width: 420px; aspect-ratio: 4/3; background: #1a1740; border-radius: 20px; display: flex; align-items: center; justify-content: center;">
+          <svg width="70%" viewBox="0 0 200 120" fill="none">
+            <rect x="8" y="46" width="150" height="52" rx="8" fill="#e9e7f5"/>
+            <rect x="8" y="46" width="150" height="14" fill="#0e8f83"/>
+            <rect x="118" y="60" width="28" height="24" rx="3" fill="#7db8e8"/>
+            <rect x="150" y="60" width="8" height="38" rx="2" fill="#f0765a"/>
+            <circle cx="40" cy="98" r="14" fill="#100e2a"/>
+            <circle cx="40" cy="98" r="6" fill="#e9e7f5"/>
+            <circle cx="130" cy="98" r="14" fill="#100e2a"/>
+            <circle cx="130" cy="98" r="6" fill="#e9e7f5"/>
+            <rect x="26" y="58" width="24" height="24" fill="#100e2a" opacity="0.08"/>
+            <path d="M28 68H36L40 60L46 78L50 68H56" stroke="#f0765a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          </svg>
+        </div>
+      </div>
+      <div style="flex: 1 1 420px; min-width: 300px;">
+        <div style="font-size: 14px; font-weight: 700; letter-spacing: 0.08em; color: #7ee0d4; margin-bottom: 14px;">ABOUT QUEROCURA</div>
+        <h2 style="margin: 0 0 24px; font-size: clamp(26px, 5.5vw, 40px); line-height: 1.1; font-weight: 700; color: #fff; letter-spacing: -0.02em;">
+          Health information shouldn't be scattered — or silent when it matters most.
+        </h2>
+        <p style="margin: 0 0 18px; font-size: 18px; line-height: 1.6; color: #c8c6de;">
+          QueroCura brings your symptoms, your records and your routine into one place — reading what your body is telling you, remembering what your doctor prescribed, and surfacing it the instant someone needs it.
+        </p>
+        <p style="margin: 0; font-size: 18px; line-height: 1.6; color: #c8c6de;">
+          From a first symptom to an emergency room, we're built to close the gap between what's known about you and what's in reach.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SERVICES / PLATFORM TABS -->
+  <div id="services" style="width: 100%; box-sizing: border-box; padding: clamp(48px,10vw,96px) clamp(16px,4vw,48px);">
+    <div style="max-width: 1180px; margin: 0 auto;">
+      <div style="font-size: 14px; font-weight: 700; letter-spacing: 0.08em; color: #0e8f83; margin-bottom: 14px; text-align: center;">OUR PLATFORM</div>
+      <h2 style="margin: 0 0 16px; font-size: clamp(28px, 6vw, 42px); font-weight: 700; letter-spacing: -0.02em; text-align: center;">One platform, six ways we help.</h2>
+      <p style="margin: 0 auto 48px; font-size: 18px; color: #46435f; text-align: center; max-width: 640px;">Tap a pillar to see what it does.</p>
+
+      <div class="platform-tab-grid" style="display: grid; gap: 12px; margin-bottom: 8px;">
+        <div onclick="showTab(0)" class="tab-btn active" id="tab-btn-0" style="border-radius: 16px; padding: 18px 10px; text-align: center;">
+          <div class="tab-icon-wrap" style="width: 40px; height: 40px; border-radius: 12px; background: #e6f6f4; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 2L4 5v6c0 5 3.4 8.7 8 9 4.6-.3 8-4 8-9V5l-8-3z" stroke="#0e8f83" stroke-width="1.9" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="tab-label" style="font-size: 12px; font-weight: 700; color: #100e2a;">Emergency<br>Glass Door</div>
+        </div>
+        <div onclick="showTab(1)" class="tab-btn" id="tab-btn-1" style="border-radius: 16px; padding: 18px 10px; text-align: center;">
+          <div class="tab-icon-wrap" style="width: 40px; height: 40px; border-radius: 12px; background: #e6f6f4; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="10.5" cy="10.5" r="6.5" stroke="#0e8f83" stroke-width="1.8"/><path d="M15.5 15.5L21 21" stroke="#0e8f83" stroke-width="1.8" stroke-linecap="round"/></svg>
+          </div>
+          <div class="tab-label" style="font-size: 12px; font-weight: 700; color: #100e2a;">Symptom<br>Intelligence</div>
+        </div>
+        <div onclick="showTab(2)" class="tab-btn" id="tab-btn-2" style="border-radius: 16px; padding: 18px 10px; text-align: center;">
+          <div class="tab-icon-wrap" style="width: 40px; height: 40px; border-radius: 12px; background: #eae8fb; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4 10a8 8 0 1 1 3 6.2L4 20l1.2-3.6A7.96 7.96 0 0 1 4 10z" stroke="#7c6fdb" stroke-width="1.8" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="tab-label" style="font-size: 12px; font-weight: 700; color: #100e2a;">Clinical<br>Interview</div>
+        </div>
+        <div onclick="showTab(3)" class="tab-btn" id="tab-btn-3" style="border-radius: 16px; padding: 18px 10px; text-align: center;">
+          <div class="tab-icon-wrap" style="width: 40px; height: 40px; border-radius: 12px; background: #fdece7; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4 17l4.5-5 3.5 3 5.5-7" stroke="#f0765a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M14 8h4v4" stroke="#f0765a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="tab-label" style="font-size: 12px; font-weight: 700; color: #100e2a;">Specialized<br>Insights</div>
+        </div>
+        <div onclick="showTab(4)" class="tab-btn" id="tab-btn-4" style="border-radius: 16px; padding: 18px 10px; text-align: center;">
+          <div class="tab-icon-wrap" style="width: 40px; height: 40px; border-radius: 12px; background: #e4f1fb; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 3l7 3v5c0 4.6-3 7.9-7 10-4-2.1-7-5.4-7-10V6l7-3z" stroke="#2f8fd1" stroke-width="1.8" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="tab-label" style="font-size: 12px; font-weight: 700; color: #100e2a;">CuraVault</div>
+        </div>
+        <div onclick="showTab(5)" class="tab-btn" id="tab-btn-5" style="border-radius: 16px; padding: 18px 10px; text-align: center;">
+          <div class="tab-icon-wrap" style="width: 40px; height: 40px; border-radius: 12px; background: #fbf1dc; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M18 8a6 6 0 1 0-12 0c0 3.5-1 5.5-1.8 6.6a1 1 0 0 0 .8 1.6h14a1 1 0 0 0 .8-1.6C18.9 13.5 18 11.5 18 8z" stroke="#e0a52c" stroke-width="1.7" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="tab-label" style="font-size: 12px; font-weight: 700; color: #100e2a;">Medicine<br>Reminders</div>
+        </div>
+      </div>
+
+      <!-- DETAIL PANEL -->
+      <div style="background: #ebe9e2; border-radius: 28px; padding: clamp(20px,6vw,48px); margin-top: 28px;">
+
+        <div class="fade-in" id="panel-0">
+            <div style="flex: 1 1 260px; min-width: 220px; display: flex; gap: 20px; justify-content: center;">
+              <img src="assets/6a378981d2c2ab0d4c61291275916505.png" alt="" style="width: 110px; height: auto; align-self: flex-end;">
+              <img src="assets/6abe27005847b6683a14deef5164e1c7.png" alt="" class="floaty" style="width: 110px; height: auto; align-self: flex-start; animation-delay: -2s;">
+            </div>
+            <div style="flex: 2 1 480px; min-width: 300px;">
+              <div style="display: inline-flex; align-items: center; gap: 8px; background: #0e8f83; border-radius: 999px; padding: 6px 14px; font-size: 12px; font-weight: 700; color: #fff; letter-spacing: 0.03em; margin-bottom: 16px;">FLAGSHIP · LIVE</div>
+              <h3 style="margin: 0 0 16px; font-size: clamp(22px, 4.5vw, 30px); font-weight: 700; letter-spacing: -0.02em;">Emergency Glass Door</h3>
+              <p style="margin: 0 0 14px; font-size: 17px; line-height: 1.6; color: #34324a;">
+                A project which aims to increase the speed of medical response for a patient who reaches the hospital in an emergency situation.
+              </p>
+              <p style="margin: 0 0 26px; font-size: 17px; line-height: 1.6; color: #34324a;">
+                A detailed summary of the patient's medical information reaches first responders immediately — biometrically verified, nothing to fill out.
+              </p>
+              <a href="#egd-how" class="cta" style="display: inline-block; background: #0e8f83; color: #fff; font-size: 15px; font-weight: 700; padding: 13px 26px; border-radius: 999px;">See the full breakdown</a>
+            </div>
+          </div>
+
+        <div class="fade-in" id="panel-1" style="display:none;">
+            <div style="flex: 0 0 auto;">
+              <div style="width: 130px; height: 130px; border-radius: 28px; background: linear-gradient(160deg, #fff, #eafaf7); box-shadow: 0 14px 28px -18px rgba(14,143,131,0.45); display: flex; align-items: center; justify-content: center;">
+                <svg width="92" height="92" viewBox="0 0 100 100" fill="none">
+                  <circle cx="50" cy="50" r="46" fill="#e6f6f4"/>
+                  <path d="M18 55h13l6-19 11 35 8-25 6 9h20" stroke="#0e8f83" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+                  <circle cx="67" cy="65" r="18" fill="#fff" stroke="#100e2a" stroke-width="4.5"/>
+                  <circle cx="67" cy="65" r="8" fill="#0e8f83"/>
+                  <line x1="79.5" y1="77.5" x2="90" y2="88" stroke="#100e2a" stroke-width="6" stroke-linecap="round"/>
+                </svg>
+              </div>
+            </div>
+            <div style="flex: 1 1 480px; min-width: 300px;">
+              <div style="display: inline-flex; align-items: center; gap: 8px; background: #fff; border: 1px solid rgba(16,14,42,0.12); border-radius: 999px; padding: 6px 14px; font-size: 12px; font-weight: 700; color: #6b6885; letter-spacing: 0.03em; margin-bottom: 16px;">IN DEVELOPMENT</div>
+              <h3 style="margin: 0 0 16px; font-size: clamp(22px, 4.5vw, 30px); font-weight: 700; letter-spacing: -0.02em;">Symptom Intelligence</h3>
+              <p style="margin: 0 0 22px; font-size: 17px; line-height: 1.6; color: #34324a;">
+                Describe how you're feeling in your own words. QueroCura maps what you describe against clinical patterns to help narrow down what might be going on — before you ever set foot in a clinic.
+              </p>
+              <div style="display: flex; flex-direction: column; gap: 10px;">
+                <div style="display: flex; gap: 10px; align-items: flex-start;"><div style="width: 6px; height: 6px; border-radius: 50%; background: #0e8f83; margin-top: 8px; flex: 0 0 auto;"></div><p style="margin: 0; font-size: 15px; color: #46435f;">Plain-language symptom input — no medical jargon required</p></div>
+                <div style="display: flex; gap: 10px; align-items: flex-start;"><div style="width: 6px; height: 6px; border-radius: 50%; background: #0e8f83; margin-top: 8px; flex: 0 0 auto;"></div><p style="margin: 0; font-size: 15px; color: #46435f;">Pattern-matched against known clinical presentations</p></div>
+                <div style="display: flex; gap: 10px; align-items: flex-start;"><div style="width: 6px; height: 6px; border-radius: 50%; background: #0e8f83; margin-top: 8px; flex: 0 0 auto;"></div><p style="margin: 0; font-size: 15px; color: #46435f;">A starting point for the clinical interview that follows</p></div>
+              </div>
+            </div>
+          </div>
+
+        <div class="fade-in" id="panel-2" style="display:none;">
+            <div style="flex: 0 0 auto;">
+              <div style="width: 130px; height: 130px; border-radius: 28px; background: linear-gradient(160deg, #fff, #f1effc); box-shadow: 0 14px 28px -18px rgba(124,111,219,0.45); display: flex; align-items: center; justify-content: center;">
+                <svg width="92" height="92" viewBox="0 0 100 100" fill="none">
+                  <circle cx="50" cy="50" r="46" fill="#eae8fb"/>
+                  <path d="M22 26h52a12 12 0 0 1 12 12v14a12 12 0 0 1-12 12H40l-16 14v-14h-2a12 12 0 0 1-12-12V38a12 12 0 0 1 12-12z" fill="#fff" stroke="#100e2a" stroke-width="4.5" stroke-linejoin="round"/>
+                  <circle cx="35" cy="45" r="4.5" fill="#7c6fdb"/>
+                  <circle cx="50" cy="45" r="4.5" fill="#7c6fdb"/>
+                  <circle cx="65" cy="45" r="4.5" fill="#7c6fdb"/>
+                </svg>
+              </div>
+            </div>
+            <div style="flex: 1 1 480px; min-width: 300px;">
+              <div style="display: inline-flex; align-items: center; gap: 8px; background: #fff; border: 1px solid rgba(16,14,42,0.12); border-radius: 999px; padding: 6px 14px; font-size: 12px; font-weight: 700; color: #6b6885; letter-spacing: 0.03em; margin-bottom: 16px;">IN DEVELOPMENT</div>
+              <h3 style="margin: 0 0 16px; font-size: clamp(22px, 4.5vw, 30px); font-weight: 700; letter-spacing: -0.02em;">Clinical Interview Model</h3>
+              <p style="margin: 0 0 22px; font-size: 17px; line-height: 1.6; color: #34324a;">
+                Instead of a static checklist, QueroCura asks the follow-up questions a clinician would — a guided, conversational interview built to increase the certainty of every prediction it makes.
+              </p>
+              <div style="display: flex; flex-direction: column; gap: 10px;">
+                <div style="display: flex; gap: 10px; align-items: flex-start;"><div style="width: 6px; height: 6px; border-radius: 50%; background: #7c6fdb; margin-top: 8px; flex: 0 0 auto;"></div><p style="margin: 0; font-size: 15px; color: #46435f;">Dynamic follow-ups, not a fixed questionnaire</p></div>
+                <div style="display: flex; gap: 10px; align-items: flex-start;"><div style="width: 6px; height: 6px; border-radius: 50%; background: #7c6fdb; margin-top: 8px; flex: 0 0 auto;"></div><p style="margin: 0; font-size: 15px; color: #46435f;">Each answer narrows down the range of likely explanations</p></div>
+                <div style="display: flex; gap: 10px; align-items: flex-start;"><div style="width: 6px; height: 6px; border-radius: 50%; background: #7c6fdb; margin-top: 8px; flex: 0 0 auto;"></div><p style="margin: 0; font-size: 15px; color: #46435f;">Designed to raise confidence before a prediction is shown</p></div>
+              </div>
+            </div>
+          </div>
+
+        <div class="fade-in" id="panel-3" style="display:none;">
+            <div style="flex: 0 0 auto;">
+              <div style="width: 130px; height: 130px; border-radius: 28px; background: linear-gradient(160deg, #fff, #fdf0eb); box-shadow: 0 14px 28px -18px rgba(240,118,90,0.45); display: flex; align-items: center; justify-content: center;">
+                <svg width="92" height="92" viewBox="0 0 100 100" fill="none">
+                  <circle cx="50" cy="50" r="46" fill="#fdece7"/>
+                  <rect x="22" y="14" width="40" height="56" rx="5" fill="#fff" stroke="#100e2a" stroke-width="4"/>
+                  <line x1="29" y1="26" x2="55" y2="26" stroke="#100e2a" stroke-width="3" stroke-linecap="round" opacity="0.3"/>
+                  <line x1="29" y1="34" x2="49" y2="34" stroke="#100e2a" stroke-width="3" stroke-linecap="round" opacity="0.3"/>
+                  <rect x="29" y="46" width="6" height="16" rx="1.5" fill="#f0765a"/>
+                  <rect x="38.5" y="52" width="6" height="10" rx="1.5" fill="#f0765a" opacity="0.55"/>
+                  <rect x="48" y="42" width="6" height="20" rx="1.5" fill="#f0765a"/>
+                  <circle cx="69" cy="67" r="18" fill="#fff" stroke="#100e2a" stroke-width="4.5"/>
+                  <circle cx="69" cy="67" r="8" fill="#f0765a"/>
+                  <line x1="81.5" y1="79.5" x2="92" y2="90" stroke="#100e2a" stroke-width="6" stroke-linecap="round"/>
+                </svg>
+              </div>
+            </div>
+            <div style="flex: 1 1 480px; min-width: 300px;">
+              <div style="display: inline-flex; align-items: center; gap: 8px; background: #fff; border: 1px solid rgba(16,14,42,0.12); border-radius: 999px; padding: 6px 14px; font-size: 12px; font-weight: 700; color: #6b6885; letter-spacing: 0.03em; margin-bottom: 16px;">IN DEVELOPMENT</div>
+              <h3 style="margin: 0 0 16px; font-size: clamp(22px, 4.5vw, 30px); font-weight: 700; letter-spacing: -0.02em;">Specialized Insights</h3>
+              <p style="margin: 0 0 22px; font-size: 17px; line-height: 1.6; color: #34324a;">
+                QueroCura reads your reports and tracks your health over time, surfacing insights that a single report on its own wouldn't show — the trend behind the number, not just the number.
+              </p>
+              <div style="display: flex; flex-direction: column; gap: 10px;">
+                <div style="display: flex; gap: 10px; align-items: flex-start;"><div style="width: 6px; height: 6px; border-radius: 50%; background: #f0765a; margin-top: 8px; flex: 0 0 auto;"></div><p style="margin: 0; font-size: 15px; color: #46435f;">Reads uploaded lab and diagnostic reports automatically</p></div>
+                <div style="display: flex; gap: 10px; align-items: flex-start;"><div style="width: 6px; height: 6px; border-radius: 50%; background: #f0765a; margin-top: 8px; flex: 0 0 auto;"></div><p style="margin: 0; font-size: 15px; color: #46435f;">Tracks how key markers move across every visit, not just one</p></div>
+                <div style="display: flex; gap: 10px; align-items: flex-start;"><div style="width: 6px; height: 6px; border-radius: 50%; background: #f0765a; margin-top: 8px; flex: 0 0 auto;"></div><p style="margin: 0; font-size: 15px; color: #46435f;">Surfaces what's worth a closer look, in plain language</p></div>
+              </div>
+            </div>
+          </div>
+
+        <div class="fade-in" id="panel-4" style="display:none;">
+            <div style="flex: 0 0 auto;">
+              <div style="width: 130px; height: 130px; border-radius: 28px; background: linear-gradient(160deg, #fff, #eaf3fc); box-shadow: 0 14px 28px -18px rgba(47,143,209,0.45); display: flex; align-items: center; justify-content: center;">
+                <svg width="92" height="92" viewBox="0 0 100 100" fill="none">
+                  <circle cx="50" cy="50" r="46" fill="#e4f1fb"/>
+                  <rect x="18" y="26" width="64" height="50" rx="10" fill="#fff" stroke="#100e2a" stroke-width="4.5"/>
+                  <rect x="18" y="26" width="64" height="12" rx="6" fill="#2f8fd1"/>
+                  <circle cx="50" cy="55" r="16" fill="#2f8fd1" stroke="#100e2a" stroke-width="4"/>
+                  <circle cx="50" cy="55" r="5.5" fill="#fff"/>
+                  <rect x="47" y="55" width="6" height="11" rx="2" fill="#fff"/>
+                </svg>
+              </div>
+            </div>
+            <div style="flex: 1 1 480px; min-width: 300px;">
+              <div style="display: inline-flex; align-items: center; gap: 8px; background: #fff; border: 1px solid rgba(16,14,42,0.12); border-radius: 999px; padding: 6px 14px; font-size: 12px; font-weight: 700; color: #6b6885; letter-spacing: 0.03em; margin-bottom: 16px;">IN DEVELOPMENT</div>
+              <h3 style="margin: 0 0 16px; font-size: clamp(22px, 4.5vw, 30px); font-weight: 700; letter-spacing: -0.02em;">CuraVault</h3>
+              <p style="margin: 0 0 22px; font-size: 17px; line-height: 1.6; color: #34324a;">
+                Every report, prescription and record lives in CuraVault — stored securely and analyzed over time, so your history travels with you instead of staying locked in a drawer or one clinic's system.
+              </p>
+              <div style="display: flex; flex-direction: column; gap: 10px;">
+                <div style="display: flex; gap: 10px; align-items: flex-start;"><div style="width: 6px; height: 6px; border-radius: 50%; background: #2f8fd1; margin-top: 8px; flex: 0 0 auto;"></div><p style="margin: 0; font-size: 15px; color: #46435f;">One secure vault for every report, scan and prescription</p></div>
+                <div style="display: flex; gap: 10px; align-items: flex-start;"><div style="width: 6px; height: 6px; border-radius: 50%; background: #2f8fd1; margin-top: 8px; flex: 0 0 auto;"></div><p style="margin: 0; font-size: 15px; color: #46435f;">Analyzed over time, so trends surface on their own</p></div>
+                <div style="display: flex; gap: 10px; align-items: flex-start;"><div style="width: 6px; height: 6px; border-radius: 50%; background: #2f8fd1; margin-top: 8px; flex: 0 0 auto;"></div><p style="margin: 0; font-size: 15px; color: #46435f;">Built on the same encryption model as Emergency Glass Door</p></div>
+              </div>
+            </div>
+          </div>
+
+        <div class="fade-in" id="panel-5" style="display:none;">
+            <div style="flex: 0 0 auto;">
+              <div style="width: 130px; height: 130px; border-radius: 28px; background: linear-gradient(160deg, #fff, #fbf3e0); box-shadow: 0 14px 28px -18px rgba(224,165,44,0.45); display: flex; align-items: center; justify-content: center;">
+                <svg width="92" height="92" viewBox="0 0 100 100" fill="none">
+                  <circle cx="50" cy="50" r="46" fill="#fbf1dc"/>
+                  <rect x="32" y="12" width="18" height="10" rx="3" fill="#e0a52c" stroke="#100e2a" stroke-width="3.5"/>
+                  <rect x="23" y="22" width="36" height="48" rx="9" fill="#fff" stroke="#100e2a" stroke-width="4.5"/>
+                  <rect x="23" y="40" width="36" height="12" fill="#e0a52c"/>
+                  <circle cx="70" cy="66" r="17" fill="#fff" stroke="#100e2a" stroke-width="4.5"/>
+                  <path d="M70 57a9 9 0 0 1 9 9v3.5l2.5 3.5H58.5L61 69.5V66a9 9 0 0 1 9-9z" fill="#e0a52c" stroke="#100e2a" stroke-width="3" stroke-linejoin="round"/>
+                  <path d="M66.5 75.5a3.5 3.5 0 0 0 7 0" stroke="#100e2a" stroke-width="3" stroke-linecap="round"/>
+                </svg>
+              </div>
+            </div>
+            <div style="flex: 1 1 480px; min-width: 300px;">
+              <div style="display: inline-flex; align-items: center; gap: 8px; background: #fff; border: 1px solid rgba(16,14,42,0.12); border-radius: 999px; padding: 6px 14px; font-size: 12px; font-weight: 700; color: #6b6885; letter-spacing: 0.03em; margin-bottom: 16px;">IN DEVELOPMENT</div>
+              <h3 style="margin: 0 0 16px; font-size: clamp(22px, 4.5vw, 30px); font-weight: 700; letter-spacing: -0.02em;">Prescription Reminders</h3>
+              <p style="margin: 0 0 22px; font-size: 17px; line-height: 1.6; color: #34324a;">
+                Prescriptions come with timing that's easy to miss. QueroCura reminds you to take the right medicine at the right time, every time — pulled straight from what's already in CuraVault.
+              </p>
+              <div style="display: flex; flex-direction: column; gap: 10px;">
+                <div style="display: flex; gap: 10px; align-items: flex-start;"><div style="width: 6px; height: 6px; border-radius: 50%; background: #e0a52c; margin-top: 8px; flex: 0 0 auto;"></div><p style="margin: 0; font-size: 15px; color: #46435f;">Reminders timed to your actual prescription, not guesswork</p></div>
+                <div style="display: flex; gap: 10px; align-items: flex-start;"><div style="width: 6px; height: 6px; border-radius: 50%; background: #e0a52c; margin-top: 8px; flex: 0 0 auto;"></div><p style="margin: 0; font-size: 15px; color: #46435f;">Works off prescriptions already stored in CuraVault</p></div>
+                <div style="display: flex; gap: 10px; align-items: flex-start;"><div style="width: 6px; height: 6px; border-radius: 50%; background: #e0a52c; margin-top: 8px; flex: 0 0 auto;"></div><p style="margin: 0; font-size: 15px; color: #46435f;">One less thing to remember during recovery</p></div>
+              </div>
+            </div>
+          </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- INFORMATION -->
+  <div style="width: 100%; background: #ebe9e2; box-sizing: border-box; padding: clamp(48px,10vw,88px) clamp(16px,4vw,48px);">
+    <div style="max-width: 1180px; margin: 0 auto; display: flex; gap: 64px; align-items: flex-start; flex-wrap: wrap;">
+      <div style="flex: 0 0 auto;">
+        <div style="width: 88px; height: 88px; border-radius: 22px; background: #fff; display: flex; align-items: center; justify-content: center;">
+          <svg width="44" height="44" viewBox="0 0 24 24" fill="none">
+            <path d="M9 3v4M15 3v4M6 21v-6a6 6 0 0 1 12 0v6" stroke="#0e8f83" stroke-width="1.8" stroke-linecap="round"/>
+            <circle cx="12" cy="13" r="2" stroke="#0e8f83" stroke-width="1.8"/>
+            <path d="M4 21h16" stroke="#0e8f83" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+        </div>
+      </div>
+      <div style="flex: 1 1 500px; min-width: 300px;">
+        <h2 style="margin: 0 0 26px; font-size: clamp(22px, 5vw, 34px); font-weight: 700; letter-spacing: -0.02em;">Who decides what's shown?</h2>
+        <div style="display: flex; flex-direction: column; gap: 18px;">
+          <div style="display: flex; gap: 14px; align-items: flex-start;">
+            <div style="width: 8px; height: 8px; border-radius: 50%; background: #0e8f83; margin-top: 10px; flex: 0 0 auto;"></div>
+            <p style="margin: 0; font-size: 18px; line-height: 1.6; color: #34324a;">You might ask, how do we decide what information to display in an emergency?</p>
+          </div>
+          <div style="display: flex; gap: 14px; align-items: flex-start;">
+            <div style="width: 8px; height: 8px; border-radius: 50%; background: #0e8f83; margin-top: 10px; flex: 0 0 auto;"></div>
+            <p style="margin: 0; font-size: 18px; line-height: 1.6; color: #34324a;">We don't. Every field is entered by the user's own physician(s), beforehand, during onboarding — the same records CuraVault keeps for you over time.</p>
+          </div>
+          <div style="display: flex; gap: 14px; align-items: flex-start;">
+            <div style="width: 8px; height: 8px; border-radius: 50%; background: #0e8f83; margin-top: 10px; flex: 0 0 auto;"></div>
+            <p style="margin: 0; font-size: 18px; line-height: 1.6; color: #34324a;">That gives medical teams the most accurate, required and relevant data for the emergency at hand.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HOW IT WORKS -->
+  <div id="egd-how" style="width: 100%; box-sizing: border-box; padding: clamp(48px,10vw,96px) clamp(16px,4vw,48px);">
+    <div style="max-width: 1180px; margin: 0 auto;">
+      <div style="font-size: 14px; font-weight: 700; letter-spacing: 0.08em; color: #0e8f83; margin-bottom: 14px; text-align: center;">EMERGENCY GLASS DOOR — THE FULL PICTURE</div>
+      <h2 style="margin: 0 0 56px; font-size: clamp(28px, 6vw, 42px); font-weight: 700; letter-spacing: -0.02em; text-align: center;">Three steps, seconds apart.</h2>
+      <div style="display: flex; gap: 28px; flex-wrap: wrap; margin-bottom: 64px;">
+        <div class="step-card" style="flex: 1 1 280px; min-width: 260px; background: #fff; border-radius: 20px; padding: 36px 30px; border: 1px solid rgba(16,14,42,0.08);">
+          <div style="width: 46px; height: 46px; border-radius: 12px; background: #e6f6f4; display: flex; align-items: center; justify-content: center; font-family: 'Space Grotesk', sans-serif; font-weight: 700; color: #0e8f83; font-size: 18px; margin-bottom: 22px;">1</div>
+          <h3 style="margin: 0 0 12px; font-size: 20px; font-weight: 700;">Scan</h3>
+          <p style="margin: 0; font-size: 16px; line-height: 1.6; color: #46435f;">A medical professional scans the patient's fingerprint or iris — no forms, no delay.</p>
+        </div>
+        <div class="step-card" style="flex: 1 1 280px; min-width: 260px; background: #fff; border-radius: 20px; padding: 36px 30px; border: 1px solid rgba(16,14,42,0.08);">
+          <div style="width: 46px; height: 46px; border-radius: 12px; background: #eae8fb; display: flex; align-items: center; justify-content: center; font-family: 'Space Grotesk', sans-serif; font-weight: 700; color: #7c6fdb; font-size: 18px; margin-bottom: 22px;">2</div>
+          <h3 style="margin: 0 0 12px; font-size: 20px; font-weight: 700;">Match</h3>
+          <p style="margin: 0; font-size: 16px; line-height: 1.6; color: #46435f;">The scan is matched against the patient's biometrics linked to their Aadhaar card.</p>
+        </div>
+        <div class="step-card" style="flex: 1 1 280px; min-width: 260px; background: #fff; border-radius: 20px; padding: 36px 30px; border: 1px solid rgba(16,14,42,0.08);">
+          <div style="width: 46px; height: 46px; border-radius: 12px; background: #fdece7; display: flex; align-items: center; justify-content: center; font-family: 'Space Grotesk', sans-serif; font-weight: 700; color: #f0765a; font-size: 18px; margin-bottom: 22px;">3</div>
+          <h3 style="margin: 0 0 12px; font-size: 20px; font-weight: 700;">Access</h3>
+          <p style="margin: 0; font-size: 16px; line-height: 1.6; color: #46435f;">On a successful match, the care team gets emergency data straight from CuraVault.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FLOWCHART -->
+  <div style="width: 100%; background: linear-gradient(165deg, #100e2a 0%, #1a1550 100%); box-sizing: border-box; padding: clamp(56px,10vw,100px) clamp(16px,4vw,48px); position: relative; overflow: hidden;">
+    <svg style="position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0.35; pointer-events: none;">
+      <pattern id="dotgrid2" width="26" height="26" patternUnits="userSpaceOnUse">
+        <circle cx="1.3" cy="1.3" r="1.3" fill="#ffffff" opacity="0.08"/>
+      </pattern>
+      <rect width="100%" height="100%" fill="url(#dotgrid2)"/>
+    </svg>
+    <div style="max-width: 720px; margin: 0 auto; position: relative;">
+      <div style="font-size: 14px; font-weight: 700; letter-spacing: 0.08em; color: #7ee0d4; margin-bottom: 14px; text-align: center;">THE FLOW, END TO END</div>
+      <h2 style="margin: 0 0 64px; font-size: clamp(26px, 5.5vw, 38px); font-weight: 700; letter-spacing: -0.02em; text-align: center; color: #fff;">From emergency to answer, live.</h2>
+
+      <div style="display: flex; flex-direction: column; align-items: center;">
+
+        <div class="flow-step" style="display: flex; align-items: center; gap: 20px; width: 100%; max-width: 460px;">
+          <div class="flow-icon-ring" style="position: relative; width: 62px; height: 62px; border-radius: 50%; background: #1a1740; border: 1.5px solid rgba(255,255,255,0.12); display: flex; align-items: center; justify-content: center; flex: 0 0 auto;">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="7.5" r="3.3" stroke="#7ee0d4" stroke-width="1.8"/><path d="M5 20c0-3.6 3.2-6 7-6s7 2.4 7 6" stroke="#7ee0d4" stroke-width="1.8" stroke-linecap="round"/></svg>
+            <div style="position: absolute; top: -6px; right: -6px; width: 20px; height: 20px; border-radius: 50%; background: #0e8f83; color: #fff; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; font-family: 'Space Grotesk', sans-serif;">1</div>
+          </div>
+          <div style="background: #1a1740; border-radius: 16px; padding: 16px 22px; flex: 1 1 auto; border: 1px solid rgba(255,255,255,0.06);">
+            <div style="font-size: 15px; font-weight: 700; color: #fff;">A medical emergency happens</div>
+            <div style="font-size: 13px; color: #a9a6c2; margin-top: 2px;">Every second before care starts is a second working against the patient.</div>
+          </div>
+        </div>
+
+        <div class="flow-connector"></div>
+
+        <div class="flow-step" style="display: flex; align-items: center; gap: 20px; width: 100%; max-width: 460px;">
+          <div class="flow-icon-ring" style="position: relative; width: 62px; height: 62px; border-radius: 50%; background: #1a1740; border: 1.5px solid rgba(255,255,255,0.12); display: flex; align-items: center; justify-content: center; flex: 0 0 auto;">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><rect x="4" y="9" width="16" height="11" rx="1.5" stroke="#7ee0d4" stroke-width="1.7"/><path d="M12 3v6M9 6h6" stroke="#7ee0d4" stroke-width="1.7" stroke-linecap="round"/><path d="M9.5 20v-4a2.5 2.5 0 0 1 5 0v4" stroke="#7ee0d4" stroke-width="1.5"/></svg>
+            <div style="position: absolute; top: -6px; right: -6px; width: 20px; height: 20px; border-radius: 50%; background: #0e8f83; color: #fff; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; font-family: 'Space Grotesk', sans-serif;">2</div>
+          </div>
+          <div style="background: #1a1740; border-radius: 16px; padding: 16px 22px; flex: 1 1 auto; border: 1px solid rgba(255,255,255,0.06);">
+            <div style="font-size: 15px; font-weight: 700; color: #fff;">They reach an ambulance or hospital</div>
+            <div style="font-size: 13px; color: #a9a6c2; margin-top: 2px;">First responders take over — often with no history on the patient at all.</div>
+          </div>
+        </div>
+
+        <div class="flow-connector"></div>
+
+        <div class="flow-step" style="display: flex; align-items: center; gap: 20px; width: 100%; max-width: 460px;">
+          <div class="flow-icon-ring" style="position: relative; width: 62px; height: 62px; border-radius: 50%; background: #1a1740; border: 1.5px solid rgba(255,255,255,0.12); display: flex; align-items: center; justify-content: center; flex: 0 0 auto;">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M6 15a6 6 0 0 1 12 0" stroke="#7ee0d4" stroke-width="1.6"/><path d="M4 13a8 8 0 0 1 16 0" stroke="#7ee0d4" stroke-width="1.6" opacity="0.55"/><path d="M8.5 17.5a3.5 3.5 0 0 1 7 0" stroke="#7ee0d4" stroke-width="1.6"/><path d="M12 18v2" stroke="#7ee0d4" stroke-width="1.8" stroke-linecap="round"/></svg>
+            <div style="position: absolute; top: -6px; right: -6px; width: 20px; height: 20px; border-radius: 50%; background: #0e8f83; color: #fff; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; font-family: 'Space Grotesk', sans-serif;">3</div>
+          </div>
+          <div style="background: #1a1740; border-radius: 16px; padding: 16px 22px; flex: 1 1 auto; border: 1px solid rgba(255,255,255,0.06);">
+            <div style="font-size: 15px; font-weight: 700; color: #fff;">A fingerprint or iris is scanned</div>
+            <div style="font-size: 13px; color: #a9a6c2; margin-top: 2px;">Checked against biometrics linked to the patient's Aadhaar card.</div>
+          </div>
+        </div>
+
+        <div class="flow-connector flow-connector-decision"></div>
+
+        <div class="flow-step" style="width: 100%; max-width: 460px; display: flex; justify-content: center;">
+          <div style="background: linear-gradient(135deg, #1e1a52, #241f52); border: 1.5px solid rgba(126,224,212,0.35); border-radius: 18px; padding: 18px 26px; text-align: center; box-shadow: 0 0 0 6px rgba(126,224,212,0.06);">
+            <div style="font-size: 12px; font-weight: 700; letter-spacing: 0.06em; color: #7ee0d4; margin-bottom: 4px;">DECISION POINT</div>
+            <div style="font-size: 16px; font-weight: 700; color: #fff;">Does it match?</div>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; width: 100%; max-width: 560px; margin-top: 32px;">
+
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 10px;">
+            <div style="display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 700; color: #6b6885;">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#6b6885" stroke-width="2.4" stroke-linecap="round"/></svg>
+              NO MATCH
+            </div>
+            <div style="background: rgba(255,255,255,0.04); border: 1px dashed rgba(255,255,255,0.18); border-radius: 16px; padding: 22px 18px; text-align: center; width: 100%; box-sizing: border-box;">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" style="margin: 0 auto 10px;"><rect x="5" y="10" width="14" height="10" rx="2" stroke="#8b88a3" stroke-width="1.7"/><path d="M8 10V7a4 4 0 0 1 7.5-2" stroke="#8b88a3" stroke-width="1.7" stroke-linecap="round"/></svg>
+              <div style="font-size: 14px; font-weight: 700; color: #c8c6de;">No access granted</div>
+              <div style="font-size: 12px; color: #6b6885; margin-top: 4px;">Nothing about the patient is exposed.</div>
+            </div>
+          </div>
+
+          <div class="flow-yes-card" style="display: flex; flex-direction: column; align-items: center; gap: 10px;">
+            <div style="display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 700; color: #7ee0d4;">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M5 12l5 5L20 7" stroke="#7ee0d4" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              MATCH FOUND
+            </div>
+            <div style="background: linear-gradient(160deg, #0e8f83, #0b6f66); border-radius: 16px; padding: 22px 18px; text-align: center; width: 100%; box-sizing: border-box; box-shadow: 0 20px 40px -16px rgba(14,143,131,0.55);">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" style="margin: 0 auto 10px;"><rect x="5" y="10" width="14" height="10" rx="2" stroke="#fff" stroke-width="1.7"/><path d="M8 10V7a4 4 0 0 1 8 0" stroke="#fff" stroke-width="1.7" stroke-linecap="round"/></svg>
+              <div style="font-size: 14px; font-weight: 700; color: #fff;">Emergency data displayed</div>
+              <div style="font-size: 12px; color: #d6f3ef; margin-top: 4px;">Straight from CuraVault, instantly.</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECURITY -->
+  <div id="security" style="width: 100%; background: #100e2a; box-sizing: border-box; padding: clamp(48px,10vw,96px) clamp(16px,4vw,48px);">
+    <div style="max-width: 1180px; margin: 0 auto; display: flex; gap: 64px; align-items: center; flex-wrap: wrap;">
+      <div style="flex: 0 0 auto;">
+        <div class="floaty" style="width: 120px; height: 120px; border-radius: 28px; background: #1a1740; display: flex; align-items: center; justify-content: center;">
+          <svg width="56" height="56" viewBox="0 0 24 24" fill="none">
+            <path d="M12 2L4 5v6c0 5 3.4 8.7 8 9 4.6-.3 8-4 8-9V5l-8-3z" stroke="#5fc9bd" stroke-width="1.7" stroke-linejoin="round"/>
+            <path d="M9 12l2 2 4-4.5" stroke="#5fc9bd" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+      </div>
+      <div style="flex: 1 1 500px; min-width: 300px;">
+        <div style="font-size: 14px; font-weight: 700; letter-spacing: 0.08em; color: #7ee0d4; margin-bottom: 14px;">SECURITY</div>
+        <h2 style="margin: 0 0 24px; font-size: clamp(26px, 5.5vw, 38px); line-height: 1.15; font-weight: 700; color: #fff; letter-spacing: -0.02em;">
+          Addressing the elephant in the room — how do we keep your data safe?
+        </h2>
+        <p style="margin: 0; font-size: 19px; line-height: 1.6; color: #c8c6de; max-width: 640px;">
+          Everything in CuraVault — emergency records, reports, prescriptions — is linearly homomorphically encrypted and accessible only through biometric verification. Not even we can see our users' data.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- OUR TEAM -->
+  <div id="team" style="width: 100%; background: #33422f; box-sizing: border-box; padding: clamp(56px,10vw,100px) clamp(16px,4vw,48px); position: relative; overflow: hidden;">
+    <svg style="position: absolute; top: 60px; right: 90px; opacity: 0.5;" width="140" height="140" viewBox="0 0 140 140" fill="none">
+      <path d="M10 60C10 30 40 15 65 25C90 35 60 55 75 50C100 42 130 55 125 85" stroke="#dcefd9" stroke-width="2" fill="none"/>
+    </svg>
+    <svg style="position: absolute; bottom: 50px; left: 60px; opacity: 0.4;" width="130" height="90" viewBox="0 0 130 90" fill="none">
+      <path d="M5 82C25 30 70 30 90 55C110 78 55 50 75 20" stroke="#dcefd9" stroke-width="2" fill="none"/>
+    </svg>
+    <div style="max-width: 1180px; margin: 0 auto; position: relative;">
+      <div style="font-size: 14px; font-weight: 700; letter-spacing: 0.08em; color: #b9e0b4; margin-bottom: 14px;">OUR TEAM</div>
+      <h2 style="margin: 0 0 64px; font-size: clamp(28px, 6vw, 42px); font-weight: 700; letter-spacing: -0.02em; color: #eef6ea;">The people behind QueroCura.</h2>
+      <div style="display: flex; gap: 72px; flex-wrap: wrap; align-items: flex-start;">
+
+        <div class="team-card" style="transform: rotate(-4deg); background: #fff; padding: 10px 10px 26px; border-radius: 6px; box-shadow: 0 18px 34px -16px rgba(0,0,0,0.4); width: 220px;">
+          <div class="team-photo-inner" style="width: 200px; height: 200px; border-radius: 3px; overflow: hidden;">
+            <img src="assets/0ab1e8250bd34d40919e07020aa459e5.jpg" alt="Udantika Dhar" style="width: 100%; height: 100%; object-fit: cover; display: block; transform: scale(1.28);">
+          </div>
+          <div style="text-align: center; margin-top: 16px; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 17px; color: #100e2a;">Udantika Dhar</div>
+          <div style="text-align: center; font-size: 13px; color: #6b6b6b; margin-top: 2px;">Chief Executive Officer</div>
+        </div>
+
+        <div class="team-card" style="transform: rotate(3deg); background: #fff; padding: 10px 10px 26px; border-radius: 6px; box-shadow: 0 18px 34px -16px rgba(0,0,0,0.4); width: 220px; margin-top: 36px;">
+          <div class="team-photo-inner" style="width: 200px; height: 200px; border-radius: 3px; overflow: hidden;">
+            <img src="assets/5321c7b8f06466de394304fe60d1a834.jpg" alt="Saumit Pradhan" style="width: 100%; height: 100%; object-fit: cover; display: block; transform: scale(1.28);">
+          </div>
+          <div style="text-align: center; margin-top: 16px; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 17px; color: #100e2a;">Saumit Pradhan</div>
+          <div style="text-align: center; font-size: 13px; color: #6b6b6b; margin-top: 2px;">Chief Technology Officer</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- FAQ -->
+  <div style="width: 100%; background: #ebe9e2; box-sizing: border-box; padding: clamp(48px,10vw,96px) clamp(16px,4vw,48px);">
+    <div style="max-width: 780px; margin: 0 auto;">
+      <div style="font-size: 14px; font-weight: 700; letter-spacing: 0.08em; color: #0e8f83; margin-bottom: 14px; text-align: center;">GOOD TO KNOW</div>
+      <h2 style="margin: 0 0 48px; font-size: clamp(24px, 5vw, 36px); font-weight: 700; letter-spacing: -0.02em; text-align: center;">A few things people ask.</h2>
+
+      <div style="display: flex; flex-direction: column; gap: 14px;">
+        <div class="info-card" style="background: #fff; border-radius: 16px; padding: 24px 28px; border: 1px solid rgba(16,14,42,0.08);">
+          <div style="font-size: 16px; font-weight: 700; margin-bottom: 8px;">What happens if there's no biometric match?</div>
+          <div style="font-size: 15px; line-height: 1.6; color: #46435f;">Access is simply denied. Nothing about the patient is shown or exposed either way — a failed match looks identical to no record existing at all.</div>
+        </div>
+        <div class="info-card" style="background: #fff; border-radius: 16px; padding: 24px 28px; border: 1px solid rgba(16,14,42,0.08);">
+          <div style="font-size: 16px; font-weight: 700; margin-bottom: 8px;">Who's allowed to enter my medical information?</div>
+          <div style="font-size: 15px; line-height: 1.6; color: #46435f;">Only your own physician(s), during onboarding. QueroCura never generates or guesses what goes into your record — it's exactly what your doctor put there.</div>
+        </div>
+        <div class="info-card" style="background: #fff; border-radius: 16px; padding: 24px 28px; border: 1px solid rgba(16,14,42,0.08);">
+          <div style="font-size: 16px; font-weight: 700; margin-bottom: 8px;">How is CuraVault different from a regular medical records app?</div>
+          <div style="font-size: 15px; line-height: 1.6; color: #46435f;">Most records apps store a file. CuraVault stores it, encrypts it so nobody — including us — can read it directly, and analyzes it over time to surface trends, all behind the same biometric gate as Emergency Glass Door.</div>
+        </div>
+        <div class="info-card" style="background: #fff; border-radius: 16px; padding: 24px 28px; border: 1px solid rgba(16,14,42,0.08);">
+          <div style="font-size: 16px; font-weight: 700; margin-bottom: 8px;">Does this replace the paperwork at check-in?</div>
+          <div style="font-size: 15px; line-height: 1.6; color: #46435f;">For the emergency moment, yes — that's the entire point of the glass door. A scan replaces the form.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- REVIEWS -->
+  <div id="reviews" style="width: 100%; box-sizing: border-box; padding: clamp(48px,10vw,96px) clamp(16px,4vw,48px);">
+    <div style="max-width: 760px; margin: 0 auto; text-align: center;">
+      <div style="font-size: 14px; font-weight: 700; letter-spacing: 0.08em; color: #0e8f83; margin-bottom: 14px;">REVIEWS</div>
+      <h2 style="margin: 0 0 20px; font-size: clamp(24px, 5vw, 36px); font-weight: 700; letter-spacing: -0.02em;">We're just getting started.</h2>
+      <p style="margin: 0; font-size: 17px; line-height: 1.6; color: #46435f;">
+        QueroCura is early — we haven't onboarded our first hospitals yet. Real reviews from real care teams will show up here as we do. If you'd like to be one of the first, we'd love to hear from you.
+      </p>
+    </div>
+  </div>
+
+  <!-- WAITLIST -->
+  <div id="waitlist" style="width: 100%; background: #ebe9e2; box-sizing: border-box; padding: clamp(48px,10vw,96px) clamp(16px,4vw,48px);">
+    <div style="max-width: 640px; margin: 0 auto; text-align: center;">
+      <div style="font-size: 14px; font-weight: 700; letter-spacing: 0.08em; color: #0e8f83; margin-bottom: 14px;">JOIN THE WAITLIST</div>
+      <h2 style="margin: 0 0 16px; font-size: clamp(26px, 5.5vw, 38px); font-weight: 700; letter-spacing: -0.02em;">Be first in line when we launch.</h2>
+      <p style="margin: 0 auto 40px; font-size: 17px; line-height: 1.6; color: #46435f; max-width: 480px;">
+        Leave your details and we'll reach out the moment QueroCura — and Emergency Glass Door — is ready for real users.
+      </p>
+    </div>
+    <div style="max-width: 560px; margin: 0 auto; background: #fff; border-radius: 28px; padding: clamp(24px,5vw,40px); box-shadow: 0 24px 48px -28px rgba(16,14,42,0.25); border: 1px solid rgba(16,14,42,0.06);">
+
+      <form id="waitlist-form" action="https://script.google.com/macros/s/AKfycbwW5q1uFKykgKzdoXQgHqqHSFzEe9WTDnA60Ol51cVOqPad6kXm1DG7_MWj460hcADC/exec" method="POST" target="hidden_iframe" onsubmit="handleWaitlistSubmit(event)">
+        <input type="text" name="hp" id="wl-hp" tabindex="-1" autocomplete="off" style="position:absolute; left:-9999px; width:1px; height:1px; opacity:0;">
+
+        <div class="wl-grid" style="margin-bottom: 16px;">
+          <div>
+            <label class="wl-label" for="wl-name">Name</label>
+            <input class="wl-input" type="text" id="wl-name" name="name" required placeholder="Your full name">
+          </div>
+          <div>
+            <label class="wl-label" for="wl-email">Email</label>
+            <input class="wl-input" type="email" id="wl-email" name="email" required placeholder="you@example.com">
+          </div>
+        </div>
+
+        <div class="wl-grid" style="margin-bottom: 16px;">
+          <div>
+            <label class="wl-label" for="wl-phone">Phone <span class="wl-optional">(optional)</span></label>
+            <input class="wl-input" type="tel" id="wl-phone" name="phone" placeholder="+91 00000 00000">
+          </div>
+          <div>
+            <label class="wl-label" for="wl-source">How did you hear about us? <span class="wl-optional">(optional)</span></label>
+            <input class="wl-input" type="text" id="wl-source" name="source" placeholder="Friend, social media, search…">
+          </div>
+        </div>
+
+        <div style="margin-bottom: 24px;">
+          <label class="wl-label" for="wl-note">A little note <span class="wl-optional">(optional)</span></label>
+          <textarea class="wl-input" id="wl-note" name="note" rows="3" placeholder="Anything you'd like us to know" style="resize: vertical; font-family: 'Manrope', sans-serif;"></textarea>
+        </div>
+
+        <button type="submit" id="wl-submit-btn" class="cta" style="width: 100%; background: #0e8f83; color: #fff; font-size: 16px; font-weight: 700; padding: 15px 30px; border-radius: 999px; border: none; cursor: pointer;">Join the waitlist</button>
+      </form>
+
+      <div id="waitlist-success" style="display:none; text-align: center; padding: 20px 0;">
+        <div style="width: 60px; height: 60px; border-radius: 50%; background: #e6f6f4; display: flex; align-items: center; justify-content: center; margin: 0 auto 18px;">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M5 12l5 5L20 7" stroke="#0e8f83" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <h3 style="margin: 0 0 10px; font-size: 22px; font-weight: 700;">You're on the list!</h3>
+        <p style="margin: 0; font-size: 15px; color: #46435f;">We'll reach out the moment QueroCura is ready for you.</p>
+      </div>
+    </div>
+    <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
+  </div>
+
+  <!-- BRAND BAND -->
+  <div style="width: 100%; background: #0a0918; box-sizing: border-box; padding: clamp(48px,10vw,90px) clamp(16px,4vw,48px); position: relative; overflow: hidden; text-align: center;">
+    <div style="position: absolute; left: 50%; top: 50%; width: 520px; height: 300px; transform: translate(-50%, -50%); background: radial-gradient(ellipse at center, rgba(14,143,131,0.35), transparent 70%); filter: blur(30px); pointer-events: none;" class="brand-glow"></div>
+    <img src="assets/e714e789f56361ecddc2f49ab568bcd2.png" alt="QueroCura" style="position: relative; width: 100%; max-width: 460px; height: auto;">
+  </div>
+
+  <!-- CTA / FOOTER -->
+  <div id="contact" style="width: 100%; box-sizing: border-box; padding: clamp(48px,10vw,96px) clamp(16px,4vw,48px) 40px; position: relative; overflow: hidden;">
+    <div style="position: absolute; top: -80px; left: -60px; width: 320px; height: 320px; border-radius: 50%; background: radial-gradient(circle, rgba(14,143,131,0.18), transparent 70%); filter: blur(10px); pointer-events: none;"></div>
+    <div style="position: absolute; bottom: -100px; right: -60px; width: 380px; height: 380px; border-radius: 50%; background: radial-gradient(circle, rgba(124,111,219,0.14), transparent 70%); filter: blur(10px); pointer-events: none;"></div>
+    <div style="max-width: 900px; margin: 0 auto; text-align: center; padding-bottom: 72px; position: relative;">
+      <div style="font-size: 14px; font-weight: 700; letter-spacing: 0.08em; color: #0e8f83; margin-bottom: 14px;">SAY HELLO</div>
+      <h2 style="margin: 0 0 20px; font-size: clamp(28px, 6vw, 42px); font-weight: 700; letter-spacing: -0.02em;">We'd genuinely love to hear from you.</h2>
+      <p style="margin: 0 0 48px; font-size: 18px; color: #46435f; max-width: 560px; margin-left: auto; margin-right: auto;">Whichever card you tap, one email opens — addressed to both of us. No picking the "right" inbox.</p>
+
+      <div style="display: flex; gap: 24px; flex-wrap: wrap; justify-content: center;">
+        <a href="https://mail.google.com/mail/?view=cm&fs=1&to=saumit@querocura.com,udantika@querocura.com&su=Hi%20QueroCura" onclick="openMail(event)" class="contact-card" style="display: flex; align-items: center; gap: 16px; background: #fff; border-radius: 20px; padding: 18px 26px 18px 18px; border: 1px solid rgba(16,14,42,0.08); text-align: left; min-width: 260px;">
+          <img src="assets/5321c7b8f06466de394304fe60d1a834.jpg" alt="Saumit Pradhan" class="contact-avatar" style="width: 58px; height: 58px; border-radius: 50%; object-fit: cover; flex: 0 0 auto; border: 2px solid rgba(14,143,131,0.25);">
+          <div>
+            <div style="font-size: 16px; font-weight: 700; color: #100e2a;">Saumit Pradhan</div>
+            <div style="font-size: 13px; color: #6b6b6b; margin-bottom: 4px;">Chief Technology Officer</div>
+            <div style="font-size: 13px; font-weight: 700; color: #0e8f83; display: flex; align-items: center; gap: 5px;">
+              Say hi
+              <svg class="contact-arrow" width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="#0e8f83" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+          </div>
+        </a>
+
+        <a href="https://mail.google.com/mail/?view=cm&fs=1&to=saumit@querocura.com,udantika@querocura.com&su=Hi%20QueroCura" onclick="openMail(event)" class="contact-card" style="display: flex; align-items: center; gap: 16px; background: #fff; border-radius: 20px; padding: 18px 26px 18px 18px; border: 1px solid rgba(16,14,42,0.08); text-align: left; min-width: 260px;">
+          <img src="assets/0ab1e8250bd34d40919e07020aa459e5.jpg" alt="Udantika Dhar" class="contact-avatar" style="width: 58px; height: 58px; border-radius: 50%; object-fit: cover; flex: 0 0 auto; border: 2px solid rgba(14,143,131,0.25);">
+          <div>
+            <div style="font-size: 16px; font-weight: 700; color: #100e2a;">Udantika Dhar</div>
+            <div style="font-size: 13px; color: #6b6b6b; margin-bottom: 4px;">Chief Executive Officer</div>
+            <div style="font-size: 13px; font-weight: 700; color: #0e8f83; display: flex; align-items: center; gap: 5px;">
+              Say hi
+              <svg class="contact-arrow" width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="#0e8f83" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+    <div style="max-width: 1180px; margin: 0 auto; border-top: 1px solid rgba(16,14,42,0.1); padding-top: 28px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <img src="assets/d4f7acc01b9438e998c9e7b9676584b0.png" alt="QueroCura" style="width: 22px; height: 20px; object-fit: contain;">
+        <span style="font-size: 14px; font-weight: 700; color: #46435f;">QueroCura · querocura.com</span>
+      </div>
+      <span style="font-size: 13px; color: #8a879c;">© 2026 QueroCura. All rights reserved.</span>
+    </div>
+  </div>
+
+</div>
+<script>
+function showTab(n) {
+  for (let i = 0; i < 6; i++) {
+    document.getElementById('panel-' + i).style.display = (i === n) ? '' : 'none';
+    document.getElementById('tab-btn-' + i).classList.toggle('active', i === n);
+  }
+}
+function heroMove(e) {
+  const wrap = document.getElementById('hero-wrap');
+  const glow = document.getElementById('hero-glow');
+  if (!wrap || !glow) return;
+  const rect = wrap.getBoundingClientRect();
+  const x = ((e.clientX - rect.left) / rect.width) * 100;
+  const y = ((e.clientY - rect.top) / rect.height) * 100;
+  glow.style.background = `radial-gradient(500px circle at ${x}% ${y}%, rgba(14,143,131,0.13), transparent 45%)`;
+}
+
+function toggleMobileMenu() {
+  const m = document.getElementById('mobile-menu');
+  m.style.display = (m.style.display === 'none' || !m.style.display) ? 'block' : 'none';
+}
+function closeMobileMenu() {
+  document.getElementById('mobile-menu').style.display = 'none';
+}
+
+// Route "Say hi" contact links to the Gmail app on mobile, and Gmail compose in a
+// new tab on desktop, both pre-filled with the same recipients + subject.
+function openMail(e) {
+  if (e) e.preventDefault();
+  const to = 'saumit@querocura.com,udantika@querocura.com';
+  const subject = 'Hi QueroCura';
+  const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  if (isMobile) {
+    window.location.href = 'mailto:' + to + '?subject=' + encodeURIComponent(subject);
+  } else {
+    window.open('https://mail.google.com/mail/?view=cm&fs=1&to=' + to + '&su=' + encodeURIComponent(subject), '_blank', 'noopener');
+  }
+}
+
+// Waitlist form: submits to a hidden iframe pointed at the Google Apps Script
+// endpoint (a plain form POST, not fetch, so no CORS issues), then shows a
+// success state optimistically since the cross-origin iframe response can't
+// be read from here.
+function handleWaitlistSubmit(e) {
+  const honeypot = document.getElementById('wl-hp').value;
+  if (honeypot) {
+    e.preventDefault();
+    return false;
+  }
+  const btn = document.getElementById('wl-submit-btn');
+  btn.disabled = true;
+  btn.textContent = 'Submitting…';
+  setTimeout(function () {
+    document.getElementById('waitlist-form').style.display = 'none';
+    document.getElementById('waitlist-success').style.display = 'block';
+  }, 900);
+}
+</script>
+<!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "cf10cc866a9f4ffeb50a6ce35a72e773"}'></script><!-- End Cloudflare Web Analytics -->
+</body>
+</html>
