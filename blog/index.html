@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Blog — QueroCura</title>
+<meta name="description" content="Perspectives on emergency care, health tech and closing the gap between symptom and treatment — from the professionals shaping QueroCura.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="QueroCura">
+<meta property="og:title" content="Blog — QueroCura">
+<meta property="og:description" content="Perspectives on emergency care, health tech and closing the gap between symptom and treatment — from the professionals shaping QueroCura.">
+<meta property="og:image" content="https://querocura.com/assets/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:url" content="https://querocura.com/blog/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Blog — QueroCura">
+<meta name="twitter:description" content="Perspectives on emergency care, health tech and closing the gap between symptom and treatment — from the professionals shaping QueroCura.">
+<meta name="twitter:image" content="https://querocura.com/assets/og-image.png">
+<link rel="icon" type="image/x-icon" href="../icons/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="../icons/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="../icons/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="48x48" href="../icons/favicon-48x48.png">
+<link rel="apple-touch-icon" sizes="180x180" href="../icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="../icons/android-chrome-192x192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="../icons/android-chrome-512x512.png">
+<meta name="theme-color" content="#0e8f83">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  html { scroll-behavior: smooth; }
+  body { margin: 0; font-family: 'Manrope', sans-serif; background: #f6f5f1; color: #100e2a; overflow-x: hidden; }
+  h1, h2, h3, .display { font-family: 'Space Grotesk', sans-serif; }
+  a { color: #0e8f83; text-decoration: none; }
+  a:hover { color: #0b6f66; }
+  .navlink { position: relative; transition: color 0.2s ease; }
+  .navlink:hover { color: #0e8f83 !important; }
+  .navlink::after { content: ''; position: absolute; left: 0; right: 100%; bottom: -4px; height: 2px; background: #0e8f83; transition: right 0.25s ease; }
+  .navlink:hover::after { right: 0; }
+  .cta { position: relative; overflow: hidden; transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease; }
+  .cta:hover { background: #0b6f66 !important; transform: translateY(-2px); box-shadow: 0 12px 24px -8px rgba(14,143,131,0.45); }
+  .cta::after { content: ''; position: absolute; top: 0; left: -60%; width: 40%; height: 100%; background: linear-gradient(115deg, transparent, rgba(255,255,255,0.35), transparent); transform: skewX(-20deg); transition: left 0.6s ease; pointer-events: none; }
+  .cta:hover::after { left: 140%; }
+  .gradient-text { background: linear-gradient(95deg, #0e8f83, #2f8fd1); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  @keyframes floatSlow { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } }
+  .floaty { animation: floatSlow 5s ease-in-out infinite; }
+  .write-card { transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease; }
+  .write-card:hover { transform: translateY(-6px); box-shadow: 0 24px 40px -20px rgba(16,14,42,0.22); border-color: rgba(14,143,131,0.35) !important; }
+
+  .nav-links-desktop, .nav-cta-desktop { display: flex; }
+  .nav-hamburger { display: none; }
+  @media (max-width: 860px) {
+    .nav-links-desktop, .nav-cta-desktop { display: none !important; }
+    .nav-hamburger { display: flex !important; }
+  }
+
+  /* scroll-reveal */
+  .reveal { opacity: 0; transform: translateY(22px); transition: opacity 0.7s ease, transform 0.7s ease; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  /* empty-state icon: gentle hover lift */
+  .empty-icon { transition: transform 0.3s ease; }
+  .empty-card:hover .empty-icon { transform: scale(1.08) rotate(-4deg); }
+  .empty-card { transition: box-shadow 0.3s ease, transform 0.3s ease; }
+  .empty-card:hover { box-shadow: 0 32px 56px -28px rgba(16,14,42,0.26); transform: translateY(-4px); }
+
+  /* topic chips */
+  .topic-chip { transition: transform 0.22s ease, background 0.22s ease, border-color 0.22s ease; }
+  .topic-chip:hover { transform: translateY(-3px); background: rgba(255,255,255,0.08); border-color: rgba(126,224,212,0.5) !important; }
+
+  /* badge pulse */
+  @keyframes softPulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(14,143,131,0.25); } 50% { box-shadow: 0 0 0 6px rgba(14,143,131,0); } }
+  .badge-pulse { animation: softPulse 2.6s ease-in-out infinite; }
+</style>
+</head>
+<body>
+<div style="width: 100%; min-height: 100vh; background: #f6f5f1; overflow-x: hidden;">
+
+  <!-- NAV -->
+  <div style="width: 100%; box-sizing: border-box; padding: 16px clamp(16px, 4vw, 48px); display: flex; align-items: center; justify-content: space-between; background: rgba(246,245,241,0.85); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 30; border-bottom: 1px solid rgba(16,14,42,0.08);">
+    <a href="../" style="display: flex; align-items: center; gap: 10px;">
+      <img src="../assets/d4f7acc01b9438e998c9e7b9676584b0.png" alt="QueroCura" style="width: 42px; height: 39px; object-fit: contain;">
+      <div style="font-size: 20px; font-weight: 700; letter-spacing: -0.02em;">
+        <span style="color: #100e2a;">Quero</span><span style="color: #0e8f83;">Cura</span>
+      </div>
+    </a>
+    <div class="nav-links-desktop" style="align-items: center; gap: 30px;">
+      <a class="navlink" href="../#about" style="color: #100e2a; font-size: 15px; font-weight: 600;">About</a>
+      <a class="navlink" href="../#services" style="color: #100e2a; font-size: 15px; font-weight: 600;">Our platform</a>
+      <a class="navlink" href="../#team" style="color: #100e2a; font-size: 15px; font-weight: 600;">Our team</a>
+      <a class="navlink" href="./" style="color: #0e8f83; font-size: 15px; font-weight: 700;">Blog</a>
+      <a class="navlink" href="../#waitlist" style="color: #100e2a; font-size: 15px; font-weight: 600;">Waitlist</a>
+      <a class="navlink" href="../#contact" style="color: #100e2a; font-size: 15px; font-weight: 600;">Contact</a>
+    </div>
+    <a href="../#contact" class="cta nav-cta-desktop" style="background: #0e8f83; color: #fff; font-size: 14px; font-weight: 700; padding: 11px 22px; border-radius: 999px;">Get in touch</a>
+    <button class="nav-hamburger" onclick="toggleMobileMenu()" aria-label="Open menu" style="align-items:center; justify-content:center; width:40px; height:40px; border-radius:10px; border:1.5px solid rgba(16,14,42,0.14); background:#fff; cursor:pointer; padding:0;">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4 6h16M4 12h16M4 18h16" stroke="#100e2a" stroke-width="2" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+  <div id="mobile-menu" style="display:none; position: sticky; top: 73px; z-index: 29; width: 100%; box-sizing: border-box; background: #f6f5f1; border-bottom: 1px solid rgba(16,14,42,0.08); box-shadow: 0 14px 24px -18px rgba(16,14,42,0.25);">
+    <div style="display:flex; flex-direction:column; padding: 8px clamp(16px,4vw,48px) 20px;">
+      <a onclick="closeMobileMenu()" href="../#about" style="color:#100e2a; font-size:16px; font-weight:600; padding:12px 0; border-bottom:1px solid rgba(16,14,42,0.08);">About</a>
+      <a onclick="closeMobileMenu()" href="../#services" style="color:#100e2a; font-size:16px; font-weight:600; padding:12px 0; border-bottom:1px solid rgba(16,14,42,0.08);">Our platform</a>
+      <a onclick="closeMobileMenu()" href="../#team" style="color:#100e2a; font-size:16px; font-weight:600; padding:12px 0; border-bottom:1px solid rgba(16,14,42,0.08);">Our team</a>
+      <a onclick="closeMobileMenu()" href="./" style="color:#0e8f83; font-size:16px; font-weight:700; padding:12px 0; border-bottom:1px solid rgba(16,14,42,0.08);">Blog</a>
+      <a onclick="closeMobileMenu()" href="../#waitlist" style="color:#100e2a; font-size:16px; font-weight:600; padding:12px 0; border-bottom:1px solid rgba(16,14,42,0.08);">Waitlist</a>
+      <a onclick="closeMobileMenu()" href="../#contact" style="color:#100e2a; font-size:16px; font-weight:600; padding:12px 0;">Contact</a>
+      <a onclick="closeMobileMenu()" href="../#contact" class="cta" style="margin-top:14px; text-align:center; background: #0e8f83; color: #fff; font-size: 15px; font-weight: 700; padding: 13px 22px; border-radius: 999px;">Get in touch</a>
+    </div>
+  </div>
+
+  <!-- HEADER -->
+  <div style="width: 100%; box-sizing: border-box; position: relative; padding: clamp(56px,10vw,96px) clamp(16px,4vw,48px) clamp(32px,6vw,56px); overflow: hidden;">
+    <div style="position: absolute; inset: 0; pointer-events: none; background: radial-gradient(560px circle at 50% 0%, rgba(14,143,131,0.12), transparent 60%), radial-gradient(420px circle at 85% 20%, rgba(47,143,209,0.10), transparent 55%);"></div>
+    <div class="reveal" style="position: relative; max-width: 900px; margin: 0 auto; text-align: center;">
+      <div class="badge-pulse" style="display: inline-flex; align-items: center; gap: 8px; background: #fff; border: 1px solid rgba(16,14,42,0.1); border-radius: 999px; padding: 7px 16px; font-size: 13px; font-weight: 700; color: #0e8f83; letter-spacing: 0.02em; margin-bottom: 24px;">
+        THE QUEROCURA BLOG
+      </div>
+      <h1 style="margin: 0 0 20px; font-size: clamp(30px, 6vw, 48px); line-height: 1.1; font-weight: 700; letter-spacing: -0.03em;">
+        Perspectives on care that <span class="gradient-text">arrives in time</span>.
+      </h1>
+      <p style="margin: 0 auto; font-size: 18px; line-height: 1.6; color: #34324a; max-width: 560px;">
+        Writing from physicians, emergency responders and health-tech builders — on the systems, decisions and near-misses that shape how care actually reaches people.
+      </p>
+    </div>
+  </div>
+
+  <!-- EMPTY STATE -->
+  <div class="reveal" style="width: 100%; box-sizing: border-box; padding: 0 clamp(16px,4vw,48px) clamp(48px,10vw,88px);">
+    <div class="empty-card" style="max-width: 640px; margin: 0 auto; background: #fff; border-radius: 28px; padding: clamp(36px,7vw,56px) clamp(24px,6vw,48px); text-align: center; border: 1px solid rgba(16,14,42,0.08); box-shadow: 0 24px 48px -30px rgba(16,14,42,0.18);">
+      <div class="floaty empty-icon" style="width: 72px; height: 72px; border-radius: 20px; background: #e6f6f4; display: flex; align-items: center; justify-content: center; margin: 0 auto 22px;">
+        <svg width="34" height="34" viewBox="0 0 24 24" fill="none"><path d="M6 4h9l5 5v11a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1z" stroke="#0e8f83" stroke-width="1.7" stroke-linejoin="round"/><path d="M14 4v5h5" stroke="#0e8f83" stroke-width="1.7" stroke-linejoin="round"/><path d="M8.5 13h7M8.5 16.5h7M8.5 9.5h3" stroke="#0e8f83" stroke-width="1.6" stroke-linecap="round"/></svg>
+      </div>
+      <h2 style="margin: 0 0 12px; font-size: 24px; font-weight: 700;">Our first articles are on their way.</h2>
+      <p style="margin: 0; font-size: 16px; line-height: 1.6; color: #46435f;">
+        We're lining up writing from the physicians and responders helping shape QueroCura. Check back soon, or join the waitlist to get notified the moment something's published.
+      </p>
+      <a href="../#waitlist" class="cta" style="display: inline-block; margin-top: 24px; background: #0e8f83; color: #fff; font-size: 15px; font-weight: 700; padding: 13px 28px; border-radius: 999px;">Join the waitlist</a>
+    </div>
+  </div>
+
+  <!-- WRITE FOR US -->
+  <div class="reveal" style="width: 100%; background: #100e2a; box-sizing: border-box; padding: clamp(48px,10vw,88px) clamp(16px,4vw,48px); position: relative; overflow: hidden;">
+    <div style="position: absolute; inset: 0; pointer-events: none; background: radial-gradient(480px circle at 90% 100%, rgba(14,143,131,0.18), transparent 60%);"></div>
+    <div style="position: relative; max-width: 900px; margin: 0 auto;">
+      <div style="display: flex; gap: 40px; align-items: center; flex-wrap: wrap;">
+        <div style="flex: 1 1 320px; min-width: 280px;">
+          <div style="font-size: 14px; font-weight: 700; letter-spacing: 0.08em; color: #7ee0d4; margin-bottom: 14px;">FOR CLINICIANS &amp; RESPONDERS</div>
+          <h2 style="margin: 0 0 18px; font-size: clamp(24px, 5vw, 32px); font-weight: 700; letter-spacing: -0.02em; color: #fff;">Write for the QueroCura blog.</h2>
+          <p style="margin: 0; font-size: 16px; line-height: 1.6; color: #c8c6de;">
+            If you work in emergency medicine, health tech or patient care and have something worth saying about how information moves — or doesn't — when it matters most, we'd like to publish it.
+          </p>
+        </div>
+        <div style="flex: 0 0 auto;">
+          <a href="../#contact" class="cta" style="display: inline-block; background: #0e8f83; color: #fff; font-size: 15px; font-weight: 700; padding: 15px 30px; border-radius: 999px; white-space: nowrap;">Pitch an article</a>
+        </div>
+      </div>
+      <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 34px;">
+        <span class="topic-chip" style="display: inline-flex; align-items: center; gap: 7px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.14); color: #e4e2f2; font-size: 13.5px; font-weight: 600; padding: 9px 16px; border-radius: 999px;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4.5 12.5l4 4L19.5 6" stroke="#7ee0d4" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Clinical practice &amp; triage
+        </span>
+        <span class="topic-chip" style="display: inline-flex; align-items: center; gap: 7px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.14); color: #e4e2f2; font-size: 13.5px; font-weight: 600; padding: 9px 16px; border-radius: 999px;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4.5 12.5l4 4L19.5 6" stroke="#7ee0d4" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Health tech &amp; systems
+        </span>
+        <span class="topic-chip" style="display: inline-flex; align-items: center; gap: 7px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.14); color: #e4e2f2; font-size: 13.5px; font-weight: 600; padding: 9px 16px; border-radius: 999px;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4.5 12.5l4 4L19.5 6" stroke="#7ee0d4" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Patient experience &amp; recovery
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div style="width: 100%; box-sizing: border-box; padding: 28px clamp(16px,4vw,48px);">
+    <div style="max-width: 1180px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;">
+      <a href="../" style="display: flex; align-items: center; gap: 8px;">
+        <img src="../assets/d4f7acc01b9438e998c9e7b9676584b0.png" alt="QueroCura" style="width: 22px; height: 20px; object-fit: contain;">
+        <span style="font-size: 14px; font-weight: 700; color: #46435f;">QueroCura · querocura.com</span>
+      </a>
+      <span style="font-size: 13px; color: #8a879c;">© 2026 QueroCura. All rights reserved.</span>
+    </div>
+  </div>
+
+</div>
+<script>
+function toggleMobileMenu() {
+  const m = document.getElementById('mobile-menu');
+  m.style.display = (m.style.display === 'none' || !m.style.display) ? 'block' : 'none';
+}
+function closeMobileMenu() {
+  document.getElementById('mobile-menu').style.display = 'none';
+}
+
+// Scroll-reveal: fade + rise each .reveal block into place as it enters view.
+(function () {
+  const targets = document.querySelectorAll('.reveal');
+  if (!('IntersectionObserver' in window)) {
+    targets.forEach(el => el.classList.add('visible'));
+    return;
+  }
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        io.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+  targets.forEach(el => io.observe(el));
+})();
+</script>
+<!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "cf10cc866a9f4ffeb50a6ce35a72e773"}'></script><!-- End Cloudflare Web Analytics -->
+</body>
+</html>
