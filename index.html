@@ -158,6 +158,19 @@
   .about-tile.open { background: #211c4d; border-color: rgba(126,224,212,0.4) !important; }
   @media (max-width: 900px) { .about-tile-grid { grid-template-columns: repeat(2, 1fr) !important; } }
   @media (max-width: 520px) { .about-tile-grid { grid-template-columns: 1fr !important; } }
+
+  /* ---- Dark mode ---- */
+  html[data-theme="dark"] body { background: #0d0c1f; color: #f2f0f8; }
+  html[data-theme="dark"] a { color: #7ee0d4; }
+  html[data-theme="dark"] a:hover { color: #9beee0; }
+  .theme-toggle { display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 10px; border: 1.5px solid rgba(16,14,42,0.14); background: #fff; cursor: pointer; padding: 0; transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease; flex: 0 0 auto; }
+  .theme-toggle:hover { transform: translateY(-2px); }
+  html[data-theme="dark"] .theme-toggle { background: #18162e; border-color: rgba(255,255,255,0.14); }
+  html[data-theme="dark"] .tab-btn { background: #18162e; border-color: rgba(255,255,255,0.14); }
+  html[data-theme="dark"] .wl-label { color: #f2f0f8; }
+  html[data-theme="dark"] .wl-optional { color: #a9a6bd; }
+  html[data-theme="dark"] .wl-input { background: #18162e; color: #f2f0f8; border-color: rgba(255,255,255,0.14); }
+  html[data-theme="dark"] .wl-input::placeholder { color: #8f8ba3; }
 </style>
 </head>
 <body>
@@ -183,6 +196,9 @@
       <a class="navlink" href="#contact" style="color: #100e2a; font-size: 15px; font-weight: 600;">Contact</a>
     </div>
     <a href="#contact" class="cta nav-cta-desktop" style="background: #0e8f83; color: #fff; font-size: 14px; font-weight: 700; padding: 11px 22px; border-radius: 999px;">Get in touch</a>
+    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode" id="theme-toggle-btn">
+      <span id="theme-toggle-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z" stroke="#100e2a" stroke-width="1.7" stroke-linejoin="round"/></svg></span>
+    </button>
     <button class="nav-hamburger" onclick="toggleMobileMenu()" aria-label="Open menu" style="display:none; align-items:center; justify-content:center; width:40px; height:40px; border-radius:10px; border:1.5px solid rgba(16,14,42,0.14); background:#fff; cursor:pointer; padding:0;">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4 6h16M4 12h16M4 18h16" stroke="#100e2a" stroke-width="2" stroke-linecap="round"/></svg>
     </button>
@@ -937,6 +953,58 @@ function heroMove(e) {
   glow.style.background = `radial-gradient(500px circle at ${x}% ${y}%, rgba(14,143,131,0.13), transparent 45%)`;
 }
 
+
+// ---- Dark mode ----
+(function () {
+  var STORAGE_KEY = 'qc-theme';
+  var root = document.documentElement;
+
+  function darkenStyle(style) {
+    return style
+      .replace(/background(-color)?:\s*#f6f5f1/gi, 'background$1: #0d0c1f')
+      .replace(/background(-color)?:\s*#fff(?:fff)?(?![0-9a-f])/gi, 'background$1: #18162e')
+      .replace(/background(-color)?:\s*#ebe9e2/gi, 'background$1: #221f3d')
+      .replace(/background(-color)?:\s*#e6f6f4/gi, 'background$1: rgba(14,143,131,0.18)')
+      .replace(/background(-color)?:\s*#fdece7/gi, 'background$1: rgba(240,118,90,0.16)')
+      .replace(/background(-color)?:\s*#eae8fb/gi, 'background$1: rgba(124,111,219,0.18)')
+      .replace(/background(-color)?:\s*rgba\(246,\s*245,\s*241,/gi, 'background$1: rgba(13,12,31,')
+      .replace(/color:\s*#100e2a/gi, 'color: #f2f0f8')
+      .replace(/color:\s*#46435f/gi, 'color: #cfccdf')
+      .replace(/color:\s*#34324a/gi, 'color: #d7d4e8')
+      .replace(/color:\s*#6b6885/gi, 'color: #b7b3cc')
+      .replace(/color:\s*#6b6b6b/gi, 'color: #b3b0c4')
+      .replace(/color:\s*#8a879c/gi, 'color: #a9a6bd')
+      .replace(/color:\s*#0e8f83/gi, 'color: #7ee0d4')
+      .replace(/rgba\(16,\s*14,\s*42,/gi, 'rgba(255,255,255,');
+  }
+
+  var SUN_ICON = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="4.2" stroke="#f2f0f8" stroke-width="1.7"/><path d="M12 3v2.2M12 18.8V21M21 12h-2.2M5.2 12H3M18.4 5.6l-1.5 1.5M7.1 16.9l-1.5 1.5M18.4 18.4l-1.5-1.5M7.1 7.1L5.6 5.6" stroke="#f2f0f8" stroke-width="1.7" stroke-linecap="round"/></svg>';
+  var MOON_ICON = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z" stroke="#100e2a" stroke-width="1.7" stroke-linejoin="round"/></svg>';
+
+  function applyTheme(dark) {
+    document.querySelectorAll('[style]').forEach(function (el) {
+      if (el.dataset.origStyle === undefined) {
+        el.dataset.origStyle = el.getAttribute('style') || '';
+      }
+      el.setAttribute('style', dark ? darkenStyle(el.dataset.origStyle) : el.dataset.origStyle);
+    });
+    root.setAttribute('data-theme', dark ? 'dark' : 'light');
+    try { localStorage.setItem(STORAGE_KEY, dark ? 'dark' : 'light'); } catch (e) {}
+    document.querySelectorAll('#theme-toggle-icon').forEach(function (el) {
+      el.innerHTML = dark ? SUN_ICON : MOON_ICON;
+    });
+  }
+
+  window.toggleTheme = function () {
+    applyTheme(root.getAttribute('data-theme') !== 'dark');
+  };
+
+  var saved = null;
+  try { saved = localStorage.getItem(STORAGE_KEY); } catch (e) {}
+  var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  var initialDark = saved ? saved === 'dark' : prefersDark;
+  if (initialDark) applyTheme(true);
+})();
 function toggleMobileMenu() {
   const m = document.getElementById('mobile-menu');
   m.style.display = (m.style.display === 'none' || !m.style.display) ? 'block' : 'none';

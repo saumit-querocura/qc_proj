@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Page not found — QueroCura</title>
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/x-icon" href="icons/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32x32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
+<meta name="theme-color" content="#0e8f83">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700;800&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  html { scroll-behavior: smooth; }
+  body { margin: 0; font-family: 'Manrope', sans-serif; background: #f6f5f1; color: #100e2a; overflow-x: hidden; }
+  h1, .display { font-family: 'Space Grotesk', sans-serif; }
+  a { color: #0e8f83; text-decoration: none; }
+  a:hover { color: #0b6f66; }
+  .cta { position: relative; overflow: hidden; transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease; display: inline-block; }
+  .cta:hover { background: #0b6f66 !important; transform: translateY(-2px); box-shadow: 0 12px 24px -8px rgba(14,143,131,0.45); }
+  .cta::after { content: ''; position: absolute; top: 0; left: -60%; width: 40%; height: 100%; background: linear-gradient(115deg, transparent, rgba(255,255,255,0.35), transparent); transform: skewX(-20deg); transition: left 0.6s ease; pointer-events: none; }
+  .cta:hover::after { left: 140%; }
+  .ghost { transition: all 0.2s ease; }
+  .ghost:hover { background: rgba(16,14,42,0.06) !important; transform: translateY(-2px); }
+  @keyframes floatSlow { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } }
+  .floaty { animation: floatSlow 5s ease-in-out infinite; }
+  .gradient-text { background: linear-gradient(95deg, #0e8f83, #2f8fd1); -webkit-background-clip: text; background-clip: text; color: transparent; }
+</style>
+</head>
+<body>
+<div style="width: 100%; min-height: 100vh; background: #f6f5f1; overflow-x: hidden; position: relative; display: flex; align-items: center; justify-content: center; box-sizing: border-box; padding: 24px;">
+  <div style="position: absolute; inset: 0; pointer-events: none; background: radial-gradient(560px circle at 50% 30%, rgba(14,143,131,0.12), transparent 60%), radial-gradient(420px circle at 80% 70%, rgba(47,143,209,0.10), transparent 55%);"></div>
+
+  <div style="position: relative; max-width: 560px; width: 100%; text-align: center;">
+    <a href="/" style="display: inline-flex; align-items: center; gap: 10px; margin-bottom: 40px;">
+      <img src="assets/d4f7acc01b9438e998c9e7b9676584b0.png" alt="QueroCura" style="width: 42px; height: 39px; object-fit: contain;">
+      <div style="font-size: 20px; font-weight: 700; letter-spacing: -0.02em;">
+        <span style="color: #100e2a;">Quero</span><span style="color: #0e8f83;">Cura</span>
+      </div>
+    </a>
+
+    <div class="floaty" style="width: 88px; height: 88px; border-radius: 24px; background: #e6f6f4; display: flex; align-items: center; justify-content: center; margin: 0 auto 28px;">
+      <svg width="42" height="42" viewBox="0 0 24 24" fill="none"><path d="M11 2a9 9 0 1 0 6.32 15.44" stroke="#0e8f83" stroke-width="1.7" stroke-linecap="round"/><path d="M21 3l-9.5 9.5" stroke="#0e8f83" stroke-width="1.7" stroke-linecap="round"/><path d="M14.5 3H21v6.5" stroke="#0e8f83" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+
+    <div style="font-family: 'Space Grotesk', sans-serif; font-weight: 800; font-size: clamp(48px, 12vw, 72px); line-height: 1; letter-spacing: -0.03em; margin-bottom: 16px;">
+      <span class="gradient-text">404</span>
+    </div>
+    <h1 style="margin: 0 0 14px; font-size: clamp(22px, 4vw, 28px); font-weight: 700; letter-spacing: -0.02em;">This page took a wrong turn.</h1>
+    <p style="margin: 0 auto 32px; font-size: 16px; line-height: 1.6; color: #46435f; max-width: 420px;">
+      The page you're looking for doesn't exist — it may have moved, or the link might be off. Let's get you back on track.
+    </p>
+
+    <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+      <a href="/" class="cta" style="background: #0e8f83; color: #fff; font-size: 15px; font-weight: 700; padding: 13px 28px; border-radius: 999px;">Back to homepage</a>
+      <a href="/blog/" class="ghost" style="background: #fff; color: #100e2a; font-size: 15px; font-weight: 700; padding: 13px 28px; border-radius: 999px; border: 1.5px solid rgba(16,14,42,0.14);">Visit the blog</a>
+    </div>
+  </div>
+</div>
+</body>
+</html>
