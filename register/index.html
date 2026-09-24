@@ -308,7 +308,8 @@ form.addEventListener("submit", async (e) => {
       return;
     }
 
-    window.location.href = "../dashboard/";
+    // Brand-new accounts always need the profile wizard first.
+    window.location.href = "../onboarding/";
   } catch (err) {
     errBox.textContent = err.message || "Something went wrong. Please try again.";
     errBox.style.display = "block";
