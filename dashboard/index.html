@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dashboard — QueroCura</title>
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/x-icon" href="../icons/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh;
+    font-family: 'Manrope', sans-serif; background: #f6f5f1; color: #100e2a;
+  }
+  h1, h2, h3, .display { font-family: 'Space Grotesk', sans-serif; }
+
+  /* ---- Top bar ---- */
+  .topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 32px; background: #fff; border-bottom: 1px solid rgba(16,14,42,0.08);
+    position: sticky; top: 0; z-index: 10;
+  }
+  .logo { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 19px; color: #100e2a; text-decoration: none; }
+  .topbar-right { display: flex; align-items: center; gap: 16px; }
+  .user-chip { font-size: 14px; font-weight: 600; color: rgba(16,14,42,0.75); }
+  .signout-btn {
+    background: transparent; border: 1.5px solid rgba(16,14,42,0.16); color: #100e2a;
+    font-family: 'Manrope', sans-serif; font-size: 13.5px; font-weight: 700;
+    padding: 9px 18px; border-radius: 999px; cursor: pointer;
+  }
+  .signout-btn:hover { border-color: rgba(16,14,42,0.32); }
+
+  /* ---- Layout ---- */
+  .shell { display: flex; max-width: 1160px; margin: 0 auto; padding: 32px 24px 80px; gap: 28px; }
+  .main { flex: 1; min-width: 0; }
+  .greeting { font-size: 26px; margin: 0 0 4px; }
+  .greeting-sub { margin: 0 0 28px; color: rgba(16,14,42,0.6); font-size: 14.5px; }
+
+  .card {
+    background: #fff; border-radius: 20px; padding: 26px 28px;
+    border: 1px solid rgba(16,14,42,0.08); margin-bottom: 22px;
+  }
+  .card h2 { font-size: 18px; margin: 0 0 18px; }
+
+  /* ---- Vitals form ---- */
+  .vitals-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 14px; }
+  .field label { display: block; font-size: 12.5px; font-weight: 700; margin-bottom: 6px; color: rgba(16,14,42,0.7); }
+  input, textarea {
+    width: 100%; padding: 11px 13px; border-radius: 10px;
+    border: 1.5px solid rgba(16,14,42,0.14); font-family: 'Manrope', sans-serif;
+    font-size: 14.5px; color: #100e2a; background: #fff; outline: none;
+  }
+  input:focus, textarea:focus { border-color: #0e8f83; box-shadow: 0 0 0 3px rgba(14,143,131,0.12); }
+  .notes-field { grid-column: 1 / -1; }
+  .save-btn {
+    background: #0e8f83; color: #fff; font-size: 15px; font-weight: 700;
+    padding: 12px 28px; border-radius: 999px; border: none; cursor: pointer;
+    font-family: 'Manrope', sans-serif; margin-top: 18px;
+  }
+  .save-btn:disabled { opacity: 0.6; cursor: default; }
+  .save-msg { font-size: 13.5px; font-weight: 600; margin-top: 12px; display: none; }
+  .save-msg.ok { color: #0e8f83; display: block; }
+  .save-msg.err { color: #b3401f; display: block; }
+
+  /* ---- Latest / flags ---- */
+  .summary-line { font-size: 15px; font-weight: 600; margin-bottom: 14px; }
+  .flag {
+    display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px;
+    border-radius: 12px; font-size: 13.5px; font-weight: 600; margin-bottom: 10px;
+  }
+  .flag.CRITICAL { background: #fdece7; color: #b3401f; }
+  .flag.CAUTION { background: #fff5e0; color: #93670b; }
+  .flag-dot { width: 8px; height: 8px; border-radius: 50%; margin-top: 5px; flex-shrink: 0; }
+  .flag.CRITICAL .flag-dot { background: #d24f28; }
+  .flag.CAUTION .flag-dot { background: #c98a10; }
+  .empty-note { font-size: 14px; color: rgba(16,14,42,0.5); }
+
+  /* ---- History table ---- */
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  th { text-align: left; padding: 10px 12px; color: rgba(16,14,42,0.55); font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: 0.03em; border-bottom: 1.5px solid rgba(16,14,42,0.08); }
+  td { padding: 12px; border-bottom: 1px solid rgba(16,14,42,0.06); }
+  tr:last-child td { border-bottom: none; }
+
+  /* ---- Sidebar nav ---- */
+  .sidebar { width: 200px; flex-shrink: 0; }
+  .sidebar a {
+    display: block; padding: 11px 16px; border-radius: 12px; margin-bottom: 4px;
+    color: rgba(16,14,42,0.7); text-decoration: none; font-size: 14.5px; font-weight: 600;
+  }
+  .sidebar a.active { background: #e6f6f4; color: #0e8f83; }
+  .sidebar a:hover:not(.active) { background: rgba(16,14,42,0.04); }
+
+  @media (max-width: 760px) {
+    .shell { flex-direction: column; }
+    .sidebar { width: 100%; display: flex; gap: 6px; overflow-x: auto; }
+    .sidebar a { white-space: nowrap; }
+  }
+</style>
+</head>
+<body>
+  <div class="topbar">
+    <a class="logo" href="../">QueroCura</a>
+    <div class="topbar-right">
+      <span class="user-chip" id="qc-user-chip"></span>
+      <button class="signout-btn" id="qc-signout-btn">Sign out</button>
+    </div>
+  </div>
+
+  <div class="shell">
+    <nav class="sidebar">
+      <a class="active" href="#">Dashboard</a>
+    </nav>
+
+    <div class="main">
+      <h1 class="greeting" id="qc-greeting">Welcome back</h1>
+      <p class="greeting-sub">Here's where things stand today.</p>
+
+      <div class="card">
+        <h2>Latest vitals</h2>
+        <div id="qc-latest-summary" class="summary-line">Loading…</div>
+        <div id="qc-flags"></div>
+      </div>
+
+      <div class="card">
+        <h2>Record new vitals</h2>
+        <form id="qc-vitals-form">
+          <div class="vitals-grid">
+            <div class="field">
+              <label for="v-temp">Temperature (°C)</label>
+              <input type="number" step="0.1" id="v-temp" name="temp">
+            </div>
+            <div class="field">
+              <label for="v-sys">Systolic BP</label>
+              <input type="number" id="v-sys" name="sys_bp">
+            </div>
+            <div class="field">
+              <label for="v-dia">Diastolic BP</label>
+              <input type="number" id="v-dia" name="dia_bp">
+            </div>
+            <div class="field">
+              <label for="v-pulse">Pulse (bpm)</label>
+              <input type="number" id="v-pulse" name="pulse">
+            </div>
+            <div class="field">
+              <label for="v-spo2">SpO₂ (%)</label>
+              <input type="number" id="v-spo2" name="spo2">
+            </div>
+            <div class="field">
+              <label for="v-glucose">Glucose</label>
+              <input type="number" step="0.1" id="v-glucose" name="glucose">
+            </div>
+            <div class="field">
+              <label for="v-weight">Weight (kg)</label>
+              <input type="number" step="0.1" id="v-weight" name="weight">
+            </div>
+            <div class="field notes-field">
+              <label for="v-notes">Notes</label>
+              <textarea id="v-notes" name="notes" rows="2"></textarea>
+            </div>
+          </div>
+          <button type="submit" class="save-btn" id="qc-save-btn">Save reading</button>
+          <div class="save-msg" id="qc-save-msg"></div>
+        </form>
+      </div>
+
+      <div class="card">
+        <h2>History</h2>
+        <div id="qc-history-wrap">
+          <div class="empty-note">Loading…</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+const API_BASE = "https://app.querocura.com/api";
+
+function fmt(v) { return (v === null || v === undefined || v === "") ? "—" : v; }
+function fmtDate(ts) {
+  if (!ts) return "—";
+  try { return new Date(ts.replace(" ", "T")).toLocaleString(); }
+  catch (e) { return ts; }
+}
+
+async function requireSession() {
+  const res = await fetch(API_BASE + "/auth/me", { credentials: "include" });
+  const data = await res.json();
+  if (!data.logged_in) {
+    window.location.href = "../login/";
+    return null;
+  }
+  return data.user;
+}
+
+function renderFlags(flags) {
+  const box = document.getElementById("qc-flags");
+  box.innerHTML = "";
+  if (!flags || !flags.length) return;
+  flags.forEach(f => {
+    const el = document.createElement("div");
+    el.className = "flag " + f.level;
+    el.innerHTML = '<span class="flag-dot"></span><span>' + f.message + "</span>";
+    box.appendChild(el);
+  });
+}
+
+async function loadLatest() {
+  const res = await fetch(API_BASE + "/vitals/latest", { credentials: "include" });
+  const data = await res.json();
+  document.getElementById("qc-latest-summary").textContent = data.summary || "No vitals recorded.";
+  renderFlags(data.flags);
+}
+
+async function loadHistory() {
+  const res = await fetch(API_BASE + "/vitals/history?limit=10", { credentials: "include" });
+  const data = await res.json();
+  const wrap = document.getElementById("qc-history-wrap");
+
+  if (!data.history || !data.history.length) {
+    wrap.innerHTML = '<div class="empty-note">No readings yet — record your first one above.</div>';
+    return;
+  }
+
+  let rows = data.history.map(r => (
+    "<tr>" +
+      "<td>" + fmtDate(r.ts) + "</td>" +
+      "<td>" + fmt(r.temp) + "</td>" +
+      "<td>" + (r.sys_bp != null && r.dia_bp != null ? r.sys_bp + "/" + r.dia_bp : "—") + "</td>" +
+      "<td>" + fmt(r.pulse) + "</td>" +
+      "<td>" + fmt(r.spo2) + "</td>" +
+      "<td>" + fmt(r.glucose) + "</td>" +
+      "<td>" + fmt(r.weight) + "</td>" +
+    "</tr>"
+  )).join("");
+
+  wrap.innerHTML =
+    "<table><thead><tr>" +
+      "<th>When</th><th>Temp</th><th>BP</th><th>Pulse</th><th>SpO₂</th><th>Glucose</th><th>Weight</th>" +
+    "</tr></thead><tbody>" + rows + "</tbody></table>";
+}
+
+document.getElementById("qc-vitals-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const btn = document.getElementById("qc-save-btn");
+  const msg = document.getElementById("qc-save-msg");
+  btn.disabled = true;
+  btn.textContent = "Saving…";
+  msg.className = "save-msg";
+  msg.textContent = "";
+
+  const payload = {};
+  payload.temp = document.getElementById("v-temp").value || null;
+  payload.sys_bp = document.getElementById("v-sys").value || null;
+  payload.dia_bp = document.getElementById("v-dia").value || null;
+  payload.pulse = document.getElementById("v-pulse").value || null;
+  payload.spo2 = document.getElementById("v-spo2").value || null;
+  payload.glucose = document.getElementById("v-glucose").value || null;
+  payload.weight = document.getElementById("v-weight").value || null;
+  payload.notes = document.getElementById("v-notes").value || "";
+
+  try {
+    const res = await fetch(API_BASE + "/vitals", {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    const data = await res.json();
+    if (!res.ok || !data.ok) throw new Error(data.message || "Couldn't save that reading.");
+
+    msg.classList.add("ok");
+    msg.textContent = "Saved.";
+    document.getElementById("qc-vitals-form").reset();
+    await loadLatest();
+    await loadHistory();
+  } catch (err) {
+    msg.classList.add("err");
+    msg.textContent = err.message || "Something went wrong.";
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Save reading";
+  }
+});
+
+document.getElementById("qc-signout-btn").addEventListener("click", async () => {
+  await fetch(API_BASE + "/auth/logout", { method: "POST", credentials: "include" });
+  window.location.href = "../";
+});
+
+(async function init() {
+  const user = await requireSession();
+  if (!user) return;
+  const name = user.display_name || user.username || user.email || "";
+  document.getElementById("qc-user-chip").textContent = name;
+  document.getElementById("qc-greeting").textContent = name ? ("Welcome back, " + name.split(" ")[0]) : "Welcome back";
+  await loadLatest();
+  await loadHistory();
+})();
+</script>
+</body>
+</html>
