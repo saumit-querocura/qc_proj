@@ -78,12 +78,32 @@
     background-size: 200% auto; animation: heroGradShift 5s ease-in-out infinite;
   }
   @keyframes heroGradShift { 0%,100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
-  .hero-sub { font-size: 14px; color: rgba(255,255,255,0.62); position: relative; z-index: 1; margin: 0; max-width: 480px; }
+  .hero-sub { font-size: 14px; color: rgba(255,255,255,0.62); position: relative; z-index: 1; margin: 0; max-width: 420px; }
   .hero-date { font-size: 11.5px; color: rgba(255,255,255,0.4); margin-top: 14px; position: relative; z-index: 1; letter-spacing: 0.04em; }
+  .hero-inner { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; }
+  .hero-text { flex: 1; min-width: 0; }
+
+  /* ---- Buddy mascot — built from the logo's heart + heartbeat + smile motif ---- */
+  .hero-buddy { position: relative; z-index: 1; flex: 0 0 auto; width: 92px; height: 92px; animation: buddyBob 4.5s ease-in-out infinite; }
+  @keyframes buddyBob { 0%,100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-6px) rotate(-2deg); } }
+  .buddy-blink { animation: buddyBlink 5.5s ease-in-out infinite; transform-origin: center; }
+  @keyframes buddyBlink { 0%, 92%, 100% { transform: scaleY(1); } 95% { transform: scaleY(0.1); } }
+
+  /* ---- Wellness score gauge ---- */
+  .score-card { display: flex; align-items: center; gap: 12px; }
+  .score-ring-wrap { position: relative; width: 52px; height: 52px; flex: 0 0 auto; }
+  .score-ring-wrap svg { transform: rotate(-90deg); }
+  .score-ring-bg { fill: none; stroke: rgba(16,14,42,0.08); stroke-width: 5; }
+  .score-ring-fg { fill: none; stroke: #0e8f83; stroke-width: 5; stroke-linecap: round; transition: stroke-dasharray 0.6s cubic-bezier(0.4,0,0.2,1), stroke 0.3s ease; }
+  .score-ring-num { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; font-family: 'Space Grotesk', sans-serif; }
 
   /* ---- Vitals snapshot strip ---- */
   .snapshot-strip { display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 12px; margin-bottom: 22px; }
-  .snap-card { position: relative; overflow: hidden; background: #fff; border-radius: 16px; padding: 15px 16px 13px; border: 1px solid rgba(16,14,42,0.08); }
+  .snap-card {
+    position: relative; overflow: hidden; background: #fff; border-radius: 16px; padding: 15px 16px 13px; border: 1px solid rgba(16,14,42,0.08);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  }
+  .snap-card:hover { transform: translateY(-4px); box-shadow: 0 14px 28px -14px rgba(16,14,42,0.22); border-color: rgba(14,143,131,0.35); }
   .snap-card::before { content: ''; position: absolute; top: -28px; right: -28px; width: 84px; height: 84px; border-radius: 50%; background: radial-gradient(circle, rgba(14,143,131,0.10), transparent 70%); pointer-events: none; }
   .snap-card .sc-icon { font-size: 17px; margin-bottom: 7px; }
   .snap-card .sc-label { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; color: rgba(16,14,42,0.45); margin-bottom: 3px; }
@@ -98,10 +118,36 @@
     position: relative; overflow: hidden;
     background: #fff; border-radius: 20px; padding: 26px 28px;
     border: 1px solid rgba(16,14,42,0.08); margin-bottom: 22px;
+    transition: box-shadow 0.25s ease;
   }
+  .card:hover { box-shadow: 0 20px 44px -26px rgba(16,14,42,0.28); }
   .card::before { content: ''; position: absolute; top: -44px; right: -44px; width: 150px; height: 150px; border-radius: 50%; background: radial-gradient(circle, rgba(14,143,131,0.06), transparent 70%); pointer-events: none; }
   .card h2 { font-size: 18px; margin: 0 0 18px; position: relative; }
   .card > * { position: relative; }
+
+  /* ---- Empty state (first-aid-kit illustration) ---- */
+  .empty-state { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 18px 12px 8px; gap: 10px; }
+  .empty-state img { width: 64px; height: 64px; object-fit: contain; opacity: 0.9; }
+  .empty-state .es-title { font-weight: 700; font-size: 14.5px; }
+  .empty-state .es-sub { font-size: 13px; color: rgba(16,14,42,0.5); max-width: 260px; }
+  .empty-state .es-cta {
+    margin-top: 4px; background: #0e8f83; color: #fff; font-size: 13px; font-weight: 700;
+    padding: 8px 18px; border-radius: 999px; border: none; cursor: pointer; font-family: 'Manrope', sans-serif;
+  }
+
+  /* ---- Confetti burst on save ---- */
+  .confetti-piece { position: fixed; top: -12px; width: 8px; height: 8px; border-radius: 2px; pointer-events: none; z-index: 999; animation: confettiFall 1.4s ease-in forwards; }
+  @keyframes confettiFall { to { transform: translateY(100vh) rotate(540deg); opacity: 0; } }
+
+  /* ---- Tip card ---- */
+  .tip-card {
+    display: flex; align-items: center; gap: 12px; padding: 16px 18px; border-radius: 16px;
+    background: linear-gradient(120deg, rgba(14,143,131,0.08), rgba(124,111,219,0.06));
+    border: 1px solid rgba(14,143,131,0.16); margin-bottom: 22px;
+  }
+  .tip-card img { width: 34px; height: 34px; object-fit: contain; flex: 0 0 auto; }
+  .tip-card .tip-text { font-size: 13px; color: rgba(16,14,42,0.68); line-height: 1.5; transition: opacity 0.3s ease; }
+  .tip-card .tip-label { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: #0e8f83; margin-bottom: 2px; }
 
   /* ---- Vitals form ---- */
   .vitals-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 14px; }
@@ -152,18 +198,33 @@
   tr:last-child td { border-bottom: none; }
 
   /* ---- Sidebar nav ---- */
-  .sidebar { width: 200px; flex-shrink: 0; }
+  .sidebar { width: 208px; flex-shrink: 0; }
+  .sidebar-avatar {
+    width: 44px; height: 44px; border-radius: 50%; margin-bottom: 16px;
+    display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, #0e8f83, #2f8fd1); color: #fff;
+    font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 16px;
+  }
   .sidebar a {
-    display: block; padding: 11px 16px; border-radius: 12px; margin-bottom: 4px;
+    display: flex; align-items: center; gap: 10px; padding: 11px 16px; border-radius: 12px; margin-bottom: 4px;
     color: rgba(16,14,42,0.7); text-decoration: none; font-size: 14.5px; font-weight: 600;
   }
+  .sidebar a .nav-icon { width: 18px; text-align: center; flex: 0 0 auto; }
   .sidebar a.active { background: #e6f6f4; color: #0e8f83; }
-  .sidebar a:hover:not(.active) { background: rgba(16,14,42,0.04); }
+  .sidebar a:hover:not(.active):not(.soon) { background: rgba(16,14,42,0.04); }
+  .sidebar a.soon { cursor: default; opacity: 0.55; }
+  .sidebar a.soon .soon-badge {
+    margin-left: auto; font-size: 9px; font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase;
+    background: rgba(16,14,42,0.08); color: rgba(16,14,42,0.5); padding: 2px 7px; border-radius: 999px;
+  }
 
   @media (max-width: 760px) {
     .shell { flex-direction: column; }
-    .sidebar { width: 100%; display: flex; gap: 6px; overflow-x: auto; }
+    .sidebar { width: 100%; display: flex; align-items: center; gap: 6px; overflow-x: auto; }
+    .sidebar-avatar { display: none; }
     .sidebar a { white-space: nowrap; }
+    .hero-inner { flex-direction: column; }
+    .hero-buddy { align-self: flex-end; margin-top: -30px; }
   }
 
   /* ---- Dark mode (same palette/keys as index.html) ---- */
@@ -189,7 +250,12 @@
   html[data-theme="dark"] td { border-bottom-color: rgba(255,255,255,0.08); }
   html[data-theme="dark"] .sidebar a { color: #cfccdf; }
   html[data-theme="dark"] .sidebar a.active { background: rgba(126,224,212,0.14); color: #7ee0d4; }
-  html[data-theme="dark"] .sidebar a:hover:not(.active) { background: rgba(255,255,255,0.06); }
+  html[data-theme="dark"] .sidebar a:hover:not(.active):not(.soon) { background: rgba(255,255,255,0.06); }
+  html[data-theme="dark"] .sidebar a.soon .soon-badge { background: rgba(255,255,255,0.08); color: #8f8ba3; }
+  html[data-theme="dark"] .score-ring-bg { stroke: rgba(255,255,255,0.1); }
+  html[data-theme="dark"] .empty-state .es-sub { color: #8f8ba3; }
+  html[data-theme="dark"] .tip-card { background: linear-gradient(120deg, rgba(126,224,212,0.08), rgba(124,111,219,0.1)); border-color: rgba(126,224,212,0.18); }
+  html[data-theme="dark"] .tip-card .tip-text { color: #cfccdf; }
 </style>
 </head>
 <body>
@@ -209,23 +275,53 @@
 
   <div class="shell">
     <nav class="sidebar">
-      <a class="active" href="#">Dashboard</a>
+      <div class="sidebar-avatar" id="qc-sidebar-avatar"></div>
+      <a class="active" href="#"><span class="nav-icon">🏠</span>Dashboard</a>
+      <a class="soon" href="#" onclick="return false;"><span class="nav-icon">🩺</span>Symptoms<span class="soon-badge">Soon</span></a>
+      <a class="soon" href="#" onclick="return false;"><span class="nav-icon">📄</span>Reports<span class="soon-badge">Soon</span></a>
+      <a class="soon" href="#" onclick="return false;"><span class="nav-icon">🔒</span>CuraVault<span class="soon-badge">Soon</span></a>
     </nav>
 
     <div class="main">
       <div class="hero">
         <div class="hero-orb hero-orb1"></div>
         <div class="hero-orb hero-orb2"></div>
-        <div class="hero-eyebrow">
-          <span class="hero-tag">Dashboard</span>
-          <span class="hero-live"><span class="hero-live-dot"></span>Live</span>
+        <div class="hero-inner">
+          <div class="hero-text">
+            <div class="hero-eyebrow">
+              <span class="hero-tag">Dashboard</span>
+              <span class="hero-live"><span class="hero-live-dot"></span>Live</span>
+            </div>
+            <h1 class="hero-greeting" id="qc-greeting">Welcome back</h1>
+            <p class="hero-sub" id="qc-greeting-sub">Here's where things stand today.</p>
+            <div class="hero-date" id="qc-today"></div>
+          </div>
+          <svg class="hero-buddy" id="qc-buddy" viewBox="0 0 100 100" fill="none">
+            <path d="M50 14C33 14 20 26 20 42c0 20 20 32 30 42 10-10 30-22 30-42 0-16-13-28-30-28Z" fill="url(#buddyGrad)" opacity="0.92"/>
+            <defs>
+              <linearGradient id="buddyGrad" x1="20" y1="14" x2="80" y2="84" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#7ee0d4"/><stop offset="1" stop-color="#a89bf5"/>
+              </linearGradient>
+            </defs>
+            <path d="M26 46l10 0 4-10 6 18 5-12 3 4 20 0" stroke="#100e2a" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" fill="none" opacity="0.55"/>
+            <g class="buddy-blink">
+              <circle cx="41" cy="40" r="3.4" fill="#100e2a"/>
+              <circle cx="59" cy="40" r="3.4" fill="#100e2a"/>
+            </g>
+            <path id="qc-buddy-mouth" d="M40 54q10 8 20 0" stroke="#100e2a" stroke-width="2.6" stroke-linecap="round" fill="none"/>
+          </svg>
         </div>
-        <h1 class="hero-greeting" id="qc-greeting">Welcome back</h1>
-        <p class="hero-sub" id="qc-greeting-sub">Here's where things stand today.</p>
-        <div class="hero-date" id="qc-today"></div>
       </div>
 
       <div class="snapshot-strip" id="qc-snapshot"></div>
+
+      <div class="tip-card">
+        <img src="../assets/6abe27005847b6683a14deef5164e1c7.png" alt="">
+        <div>
+          <div class="tip-label">Did you know</div>
+          <div class="tip-text" id="qc-tip">Oxygen makes up about 65% of your body's mass.</div>
+        </div>
+      </div>
 
       <div class="card">
         <h2>Flags &amp; notes</h2>
@@ -233,7 +329,7 @@
         <div id="qc-flags"></div>
       </div>
 
-      <div class="card">
+      <div class="card" id="qc-vitals-card">
         <h2>Record new vitals</h2>
         <form id="qc-vitals-form">
           <div class="vitals-grid">
@@ -361,11 +457,44 @@ function flagSeverityFor(keywords, flags) {
   return "";
 }
 
+function computeWellness(flags) {
+  let score = 100;
+  (flags || []).forEach(f => { score -= f.level === "CRITICAL" ? 30 : f.level === "CAUTION" ? 14 : 0; });
+  score = Math.max(15, Math.min(100, score));
+  const label = score >= 85 ? "Great" : score >= 65 ? "Good" : score >= 40 ? "Fair" : "Needs care";
+  const color = score >= 85 ? "#0e8f83" : score >= 65 ? "#0e8f83" : score >= 40 ? "#c98a10" : "#d24f28";
+  return { score, label, color };
+}
+
+function scoreCardHtml(flags) {
+  const w = computeWellness(flags);
+  const R = 21, C = 2 * Math.PI * R, off = C - (w.score / 100) * C;
+  return '<div class="snap-card score-card">' +
+    '<div class="score-ring-wrap">' +
+      '<svg width="52" height="52" viewBox="0 0 52 52">' +
+        '<circle class="score-ring-bg" cx="26" cy="26" r="' + R + '"/>' +
+        '<circle class="score-ring-fg" cx="26" cy="26" r="' + R + '" stroke="' + w.color + '" stroke-dasharray="' + C + '" stroke-dashoffset="' + off + '"/>' +
+      '</svg>' +
+      '<div class="score-ring-num">' + w.score + '</div>' +
+    '</div>' +
+    '<div><div class="sc-label">Wellness</div><div class="sc-value" style="font-size:15px">' + w.label + '</div></div>' +
+  '</div>';
+}
+
+function updateBuddy(flags) {
+  const worst = (flags || []).reduce((acc, f) => (f.level === "CRITICAL" ? "CRITICAL" : (f.level === "CAUTION" && acc !== "CRITICAL") ? "CAUTION" : acc), "");
+  const mouth = document.getElementById("qc-buddy-mouth");
+  if (!mouth) return;
+  if (worst === "CRITICAL") mouth.setAttribute("d", "M40 58q10 -8 20 0");
+  else if (worst === "CAUTION") mouth.setAttribute("d", "M40 55h20");
+  else mouth.setAttribute("d", "M40 54q10 8 20 0");
+}
+
 function renderSnapshot(latest, flags) {
   const box = document.getElementById("qc-snapshot");
   latest = latest || {};
   const hasBp = latest.sys_bp != null && latest.dia_bp != null;
-  box.innerHTML = SNAPSHOT_METRICS.map(m => {
+  const cards = SNAPSHOT_METRICS.map(m => {
     let value = "—", unit = m.unit;
     if (m.key === "bp") { value = hasBp ? (latest.sys_bp + "/" + latest.dia_bp) : "—"; unit = ""; }
     else if (latest[m.key] !== undefined && latest[m.key] !== null && latest[m.key] !== "") { value = latest[m.key]; }
@@ -376,6 +505,40 @@ function renderSnapshot(latest, flags) {
       '<div class="sc-value">' + value + (value !== "—" && unit ? '<span class="unit">' + unit + '</span>' : '') + '</div>' +
     '</div>';
   }).join("");
+  box.innerHTML = scoreCardHtml(flags) + cards;
+  updateBuddy(flags);
+}
+
+const QC_TIPS = [
+  "Oxygen makes up about 65% of your body's mass.",
+  "You breathe roughly 22,000 times a day, on autopilot.",
+  "Logging vitals regularly helps QueroCura spot trends early.",
+  "Your resting pulse tends to be lowest right after you wake up.",
+  "A blood pressure reading is best taken seated, after 5 minutes of rest.",
+];
+function startTipRotator() {
+  const el = document.getElementById("qc-tip");
+  if (!el) return;
+  let i = 0;
+  setInterval(() => {
+    i = (i + 1) % QC_TIPS.length;
+    el.style.opacity = 0;
+    setTimeout(() => { el.textContent = QC_TIPS[i]; el.style.opacity = 1; }, 260);
+  }, 5500);
+}
+
+function fireConfetti() {
+  const colors = ["#0e8f83", "#7c6fdb", "#2f8fd1", "#e0a52c"];
+  for (let i = 0; i < 26; i++) {
+    const p = document.createElement("div");
+    p.className = "confetti-piece";
+    p.style.left = (45 + Math.random() * 10) + "vw";
+    p.style.background = colors[i % colors.length];
+    p.style.animationDelay = (Math.random() * 0.2) + "s";
+    p.style.animationDuration = (1.1 + Math.random() * 0.6) + "s";
+    document.body.appendChild(p);
+    setTimeout(() => p.remove(), 2000);
+  }
 }
 
 function setGreetingChrome() {
@@ -399,7 +562,12 @@ async function loadHistory() {
   const wrap = document.getElementById("qc-history-wrap");
 
   if (!data.history || !data.history.length) {
-    wrap.innerHTML = '<div class="empty-note">No readings yet — record your first one above.</div>';
+    wrap.innerHTML = '<div class="empty-state">' +
+      '<img src="../assets/6abe27005847b6683a14deef5164e1c7.png" alt="">' +
+      '<div class="es-title">No readings yet</div>' +
+      '<div class="es-sub">Record your first vitals above and QueroCura will start tracking trends for you.</div>' +
+      '<button type="button" class="es-cta" onclick="document.getElementById(\'qc-vitals-card\').scrollIntoView({behavior:\'smooth\'})">Add a reading</button>' +
+    '</div>';
     return;
   }
 
@@ -453,6 +621,7 @@ document.getElementById("qc-vitals-form").addEventListener("submit", async (e) =
     msg.classList.add("ok");
     msg.textContent = "Saved.";
     document.getElementById("qc-vitals-form").reset();
+    fireConfetti();
     await loadLatest();
     await loadHistory();
   } catch (err) {
@@ -477,11 +646,14 @@ document.getElementById("qc-signout-btn").addEventListener("click", async () => 
   const name = user.display_name || user.username || user.email || "";
   const firstName = name ? name.split(" ")[0] : "";
   document.getElementById("qc-user-chip").textContent = name;
+  const initials = name ? name.trim().split(/\s+/).slice(0, 2).map(w => w[0].toUpperCase()).join("") : "?";
+  document.getElementById("qc-sidebar-avatar").textContent = initials;
   const greetWord = setGreetingChrome();
   document.getElementById("qc-greeting").innerHTML = firstName
     ? (greetWord + ", <span class='name'>" + firstName + "</span> 👋")
     : (greetWord + " 👋");
   document.getElementById("qc-greeting-sub").textContent = "Here's where things stand today.";
+  startTipRotator();
   await loadLatest();
   await loadHistory();
 })();
