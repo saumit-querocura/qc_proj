@@ -217,7 +217,21 @@ form.addEventListener("submit", async (e) => {
       throw new Error(data.message || "Couldn't sign you in. Check your email and password.");
     }
 
-    window.location.href = "../dashboard/";
+    // Route returning users straight to their dashboard, but send anyone
+    // who never finished the profile wizard back to it first.
+    btnLabel.textContent = "Just a sec…";
+    let goTo = "../dashboard/";
+    try {
+      const profRes = await fetch(API_BASE.replace("/auth", "") + "/profile", { credentials: "include" });
+      const profData = await profRes.json();
+      if (profData.ok && profData.profile && !profData.profile.wizard_done) {
+        goTo = "../onboarding/";
+      }
+    } catch (e) {
+      // If the profile check fails for any reason, fall back to the
+      // dashboard — it does its own wizard_done check on load anyway.
+    }
+    window.location.href = goTo;
   } catch (err) {
     errBox.textContent = err.message || "Something went wrong. Please try again.";
     errBox.style.display = "block";
