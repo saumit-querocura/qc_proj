@@ -14,34 +14,73 @@
   body {
     margin: 0; min-height: 100vh; display: flex; flex-direction: column;
     font-family: 'Manrope', sans-serif; background: #f6f5f1; color: #100e2a;
+    position: relative; overflow-x: hidden;
   }
   h1 { font-family: 'Space Grotesk', sans-serif; }
-  .topbar { padding: 24px 40px; }
+  .bg-orb {
+    position: fixed; border-radius: 50%; filter: blur(60px); opacity: 0.35; z-index: 0;
+    animation: float 12s ease-in-out infinite;
+  }
+  .bg-orb1 { width: 340px; height: 340px; background: #7c6fdb; top: -80px; right: -100px; left: auto; }
+  .bg-orb2 { width: 300px; height: 300px; background: #0e8f83; bottom: -100px; left: -80px; animation-delay: -6s; }
+  @keyframes float { 0%,100% { transform: translateY(0) translateX(0); } 50% { transform: translateY(-24px) translateX(16px); } }
+
+  .topbar { padding: 24px 40px; position: relative; z-index: 1; }
   .logo { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 20px; color: #100e2a; text-decoration: none; }
-  .wrap { flex: 1; display: flex; align-items: center; justify-content: center; padding: 24px; }
+  .wrap { flex: 1; display: flex; align-items: center; justify-content: center; padding: 24px; position: relative; z-index: 1; }
   .card {
     width: 100%; max-width: 420px; background: #fff; border-radius: 24px;
     padding: 40px 36px; border: 1px solid rgba(16,14,42,0.08);
-    box-shadow: 0 20px 60px rgba(16,14,42,0.08);
+    box-shadow: 0 20px 60px rgba(16,14,42,0.10);
   }
   .card h1 { font-size: 26px; margin: 0 0 6px; }
   .card p.sub { margin: 0 0 28px; color: rgba(16,14,42,0.6); font-size: 14.5px; }
-  label { display: block; font-size: 13.5px; font-weight: 700; margin-bottom: 6px; }
-  .field { margin-bottom: 18px; }
-  input {
-    width: 100%; padding: 13px 16px; border-radius: 12px;
+
+  .field { margin-bottom: 20px; }
+  .field-inner { position: relative; }
+  .field-input {
+    width: 100%; padding: 20px 44px 8px 16px; border-radius: 12px;
     border: 1.5px solid rgba(16,14,42,0.14); font-family: 'Manrope', sans-serif;
     font-size: 15px; color: #100e2a; background: #fff; outline: none;
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
   }
-  input:focus { border-color: #0e8f83; box-shadow: 0 0 0 3px rgba(14,143,131,0.12); }
-  .hint { font-size: 12.5px; color: rgba(16,14,42,0.5); margin-top: 6px; }
+  .field-input:focus { border-color: #0e8f83; box-shadow: 0 0 0 3px rgba(14,143,131,0.12); }
+  .field-inner.has-ok .field-input { border-color: #0e8f83; }
+  .field-inner.has-err .field-input { border-color: #d24f28; }
+  .field-label {
+    position: absolute; left: 16px; top: 18px; font-size: 15px; color: rgba(16,14,42,0.45);
+    pointer-events: none; transition: all 0.15s ease;
+  }
+  .field-input:focus ~ .field-label, .field-input.filled ~ .field-label {
+    top: 8px; font-size: 11px; font-weight: 700; color: #0e8f83;
+  }
+  .field-eye {
+    position: absolute; right: 12px; top: 14px; background: none; border: none;
+    cursor: pointer; font-size: 17px; opacity: 0.55; padding: 4px;
+  }
+  .field-eye:hover { opacity: 0.9; }
+  .field-badge {
+    position: absolute; right: 14px; top: 20px; font-size: 12px; font-weight: 700;
+    display: none;
+  }
+  .field-badge.chk { display: block; color: rgba(16,14,42,0.4); }
+  .field-badge.ok { display: block; color: #0e8f83; }
+  .field-badge.err { display: block; color: #d24f28; }
+
+  .pw-strength { height: 4px; border-radius: 4px; background: rgba(16,14,42,0.08); margin-top: 8px; overflow: hidden; }
+  .pw-bar { height: 100%; width: 0%; border-radius: 4px; transition: width 0.2s ease, background 0.2s ease; }
+  .field-hint { font-size: 12px; color: rgba(16,14,42,0.45); margin-top: 6px; }
+
   .submit {
     width: 100%; background: #0e8f83; color: #fff; font-size: 16px; font-weight: 700;
     padding: 14px 30px; border-radius: 999px; border: none; cursor: pointer;
     font-family: 'Manrope', sans-serif; margin-top: 6px; transition: opacity 0.2s ease;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
   }
-  .submit:disabled { opacity: 0.6; cursor: default; }
+  .submit:disabled { opacity: 0.65; cursor: default; }
+  .submit .arrow { transition: transform 0.15s ease; }
+  .submit:hover:not(:disabled) .arrow { transform: translateX(3px); }
+
   .alt { text-align: center; margin-top: 22px; font-size: 14px; color: rgba(16,14,42,0.7); }
   .alt a { color: #0e8f83; font-weight: 700; text-decoration: none; }
   .error {
@@ -51,6 +90,8 @@
 </style>
 </head>
 <body>
+  <div class="bg-orb bg-orb1"></div>
+  <div class="bg-orb bg-orb2"></div>
   <div class="topbar"><a class="logo" href="../">QueroCura</a></div>
   <div class="wrap">
     <div class="card">
@@ -59,42 +100,113 @@
       <div class="error" id="qc-error"></div>
       <form id="qc-register-form">
         <div class="field">
-          <label for="qc-name">Full name</label>
-          <input type="text" id="qc-name" name="name" autocomplete="name" required>
+          <div class="field-inner">
+            <input type="text" class="field-input" id="qc-name" name="name" autocomplete="name" placeholder=" " required
+              oninput="this.classList.toggle('filled', this.value.length>0)">
+            <label class="field-label" for="qc-name">Full name</label>
+          </div>
         </div>
         <div class="field">
-          <label for="qc-email">Email</label>
-          <input type="email" id="qc-email" name="email" autocomplete="email" required>
+          <div class="field-inner" id="qc-email-wrap">
+            <input type="email" class="field-input" id="qc-email" name="email" autocomplete="email" placeholder=" " required
+              oninput="this.classList.toggle('filled', this.value.length>0); qcCheckEmail(this.value)">
+            <span class="field-badge" id="qc-email-badge"></span>
+            <label class="field-label" for="qc-email">Email</label>
+          </div>
         </div>
         <div class="field">
-          <label for="qc-password">Password</label>
-          <input type="password" id="qc-password" name="password" autocomplete="new-password" minlength="8" required>
-          <div class="hint">At least 8 characters.</div>
+          <div class="field-inner">
+            <input type="password" class="field-input" id="qc-password" name="password" autocomplete="new-password" minlength="8" placeholder=" " required
+              oninput="this.classList.toggle('filled', this.value.length>0); qcCheckStrength(this.value)">
+            <button type="button" class="field-eye" tabindex="-1" onclick="qcToggleEye(this)">&#128065;</button>
+            <label class="field-label" for="qc-password">Password</label>
+          </div>
+          <div class="pw-strength"><div class="pw-bar" id="qc-pw-bar"></div></div>
+          <div class="field-hint">At least 8 characters.</div>
         </div>
-        <button type="submit" class="submit" id="qc-submit-btn">Create account</button>
+        <button type="submit" class="submit" id="qc-submit-btn">
+          <span class="btn-label">Create account</span><span class="arrow">&rarr;</span>
+        </button>
       </form>
       <div class="alt">Already have an account? <a href="../login/">Sign in</a></div>
     </div>
   </div>
 
 <script>
-const API_BASE = "https://app.querocura.com/api/auth";
+function qcToggleEye(btn) {
+  const input = btn.closest(".field-inner").querySelector("input");
+  input.type = input.type === "password" ? "text" : "password";
+  btn.innerHTML = input.type === "password" ? "&#128065;" : "&#128584;";
+}
+
+function qcCheckStrength(v) {
+  const bar = document.getElementById("qc-pw-bar");
+  let s = 0;
+  if (v.length >= 8) s += 25;
+  if (v.length >= 12) s += 15;
+  if (/[A-Z]/.test(v)) s += 20;
+  if (/[0-9]/.test(v)) s += 20;
+  if (/[^A-Za-z0-9]/.test(v)) s += 20;
+  s = Math.min(100, s);
+  bar.style.width = s + "%";
+  bar.style.background = s < 40 ? "#d24f28" : s < 70 ? "#c98a10" : "#0e8f83";
+}
+
+const API_AUTH = "https://app.querocura.com/api/auth";
+let emailCheckTimer = null;
+
+function qcCheckEmail(v) {
+  const badge = document.getElementById("qc-email-badge");
+  const wrap = document.getElementById("qc-email-wrap");
+  clearTimeout(emailCheckTimer);
+  const clean = v.trim().toLowerCase();
+
+  if (!clean.includes("@") || clean.length < 5) {
+    badge.className = "field-badge";
+    wrap.classList.remove("has-ok", "has-err");
+    return;
+  }
+
+  badge.className = "field-badge chk";
+  badge.textContent = "⋯";
+
+  emailCheckTimer = setTimeout(() => {
+    fetch(API_AUTH + "/check-email?email=" + encodeURIComponent(clean))
+      .then(r => r.json())
+      .then(d => {
+        if (d.available) {
+          badge.className = "field-badge ok";
+          badge.textContent = "✓ available";
+          wrap.classList.add("has-ok");
+          wrap.classList.remove("has-err");
+        } else {
+          badge.className = "field-badge err";
+          badge.textContent = "✕ taken";
+          wrap.classList.add("has-err");
+          wrap.classList.remove("has-ok");
+        }
+      })
+      .catch(() => { badge.className = "field-badge"; });
+  }, 420);
+}
+
 const form = document.getElementById("qc-register-form");
 const errBox = document.getElementById("qc-error");
 const btn = document.getElementById("qc-submit-btn");
+const btnLabel = btn.querySelector(".btn-label");
 
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
   errBox.style.display = "none";
   btn.disabled = true;
-  btn.textContent = "Creating account…";
+  btnLabel.textContent = "Creating account…";
 
   const display_name = document.getElementById("qc-name").value.trim();
   const email = document.getElementById("qc-email").value.trim();
   const password = document.getElementById("qc-password").value;
 
   try {
-    const regRes = await fetch(API_BASE + "/register", {
+    const regRes = await fetch(API_AUTH + "/register", {
       method: "POST",
       credentials: "include",
       headers: { "Content-Type": "application/json" },
@@ -109,8 +221,8 @@ form.addEventListener("submit", async (e) => {
     // Registration doesn't start a session by itself — log in right away
     // with the same credentials so the person lands straight in their
     // dashboard instead of hitting a second sign-in step.
-    btn.textContent = "Signing you in…";
-    const loginRes = await fetch(API_BASE + "/login", {
+    btnLabel.textContent = "Signing you in…";
+    const loginRes = await fetch(API_AUTH + "/login", {
       method: "POST",
       credentials: "include",
       headers: { "Content-Type": "application/json" },
@@ -119,17 +231,16 @@ form.addEventListener("submit", async (e) => {
     const loginData = await loginRes.json();
 
     if (!loginRes.ok || !loginData.ok) {
-      // Account was created but auto-login failed — send them to sign in manually.
       window.location.href = "../login/?justRegistered=1";
       return;
     }
 
-    window.location.href = "https://app.querocura.com/profile";
+    window.location.href = "../dashboard/";
   } catch (err) {
     errBox.textContent = err.message || "Something went wrong. Please try again.";
     errBox.style.display = "block";
     btn.disabled = false;
-    btn.textContent = "Create account";
+    btnLabel.textContent = "Create account";
   }
 });
 </script>
