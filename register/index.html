@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Create your account — QueroCura</title>
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/x-icon" href="../icons/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh; display: flex; flex-direction: column;
+    font-family: 'Manrope', sans-serif; background: #f6f5f1; color: #100e2a;
+  }
+  h1 { font-family: 'Space Grotesk', sans-serif; }
+  .topbar { padding: 24px 40px; }
+  .logo { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 20px; color: #100e2a; text-decoration: none; }
+  .wrap { flex: 1; display: flex; align-items: center; justify-content: center; padding: 24px; }
+  .card {
+    width: 100%; max-width: 420px; background: #fff; border-radius: 24px;
+    padding: 40px 36px; border: 1px solid rgba(16,14,42,0.08);
+    box-shadow: 0 20px 60px rgba(16,14,42,0.08);
+  }
+  .card h1 { font-size: 26px; margin: 0 0 6px; }
+  .card p.sub { margin: 0 0 28px; color: rgba(16,14,42,0.6); font-size: 14.5px; }
+  label { display: block; font-size: 13.5px; font-weight: 700; margin-bottom: 6px; }
+  .field { margin-bottom: 18px; }
+  input {
+    width: 100%; padding: 13px 16px; border-radius: 12px;
+    border: 1.5px solid rgba(16,14,42,0.14); font-family: 'Manrope', sans-serif;
+    font-size: 15px; color: #100e2a; background: #fff; outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+  input:focus { border-color: #0e8f83; box-shadow: 0 0 0 3px rgba(14,143,131,0.12); }
+  .hint { font-size: 12.5px; color: rgba(16,14,42,0.5); margin-top: 6px; }
+  .submit {
+    width: 100%; background: #0e8f83; color: #fff; font-size: 16px; font-weight: 700;
+    padding: 14px 30px; border-radius: 999px; border: none; cursor: pointer;
+    font-family: 'Manrope', sans-serif; margin-top: 6px; transition: opacity 0.2s ease;
+  }
+  .submit:disabled { opacity: 0.6; cursor: default; }
+  .alt { text-align: center; margin-top: 22px; font-size: 14px; color: rgba(16,14,42,0.7); }
+  .alt a { color: #0e8f83; font-weight: 700; text-decoration: none; }
+  .error {
+    display: none; background: #fdece7; color: #b3401f; border-radius: 12px;
+    padding: 12px 14px; font-size: 13.5px; margin-bottom: 18px; font-weight: 600;
+  }
+</style>
+</head>
+<body>
+  <div class="topbar"><a class="logo" href="../">QueroCura</a></div>
+  <div class="wrap">
+    <div class="card">
+      <h1>Create your account</h1>
+      <p class="sub">Free — takes about a minute.</p>
+      <div class="error" id="qc-error"></div>
+      <form id="qc-register-form">
+        <div class="field">
+          <label for="qc-name">Full name</label>
+          <input type="text" id="qc-name" name="name" autocomplete="name" required>
+        </div>
+        <div class="field">
+          <label for="qc-email">Email</label>
+          <input type="email" id="qc-email" name="email" autocomplete="email" required>
+        </div>
+        <div class="field">
+          <label for="qc-password">Password</label>
+          <input type="password" id="qc-password" name="password" autocomplete="new-password" minlength="8" required>
+          <div class="hint">At least 8 characters.</div>
+        </div>
+        <button type="submit" class="submit" id="qc-submit-btn">Create account</button>
+      </form>
+      <div class="alt">Already have an account? <a href="../login/">Sign in</a></div>
+    </div>
+  </div>
+
+<script>
+const API_BASE = "https://app.querocura.com/api/auth";
+const form = document.getElementById("qc-register-form");
+const errBox = document.getElementById("qc-error");
+const btn = document.getElementById("qc-submit-btn");
+
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  errBox.style.display = "none";
+  btn.disabled = true;
+  btn.textContent = "Creating account…";
+
+  const display_name = document.getElementById("qc-name").value.trim();
+  const email = document.getElementById("qc-email").value.trim();
+  const password = document.getElementById("qc-password").value;
+
+  try {
+    const regRes = await fetch(API_BASE + "/register", {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password, display_name }),
+    });
+    const regData = await regRes.json();
+
+    if (!regRes.ok || !regData.ok) {
+      throw new Error(regData.message || "Couldn't create your account. Please try again.");
+    }
+
+    // Registration doesn't start a session by itself — log in right away
+    // with the same credentials so the person lands straight in their
+    // dashboard instead of hitting a second sign-in step.
+    btn.textContent = "Signing you in…";
+    const loginRes = await fetch(API_BASE + "/login", {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    });
+    const loginData = await loginRes.json();
+
+    if (!loginRes.ok || !loginData.ok) {
+      // Account was created but auto-login failed — send them to sign in manually.
+      window.location.href = "../login/?justRegistered=1";
+      return;
+    }
+
+    window.location.href = "https://app.querocura.com/profile";
+  } catch (err) {
+    errBox.textContent = err.message || "Something went wrong. Please try again.";
+    errBox.style.display = "block";
+    btn.disabled = false;
+    btn.textContent = "Create account";
+  }
+});
+</script>
+</body>
+</html>
