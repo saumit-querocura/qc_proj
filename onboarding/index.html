@@ -1,0 +1,526 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Set up your profile — QueroCura</title>
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/x-icon" href="../icons/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script>
+  (function () {
+    try {
+      if (localStorage.getItem('qc-theme') === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      }
+    } catch (e) {}
+  })();
+</script>
+<style>
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0; min-height: 100vh;
+    font-family: 'Manrope', sans-serif; background: #f6f5f1; color: #100e2a;
+  }
+  h1, h2, h3, .display { font-family: 'Space Grotesk', sans-serif; }
+  a { color: #0e8f83; text-decoration: none; }
+  a:hover { color: #0b6f66; }
+
+  /* ---- Topbar (ditto index.html nav) ---- */
+  .topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px clamp(16px,4vw,32px); background: rgba(246,245,241,0.85); backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(16,14,42,0.08); position: sticky; top: 0; z-index: 10;
+  }
+  .logo-wrap { display: flex; align-items: center; gap: 10px; }
+  .logo-wrap img { width: 38px; height: 35px; object-fit: contain; }
+  .logo-text { font-size: 19px; font-weight: 700; letter-spacing: -0.02em; font-family: 'Space Grotesk', sans-serif; }
+  .logo-text .ink { color: #100e2a; }
+  .logo-text .teal { color: #0e8f83; }
+  .topbar-right { display: flex; align-items: center; gap: 16px; }
+  .navlink { color: #100e2a; font-size: 14px; font-weight: 700; }
+  .theme-toggle {
+    display: inline-flex; align-items: center; justify-content: center; width: 38px; height: 38px;
+    border-radius: 10px; border: 1.5px solid rgba(16,14,42,0.14); background: #fff; cursor: pointer;
+    padding: 0; transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease; flex: 0 0 auto;
+  }
+  .theme-toggle:hover { transform: translateY(-2px); }
+
+  /* ---- Progress ---- */
+  .progress-wrap { max-width: 680px; margin: 0 auto; padding: 28px 20px 0; }
+  .progress-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .progress-step-label { font-size: 13px; font-weight: 700; color: rgba(16,14,42,0.55); }
+  .progress-track { height: 6px; border-radius: 6px; background: rgba(16,14,42,0.08); overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 6px; background: linear-gradient(95deg, #0e8f83, #2f8fd1); transition: width 0.45s cubic-bezier(0.4,0,0.2,1); }
+
+  /* ---- Card shell ---- */
+  .wrap { max-width: 680px; margin: 0 auto; padding: 22px 20px 60px; }
+  .card {
+    position: relative; overflow: hidden;
+    background: #fff; border-radius: 26px; padding: 38px 36px;
+    border: 1px solid rgba(16,14,42,0.08); box-shadow: 0 24px 60px -20px rgba(16,14,42,0.16);
+    animation: fadeSlideIn 0.4s cubic-bezier(0.2,0.9,0.3,1) both;
+  }
+  @keyframes fadeSlideIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+  .step-glow {
+    position: absolute; inset: 0; opacity: 0.55; pointer-events: none;
+    background: radial-gradient(520px circle at 88% -10%, var(--step-tint, rgba(14,143,131,0.14)), transparent 60%);
+  }
+  .step-head { position: relative; display: flex; align-items: center; gap: 14px; margin-bottom: 6px; }
+  .step-icon {
+    width: 46px; height: 46px; border-radius: 14px; flex: 0 0 auto;
+    display: flex; align-items: center; justify-content: center; font-size: 21px;
+    background: var(--step-tint, #e6f6f4);
+  }
+  .step-title { font-size: 22px; margin: 0; }
+  .step-hint { position: relative; margin: 0 0 26px; color: rgba(16,14,42,0.6); font-size: 14px; line-height: 1.5; }
+
+  .field { margin-bottom: 20px; position: relative; }
+  .field-inner { position: relative; }
+  .field-input, textarea.field-input {
+    width: 100%; padding: 20px 16px 8px; border-radius: 12px;
+    border: 1.5px solid rgba(16,14,42,0.14); font-family: 'Manrope', sans-serif;
+    font-size: 15px; color: #100e2a; background: #fff; outline: none; resize: vertical;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+  .field-input:focus { border-color: #0e8f83; box-shadow: 0 0 0 3px rgba(14,143,131,0.15); }
+  .field-label {
+    position: absolute; left: 16px; top: 18px; font-size: 15px; color: rgba(16,14,42,0.45);
+    pointer-events: none; transition: all 0.15s ease;
+  }
+  .field-input:focus ~ .field-label, .field-input.filled ~ .field-label {
+    top: 8px; font-size: 11px; font-weight: 700; color: #0e8f83;
+  }
+  .field-opt { font-weight: 500; color: rgba(16,14,42,0.4); }
+
+  .sec-label { font-size: 12.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: rgba(16,14,42,0.5); margin: 22px 0 10px; }
+  .sec-label:first-child { margin-top: 0; }
+
+  /* ---- Pills (single-select) ---- */
+  .pill-row { display: flex; flex-wrap: wrap; gap: 8px; }
+  .pill {
+    padding: 10px 18px; border-radius: 999px; border: 1.5px solid rgba(16,14,42,0.14);
+    font-size: 13.5px; font-weight: 700; cursor: pointer; background: #fff; color: #100e2a;
+    transition: all 0.18s ease; user-select: none;
+  }
+  .pill:hover { border-color: rgba(14,143,131,0.5); transform: translateY(-1px); }
+  .pill.sel { background: #100e2a; border-color: #100e2a; color: #fff; }
+
+  /* ---- Chips (multi-select tag cloud) ---- */
+  .chip-cloud { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
+  .chip {
+    padding: 9px 16px; border-radius: 999px; border: 1.5px solid rgba(16,14,42,0.14);
+    font-size: 13.5px; font-weight: 600; cursor: pointer; background: #fff; color: #100e2a;
+    transition: all 0.18s ease; user-select: none;
+  }
+  .chip:hover { border-color: rgba(14,143,131,0.5); transform: translateY(-1px); }
+  .chip.sel { background: #e6f6f4; border-color: #0e8f83; color: #0b6f66; }
+  .chip.none-chip.sel { background: #100e2a; border-color: #100e2a; color: #fff; }
+  .extra-input {
+    width: 100%; padding: 11px 14px; border-radius: 10px; margin-top: 4px;
+    border: 1.5px dashed rgba(16,14,42,0.2); font-family: 'Manrope', sans-serif;
+    font-size: 13.5px; color: #100e2a; background: transparent; outline: none;
+  }
+  .extra-input:focus { border-color: #0e8f83; border-style: solid; }
+  .extra-input::placeholder { color: rgba(16,14,42,0.4); }
+
+  /* ---- Footer nav ---- */
+  .step-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 30px; gap: 12px; }
+  .btn-back {
+    background: transparent; border: 1.5px solid rgba(16,14,42,0.16); color: #100e2a;
+    font-family: 'Manrope', sans-serif; font-size: 14.5px; font-weight: 700;
+    padding: 12px 22px; border-radius: 999px; cursor: pointer; transition: all 0.18s ease;
+  }
+  .btn-back:hover { background: rgba(16,14,42,0.05); }
+  .btn-back:disabled { opacity: 0; pointer-events: none; }
+  .btn-next {
+    position: relative; overflow: hidden; margin-left: auto;
+    background: linear-gradient(95deg, #0e8f83, #2f8fd1); color: #fff; font-size: 15.5px; font-weight: 700;
+    padding: 13px 28px; border-radius: 999px; border: none; cursor: pointer;
+    font-family: 'Manrope', sans-serif; transition: transform 0.18s ease, box-shadow 0.18s ease;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .btn-next::after {
+    content: ''; position: absolute; top: 0; left: -60%; width: 40%; height: 100%;
+    background: linear-gradient(115deg, transparent, rgba(255,255,255,0.4), transparent);
+    transform: skewX(-20deg); transition: left 0.6s ease; pointer-events: none;
+  }
+  .btn-next:hover:not(:disabled)::after { left: 140%; }
+  .btn-next:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 14px 26px -10px rgba(14,143,131,0.5); }
+  .btn-next:disabled { opacity: 0.65; cursor: default; }
+
+  /* ---- Review step ---- */
+  .review-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 20px; }
+  .review-item { border-bottom: 1px solid rgba(16,14,42,0.07); padding-bottom: 10px; }
+  .review-item .rl { font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; color: rgba(16,14,42,0.45); margin-bottom: 3px; }
+  .review-item .rv { font-size: 14.5px; font-weight: 600; }
+  .review-item.full { grid-column: 1 / -1; }
+  @media (max-width: 520px) { .review-grid { grid-template-columns: 1fr; } }
+
+  .error {
+    display: none; background: #fdece7; color: #b3401f; border-radius: 12px;
+    padding: 12px 14px; font-size: 13.5px; margin-bottom: 18px; font-weight: 600;
+  }
+
+  /* ---- Dark mode ---- */
+  html[data-theme="dark"] body { background: #0d0c1f; color: #f2f0f8; }
+  html[data-theme="dark"] a { color: #7ee0d4; }
+  html[data-theme="dark"] .topbar { background: rgba(13,12,31,0.85); border-bottom-color: rgba(255,255,255,0.1); }
+  html[data-theme="dark"] .logo-text .ink { color: #f2f0f8; }
+  html[data-theme="dark"] .navlink { color: #f2f0f8; }
+  html[data-theme="dark"] .theme-toggle { background: #18162e; border-color: rgba(255,255,255,0.14); }
+  html[data-theme="dark"] .progress-track { background: rgba(255,255,255,0.1); }
+  html[data-theme="dark"] .progress-step-label { color: #a9a6bd; }
+  html[data-theme="dark"] .card { background: #18162e; border-color: rgba(255,255,255,0.1); }
+  html[data-theme="dark"] .step-hint { color: #a9a6bd; }
+  html[data-theme="dark"] .field-input { background: #100e2a; color: #f2f0f8; border-color: rgba(255,255,255,0.14); }
+  html[data-theme="dark"] .field-label { color: #8f8ba3; }
+  html[data-theme="dark"] .sec-label { color: #8f8ba3; }
+  html[data-theme="dark"] .pill { background: #100e2a; color: #f2f0f8; border-color: rgba(255,255,255,0.16); }
+  html[data-theme="dark"] .pill.sel { background: #7ee0d4; border-color: #7ee0d4; color: #0d0c1f; }
+  html[data-theme="dark"] .chip { background: #100e2a; color: #f2f0f8; border-color: rgba(255,255,255,0.16); }
+  html[data-theme="dark"] .chip.sel { background: rgba(126,224,212,0.16); border-color: #7ee0d4; color: #7ee0d4; }
+  html[data-theme="dark"] .chip.none-chip.sel { background: #7ee0d4; border-color: #7ee0d4; color: #0d0c1f; }
+  html[data-theme="dark"] .extra-input { color: #f2f0f8; border-color: rgba(255,255,255,0.2); }
+  html[data-theme="dark"] .btn-back { color: #f2f0f8; border-color: rgba(255,255,255,0.18); }
+  html[data-theme="dark"] .btn-back:hover { background: rgba(255,255,255,0.06); }
+  html[data-theme="dark"] .review-item { border-bottom-color: rgba(255,255,255,0.08); }
+  html[data-theme="dark"] .review-item .rl { color: #8f8ba3; }
+  html[data-theme="dark"] .error { background: rgba(210,79,40,0.16); color: #f0a488; }
+</style>
+</head>
+<body>
+  <div class="topbar">
+    <a class="logo-wrap" href="../">
+      <img src="../assets/d4f7acc01b9438e998c9e7b9676584b0.png" alt="QueroCura">
+      <span class="logo-text"><span class="ink">Quero</span><span class="teal">Cura</span></span>
+    </a>
+    <div class="topbar-right">
+      <a class="navlink" href="#" id="qc-skip-link" onclick="qcSkip(event)">Skip for now</a>
+      <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode" id="theme-toggle-btn">
+        <span id="theme-toggle-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z" stroke="#100e2a" stroke-width="1.7" stroke-linejoin="round"/></svg></span>
+      </button>
+    </div>
+  </div>
+
+  <div class="progress-wrap">
+    <div class="progress-top">
+      <span class="progress-step-label" id="qc-progress-label">Step 1 of 6</span>
+      <span class="progress-step-label" id="qc-progress-pct">0%</span>
+    </div>
+    <div class="progress-track"><div class="progress-fill" id="qc-progress-fill" style="width:0%"></div></div>
+  </div>
+
+  <div class="wrap">
+    <div class="card" id="qc-card">
+      <div class="step-glow" id="qc-step-glow"></div>
+      <div class="error" id="qc-error"></div>
+      <div id="qc-step-body"></div>
+    </div>
+  </div>
+
+<script>
+/* ---- Theme toggle (shared qc-theme key) ---- */
+var STORAGE_KEY = 'qc-theme';
+var root = document.documentElement;
+var SUN_ICON = '<svg width="17" height="17" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="4.2" stroke="#f2f0f8" stroke-width="1.7"/><path d="M12 3v2.2M12 18.8V21M21 12h-2.2M5.2 12H3M18.4 5.6l-1.5 1.5M7.1 16.9l-1.5 1.5M18.4 18.4l-1.5-1.5M7.1 7.1L5.6 5.6" stroke="#f2f0f8" stroke-width="1.7" stroke-linecap="round"/></svg>';
+var MOON_ICON = '<svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z" stroke="#100e2a" stroke-width="1.7" stroke-linejoin="round"/></svg>';
+function applyTheme(dark) {
+  root.setAttribute('data-theme', dark ? 'dark' : 'light');
+  try { localStorage.setItem(STORAGE_KEY, dark ? 'dark' : 'light'); } catch (e) {}
+  var icon = document.getElementById('theme-toggle-icon');
+  if (icon) icon.innerHTML = dark ? SUN_ICON : MOON_ICON;
+}
+window.toggleTheme = function () { applyTheme(root.getAttribute('data-theme') !== 'dark'); };
+if (root.getAttribute('data-theme') === 'dark') applyTheme(true);
+
+/* ---- Setup ---- */
+const API = "https://app.querocura.com/api";
+const TOTAL_STEPS = 6;
+let curStep = 1;
+let options = null;
+let state = {
+  display_name: "", age: "", sex: "unknown", blood_type: "unknown",
+  med_allergies: [], food_allergies: [], env_allergies: [],
+  conditions: [], medications: "", family_history: [],
+  smoking: "unknown", alcohol: "unknown", exercise: "unknown",
+  pregnant: false, occupation: "",
+};
+
+const STEP_META = [
+  { tint: "#e6f6f4", icon: "👋", title: "Let's get acquainted", hint: "A few basics so QueroCura knows who it's caring for." },
+  { tint: "#fdece7", icon: "⚠️", title: "Any allergies?", hint: "We use this to keep every recommendation safer." },
+  { tint: "#eae8fb", icon: "📋", title: "Your health history", hint: "Private context that helps personalise your care." },
+  { tint: "#fbf1dc", icon: "💊", title: "Medications & family health", hint: "Current medicines and hereditary patterns that matter." },
+  { tint: "#e4f1fb", icon: "🏃", title: "How do you live?", hint: "Lifestyle shapes risk and the advice you receive." },
+  { tint: "#e6f6f4", icon: "✨", title: "Review & finish", hint: "One last check, then you're all set." },
+];
+
+function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
+
+async function requireSession() {
+  const res = await fetch(API + "/auth/me", { credentials: "include" });
+  const data = await res.json();
+  if (!data.logged_in) { window.location.href = "../login/"; return null; }
+  return data.user;
+}
+
+function mergeProfileIntoState(p) {
+  if (!p) return;
+  ["display_name","sex","blood_type","medications","smoking","alcohol","exercise","occupation"].forEach(k => {
+    if (p[k] !== undefined && p[k] !== null) state[k] = p[k];
+  });
+  if (p.age !== undefined && p.age !== null) state.age = p.age;
+  ["med_allergies","food_allergies","env_allergies","conditions","family_history"].forEach(k => {
+    if (Array.isArray(p[k])) state[k] = p[k].slice();
+  });
+  if (typeof p.pregnant === "boolean") state.pregnant = p.pregnant;
+}
+
+async function saveProfile(finish) {
+  const payload = Object.assign({}, state, { wizard_done: !!finish });
+  const res = await fetch(API + "/profile", {
+    method: "POST", credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  const data = await res.json();
+  if (!res.ok || !data.ok) throw new Error(data.message || "Couldn't save your profile.");
+  return data;
+}
+
+window.qcSkip = async function (e) {
+  e.preventDefault();
+  try {
+    await saveProfile(true);
+    window.location.href = "../dashboard/";
+  } catch (err) {
+    showError(err.message);
+  }
+};
+
+function showError(msg) {
+  const box = document.getElementById("qc-error");
+  box.textContent = msg || "Something went wrong. Please try again.";
+  box.style.display = "block";
+}
+function hideError() { document.getElementById("qc-error").style.display = "none"; }
+
+function updateProgress() {
+  const pct = Math.round(((curStep - 1) / TOTAL_STEPS) * 100);
+  document.getElementById("qc-progress-label").textContent = "Step " + curStep + " of " + TOTAL_STEPS;
+  document.getElementById("qc-progress-pct").textContent = pct + "%";
+  document.getElementById("qc-progress-fill").style.width = pct + "%";
+  const meta = STEP_META[curStep - 1];
+  document.getElementById("qc-step-glow").style.setProperty("--step-tint", meta.tint);
+}
+
+/* ---- Reusable field widgets ---- */
+function pillRow(cat, opts, labelsMap) {
+  return '<div class="pill-row">' + opts.map(v => {
+    const label = (labelsMap && labelsMap[v]) || (v.charAt(0).toUpperCase() + v.slice(1));
+    return '<span class="pill' + (state[cat] === v ? ' sel' : '') + '" data-cat="' + cat + '" data-v="' + esc(v) + '" onclick="pickPill(this)">' + esc(label) + '</span>';
+  }).join("") + '</div>';
+}
+window.pickPill = function (el) {
+  const cat = el.dataset.cat, v = el.dataset.v;
+  document.querySelectorAll('.pill[data-cat="' + cat + '"]').forEach(p => p.classList.remove('sel'));
+  el.classList.add('sel');
+  state[cat] = v;
+};
+
+function chipCloud(cat, items) {
+  const cur = state[cat] || [];
+  const isNoneSel = cur.length === 0;
+  let html = '<div class="chip-cloud">';
+  items.forEach(item => {
+    if (item === "None") {
+      html += '<span class="chip none-chip' + (isNoneSel ? ' sel' : '') + '" data-cat="' + cat + '" data-v="__none__" onclick="toggleChip(this)">None</span>';
+    } else {
+      html += '<span class="chip' + (cur.includes(item) ? ' sel' : '') + '" data-cat="' + cat + '" data-v="' + esc(item) + '" onclick="toggleChip(this)">' + esc(item) + '</span>';
+    }
+  });
+  html += '</div>';
+  return html;
+}
+window.toggleChip = function (el) {
+  const cat = el.dataset.cat, v = el.dataset.v;
+  if (v === "__none__") {
+    state[cat] = [];
+    document.querySelectorAll('.chip[data-cat="' + cat + '"]').forEach(c => c.classList.remove('sel'));
+    el.classList.add('sel');
+    return;
+  }
+  const arr = state[cat];
+  const idx = arr.indexOf(v);
+  if (idx === -1) { arr.push(v); el.classList.add('sel'); }
+  else { arr.splice(idx, 1); el.classList.remove('sel'); }
+  const noneChip = document.querySelector('.chip.none-chip[data-cat="' + cat + '"]');
+  if (noneChip) noneChip.classList.toggle('sel', arr.length === 0);
+};
+
+function extraTagInput(cat, placeholder) {
+  return '<input type="text" class="extra-input" placeholder="' + esc(placeholder) + '" ' +
+    'onkeydown="if(event.key===\'Enter\'){event.preventDefault(); qcAddExtraTags(this,\'' + cat + '\');}" ' +
+    'onblur="qcAddExtraTags(this,\'' + cat + '\')">';
+}
+window.qcAddExtraTags = function (input, cat) {
+  const raw = input.value.trim();
+  if (!raw) return;
+  const tokens = raw.split(",").map(t => t.trim()).filter(Boolean);
+  tokens.forEach(t => { if (!state[cat].includes(t)) state[cat].push(t); });
+  input.value = "";
+  renderStep();
+};
+
+function floatField(id, cat, label, type, opt) {
+  opt = opt || {};
+  const val = state[cat] == null ? "" : state[cat];
+  const filled = val !== "" ? " filled" : "";
+  const tag = type === "textarea" ? "textarea" : "input";
+  const openTag = tag === "textarea"
+    ? '<textarea class="field-input' + filled + '" id="' + id + '" rows="' + (opt.rows || 3) + '" placeholder=" " ' +
+        'oninput="qcSetText(this,\'' + cat + '\')">' + esc(val) + '</textarea>'
+    : '<input class="field-input' + filled + '" id="' + id + '" type="' + (type || "text") + '" placeholder=" " value="' + esc(val) + '" ' +
+        (opt.min !== undefined ? 'min="' + opt.min + '" ' : '') + (opt.max !== undefined ? 'max="' + opt.max + '" ' : '') +
+        'oninput="qcSetText(this,\'' + cat + '\')">';
+  return '<div class="field"><div class="field-inner">' + openTag +
+    '<label class="field-label" for="' + id + '">' + esc(label) + (opt.optional ? ' <span class="field-opt">optional</span>' : '') + '</label>' +
+    '</div></div>';
+}
+window.qcSetText = function (el, cat) {
+  el.classList.toggle('filled', el.value.length > 0);
+  state[cat] = cat === 'age' ? (el.value === '' ? '' : el.value) : el.value;
+};
+
+/* ---- Step renderers ---- */
+function renderStepBody() {
+  const meta = STEP_META[curStep - 1];
+  let inner = '<div class="step-head"><div class="step-icon" style="background:' + meta.tint + '">' + meta.icon + '</div><h1 class="step-title">' + meta.title + '</h1></div>' +
+    '<p class="step-hint">' + meta.hint + '</p>';
+
+  if (curStep === 1) {
+    inner += floatField("f-name", "display_name", "What should we call you?", "text");
+    inner += floatField("f-age", "age", "Age", "number", { min: 1, max: 120, optional: true });
+    inner += '<div class="sec-label">Biological sex</div>' + pillRow("sex", options.sex_options, { unknown: "Prefer not to say" });
+    inner += '<div class="sec-label">ABO blood group <span class="field-opt">optional</span></div>' + pillRow("blood_type", options.blood_types, { unknown: "Unknown" });
+  } else if (curStep === 2) {
+    inner += '<div class="sec-label">Medication allergies</div>' + chipCloud("med_allergies", options.common_med_allergies);
+    inner += '<div class="sec-label">Food allergies</div>' + chipCloud("food_allergies", options.common_food_allergies);
+    inner += '<div class="sec-label">Environmental allergies</div>' + chipCloud("env_allergies", options.common_env_allergies);
+  } else if (curStep === 3) {
+    inner += '<div class="sec-label">Known conditions</div>' + chipCloud("conditions", options.known_conditions);
+    inner += extraTagInput("conditions", "Add another condition, comma separated — then press Enter");
+  } else if (curStep === 4) {
+    inner += floatField("f-meds", "medications", "Current medications", "textarea", { rows: 3, optional: true });
+    inner += '<div class="sec-label">Family history</div>' + chipCloud("family_history", options.known_family_history);
+    inner += extraTagInput("family_history", "Add another, comma separated — then press Enter");
+  } else if (curStep === 5) {
+    inner += '<div class="sec-label">Smoking</div>' + pillRow("smoking", options.smoking_options, { unknown: "Prefer not to say" });
+    inner += '<div class="sec-label">Alcohol</div>' + pillRow("alcohol", options.alcohol_options, { unknown: "Prefer not to say", none: "None" });
+    inner += '<div class="sec-label">Exercise</div>' + pillRow("exercise", options.exercise_options, { unknown: "Prefer not to say" });
+  } else if (curStep === 6) {
+    inner += '<div class="sec-label">Pregnant</div>' +
+      '<div class="pill-row">' +
+        '<span class="pill' + (state.pregnant ? ' sel' : '') + '" data-preg="1" onclick="qcSetPregnant(this,true)">Yes</span>' +
+        '<span class="pill' + (!state.pregnant ? ' sel' : '') + '" data-preg="0" onclick="qcSetPregnant(this,false)">No</span>' +
+      '</div>';
+    inner += floatField("f-occ", "occupation", "Occupation", "text", { optional: true });
+    inner += '<div class="sec-label" style="margin-top:26px">Review</div>' + renderReview();
+  }
+
+  inner += '<div class="step-footer">' +
+    '<button class="btn-back" id="qc-back-btn" onclick="qcBack()"' + (curStep === 1 ? ' disabled' : '') + '>&larr; Back</button>' +
+    '<button class="btn-next" id="qc-next-btn" onclick="qcNext()">' +
+      (curStep === TOTAL_STEPS ? 'Finish &amp; go to dashboard ✨' : 'Continue') +
+      (curStep === TOTAL_STEPS ? '' : ' <span>&rarr;</span>') +
+    '</button>' +
+  '</div>';
+
+  document.getElementById("qc-step-body").innerHTML = inner;
+}
+window.qcSetPregnant = function (el, val) {
+  document.querySelectorAll('.pill[data-preg]').forEach(p => p.classList.remove('sel'));
+  el.classList.add('sel');
+  state.pregnant = val;
+};
+
+function renderReview() {
+  const rows = [
+    ["Name", state.display_name || "—"],
+    ["Age", state.age || "—"],
+    ["Sex", state.sex],
+    ["Blood group", state.blood_type],
+    ["Allergies", [].concat(state.med_allergies, state.food_allergies, state.env_allergies).join(", ") || "None recorded"],
+    ["Conditions", state.conditions.join(", ") || "None recorded"],
+    ["Medications", state.medications || "—"],
+    ["Family history", state.family_history.join(", ") || "None recorded"],
+    ["Smoking", state.smoking],
+    ["Alcohol", state.alcohol],
+    ["Exercise", state.exercise],
+    ["Occupation", state.occupation || "—"],
+  ];
+  return '<div class="review-grid">' + rows.map(([l, v]) =>
+    '<div class="review-item"><div class="rl">' + esc(l) + '</div><div class="rv">' + esc(v) + '</div></div>'
+  ).join("") + '</div>';
+}
+
+function renderStep() { renderStepBody(); updateProgress(); }
+
+window.qcBack = function () {
+  if (curStep <= 1) return;
+  curStep -= 1;
+  const card = document.getElementById("qc-card");
+  card.style.animation = "none"; void card.offsetWidth; card.style.animation = "";
+  renderStep();
+};
+
+window.qcNext = async function () {
+  hideError();
+  const btn = document.getElementById("qc-next-btn");
+  btn.disabled = true;
+  try {
+    await saveProfile(curStep === TOTAL_STEPS);
+  } catch (err) {
+    btn.disabled = false;
+    showError(err.message);
+    return;
+  }
+  if (curStep === TOTAL_STEPS) {
+    window.location.href = "../dashboard/";
+    return;
+  }
+  curStep += 1;
+  const card = document.getElementById("qc-card");
+  card.style.animation = "none"; void card.offsetWidth; card.style.animation = "";
+  renderStep();
+};
+
+(async function init() {
+  const user = await requireSession();
+  if (!user) return;
+
+  const [profRes, optRes] = await Promise.all([
+    fetch(API + "/profile", { credentials: "include" }),
+    fetch(API + "/profile/options", { credentials: "include" }),
+  ]);
+  const profData = await profRes.json();
+  const optData = await optRes.json();
+  options = optData.options;
+
+  if (profData.ok && profData.profile) {
+    if (profData.profile.wizard_done) {
+      window.location.href = "../dashboard/";
+      return;
+    }
+    mergeProfileIntoState(profData.profile);
+  }
+
+  renderStep();
+})();
+</script>
+</body>
+</html>
