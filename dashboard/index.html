@@ -267,6 +267,20 @@ async function requireSession() {
   return data.user;
 }
 
+async function requireCompletedProfile() {
+  try {
+    const res = await fetch(API_BASE + "/profile", { credentials: "include" });
+    const data = await res.json();
+    if (data.ok && data.profile && !data.profile.wizard_done) {
+      window.location.href = "../onboarding/";
+      return false;
+    }
+  } catch (e) {
+    // If the check itself fails, don't block access to the dashboard.
+  }
+  return true;
+}
+
 function renderFlags(flags) {
   const box = document.getElementById("qc-flags");
   box.innerHTML = "";
@@ -365,6 +379,8 @@ document.getElementById("qc-signout-btn").addEventListener("click", async () => 
 (async function init() {
   const user = await requireSession();
   if (!user) return;
+  const complete = await requireCompletedProfile();
+  if (!complete) return;
   const name = user.display_name || user.username || user.email || "";
   document.getElementById("qc-user-chip").textContent = name;
   document.getElementById("qc-greeting").textContent = name ? ("Welcome back, " + name.split(" ")[0]) : "Welcome back";
