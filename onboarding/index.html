@@ -54,7 +54,13 @@
   .progress-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
   .progress-step-label { font-size: 13px; font-weight: 700; color: rgba(16,14,42,0.55); }
   .progress-track { height: 6px; border-radius: 6px; background: rgba(16,14,42,0.08); overflow: hidden; }
-  .progress-fill { height: 100%; border-radius: 6px; background: linear-gradient(95deg, #0e8f83, #2f8fd1); transition: width 0.45s cubic-bezier(0.4,0,0.2,1); }
+  .progress-fill {
+    position: relative; height: 100%; border-radius: 6px;
+    background: linear-gradient(95deg, #0e8f83, #2f8fd1, #7c6fdb, #0e8f83);
+    background-size: 300% auto; animation: progressShimmer 3.5s linear infinite;
+    transition: width 0.45s cubic-bezier(0.4,0,0.2,1);
+  }
+  @keyframes progressShimmer { 0% { background-position: 0% 50%; } 100% { background-position: 300% 50%; } }
 
   /* ---- Card shell ---- */
   .wrap { max-width: 680px; margin: 0 auto; padding: 22px 20px 60px; }
@@ -66,9 +72,29 @@
   }
   @keyframes fadeSlideIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
   .step-glow {
-    position: absolute; inset: 0; opacity: 0.55; pointer-events: none;
+    position: absolute; inset: 0; opacity: 0.6; pointer-events: none;
     background: radial-gradient(520px circle at 88% -10%, var(--step-tint, rgba(14,143,131,0.14)), transparent 60%);
+    animation: glowDrift 9s ease-in-out infinite;
   }
+  @keyframes glowDrift {
+    0%,100% { background-position: 0 0; }
+    50% { background-position: -30px 20px; }
+  }
+  .finish-flourish {
+    position: absolute; inset: 0; z-index: 5; display: none; align-items: center; justify-content: center;
+    flex-direction: column; gap: 14px; background: linear-gradient(165deg, #1a1740 0%, #100e2a 100%);
+    color: #fff; text-align: center; border-radius: 26px;
+  }
+  .finish-flourish.show { display: flex; animation: fadeSlideIn 0.3s ease both; }
+  .finish-check {
+    width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, #0e8f83, #2f8fd1); font-size: 30px;
+    animation: checkPop 0.5s cubic-bezier(0.34,1.56,0.64,1) both;
+    box-shadow: 0 0 0 8px rgba(14,143,131,0.16);
+  }
+  @keyframes checkPop { from { transform: scale(0.4); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  .finish-flourish h2 { font-size: 20px; margin: 0; }
+  .finish-flourish p { font-size: 13.5px; color: rgba(255,255,255,0.6); margin: 0; }
   .step-head { position: relative; display: flex; align-items: center; gap: 14px; margin-bottom: 6px; }
   .step-icon {
     width: 46px; height: 46px; border-radius: 14px; flex: 0 0 auto;
@@ -219,6 +245,11 @@
       <div class="step-glow" id="qc-step-glow"></div>
       <div class="error" id="qc-error"></div>
       <div id="qc-step-body"></div>
+      <div class="finish-flourish" id="qc-finish-flourish">
+        <div class="finish-check">✓</div>
+        <h2>You're all set!</h2>
+        <p>Taking you to your dashboard…</p>
+      </div>
     </div>
   </div>
 
@@ -490,7 +521,8 @@ window.qcNext = async function () {
     return;
   }
   if (curStep === TOTAL_STEPS) {
-    window.location.href = "../dashboard/";
+    document.getElementById("qc-finish-flourish").classList.add("show");
+    setTimeout(() => { window.location.href = "../dashboard/"; }, 900);
     return;
   }
   curStep += 1;
