@@ -57,14 +57,51 @@
   /* ---- Layout ---- */
   .shell { display: flex; max-width: 1160px; margin: 0 auto; padding: 32px 24px 80px; gap: 28px; }
   .main { flex: 1; min-width: 0; }
-  .greeting { font-size: 26px; margin: 0 0 4px; }
-  .greeting-sub { margin: 0 0 28px; color: rgba(16,14,42,0.6); font-size: 14.5px; }
+
+  /* ---- Hero greeting (ditto login/register dark panel + moving gradients) ---- */
+  .hero {
+    position: relative; overflow: hidden; border-radius: 24px; margin-bottom: 22px;
+    background: linear-gradient(165deg, #1a1740 0%, #100e2a 100%); color: #fff; padding: 30px 32px;
+  }
+  .hero-orb { position: absolute; border-radius: 50%; filter: blur(60px); opacity: 0.5; pointer-events: none; animation: heroDrift 14s ease-in-out infinite; }
+  .hero-orb1 { width: 220px; height: 220px; background: #0e8f83; top: -70px; right: 60px; }
+  .hero-orb2 { width: 180px; height: 180px; background: #7c6fdb; bottom: -60px; left: 20%; animation-delay: -7s; }
+  @keyframes heroDrift { 0%,100% { transform: translate(0,0); } 50% { transform: translate(18px,-14px); } }
+  .hero-eyebrow { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; position: relative; z-index: 1; }
+  .hero-tag { padding: 4px 12px; border-radius: 999px; background: rgba(126,224,212,0.16); border: 1px solid rgba(126,224,212,0.3); color: #7ee0d4; font-size: 11px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; }
+  .hero-live { display: flex; align-items: center; gap: 6px; font-size: 11px; color: rgba(255,255,255,0.55); font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; }
+  .hero-live-dot { width: 6px; height: 6px; border-radius: 50%; background: #7ee0d4; animation: heroBeacon 2.2s ease-out infinite; }
+  @keyframes heroBeacon { 0% { box-shadow: 0 0 0 0 rgba(126,224,212,0.5); } 100% { box-shadow: 0 0 0 8px rgba(126,224,212,0); } }
+  .hero-greeting { font-size: clamp(23px,3vw,31px); margin: 0 0 8px; position: relative; z-index: 1; }
+  .hero-greeting .name {
+    background: linear-gradient(95deg,#7ee0d4,#a89bf5); -webkit-background-clip: text; background-clip: text; color: transparent;
+    background-size: 200% auto; animation: heroGradShift 5s ease-in-out infinite;
+  }
+  @keyframes heroGradShift { 0%,100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+  .hero-sub { font-size: 14px; color: rgba(255,255,255,0.62); position: relative; z-index: 1; margin: 0; max-width: 480px; }
+  .hero-date { font-size: 11.5px; color: rgba(255,255,255,0.4); margin-top: 14px; position: relative; z-index: 1; letter-spacing: 0.04em; }
+
+  /* ---- Vitals snapshot strip ---- */
+  .snapshot-strip { display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 12px; margin-bottom: 22px; }
+  .snap-card { position: relative; overflow: hidden; background: #fff; border-radius: 16px; padding: 15px 16px 13px; border: 1px solid rgba(16,14,42,0.08); }
+  .snap-card::before { content: ''; position: absolute; top: -28px; right: -28px; width: 84px; height: 84px; border-radius: 50%; background: radial-gradient(circle, rgba(14,143,131,0.10), transparent 70%); pointer-events: none; }
+  .snap-card .sc-icon { font-size: 17px; margin-bottom: 7px; }
+  .snap-card .sc-label { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; color: rgba(16,14,42,0.45); margin-bottom: 3px; }
+  .snap-card .sc-value { font-size: 18px; font-weight: 700; font-family: 'Space Grotesk', sans-serif; }
+  .snap-card .sc-value .unit { font-size: 11.5px; font-weight: 600; color: rgba(16,14,42,0.4); margin-left: 2px; }
+  .snap-card.flag-CRITICAL { border-color: rgba(210,79,40,0.4); }
+  .snap-card.flag-CRITICAL::before { background: radial-gradient(circle, rgba(210,79,40,0.14), transparent 70%); }
+  .snap-card.flag-CAUTION { border-color: rgba(201,138,16,0.4); }
+  .snap-card.flag-CAUTION::before { background: radial-gradient(circle, rgba(201,138,16,0.14), transparent 70%); }
 
   .card {
+    position: relative; overflow: hidden;
     background: #fff; border-radius: 20px; padding: 26px 28px;
     border: 1px solid rgba(16,14,42,0.08); margin-bottom: 22px;
   }
-  .card h2 { font-size: 18px; margin: 0 0 18px; }
+  .card::before { content: ''; position: absolute; top: -44px; right: -44px; width: 150px; height: 150px; border-radius: 50%; background: radial-gradient(circle, rgba(14,143,131,0.06), transparent 70%); pointer-events: none; }
+  .card h2 { font-size: 18px; margin: 0 0 18px; position: relative; }
+  .card > * { position: relative; }
 
   /* ---- Vitals form ---- */
   .vitals-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 14px; }
@@ -139,8 +176,10 @@
   html[data-theme="dark"] .signout-btn { color: #f2f0f8; border-color: rgba(255,255,255,0.16); }
   html[data-theme="dark"] .signout-btn:hover { background: rgba(255,255,255,0.06); }
   html[data-theme="dark"] .theme-toggle { background: #18162e; border-color: rgba(255,255,255,0.14); }
-  html[data-theme="dark"] .greeting-sub { color: #a9a6bd; }
   html[data-theme="dark"] .card { background: #18162e; border-color: rgba(255,255,255,0.1); }
+  html[data-theme="dark"] .snap-card { background: #18162e; border-color: rgba(255,255,255,0.1); }
+  html[data-theme="dark"] .snap-card .sc-label { color: #8f8ba3; }
+  html[data-theme="dark"] .snap-card .sc-value .unit { color: #8f8ba3; }
   html[data-theme="dark"] .field label { color: #b7b3cc; }
   html[data-theme="dark"] input, html[data-theme="dark"] textarea { background: #100e2a; color: #f2f0f8; border-color: rgba(255,255,255,0.14); }
   html[data-theme="dark"] .flag.CRITICAL { background: rgba(210,79,40,0.16); color: #f0a488; }
@@ -174,11 +213,22 @@
     </nav>
 
     <div class="main">
-      <h1 class="greeting" id="qc-greeting">Welcome back</h1>
-      <p class="greeting-sub">Here's where things stand today.</p>
+      <div class="hero">
+        <div class="hero-orb hero-orb1"></div>
+        <div class="hero-orb hero-orb2"></div>
+        <div class="hero-eyebrow">
+          <span class="hero-tag">Dashboard</span>
+          <span class="hero-live"><span class="hero-live-dot"></span>Live</span>
+        </div>
+        <h1 class="hero-greeting" id="qc-greeting">Welcome back</h1>
+        <p class="hero-sub" id="qc-greeting-sub">Here's where things stand today.</p>
+        <div class="hero-date" id="qc-today"></div>
+      </div>
+
+      <div class="snapshot-strip" id="qc-snapshot"></div>
 
       <div class="card">
-        <h2>Latest vitals</h2>
+        <h2>Flags &amp; notes</h2>
         <div id="qc-latest-summary" class="summary-line">Loading…</div>
         <div id="qc-flags"></div>
       </div>
@@ -293,11 +343,54 @@ function renderFlags(flags) {
   });
 }
 
+const SNAPSHOT_METRICS = [
+  { key: "temp",    icon: "🌡️", label: "Temp",    unit: "°C", keywords: ["temperature"] },
+  { key: "bp",      icon: "❤️", label: "BP",      unit: "",   keywords: ["blood pressure", "bp"] },
+  { key: "pulse",   icon: "💓", label: "Pulse",   unit: "bpm",keywords: ["pulse"] },
+  { key: "spo2",    icon: "🫁", label: "SpO₂",    unit: "%",  keywords: ["oxygen", "spo"] },
+  { key: "glucose", icon: "🩸", label: "Glucose", unit: "",   keywords: ["glucose", "sugar"] },
+  { key: "weight",  icon: "⚖️", label: "Weight",  unit: "kg", keywords: ["weight"] },
+];
+
+function flagSeverityFor(keywords, flags) {
+  if (!flags || !flags.length) return "";
+  for (const f of flags) {
+    const msg = (f.message || "").toLowerCase();
+    if (keywords.some(k => msg.includes(k))) return f.level || "";
+  }
+  return "";
+}
+
+function renderSnapshot(latest, flags) {
+  const box = document.getElementById("qc-snapshot");
+  latest = latest || {};
+  const hasBp = latest.sys_bp != null && latest.dia_bp != null;
+  box.innerHTML = SNAPSHOT_METRICS.map(m => {
+    let value = "—", unit = m.unit;
+    if (m.key === "bp") { value = hasBp ? (latest.sys_bp + "/" + latest.dia_bp) : "—"; unit = ""; }
+    else if (latest[m.key] !== undefined && latest[m.key] !== null && latest[m.key] !== "") { value = latest[m.key]; }
+    const sev = flagSeverityFor(m.keywords, flags);
+    return '<div class="snap-card' + (sev ? ' flag-' + sev : '') + '">' +
+      '<div class="sc-icon">' + m.icon + '</div>' +
+      '<div class="sc-label">' + m.label + '</div>' +
+      '<div class="sc-value">' + value + (value !== "—" && unit ? '<span class="unit">' + unit + '</span>' : '') + '</div>' +
+    '</div>';
+  }).join("");
+}
+
+function setGreetingChrome() {
+  const hr = new Date().getHours();
+  const word = hr < 12 ? "Good morning" : hr < 18 ? "Good afternoon" : "Good evening";
+  document.getElementById("qc-today").textContent = new Date().toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short", year: "numeric" });
+  return word;
+}
+
 async function loadLatest() {
   const res = await fetch(API_BASE + "/vitals/latest", { credentials: "include" });
   const data = await res.json();
   document.getElementById("qc-latest-summary").textContent = data.summary || "No vitals recorded.";
   renderFlags(data.flags);
+  renderSnapshot(data.latest, data.flags);
 }
 
 async function loadHistory() {
@@ -382,8 +475,13 @@ document.getElementById("qc-signout-btn").addEventListener("click", async () => 
   const complete = await requireCompletedProfile();
   if (!complete) return;
   const name = user.display_name || user.username || user.email || "";
+  const firstName = name ? name.split(" ")[0] : "";
   document.getElementById("qc-user-chip").textContent = name;
-  document.getElementById("qc-greeting").textContent = name ? ("Welcome back, " + name.split(" ")[0]) : "Welcome back";
+  const greetWord = setGreetingChrome();
+  document.getElementById("qc-greeting").innerHTML = firstName
+    ? (greetWord + ", <span class='name'>" + firstName + "</span> 👋")
+    : (greetWord + " 👋");
+  document.getElementById("qc-greeting-sub").textContent = "Here's where things stand today.";
   await loadLatest();
   await loadHistory();
 })();
