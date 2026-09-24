@@ -79,6 +79,10 @@
     50% { transform: translateY(-10px); }
   }
   .floaty { animation: floatSlow 5s ease-in-out infinite; }
+  .reveal { opacity: 0; transform: translateY(26px); transition: opacity 0.7s ease, transform 0.7s ease; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+  @keyframes softPulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(14,143,131,0.25); } 50% { box-shadow: 0 0 0 6px rgba(14,143,131,0); } }
+  .badge-pulse { animation: softPulse 2.6s ease-in-out infinite; }
   @keyframes drawLine {
     from { stroke-dashoffset: 340; }
     to { stroke-dashoffset: 0; }
@@ -217,17 +221,18 @@
   </div>
 
   <!-- HERO -->
-  <div onmousemove="heroMove(event)" id="hero-wrap" style="width: 100%; box-sizing: border-box; padding: clamp(48px,10vw,84px) clamp(16px,4vw,48px) clamp(40px,8vw,76px); max-width: 1200px; margin: 0 auto; position: relative;">
-    <svg style="position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0.5; pointer-events: none;" preserveAspectRatio="none">
-      <pattern id="dotgrid" width="28" height="28" patternUnits="userSpaceOnUse">
-        <circle cx="1.5" cy="1.5" r="1.5" fill="#100e2a" opacity="0.06"/>
-      </pattern>
-      <rect x="60%" y="0" width="40%" height="100%" fill="url(#dotgrid)"/>
-    </svg>
-    <div id="hero-glow" style="position: absolute; inset: 0; background: radial-gradient(500px circle at 72% 35%, rgba(14,143,131,0.13), transparent 45%); pointer-events: none; transition: background 0.15s ease;"></div>
-    <div style="display: flex; gap: 48px; align-items: center; flex-wrap: wrap; position: relative;">
+  <div onmousemove="heroMove(event)" style="width: 100%; position: relative; overflow: hidden;">
+    <div id="hero-glow" style="position: absolute; inset: 0; background: radial-gradient(1100px circle at 72% 35%, rgba(14,143,131,0.16), transparent 60%), radial-gradient(900px circle at 8% 70%, rgba(47,143,209,0.10), transparent 60%); pointer-events: none; transition: background 0.15s ease;"></div>
+    <div id="hero-wrap" style="width: 100%; box-sizing: border-box; padding: clamp(48px,10vw,84px) clamp(16px,4vw,48px) clamp(40px,8vw,76px); max-width: 1200px; margin: 0 auto; position: relative;">
+      <svg style="position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0.5; pointer-events: none;" preserveAspectRatio="none">
+        <pattern id="dotgrid" width="28" height="28" patternUnits="userSpaceOnUse">
+          <circle cx="1.5" cy="1.5" r="1.5" fill="#100e2a" opacity="0.06"/>
+        </pattern>
+        <rect x="60%" y="0" width="40%" height="100%" fill="url(#dotgrid)"/>
+      </svg>
+      <div style="display: flex; gap: 48px; align-items: center; flex-wrap: wrap; position: relative;">
       <div style="flex: 1 1 520px; min-width: 300px;">
-        <div style="display: inline-flex; align-items: center; gap: 8px; background: #fff; border: 1px solid rgba(16,14,42,0.1); border-radius: 999px; padding: 7px 16px; font-size: 13px; font-weight: 700; color: #0e8f83; letter-spacing: 0.02em; margin-bottom: 26px;">
+        <div class="badge-pulse" style="display: inline-flex; align-items: center; gap: 8px; background: #fff; border: 1px solid rgba(16,14,42,0.1); border-radius: 999px; padding: 7px 16px; font-size: 13px; font-weight: 700; color: #0e8f83; letter-spacing: 0.02em; margin-bottom: 26px;">
           A COMPLETE HEALTH PLATFORM
         </div>
         <h1 style="margin: 0 0 20px; font-size: clamp(34px, 9vw, 60px); line-height: 1.06; font-weight: 700; letter-spacing: -0.03em;">
@@ -273,9 +278,10 @@
       </div>
     </div>
   </div>
+  </div>
 
   <!-- ABOUT -->
-  <div id="about" style="width: 100%; background: #100e2a; box-sizing: border-box; padding: clamp(48px,10vw,88px) clamp(16px,4vw,48px);">
+  <div id="about" class="reveal" style="width: 100%; background: #100e2a; box-sizing: border-box; padding: clamp(48px,10vw,88px) clamp(16px,4vw,48px);">
     <div style="max-width: 1180px; margin: 0 auto; display: flex; gap: 64px; align-items: center; flex-wrap: wrap;">
       <div style="flex: 1 1 340px; min-width: 300px;">
         <div class="floaty" style="width: 100%; max-width: 420px; aspect-ratio: 4/3; background: #1a1740; border-radius: 20px; display: flex; align-items: center; justify-content: center;">
@@ -380,7 +386,7 @@
   </div>
 
   <!-- SERVICES / PLATFORM TABS -->
-  <div id="services" style="width: 100%; box-sizing: border-box; padding: clamp(48px,10vw,96px) clamp(16px,4vw,48px);">
+  <div id="services" class="reveal" style="width: 100%; box-sizing: border-box; padding: clamp(48px,10vw,96px) clamp(16px,4vw,48px);">
     <div style="max-width: 1180px; margin: 0 auto;">
       <div style="font-size: 14px; font-weight: 700; letter-spacing: 0.08em; color: #0e8f83; margin-bottom: 14px; text-align: center;">OUR PLATFORM</div>
       <h2 style="margin: 0 0 16px; font-size: clamp(28px, 6vw, 42px); font-weight: 700; letter-spacing: -0.02em; text-align: center;">One platform, six ways we help.</h2>
@@ -621,7 +627,7 @@
   </div>
 
   <!-- HOW IT WORKS -->
-  <div id="egd-how" style="width: 100%; box-sizing: border-box; padding: clamp(48px,10vw,96px) clamp(16px,4vw,48px);">
+  <div id="egd-how" class="reveal" style="width: 100%; box-sizing: border-box; padding: clamp(48px,10vw,96px) clamp(16px,4vw,48px);">
     <div style="max-width: 1180px; margin: 0 auto;">
       <div style="font-size: 14px; font-weight: 700; letter-spacing: 0.08em; color: #0e8f83; margin-bottom: 14px; text-align: center;">EMERGENCY GLASS DOOR — THE FULL PICTURE</div>
       <h2 style="margin: 0 0 56px; font-size: clamp(28px, 6vw, 42px); font-weight: 700; letter-spacing: -0.02em; text-align: center;">Three steps, seconds apart.</h2>
@@ -737,7 +743,7 @@
   </div>
 
   <!-- SECURITY -->
-  <div id="security" style="width: 100%; background: #100e2a; box-sizing: border-box; padding: clamp(48px,10vw,96px) clamp(16px,4vw,48px);">
+  <div id="security" class="reveal" style="width: 100%; background: #100e2a; box-sizing: border-box; padding: clamp(48px,10vw,96px) clamp(16px,4vw,48px);">
     <div style="max-width: 1180px; margin: 0 auto; display: flex; gap: 64px; align-items: center; flex-wrap: wrap;">
       <div style="flex: 0 0 auto;">
         <div class="floaty" style="width: 120px; height: 120px; border-radius: 28px; background: #1a1740; display: flex; align-items: center; justify-content: center;">
@@ -760,7 +766,7 @@
   </div>
 
   <!-- OUR TEAM -->
-  <div id="team" style="width: 100%; background: #33422f; box-sizing: border-box; padding: clamp(56px,10vw,100px) clamp(16px,4vw,48px); position: relative; overflow: hidden;">
+  <div id="team" class="reveal" style="width: 100%; background: #33422f; box-sizing: border-box; padding: clamp(56px,10vw,100px) clamp(16px,4vw,48px); position: relative; overflow: hidden;">
     <svg style="position: absolute; top: 60px; right: 90px; opacity: 0.5;" width="140" height="140" viewBox="0 0 140 140" fill="none">
       <path d="M10 60C10 30 40 15 65 25C90 35 60 55 75 50C100 42 130 55 125 85" stroke="#dcefd9" stroke-width="2" fill="none"/>
     </svg>
@@ -820,7 +826,7 @@
   </div>
 
   <!-- REVIEWS -->
-  <div id="reviews" style="width: 100%; box-sizing: border-box; padding: clamp(48px,10vw,96px) clamp(16px,4vw,48px);">
+  <div id="reviews" class="reveal" style="width: 100%; box-sizing: border-box; padding: clamp(48px,10vw,96px) clamp(16px,4vw,48px);">
     <div style="max-width: 760px; margin: 0 auto; text-align: center;">
       <div style="font-size: 14px; font-weight: 700; letter-spacing: 0.08em; color: #0e8f83; margin-bottom: 14px;">REVIEWS</div>
       <h2 style="margin: 0 0 20px; font-size: clamp(24px, 5vw, 36px); font-weight: 700; letter-spacing: -0.02em;">We're just getting started.</h2>
@@ -831,7 +837,7 @@
   </div>
 
   <!-- WAITLIST -->
-  <div id="waitlist" style="width: 100%; background: #ebe9e2; box-sizing: border-box; padding: clamp(48px,10vw,96px) clamp(16px,4vw,48px);">
+  <div id="waitlist" class="reveal" style="width: 100%; background: #ebe9e2; box-sizing: border-box; padding: clamp(48px,10vw,96px) clamp(16px,4vw,48px);">
     <div style="max-width: 640px; margin: 0 auto; text-align: center;">
       <div style="font-size: 14px; font-weight: 700; letter-spacing: 0.08em; color: #0e8f83; margin-bottom: 14px;">JOIN THE WAITLIST</div>
       <h2 style="margin: 0 0 16px; font-size: clamp(26px, 5.5vw, 38px); font-weight: 700; letter-spacing: -0.02em;">Be first in line when we launch.</h2>
@@ -892,7 +898,7 @@
   </div>
 
   <!-- CTA / FOOTER -->
-  <div id="contact" style="width: 100%; box-sizing: border-box; padding: clamp(48px,10vw,96px) clamp(16px,4vw,48px) 40px; position: relative; overflow: hidden;">
+  <div id="contact" class="reveal" style="width: 100%; box-sizing: border-box; padding: clamp(48px,10vw,96px) clamp(16px,4vw,48px) 40px; position: relative; overflow: hidden;">
     <div style="position: absolute; top: -80px; left: -60px; width: 320px; height: 320px; border-radius: 50%; background: radial-gradient(circle, rgba(14,143,131,0.18), transparent 70%); filter: blur(10px); pointer-events: none;"></div>
     <div style="position: absolute; bottom: -100px; right: -60px; width: 380px; height: 380px; border-radius: 50%; background: radial-gradient(circle, rgba(124,111,219,0.14), transparent 70%); filter: blur(10px); pointer-events: none;"></div>
     <div style="max-width: 900px; margin: 0 auto; text-align: center; padding-bottom: 72px; position: relative;">
@@ -944,13 +950,18 @@ function showTab(n) {
   }
 }
 function heroMove(e) {
-  const wrap = document.getElementById('hero-wrap');
   const glow = document.getElementById('hero-glow');
-  if (!wrap || !glow) return;
-  const rect = wrap.getBoundingClientRect();
+  if (!glow) return;
+  // Percentages are computed against the glow layer's own box (which now
+  // spans the full page width), not the narrower centered content column,
+  // so the glow tracks the cursor correctly across the whole hero width.
+  const rect = glow.getBoundingClientRect();
   const x = ((e.clientX - rect.left) / rect.width) * 100;
   const y = ((e.clientY - rect.top) / rect.height) * 100;
-  glow.style.background = `radial-gradient(500px circle at ${x}% ${y}%, rgba(14,143,131,0.13), transparent 45%)`;
+  // Keep the second, static ambient blob (lower-left) in place so the glow
+  // still reaches the far side of very wide screens even while the first
+  // blob tracks the cursor.
+  glow.style.background = `radial-gradient(1100px circle at ${x}% ${y}%, rgba(14,143,131,0.16), transparent 60%), radial-gradient(900px circle at 8% 70%, rgba(47,143,209,0.10), transparent 60%)`;
 }
 
 
@@ -1001,8 +1012,10 @@ function heroMove(e) {
 
   var saved = null;
   try { saved = localStorage.getItem(STORAGE_KEY); } catch (e) {}
-  var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-  var initialDark = saved ? saved === 'dark' : prefersDark;
+  // Light mode is the default regardless of system preference; dark mode only
+  // activates once someone explicitly picks it via the toggle (and is then
+  // remembered for their next visit).
+  var initialDark = saved === 'dark';
   if (initialDark) applyTheme(true);
 })();
 function toggleMobileMenu() {
@@ -1062,6 +1075,24 @@ function handleWaitlistSubmit(e) {
     document.getElementById('waitlist-success').style.display = 'block';
   }, 900);
 }
+
+// Scroll-reveal: fade + rise each major section into place as it enters view.
+(function () {
+  var targets = document.querySelectorAll('.reveal');
+  if (!('IntersectionObserver' in window)) {
+    targets.forEach(function (el) { el.classList.add('visible'); });
+    return;
+  }
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        io.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -60px 0px' });
+  targets.forEach(function (el) { io.observe(el); });
+})();
 </script>
 <!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "cf10cc866a9f4ffeb50a6ce35a72e773"}'></script><!-- End Cloudflare Web Analytics -->
 </body>
