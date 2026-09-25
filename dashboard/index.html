@@ -210,6 +210,29 @@
   .section-panel { display: none; }
   .section-panel.active { display: block; }
 
+  /* ---- Day-range selector (Trends / Analysis) ---- */
+  .day-select { display: inline-flex; gap: 4px; background: #fff; border: 1px solid rgba(16,14,42,0.08); border-radius: 999px; padding: 4px; margin-bottom: 16px; }
+  .day-btn { padding: 7px 15px; border-radius: 999px; font-size: 12.5px; font-weight: 700; color: rgba(16,14,42,0.55); cursor: pointer; border: none; background: transparent; font-family: 'Manrope', sans-serif; transition: background 0.18s ease, color 0.18s ease; }
+  .day-btn:hover:not(.active) { color: #100e2a; }
+  .day-btn.active { background: #100e2a; color: #fff; }
+
+  /* ---- Trend cards ---- */
+  .trend-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 14px; }
+  .trend-card { background: #fbfaf6; border: 1px solid rgba(16,14,42,0.08); border-radius: 16px; padding: 16px 18px; }
+  .trend-card .tc-title { font-size: 11.5px; font-weight: 700; color: rgba(16,14,42,0.5); text-transform: uppercase; letter-spacing: 0.03em; margin-bottom: 8px; }
+  .trend-card .tc-value-row { display: flex; align-items: baseline; gap: 6px; }
+  .trend-card .tc-value { font-family: 'Fraunces', serif; font-size: 23px; font-weight: 600; }
+  .trend-card .tc-unit { font-size: 11px; color: rgba(16,14,42,0.4); }
+  .trend-card .tc-dir { font-size: 12.5px; font-weight: 700; display: inline-flex; align-items: center; gap: 3px; margin-left: auto; }
+  .trend-card .tc-stats { display: flex; gap: 14px; margin-top: 13px; font-size: 11px; color: rgba(16,14,42,0.5); flex-wrap: wrap; }
+  .trend-card .tc-stats b { color: #100e2a; font-weight: 700; }
+
+  /* ---- Overall level banner + detailed flags (Analysis) ---- */
+  .level-banner { display: flex; align-items: center; gap: 12px; padding: 16px 18px; border-radius: 14px; margin-bottom: 18px; font-weight: 700; font-size: 14.5px; }
+  .level-banner .lb-dot { width: 10px; height: 10px; border-radius: 50%; flex: 0 0 auto; }
+  .flag-row-detailed { display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px; border-radius: 12px; font-size: 13.5px; font-weight: 600; margin-bottom: 8px; }
+  .flag-row-detailed .frd-meta { display: block; font-size: 11px; font-weight: 600; opacity: 0.7; margin-top: 2px; }
+
   /* ---- Vitals form ---- */
   .vitals-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 14px; }
   .field label { display: block; font-size: 12.5px; font-weight: 700; margin-bottom: 6px; color: rgba(16,14,42,0.7); }
@@ -302,6 +325,14 @@
   html[data-theme="dark"] .section-tab.active { background: #7ee0d4; color: #100e2a; }
   html[data-theme="dark"] .soon-panel { color: #8f8ba3; }
   html[data-theme="dark"] .soon-panel .sp-title { color: #f2f0f8; }
+  html[data-theme="dark"] .day-select { background: #18162e; border-color: rgba(255,255,255,0.1); }
+  html[data-theme="dark"] .day-btn { color: #a9a6bd; }
+  html[data-theme="dark"] .day-btn:hover:not(.active) { color: #f2f0f8; }
+  html[data-theme="dark"] .day-btn.active { background: #7ee0d4; color: #100e2a; }
+  html[data-theme="dark"] .trend-card { background: #100e2a; border-color: rgba(255,255,255,0.1); }
+  html[data-theme="dark"] .trend-card .tc-unit { color: #8f8ba3; }
+  html[data-theme="dark"] .trend-card .tc-stats { color: #8f8ba3; }
+  html[data-theme="dark"] .trend-card .tc-stats b { color: #f2f0f8; }
   html[data-theme="dark"] .field label { color: #b7b3cc; }
   html[data-theme="dark"] input, html[data-theme="dark"] textarea { background: #100e2a; color: #f2f0f8; border-color: rgba(255,255,255,0.14); }
   html[data-theme="dark"] .flag.CRITICAL { background: rgba(210,79,40,0.16); color: #f0a488; }
@@ -324,7 +355,7 @@
     <nav class="tab-nav">
       <a class="tab-link soon" href="#" onclick="return false;"><span class="tl-ic">🔍</span>Symptoms<span class="soon-tag">Soon</span></a>
       <a class="tab-link soon" href="#" onclick="return false;"><span class="tl-ic">💬</span>Dr. Cura<span class="soon-tag">Soon</span></a>
-      <a class="tab-link soon" href="#" onclick="return false;"><span class="tl-ic">❤️</span>Vitals<span class="soon-tag">Soon</span></a>
+      <a class="tab-link" href="../vitals/"><span class="tl-ic">❤️</span>Vitals</a>
       <a class="tab-link active" href="#"><span class="tl-ic">🏠</span>Dashboard</a>
       <a class="tab-link" href="../onboarding/"><span class="tl-ic">👤</span>Profile</a>
     </nav>
@@ -416,66 +447,31 @@
         <div id="qc-flags"></div>
       </div>
 
-      <div class="card" id="qc-vitals-card">
-        <h2>Record new vitals</h2>
-        <form id="qc-vitals-form">
-          <div class="vitals-grid">
-            <div class="field">
-              <label for="v-temp">Temperature (°C)</label>
-              <input type="number" step="0.1" id="v-temp" name="temp">
-            </div>
-            <div class="field">
-              <label for="v-sys">Systolic BP</label>
-              <input type="number" id="v-sys" name="sys_bp">
-            </div>
-            <div class="field">
-              <label for="v-dia">Diastolic BP</label>
-              <input type="number" id="v-dia" name="dia_bp">
-            </div>
-            <div class="field">
-              <label for="v-pulse">Pulse (bpm)</label>
-              <input type="number" id="v-pulse" name="pulse">
-            </div>
-            <div class="field">
-              <label for="v-spo2">SpO₂ (%)</label>
-              <input type="number" id="v-spo2" name="spo2">
-            </div>
-            <div class="field">
-              <label for="v-glucose">Glucose</label>
-              <input type="number" step="0.1" id="v-glucose" name="glucose">
-            </div>
-            <div class="field">
-              <label for="v-weight">Weight (kg)</label>
-              <input type="number" step="0.1" id="v-weight" name="weight">
-            </div>
-            <div class="field notes-field">
-              <label for="v-notes">Notes</label>
-              <textarea id="v-notes" name="notes" rows="2"></textarea>
-            </div>
-          </div>
-          <button type="submit" class="save-btn" id="qc-save-btn">Save reading</button>
-          <div class="save-msg" id="qc-save-msg"></div>
-        </form>
+      <div class="card cta-vitals-card">
+        <div>
+          <h2 style="margin-bottom:6px;">Record new vitals</h2>
+          <div class="empty-note" style="margin:0;">Log a fresh reading any time — it takes about 20 seconds.</div>
+        </div>
+        <button type="button" class="save-btn" style="margin-top:0;" onclick="window.location.href='../vitals/'">Add a reading →</button>
       </div>
     </div>
 
     <div class="section-panel" data-panel="trends">
+      <div class="day-select" id="qc-day-select">
+        <button type="button" class="day-btn" data-days="7">7 days</button>
+        <button type="button" class="day-btn active" data-days="14">14 days</button>
+        <button type="button" class="day-btn" data-days="30">30 days</button>
+      </div>
       <div class="card">
-        <div class="soon-panel">
-          <div class="sp-ic">📈</div>
-          <div class="sp-title">Trends are on the way</div>
-          <div>We're building charts to track how your vitals move over time.</div>
-        </div>
+        <h2>How your vitals are moving</h2>
+        <div id="qc-trend-wrap"><div class="empty-note">Loading…</div></div>
       </div>
     </div>
 
     <div class="section-panel" data-panel="analysis">
       <div class="card">
-        <div class="soon-panel">
-          <div class="sp-ic">🧬</div>
-          <div class="sp-title">Analysis is on the way</div>
-          <div>Dr. Cura's deeper insights will land here soon.</div>
-        </div>
+        <h2>Dr. Cura's read</h2>
+        <div id="qc-analysis-wrap"><div class="empty-note">Loading…</div></div>
       </div>
     </div>
 
@@ -687,6 +683,101 @@ function renderProfileCard(profile, user) {
     : '<span class="profile-chip">No known allergies logged</span>';
 }
 
+/* ---- Insights (backend trend/dashboard engine) ---- */
+const LEVEL_META = {
+  normal:    { color: "#0e8f83", word: "Normal" },
+  watch:     { color: "#2f8fd1", word: "Worth watching" },
+  caution:   { color: "#c98a10", word: "Caution" },
+  urgent:    { color: "#d24f28", word: "Urgent" },
+  emergency: { color: "#b3182a", word: "Emergency" },
+};
+const DIR_META = {
+  rising:  { arrow: "↑", color: "#c98a10" },
+  falling: { arrow: "↓", color: "#2f8fd1" },
+  stable:  { arrow: "→", color: "#0e8f83" },
+  single_reading: { arrow: "•", color: "rgba(16,14,42,0.4)" },
+  no_data: { arrow: "—", color: "rgba(16,14,42,0.4)" },
+};
+
+function renderTrends(data) {
+  const wrap = document.getElementById("qc-trend-wrap");
+  if (!data || !data.has_data) {
+    wrap.innerHTML = '<div class="empty-note">Not enough readings yet in this window — record a few vitals to see trends.</div>';
+    return;
+  }
+  wrap.innerHTML = '<div class="trend-grid">' + data.cards.map(c => {
+    const dir = DIR_META[c.direction] || DIR_META.no_data;
+    const val = c.latest !== null && c.latest !== undefined ? c.latest : "—";
+    return '<div class="trend-card">' +
+      '<div class="tc-title">' + c.title + '</div>' +
+      '<div class="tc-value-row">' +
+        '<span class="tc-value">' + val + '</span>' +
+        (val !== "—" ? '<span class="tc-unit">' + c.unit + '</span>' : '') +
+        '<span class="tc-dir" style="color:' + dir.color + '">' + dir.arrow + (c.delta !== null && c.delta !== undefined ? ' ' + (c.delta > 0 ? '+' : '') + c.delta : '') + '</span>' +
+      '</div>' +
+      '<div class="tc-stats">' +
+        '<span>Min <b>' + (c.min ?? "—") + '</b></span>' +
+        '<span>Avg <b>' + (c.avg ?? "—") + '</b></span>' +
+        '<span>Max <b>' + (c.max ?? "—") + '</b></span>' +
+        '<span>' + (c.count || 0) + ' reading' + (c.count === 1 ? '' : 's') + '</span>' +
+      '</div>' +
+    '</div>';
+  }).join("") + '</div>';
+}
+
+function renderAnalysis(data) {
+  const wrap = document.getElementById("qc-analysis-wrap");
+  if (!data || !data.has_data) {
+    wrap.innerHTML = '<div class="empty-note">' + (data && data.summary ? data.summary : "Not enough vitals recorded yet for an analysis.") + '</div>';
+    return;
+  }
+  const lvl = LEVEL_META[data.overall_level] || LEVEL_META.normal;
+  let html = '<div class="level-banner" style="background:' + lvl.color + '1a; color:' + lvl.color + '">' +
+    '<span class="lb-dot" style="background:' + lvl.color + '"></span>' +
+    'Overall level: ' + lvl.word +
+  '</div>';
+  html += '<div class="summary-line" style="font-weight:500;">' + (data.summary || "") + '</div>';
+  if (data.flags && data.flags.length) {
+    html += data.flags.map(f => {
+      const m = LEVEL_META[f.level] || LEVEL_META.normal;
+      return '<div class="flag-row-detailed" style="background:' + m.color + '1a; color:' + m.color + '">' +
+        '<span class="flag-dot" style="background:' + m.color + '"></span>' +
+        '<span>' + f.message + '<span class="frd-meta">' + (f.metric || "") + (f.value !== undefined && f.value !== null ? ": " + f.value : "") + '</span></span>' +
+      '</div>';
+    }).join("");
+  } else {
+    html += '<div class="empty-note" style="margin-top:10px;">No alerts from Dr. Cura right now — keep logging to help it learn your baseline.</div>';
+  }
+  wrap.innerHTML = html;
+}
+
+let qcInsightsDays = 14;
+async function loadInsights(days) {
+  qcInsightsDays = days || qcInsightsDays;
+  document.getElementById("qc-trend-wrap").innerHTML = '<div class="empty-note">Loading…</div>';
+  document.getElementById("qc-analysis-wrap").innerHTML = '<div class="empty-note">Loading…</div>';
+  try {
+    const res = await fetch(API_BASE + "/vitals/dashboard?days=" + qcInsightsDays, { credentials: "include" });
+    const data = await res.json();
+    renderTrends(data);
+    renderAnalysis(data);
+  } catch (e) {
+    document.getElementById("qc-trend-wrap").innerHTML = '<div class="empty-note">Couldn\'t load trends right now.</div>';
+    document.getElementById("qc-analysis-wrap").innerHTML = '<div class="empty-note">Couldn\'t load analysis right now.</div>';
+  }
+}
+
+function initDaySelect() {
+  const btns = document.querySelectorAll("#qc-day-select .day-btn");
+  btns.forEach(b => {
+    b.addEventListener("click", () => {
+      btns.forEach(x => x.classList.remove("active"));
+      b.classList.add("active");
+      loadInsights(parseInt(b.getAttribute("data-days"), 10));
+    });
+  });
+}
+
 const QC_TIPS = [
   "Oxygen makes up about 65% of your body's mass.",
   "You breathe roughly 22,000 times a day, on autopilot.",
@@ -757,7 +848,7 @@ async function loadHistory() {
       '<img src="../assets/6abe27005847b6683a14deef5164e1c7.png" alt="">' +
       '<div class="es-title">No readings yet</div>' +
       '<div class="es-sub">Record your first vitals and QueroCura will start tracking trends for you.</div>' +
-      '<button type="button" class="es-cta" onclick="document.querySelector(\'.section-tab[data-panel=overview]\').click(); document.getElementById(\'qc-vitals-card\').scrollIntoView({behavior:\'smooth\'});">Add a reading</button>' +
+      '<button type="button" class="es-cta" onclick="window.location.href=\'../vitals/\';">Add a reading</button>' +
     '</div>';
     return;
   }
@@ -780,50 +871,6 @@ async function loadHistory() {
     "</tr></thead><tbody>" + rows + "</tbody></table>";
 }
 
-document.getElementById("qc-vitals-form").addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const btn = document.getElementById("qc-save-btn");
-  const msg = document.getElementById("qc-save-msg");
-  btn.disabled = true;
-  btn.textContent = "Saving…";
-  msg.className = "save-msg";
-  msg.textContent = "";
-
-  const payload = {};
-  payload.temp = document.getElementById("v-temp").value || null;
-  payload.sys_bp = document.getElementById("v-sys").value || null;
-  payload.dia_bp = document.getElementById("v-dia").value || null;
-  payload.pulse = document.getElementById("v-pulse").value || null;
-  payload.spo2 = document.getElementById("v-spo2").value || null;
-  payload.glucose = document.getElementById("v-glucose").value || null;
-  payload.weight = document.getElementById("v-weight").value || null;
-  payload.notes = document.getElementById("v-notes").value || "";
-
-  try {
-    const res = await fetch(API_BASE + "/vitals", {
-      method: "POST",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-    const data = await res.json();
-    if (!res.ok || !data.ok) throw new Error(data.message || "Couldn't save that reading.");
-
-    msg.classList.add("ok");
-    msg.textContent = "Saved.";
-    document.getElementById("qc-vitals-form").reset();
-    fireConfetti();
-    await loadLatest();
-    await loadHistory();
-  } catch (err) {
-    msg.classList.add("err");
-    msg.textContent = err.message || "Something went wrong.";
-  } finally {
-    btn.disabled = false;
-    btn.textContent = "Save reading";
-  }
-});
-
 document.getElementById("qc-signout-btn").addEventListener("click", async () => {
   await fetch(API_BASE + "/auth/logout", { method: "POST", credentials: "include" });
   window.location.href = "../";
@@ -843,9 +890,11 @@ document.getElementById("qc-signout-btn").addEventListener("click", async () => 
   document.getElementById("qc-greeting-sub").textContent = "Here's where things stand today.";
   renderProfileCard(profile, user);
   initSectionTabs();
+  initDaySelect();
   startTipRotator();
   await loadLatest();
   await loadHistory();
+  await loadInsights(14);
 })();
 </script>
 </body>
