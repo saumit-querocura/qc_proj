@@ -8,6 +8,8 @@
 <link rel="icon" type="image/x-icon" href="../icons/favicon.ico">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://app.querocura.com">
+<link rel="dns-prefetch" href="https://app.querocura.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script>
   (function () {
@@ -532,15 +534,17 @@ window.qcNext = async function () {
 };
 
 (async function init() {
-  const user = await requireSession();
-  if (!user) return;
-
-  const [profRes, optRes] = await Promise.all([
-    fetch(API + "/profile", { credentials: "include" }),
-    fetch(API + "/profile/options", { credentials: "include" }),
+  // Fire all three session-cookie reads at once instead of waiting on
+  // auth before starting the profile/options fetches — they don't
+  // actually depend on each other, they just all need the same cookie.
+  const [meData, profData, optData] = await Promise.all([
+    fetch(API + "/auth/me", { credentials: "include" }).then(r => r.json()),
+    fetch(API + "/profile", { credentials: "include" }).then(r => r.json()),
+    fetch(API + "/profile/options", { credentials: "include" }).then(r => r.json()),
   ]);
-  const profData = await profRes.json();
-  const optData = await optRes.json();
+
+  if (!meData.logged_in) { window.location.href = "../login/"; return; }
+
   options = optData.options;
 
   if (profData.ok && profData.profile) {
