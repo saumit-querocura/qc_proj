@@ -125,6 +125,11 @@
   .qc-btn:hover:not(:disabled) { border-color: #0e8f83; color: #0e8f83; }
   .qc-btn:disabled { opacity: 0.5; cursor: default; }
   .qc-btn.qc-answered { background: #0e8f83; color: #fff; border-color: #0e8f83; }
+  .qc-opts { display: flex; flex-direction: column; gap: 8px; width: 100%; max-width: 320px; margin: 0 auto; }
+  .qc-opt-btn { font-size: 13.5px; font-weight: 700; padding: 12px 18px; border-radius: 12px; cursor: pointer; font-family: 'Manrope', sans-serif; border: 1px solid rgba(16,14,42,0.14); background: #fff; color: #10142a; transition: all 0.15s ease; text-align: center; }
+  .qc-opt-btn:hover:not(:disabled) { border-color: #0e8f83; color: #0e8f83; }
+  .qc-opt-btn:disabled { opacity: 0.5; cursor: default; }
+  .qc-opt-btn.qc-answered { background: #0e8f83; color: #fff; border-color: #0e8f83; }
   .qc-skip { font-size: 12px; font-weight: 600; color: rgba(16,14,42,0.4); background: none; border: none; cursor: pointer; text-decoration: underline; margin-top: 4px; font-family: 'Manrope', sans-serif; }
 
   /* ---- Blockbuster scan animation: now a full-screen immersive overlay ---- */
@@ -188,6 +193,22 @@
   .condition-name { font-family: 'Fraunces', serif; font-size: 21px; font-weight: 600; }
   .condition-meta { font-size: 12.5px; color: rgba(16,14,42,0.5); margin-top: 2px; }
   .condition-desc { font-size: 14px; color: rgba(16,14,42,0.65); line-height: 1.6; margin-bottom: 16px; }
+  .match-visuals { display: flex; align-items: center; gap: 18px; margin: 12px 0 16px; flex-wrap: wrap; }
+  .gauge-wrap { display: flex; align-items: center; gap: 10px; }
+  .gauge-ring { width: 52px; height: 52px; border-radius: 50%; background: conic-gradient(var(--gauge-color, #0e8f83) calc(var(--pct, 0) * 1%), rgba(16,14,42,0.09) 0); display: flex; align-items: center; justify-content: center; flex: 0 0 auto; }
+  .gauge-ring::before { content: ""; }
+  .gauge-inner { width: 40px; height: 40px; border-radius: 50%; background: #fff; display: flex; align-items: center; justify-content: center; font-size: 12.5px; font-weight: 800; color: #10142a; }
+  .gauge-text { display: flex; flex-direction: column; }
+  .gauge-title { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: rgba(16,14,42,0.45); }
+  .gauge-desc { font-size: 12.5px; font-weight: 600; color: #10142a; margin-top: 1px; }
+  .severity-block { display: flex; flex-direction: column; gap: 6px; min-width: 140px; }
+  .severity-title { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: rgba(16,14,42,0.45); }
+  .severity-bar { display: flex; gap: 4px; }
+  .sev-seg { flex: 1; height: 8px; border-radius: 999px; background: rgba(16,14,42,0.1); }
+  .sev-seg.active-low { background: #2f8f5e; }
+  .sev-seg.active-medium { background: #c58a0f; }
+  .sev-seg.active-high { background: #d24f28; }
+  .severity-desc { font-size: 12.5px; font-weight: 600; color: #10142a; }
 
   .chip-list { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 4px; }
   .info-chip { font-size: 12px; font-weight: 700; padding: 5px 12px; border-radius: 999px; background: rgba(14,143,131,0.08); color: #0e8f83; border: 1px solid rgba(14,143,131,0.18); }
@@ -202,6 +223,8 @@
   @media (max-width: 560px) { .care-cols { grid-template-columns: 1fr; } }
 
   .doctor-callout { display: flex; gap: 10px; padding: 14px 16px; border-radius: 12px; background: rgba(47,143,209,0.08); border: 1px solid rgba(47,143,209,0.2); font-size: 13.5px; color: #1e5f8a; line-height: 1.55; margin-top: 16px; }
+  .reasoning-callout { display: flex; gap: 10px; padding: 14px 16px; border-radius: 12px; background: rgba(14,143,131,0.08); border: 1px solid rgba(14,143,131,0.2); font-size: 13.5px; color: #0e6f66; line-height: 1.6; }
+  .comorbidity-callout { display: flex; gap: 10px; padding: 14px 16px; border-radius: 12px; background: rgba(197,138,15,0.1); border: 1px solid rgba(197,138,15,0.24); font-size: 13.5px; color: #8a5f0a; line-height: 1.6; }
 
   .other-cond-row { display: flex; align-items: center; justify-content: space-between; padding: 11px 0; border-bottom: 1px solid rgba(16,14,42,0.06); font-size: 13.5px; }
   .other-cond-row:last-child { border-bottom: none; }
@@ -236,13 +259,22 @@
   html[data-theme="dark"] .patient-answer strong { color: #f2f0f8; }
   html[data-theme="dark"] .condition-meta { color: #8f8ba3; }
   html[data-theme="dark"] .condition-desc { color: #b7b3cc; }
+  html[data-theme="dark"] .gauge-inner { background: #1a1830; color: #f2f0f8; }
+  html[data-theme="dark"] .gauge-title { color: #8f8ba3; }
+  html[data-theme="dark"] .gauge-desc { color: #f2f0f8; }
+  html[data-theme="dark"] .severity-title { color: #8f8ba3; }
+  html[data-theme="dark"] .sev-seg { background: rgba(255,255,255,0.1); }
+  html[data-theme="dark"] .severity-desc { color: #f2f0f8; }
   html[data-theme="dark"] .section-label { color: #8f8ba3; }
   html[data-theme="dark"] .quick-check { background: rgba(14,143,131,0.1); border-color: rgba(14,143,131,0.28); }
   html[data-theme="dark"] .qc-sub { color: #8f8ba3; }
   html[data-theme="dark"] .qc-question { color: #f2f1fa; }
   html[data-theme="dark"] .qc-btn { background: rgba(255,255,255,0.06); color: #f2f1fa; border-color: rgba(255,255,255,0.14); }
+  html[data-theme="dark"] .qc-opt-btn { background: rgba(255,255,255,0.06); color: #f2f1fa; border-color: rgba(255,255,255,0.14); }
   html[data-theme="dark"] .qc-skip { color: #8f8ba3; }
   html[data-theme="dark"] .doctor-callout { background: rgba(47,143,209,0.12); color: #a9d4f0; }
+  html[data-theme="dark"] .reasoning-callout { background: rgba(126,224,212,0.1); color: #7ee0d4; }
+  html[data-theme="dark"] .comorbidity-callout { background: rgba(240,180,60,0.12); color: #f0c060; }
   html[data-theme="dark"] .other-cond-row { border-bottom-color: rgba(255,255,255,0.08); }
   html[data-theme="dark"] .other-cond-urgency { background: rgba(255,255,255,0.08); color: #cfccdf; }
   html[data-theme="dark"] .disclaimer-note { color: #8f8ba3; border-top-color: rgba(255,255,255,0.1); }
@@ -523,6 +555,30 @@ function showQuestionPhase(questions, baseText) {
     if (step >= questions.length) { finish(true); return; }
     const q = questions[step];
     counter.textContent = "Question " + (step + 1) + " of " + questions.length;
+
+    if (q.type && q.type !== "yesno" && Array.isArray(q.options) && q.options.length) {
+      // Options-bearing question (currently: duration) -- one stacked
+      // button per option, answered with that option's own phrase rather
+      // than a generic yes/no confirm_phrase.
+      list.innerHTML =
+        '<div class="qc-question sqp-step">' + escapeHtml(q.question) + '</div>' +
+        '<div class="qc-opts sqp-step">' +
+          q.options.map((opt, oi) => '<button type="button" class="qc-opt-btn" data-qc-opt="' + oi + '">' + escapeHtml(opt.label) + '</button>').join("") +
+        '</div>';
+      list.querySelectorAll(".qc-opt-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const oi = parseInt(btn.getAttribute("data-qc-opt"), 10);
+          const opt = q.options[oi];
+          answers[step] = (opt && (opt.phrase || opt.label)) || "";
+
+          if (dots[step]) dots[step].classList.add("sqp-done");
+          step++;
+          renderStep();
+        });
+      });
+      return;
+    }
+
     list.innerHTML =
       '<div class="qc-question sqp-step">' + escapeHtml(q.question) + '</div>' +
       '<div class="qc-btns sqp-step">' +
@@ -568,6 +624,54 @@ function listHtml(className, items) {
   return '<ul class="' + className + '">' + items.map(i => "<li>" + mdBold(i) + "</li>").join("") + "</ul>";
 }
 
+// Confidence gauge (how strongly the matched symptoms point to this specific
+// condition, from match_strength/confidence_band) + severity scale bar (how
+// serious the condition itself tends to be, from risk) -- two different
+// questions ("how sure are we" vs "how serious is it if we're right"), so
+// they're rendered as two separate visuals rather than folded into one.
+const CONFIDENCE_BAND_TEXT = {
+  narrow: "High confidence match",
+  moderate: "Moderate confidence match",
+  broad: "Broader, less certain match",
+};
+const RISK_LEVEL_TEXT = { Low: "Low severity", Medium: "Moderate severity", High: "High severity" };
+
+function matchVisualsHtml(data) {
+  const hasGauge = typeof data.match_strength === "number";
+  const hasSeverity = data.risk && RISK_LEVEL_TEXT[data.risk];
+  if (!hasGauge && !hasSeverity) return "";
+
+  let html = '<div class="match-visuals">';
+
+  if (hasGauge) {
+    const pct = Math.round(data.match_strength * 100);
+    const gaugeColor = pct >= 62 ? "#0e8f83" : pct >= 35 ? "#c58a0f" : "#8a7bb5";
+    const bandText = CONFIDENCE_BAND_TEXT[data.confidence_band] || "Estimated match";
+    html += '<div class="gauge-wrap">' +
+      '<div class="gauge-ring" style="--pct:' + pct + ';--gauge-color:' + gaugeColor + ';"><div class="gauge-inner">' + pct + '%</div></div>' +
+      '<div class="gauge-text"><div class="gauge-title">Match confidence</div><div class="gauge-desc">' + escapeHtml(bandText) + '</div></div>' +
+    '</div>';
+  }
+
+  if (hasSeverity) {
+    const level = data.risk; // "Low" | "Medium" | "High"
+    const activeClass = "active-" + level.toLowerCase();
+    const segCount = level === "Low" ? 1 : level === "Medium" ? 2 : 3;
+    let segs = "";
+    for (let i = 0; i < 3; i++) {
+      segs += '<div class="sev-seg' + (i < segCount ? " " + activeClass : "") + '"></div>';
+    }
+    html += '<div class="severity-block">' +
+      '<div class="severity-title">Condition severity</div>' +
+      '<div class="severity-bar">' + segs + '</div>' +
+      '<div class="severity-desc">' + escapeHtml(RISK_LEVEL_TEXT[level]) + '</div>' +
+    '</div>';
+  }
+
+  html += '</div>';
+  return html;
+}
+
 // Normalizes the thin /api/diagnosis/analyse response (top_condition /
 // clinical_reasoning / overall_urgency) into the same flat shape this
 // renderer already expects from the richer /api/fast/analyse endpoint,
@@ -580,6 +684,9 @@ function normalizeResponse(data) {
     name: top.name,
     emoji: top.emoji,
     confidence: undefined,
+    match_strength: top.match_strength,
+    confidence_band: top.confidence_band,
+    risk: top.risk,
     description: top.description,
     red_flags: top.red_flags,
     home_care_now: top.home_care_now,
@@ -625,7 +732,8 @@ function renderResult(rawData, baseText, round) {
         '<div><div class="condition-name">' + escapeHtml(data.name) + '</div>' +
         '<div class="condition-meta">' + (data.confidence ? data.confidence + "% match" : "") + '</div></div>' +
       '</div>' +
-      (data.description ? '<div class="condition-desc">' + escapeHtml(data.description) + '</div>' : '');
+      (data.description ? '<div class="condition-desc">' + escapeHtml(data.description) + '</div>' : '') +
+      matchVisualsHtml(data);
 
     const redChips = (data.red_flags || []).map(s => '<span class="info-chip red">⚠ ' + escapeHtml(s) + '</span>').join("");
     if (redChips) html += '<div class="chip-list">' + redChips + '</div>';
@@ -638,6 +746,13 @@ function renderResult(rawData, baseText, round) {
       '</div>';
     }
     html += '</div>';
+  }
+
+  // Plain-language reasoning paragraph from build_reasoning_explanation() --
+  // narrates the actual matched symptoms and runner-up comparison behind
+  // the top pick, so the result doesn't read as a bare label.
+  if (data.reasoning_explanation) {
+    html += '<div class="card reveal" ' + step() + '><div class="reasoning-callout"><span>🧠</span><span>' + escapeHtml(data.reasoning_explanation) + '</span></div></div>';
   }
 
   // "How QueroCura reasoned" — surfaces the medical-reasoning-board's trace
@@ -663,6 +778,15 @@ function renderResult(rawData, baseText, round) {
       '<div class="section-label" style="margin-top:0;">Other possibilities</div>' +
       others.map(c => '<div class="other-cond-row"><span class="other-cond-name">' + escapeHtml(c.name) + '</span><span class="other-cond-urgency">' + escapeHtml(c.urgency || c.risk || "—") + '</span></div>').join("") +
     '</div>';
+  }
+
+  // Possible-comorbidity note from detect_possible_comorbidity() -- only
+  // present when the top two candidates are both strongly supported by
+  // largely non-overlapping symptoms, i.e. it actually looks like two
+  // separate things rather than one condition explaining everything.
+  const comorbidity = data.possible_comorbidity;
+  if (comorbidity && comorbidity.note) {
+    html += '<div class="card reveal" ' + step() + '><div class="comorbidity-callout"><span>' + (comorbidity.secondary && comorbidity.secondary.emoji ? comorbidity.secondary.emoji : "🔀") + '</span><span><strong>Worth noting:</strong> ' + escapeHtml(comorbidity.note) + '</span></div></div>';
   }
 
   if ((data.why_it_fits && data.why_it_fits.length) || (data.monitoring_advice && data.monitoring_advice.length)) {
