@@ -1,0 +1,439 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Symptom Checker — QueroCura</title>
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/x-icon" href="../icons/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700;800&family=Manrope:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500;1,9..144,600&display=swap" rel="stylesheet">
+<script>
+  (function () {
+    try {
+      if (localStorage.getItem('qc-theme') === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      }
+    } catch (e) {}
+  })();
+</script>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; min-height: 100vh; font-family: 'Manrope', sans-serif; background: #f6f5f1; color: #100e2a; }
+  h1, h2, h3, .display { font-family: 'Space Grotesk', sans-serif; }
+  a { color: #0e8f83; text-decoration: none; }
+  a:hover { color: #0b6f66; }
+
+  /* ---- Top bar (ditto dashboard/vitals) ---- */
+  .topbar { display: flex; align-items: center; justify-content: space-between; gap: 18px; flex-wrap: wrap; padding: 14px clamp(16px,4vw,32px); background: rgba(246,245,241,0.88); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(16,14,42,0.08); position: sticky; top: 0; z-index: 20; }
+  .logo-wrap { display: flex; align-items: center; gap: 10px; flex: 0 0 auto; }
+  .logo-wrap img { width: 34px; height: 31px; object-fit: contain; }
+  .logo-text { font-size: 18px; font-weight: 700; letter-spacing: -0.02em; font-family: 'Space Grotesk', sans-serif; }
+  .logo-text .ink { color: #100e2a; } .logo-text .teal { color: #0e8f83; }
+  .user-pill { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px 5px 6px; border-radius: 999px; background: rgba(16,14,42,0.05); font-size: 12.5px; font-weight: 700; color: rgba(16,14,42,0.75); margin-left: 4px; }
+  .user-pill .up-dot { width: 20px; height: 20px; border-radius: 50%; background: linear-gradient(135deg,#0e8f83,#2f8fd1); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 10px; }
+  .tab-nav { display: flex; align-items: center; gap: 4px; flex: 1 1 auto; justify-content: center; overflow-x: auto; scrollbar-width: none; }
+  .tab-nav::-webkit-scrollbar { display: none; }
+  .tab-link { display: flex; align-items: center; gap: 7px; white-space: nowrap; padding: 9px 15px; border-radius: 999px; font-size: 13.5px; font-weight: 700; color: rgba(16,14,42,0.55); transition: background 0.18s ease, color 0.18s ease; }
+  .tab-link .tl-ic { font-size: 14px; }
+  .tab-link:hover:not(.active):not(.soon) { background: rgba(16,14,42,0.05); color: #100e2a; }
+  .tab-link.active { background: #100e2a; color: #fff; }
+  .tab-link.soon { opacity: 0.45; cursor: default; }
+  .tab-link.soon .soon-tag { font-size: 8.5px; font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase; background: rgba(16,14,42,0.1); padding: 1px 6px; border-radius: 999px; margin-left: 2px; }
+  .topbar-right { display: flex; align-items: center; gap: 10px; flex: 0 0 auto; }
+  .signout-btn { background: #100e2a; border: none; color: #fff; font-family: 'Manrope', sans-serif; font-size: 13px; font-weight: 700; padding: 9px 18px; border-radius: 999px; cursor: pointer; transition: transform 0.18s ease, background 0.18s ease; }
+  .signout-btn:hover { background: #221f4d; transform: translateY(-2px); }
+  .theme-toggle { display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 10px; border: 1.5px solid rgba(16,14,42,0.14); background: #fff; cursor: pointer; padding: 0; transition: transform 0.2s ease; flex: 0 0 auto; }
+  .theme-toggle:hover { transform: translateY(-2px); }
+  @media (max-width: 900px) { .tab-nav { order: 3; width: 100%; justify-content: flex-start; } }
+
+  .shell { max-width: 820px; margin: 0 auto; padding: 32px 24px 90px; }
+  .page-eyebrow { display: inline-flex; align-items: center; gap: 8px; padding: 4px 12px; border-radius: 999px; background: rgba(14,143,131,0.08); border: 1px solid rgba(14,143,131,0.18); color: #0e8f83; font-size: 10.5px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 12px; }
+  .page-title { font-family: 'Fraunces', serif; font-size: clamp(27px,4.2vw,36px); font-weight: 600; margin: 0 0 8px; }
+  .page-sub { font-size: 14.5px; color: rgba(16,14,42,0.55); margin: 0 0 26px; max-width: 560px; line-height: 1.55; }
+
+  .card { position: relative; overflow: hidden; background: #fff; border-radius: 22px; padding: 28px 30px; border: 1px solid rgba(16,14,42,0.08); margin-bottom: 20px; }
+  .card::before { content: ''; position: absolute; top: -44px; right: -44px; width: 150px; height: 150px; border-radius: 50%; background: radial-gradient(circle, rgba(14,143,131,0.06), transparent 70%); pointer-events: none; }
+  .card > * { position: relative; }
+
+  textarea#sym-input { width: 100%; min-height: 120px; padding: 16px 18px; border-radius: 16px; border: 1.5px solid rgba(16,14,42,0.14); font-family: 'Manrope', sans-serif; font-size: 15px; color: #100e2a; background: #fbfaf6; outline: none; resize: vertical; line-height: 1.5; }
+  textarea#sym-input:focus { border-color: #0e8f83; box-shadow: 0 0 0 3px rgba(14,143,131,0.12); }
+  .chip-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 4px; }
+  .example-chip { font-size: 12.5px; font-weight: 600; color: #0e8f83; background: rgba(14,143,131,0.08); border: 1px solid rgba(14,143,131,0.18); padding: 6px 13px; border-radius: 999px; cursor: pointer; transition: background 0.15s ease, transform 0.15s ease; }
+  .example-chip:hover { background: rgba(14,143,131,0.16); transform: translateY(-1px); }
+
+  .analyse-row { display: flex; align-items: center; gap: 14px; margin-top: 18px; flex-wrap: wrap; }
+  .analyse-btn { position: relative; overflow: hidden; background: #0e8f83; color: #fff; font-size: 15px; font-weight: 700; padding: 13px 30px; border-radius: 999px; border: none; cursor: pointer; font-family: 'Manrope', sans-serif; transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease; }
+  .analyse-btn::after { content: ''; position: absolute; top: 0; left: -60%; width: 40%; height: 100%; background: linear-gradient(115deg, transparent, rgba(255,255,255,0.35), transparent); transform: skewX(-20deg); transition: left 0.6s ease; pointer-events: none; }
+  .analyse-btn:hover:not(:disabled)::after { left: 140%; }
+  .analyse-btn:hover:not(:disabled) { background: #0b6f66; transform: translateY(-2px); box-shadow: 0 12px 24px -8px rgba(14,143,131,0.45); }
+  .analyse-btn:disabled { opacity: 0.55; cursor: default; }
+  .err-msg { font-size: 13.5px; font-weight: 600; color: #b3401f; }
+
+  /* ---- Blockbuster scan animation ---- */
+  .scan-wrap { display: none; flex-direction: column; align-items: center; text-align: center; padding: 40px 10px 30px; }
+  .scan-wrap.show { display: flex; }
+  .scan-stage { position: relative; width: 168px; height: 168px; margin-bottom: 22px; }
+  .scan-ring { position: absolute; inset: 0; border-radius: 50%; border: 2px solid rgba(14,143,131,0.35); animation: scanPulse 2.4s ease-out infinite; }
+  .scan-ring:nth-child(2) { animation-delay: 0.8s; border-color: rgba(124,111,219,0.3); }
+  .scan-ring:nth-child(3) { animation-delay: 1.6s; border-color: rgba(47,143,209,0.3); }
+  @keyframes scanPulse { 0% { transform: scale(0.55); opacity: 1; } 100% { transform: scale(1); opacity: 0; } }
+  .scan-sweep { position: absolute; inset: 8px; border-radius: 50%; background: conic-gradient(from 0deg, transparent 0deg, rgba(14,143,131,0.35) 60deg, transparent 100deg); animation: scanSweep 1.6s linear infinite; }
+  @keyframes scanSweep { to { transform: rotate(360deg); } }
+  .scan-core { position: absolute; inset: 34%; border-radius: 50%; background: linear-gradient(135deg, #0e8f83, #7c6fdb); display: flex; align-items: center; justify-content: center; box-shadow: 0 0 0 8px rgba(14,143,131,0.1), 0 12px 28px -10px rgba(14,143,131,0.5); animation: coreBeat 1.3s ease-in-out infinite; }
+  @keyframes coreBeat { 0%,100% { transform: scale(1); } 50% { transform: scale(1.08); } }
+  .scan-core svg { width: 26px; height: 26px; }
+  .scan-status { font-size: 14px; font-weight: 700; color: #100e2a; min-height: 20px; transition: opacity 0.25s ease; }
+  .scan-substatus { font-size: 12px; color: rgba(16,14,42,0.45); margin-top: 4px; }
+
+  /* ---- Results ---- */
+  .results-wrap { display: none; }
+  .results-wrap.show { display: block; }
+  .reveal { opacity: 0; transform: translateY(14px); animation: revealUp 0.5s ease forwards; }
+  @keyframes revealUp { to { opacity: 1; transform: translateY(0); } }
+
+  .urgency-banner { display: flex; align-items: center; gap: 12px; padding: 16px 20px; border-radius: 16px; margin-bottom: 20px; font-weight: 700; font-size: 15px; }
+  .urgency-banner .ub-dot { width: 11px; height: 11px; border-radius: 50%; flex: 0 0 auto; }
+  .urgency-banner.pulse .ub-dot { animation: ubBeacon 1.4s ease-out infinite; }
+  @keyframes ubBeacon { 0% { box-shadow: 0 0 0 0 currentColor; opacity: 1; } 100% { box-shadow: 0 0 0 10px transparent; opacity: 0.6; } }
+
+  .patient-answer { font-size: 15px; line-height: 1.7; color: #34324a; }
+  .patient-answer strong { color: #100e2a; }
+
+  .condition-head { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; }
+  .condition-emoji { font-size: 34px; line-height: 1; flex: 0 0 auto; }
+  .condition-name { font-family: 'Fraunces', serif; font-size: 21px; font-weight: 600; }
+  .condition-meta { font-size: 12.5px; color: rgba(16,14,42,0.5); margin-top: 2px; }
+  .condition-desc { font-size: 14px; color: rgba(16,14,42,0.65); line-height: 1.6; margin-bottom: 16px; }
+
+  .chip-list { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 4px; }
+  .info-chip { font-size: 12px; font-weight: 700; padding: 5px 12px; border-radius: 999px; background: rgba(14,143,131,0.08); color: #0e8f83; border: 1px solid rgba(14,143,131,0.18); }
+  .info-chip.red { background: rgba(210,79,40,0.1); color: #b3401f; border-color: rgba(210,79,40,0.26); }
+
+  .section-label { font-size: 11.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; color: rgba(16,14,42,0.45); margin: 18px 0 8px; }
+  .care-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .care-list { list-style: none; margin: 0; padding: 0; font-size: 13.5px; line-height: 1.7; }
+  .care-list li { padding-left: 20px; position: relative; margin-bottom: 4px; }
+  .care-list.do li::before { content: '✓'; position: absolute; left: 0; color: #0e8f83; font-weight: 800; }
+  .care-list.avoid li::before { content: '✕'; position: absolute; left: 0; color: #b3401f; font-weight: 800; }
+  @media (max-width: 560px) { .care-cols { grid-template-columns: 1fr; } }
+
+  .doctor-callout { display: flex; gap: 10px; padding: 14px 16px; border-radius: 12px; background: rgba(47,143,209,0.08); border: 1px solid rgba(47,143,209,0.2); font-size: 13.5px; color: #1e5f8a; line-height: 1.55; margin-top: 16px; }
+
+  .other-cond-row { display: flex; align-items: center; justify-content: space-between; padding: 11px 0; border-bottom: 1px solid rgba(16,14,42,0.06); font-size: 13.5px; }
+  .other-cond-row:last-child { border-bottom: none; }
+  .other-cond-name { font-weight: 700; }
+  .other-cond-urgency { font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 999px; background: rgba(16,14,42,0.06); color: rgba(16,14,42,0.6); }
+
+  .followup-list, .monitor-list { list-style: none; margin: 0; padding: 0; font-size: 13.5px; line-height: 1.8; }
+  .followup-list li, .monitor-list li { padding-left: 18px; position: relative; }
+  .followup-list li::before { content: '?'; position: absolute; left: 0; color: #7c6fdb; font-weight: 800; }
+  .monitor-list li::before { content: '👁'; position: absolute; left: 0; font-size: 11px; }
+
+  .disclaimer-note { font-size: 12px; color: rgba(16,14,42,0.45); line-height: 1.6; text-align: center; margin-top: 28px; padding-top: 20px; border-top: 1px solid rgba(16,14,42,0.08); }
+
+  html[data-theme="dark"] body { background: #0d0c1f; color: #f2f0f8; }
+  html[data-theme="dark"] a { color: #7ee0d4; } html[data-theme="dark"] a:hover { color: #9beee0; }
+  html[data-theme="dark"] .topbar { background: rgba(13,12,31,0.88); border-bottom-color: rgba(255,255,255,0.1); }
+  html[data-theme="dark"] .logo-text .ink { color: #f2f0f8; }
+  html[data-theme="dark"] .user-pill { background: rgba(255,255,255,0.06); color: #cfccdf; }
+  html[data-theme="dark"] .tab-link { color: #a9a6bd; }
+  html[data-theme="dark"] .tab-link:hover:not(.active):not(.soon) { background: rgba(255,255,255,0.06); color: #f2f0f8; }
+  html[data-theme="dark"] .tab-link.active { background: #7ee0d4; color: #100e2a; }
+  html[data-theme="dark"] .tab-link.soon .soon-tag { background: rgba(255,255,255,0.1); }
+  html[data-theme="dark"] .signout-btn { background: #7ee0d4; color: #100e2a; } html[data-theme="dark"] .signout-btn:hover { background: #9beee0; }
+  html[data-theme="dark"] .theme-toggle { background: #18162e; border-color: rgba(255,255,255,0.14); }
+  html[data-theme="dark"] .card { background: #18162e; border-color: rgba(255,255,255,0.1); }
+  html[data-theme="dark"] .page-sub { color: #b7b3cc; }
+  html[data-theme="dark"] .page-eyebrow { background: rgba(126,224,212,0.1); border-color: rgba(126,224,212,0.22); color: #7ee0d4; }
+  html[data-theme="dark"] textarea#sym-input { background: #100e2a; color: #f2f0f8; border-color: rgba(255,255,255,0.14); }
+  html[data-theme="dark"] .scan-status { color: #f2f0f8; }
+  html[data-theme="dark"] .scan-substatus { color: #8f8ba3; }
+  html[data-theme="dark"] .patient-answer { color: #cfccdf; }
+  html[data-theme="dark"] .patient-answer strong { color: #f2f0f8; }
+  html[data-theme="dark"] .condition-meta { color: #8f8ba3; }
+  html[data-theme="dark"] .condition-desc { color: #b7b3cc; }
+  html[data-theme="dark"] .section-label { color: #8f8ba3; }
+  html[data-theme="dark"] .doctor-callout { background: rgba(47,143,209,0.12); color: #a9d4f0; }
+  html[data-theme="dark"] .other-cond-row { border-bottom-color: rgba(255,255,255,0.08); }
+  html[data-theme="dark"] .other-cond-urgency { background: rgba(255,255,255,0.08); color: #cfccdf; }
+  html[data-theme="dark"] .disclaimer-note { color: #8f8ba3; border-top-color: rgba(255,255,255,0.1); }
+</style>
+</head>
+<body>
+  <div class="topbar">
+    <a class="logo-wrap" href="../">
+      <img src="../assets/d4f7acc01b9438e998c9e7b9676584b0.png" alt="QueroCura">
+      <span class="logo-text"><span class="ink">Quero</span><span class="teal">Cura</span></span>
+    </a>
+    <nav class="tab-nav">
+      <a class="tab-link active" href="#"><span class="tl-ic">🔍</span>Symptoms</a>
+      <a class="tab-link soon" href="#" onclick="return false;"><span class="tl-ic">💬</span>Dr. Cura<span class="soon-tag">Soon</span></a>
+      <a class="tab-link" href="../vitals/"><span class="tl-ic">❤️</span>Vitals</a>
+      <a class="tab-link" href="../curavault/"><span class="tl-ic">🔒</span>CuraVault</a>
+      <a class="tab-link" href="../dashboard/"><span class="tl-ic">🏠</span>Dashboard</a>
+      <a class="tab-link" href="../onboarding/"><span class="tl-ic">👤</span>Profile</a>
+    </nav>
+    <div class="topbar-right">
+      <span class="user-pill" id="qc-user-chip"><span class="up-dot" id="qc-user-dot">?</span><span id="qc-user-name"></span></span>
+      <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode" id="theme-toggle-btn">
+        <span id="theme-toggle-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z" stroke="#100e2a" stroke-width="1.7" stroke-linejoin="round"/></svg></span>
+      </button>
+      <button class="signout-btn" id="qc-signout-btn">Sign out</button>
+    </div>
+  </div>
+
+  <div class="shell">
+    <span class="page-eyebrow">Symptom Checker</span>
+    <h1 class="page-title">What's going on?</h1>
+    <p class="page-sub">Describe how you're feeling in your own words. QueroCura cross-references it with your saved profile and latest vitals to help you understand what might be happening and what to do next.</p>
+
+    <div class="card">
+      <form id="sym-form">
+        <textarea id="sym-input" placeholder="e.g. Fever since yesterday evening, around 101°F, with a sore throat and a mild headache…" required></textarea>
+        <div class="chip-row" id="sym-examples">
+          <span class="example-chip" data-text="Fever, sore throat and body ache since this morning.">Fever + sore throat</span>
+          <span class="example-chip" data-text="Persistent dry cough for 3 days, mild chest tightness, no fever.">Dry cough + chest tightness</span>
+          <span class="example-chip" data-text="Headache, dizziness and nausea since last night.">Headache + dizziness</span>
+          <span class="example-chip" data-text="Stomach pain and loose motions since yesterday.">Stomach pain</span>
+        </div>
+        <div class="analyse-row">
+          <button type="submit" class="analyse-btn" id="sym-btn">Analyze symptoms</button>
+          <span class="err-msg" id="sym-err"></span>
+        </div>
+      </form>
+
+      <div class="scan-wrap" id="sym-scan">
+        <div class="scan-stage">
+          <div class="scan-ring"></div>
+          <div class="scan-ring"></div>
+          <div class="scan-ring"></div>
+          <div class="scan-sweep"></div>
+          <div class="scan-core">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M20.8 4.6c-1.7-1.5-4.4-1.5-6 .2L12 7.6 9.2 4.8c-1.6-1.7-4.3-1.7-6 -.2-1.9 1.7-2 4.7-.2 6.5l8.6 8.7c.2.2.6.2.8 0l8.6-8.7c1.8-1.8 1.7-4.8-.2-6.5Z" fill="#fff"/><path d="M4 12.5h3l1.6-3.2 2 5.6 1.5-2.4H16" stroke="#100e2a" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" opacity="0.55"/></svg>
+          </div>
+        </div>
+        <div class="scan-status" id="sym-scan-status">Reading what you shared…</div>
+        <div class="scan-substatus">This usually takes a few seconds</div>
+      </div>
+    </div>
+
+    <div class="results-wrap" id="sym-results"></div>
+
+    <div class="disclaimer-note">
+      QueroCura's symptom checker gives educational guidance only — it is not a clinical diagnosis. Always consult a qualified healthcare professional for medical decisions, and seek emergency care immediately for severe or worsening symptoms.
+    </div>
+  </div>
+
+<script>
+var STORAGE_KEY = 'qc-theme';
+var root = document.documentElement;
+var SUN_ICON = '<svg width="17" height="17" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="4.2" stroke="#f2f0f8" stroke-width="1.7"/><path d="M12 3v2.2M12 18.8V21M21 12h-2.2M5.2 12H3M18.4 5.6l-1.5 1.5M7.1 16.9l-1.5 1.5M18.4 18.4l-1.5-1.5M7.1 7.1L5.6 5.6" stroke="#f2f0f8" stroke-width="1.7" stroke-linecap="round"/></svg>';
+var MOON_ICON = '<svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z" stroke="#100e2a" stroke-width="1.7" stroke-linejoin="round"/></svg>';
+function applyTheme(dark) {
+  root.setAttribute('data-theme', dark ? 'dark' : 'light');
+  try { localStorage.setItem(STORAGE_KEY, dark ? 'dark' : 'light'); } catch (e) {}
+  var icon = document.getElementById('theme-toggle-icon');
+  if (icon) icon.innerHTML = dark ? SUN_ICON : MOON_ICON;
+}
+window.toggleTheme = function () { applyTheme(root.getAttribute('data-theme') !== 'dark'); };
+if (root.getAttribute('data-theme') === 'dark') applyTheme(true);
+
+const API_BASE = "https://app.querocura.com/api";
+
+async function requireSession() {
+  const res = await fetch(API_BASE + "/auth/me", { credentials: "include" });
+  const data = await res.json();
+  if (!data.logged_in) { window.location.href = "../login/"; return null; }
+  return data.user;
+}
+async function requireCompletedProfile() {
+  try {
+    const res = await fetch(API_BASE + "/profile", { credentials: "include" });
+    const data = await res.json();
+    if (data.ok && data.profile && !data.profile.wizard_done) {
+      window.location.href = "../onboarding/";
+      return false;
+    }
+  } catch (e) {}
+  return true;
+}
+
+function escapeHtml(s) {
+  return (s || "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+function mdBold(s) {
+  return escapeHtml(s).replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+}
+
+document.querySelectorAll(".example-chip").forEach(chip => {
+  chip.addEventListener("click", () => {
+    document.getElementById("sym-input").value = chip.getAttribute("data-text");
+    document.getElementById("sym-input").focus();
+  });
+});
+
+const SCAN_PHRASES = [
+  "Reading what you shared…",
+  "Cross-checking your saved profile…",
+  "Comparing against known symptom patterns…",
+  "Weighing your latest vitals…",
+  "Putting together your guidance…",
+];
+let scanTimer = null;
+function startScan() {
+  const scan = document.getElementById("sym-scan");
+  const status = document.getElementById("sym-scan-status");
+  scan.classList.add("show");
+  let i = 0;
+  status.textContent = SCAN_PHRASES[0];
+  scanTimer = setInterval(() => {
+    i = (i + 1) % SCAN_PHRASES.length;
+    status.style.opacity = 0;
+    setTimeout(() => { status.textContent = SCAN_PHRASES[i]; status.style.opacity = 1; }, 220);
+  }, 1100);
+}
+function stopScan() {
+  document.getElementById("sym-scan").classList.remove("show");
+  if (scanTimer) clearInterval(scanTimer);
+}
+
+const URGENCY_COLORS = {
+  low: "#0e8f83", medium: "#c98a10", high: "#d24f28", emergency: "#b3182a", unknown: "#2f8fd1",
+};
+function urgencyColor(word) {
+  const w = (word || "").toLowerCase();
+  if (w.includes("emergency")) return URGENCY_COLORS.emergency;
+  if (w.includes("high") || w.includes("urgent")) return URGENCY_COLORS.high;
+  if (w.includes("medium") || w.includes("caution") || w.includes("watch")) return URGENCY_COLORS.medium;
+  if (w.includes("low") || w.includes("routine")) return URGENCY_COLORS.low;
+  return URGENCY_COLORS.unknown;
+}
+
+function listHtml(className, items) {
+  if (!items || !items.length) return "";
+  return '<ul class="' + className + '">' + items.map(i => "<li>" + mdBold(i) + "</li>").join("") + "</ul>";
+}
+
+function renderResult(data) {
+  const wrap = document.getElementById("sym-results");
+  const top = data.top_condition || {};
+  const reasoning = data.clinical_reasoning || {};
+  const urgencyWord = data.overall_urgency || reasoning.urgency || "Unknown";
+  const uColor = urgencyColor(urgencyWord);
+  const isSevere = /high|urgent|emergency/i.test(urgencyWord);
+
+  let html = "";
+  let delay = 0;
+  const step = () => { const d = delay; delay += 90; return 'style="animation-delay:' + d + 'ms"'; };
+
+  html += '<div class="urgency-banner reveal ' + (isSevere ? "pulse" : "") + '" ' + step() + ' style="background:' + uColor + '1a; color:' + uColor + '; animation-delay:' + (delay - 90) + 'ms">' +
+    '<span class="ub-dot" style="background:' + uColor + '"></span>' +
+    'Urgency: ' + escapeHtml(urgencyWord) +
+  '</div>';
+
+  if (reasoning.patient_answer) {
+    html += '<div class="card reveal" ' + step() + '><div class="patient-answer">' + mdBold(reasoning.patient_answer).replace(/\n\n/g, "<br><br>") + '</div></div>';
+  }
+
+  if (top.name) {
+    html += '<div class="card reveal" ' + step() + '>' +
+      '<div class="condition-head">' +
+        '<div class="condition-emoji">' + (top.emoji || "🩺") + '</div>' +
+        '<div><div class="condition-name">' + escapeHtml(top.name) + '</div>' +
+        '<div class="condition-meta">' + (top.confidence_band ? escapeHtml(top.confidence_band) + " match · " : "") + (top.specialist ? "Best seen by a " + escapeHtml(top.specialist) : "") + '</div></div>' +
+      '</div>' +
+      (top.description ? '<div class="condition-desc">' + escapeHtml(top.description) + '</div>' : '');
+
+    const chips = (top.signals || []).map(s => '<span class="info-chip">' + escapeHtml(s) + '</span>').join("");
+    const redChips = (top.red_flags || []).map(s => '<span class="info-chip red">⚠ ' + escapeHtml(s) + '</span>').join("");
+    if (chips || redChips) html += '<div class="chip-list">' + chips + redChips + '</div>';
+
+    if ((top.home_care_now && top.home_care_now.length) || (top.avoid && top.avoid.length)) {
+      html += '<div class="section-label">What you can do</div><div class="care-cols">' +
+        '<div>' + listHtml("care-list do", top.home_care_now) + listHtml("care-list do", top.home_care_ongoing) + '</div>' +
+        '<div>' + listHtml("care-list avoid", top.avoid) + '</div>' +
+      '</div>';
+    }
+
+    if (top.when_doctor) {
+      html += '<div class="doctor-callout"><span>🩺</span><span><strong>See a doctor if:</strong> ' + mdBold(top.when_doctor) + '</span></div>';
+    }
+    html += '</div>';
+  }
+
+  const others = (data.possible_conditions || []).filter(c => c.name && c.name !== top.name).slice(0, 4);
+  if (others.length) {
+    html += '<div class="card reveal" ' + step() + '>' +
+      '<div class="section-label" style="margin-top:0;">Other possibilities</div>' +
+      others.map(c => '<div class="other-cond-row"><span class="other-cond-name">' + escapeHtml(c.name) + '</span><span class="other-cond-urgency">' + escapeHtml(c.urgency || "—") + '</span></div>').join("") +
+    '</div>';
+  }
+
+  if ((reasoning.follow_up_questions && reasoning.follow_up_questions.length) || (reasoning.monitoring_advice && reasoning.monitoring_advice.length)) {
+    html += '<div class="card reveal" ' + step() + '>';
+    if (reasoning.follow_up_questions && reasoning.follow_up_questions.length) {
+      html += '<div class="section-label" style="margin-top:0;">Worth thinking about</div>' + listHtml("followup-list", reasoning.follow_up_questions);
+    }
+    if (reasoning.monitoring_advice && reasoning.monitoring_advice.length) {
+      html += '<div class="section-label">Keep an eye on</div>' + listHtml("monitor-list", reasoning.monitoring_advice);
+    }
+    html += '</div>';
+  }
+
+  wrap.innerHTML = html;
+  wrap.classList.add("show");
+  wrap.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+document.getElementById("sym-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const text = document.getElementById("sym-input").value.trim();
+  const errEl = document.getElementById("sym-err");
+  errEl.textContent = "";
+  if (!text) return;
+
+  const btn = document.getElementById("sym-btn");
+  btn.disabled = true;
+  document.getElementById("sym-results").classList.remove("show");
+  document.getElementById("sym-results").innerHTML = "";
+  startScan();
+
+  try {
+    const res = await fetch(API_BASE + "/diagnosis/analyse", {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text }),
+    });
+    const data = await res.json();
+    stopScan();
+    if (!res.ok || data.ok === false) throw new Error(data.message || "Couldn't analyze that just now.");
+    renderResult(data);
+  } catch (err) {
+    stopScan();
+    errEl.textContent = err.message || "Something went wrong — please try again.";
+  } finally {
+    btn.disabled = false;
+  }
+});
+
+document.getElementById("qc-signout-btn").addEventListener("click", async () => {
+  await fetch(API_BASE + "/auth/logout", { method: "POST", credentials: "include" });
+  window.location.href = "../";
+});
+
+(async function init() {
+  const user = await requireSession();
+  if (!user) return;
+  const complete = await requireCompletedProfile();
+  if (!complete) return;
+  const name = user.display_name || user.username || user.email || "";
+  const initials = name ? name.trim().split(/\s+/).slice(0, 2).map(w => w[0].toUpperCase()).join("") : "?";
+  document.getElementById("qc-user-dot").textContent = initials;
+  document.getElementById("qc-user-name").textContent = name ? name.split(" ")[0] : "";
+})();
+</script>
+</body>
+</html>
