@@ -127,27 +127,50 @@
   .qc-btn.qc-answered { background: #0e8f83; color: #fff; border-color: #0e8f83; }
   .qc-skip { font-size: 12px; font-weight: 600; color: rgba(16,14,42,0.4); background: none; border: none; cursor: pointer; text-decoration: underline; margin-top: 4px; font-family: 'Manrope', sans-serif; }
 
-  /* ---- Blockbuster scan animation ---- */
-  .scan-wrap { display: none; flex-direction: column; align-items: center; text-align: center; padding: 40px 10px 30px; }
-  .scan-wrap.show { display: flex; }
-  .scan-stage { position: relative; width: 168px; height: 168px; margin-bottom: 22px; }
+  /* ---- Blockbuster scan animation: now a full-screen immersive overlay ---- */
+  /* that carries the person through scan -> targeted questions -> reveal   */
+  /* without ever leaving a focused, cinematic view.                        */
+  .scan-wrap { position: fixed; inset: 0; z-index: 999; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 40px 24px; opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 0.4s ease; background: radial-gradient(circle at 50% 38%, #eafaf7 0%, #f6f5f1 62%, #f6f5f1 100%); }
+  .scan-wrap.show { opacity: 1; visibility: visible; pointer-events: auto; }
+  .scan-wrap::before { content: ''; position: absolute; inset: 0; background-image: radial-gradient(rgba(14,143,131,0.14) 1.5px, transparent 1.5px); background-size: 28px 28px; opacity: 0.6; animation: scanDrift 14s linear infinite; pointer-events: none; }
+  @keyframes scanDrift { from { background-position: 0 0; } to { background-position: 140px 140px; } }
+  .scan-phase { display: flex; flex-direction: column; align-items: center; }
+  .scan-stage { position: relative; width: 190px; height: 190px; margin-bottom: 26px; }
   .scan-ring { position: absolute; inset: 0; border-radius: 50%; border: 2px solid rgba(14,143,131,0.35); animation: scanPulse 2.4s ease-out infinite; }
   .scan-ring:nth-child(2) { animation-delay: 0.8s; border-color: rgba(124,111,219,0.3); }
   .scan-ring:nth-child(3) { animation-delay: 1.6s; border-color: rgba(47,143,209,0.3); }
   @keyframes scanPulse { 0% { transform: scale(0.55); opacity: 1; } 100% { transform: scale(1); opacity: 0; } }
   .scan-sweep { position: absolute; inset: 8px; border-radius: 50%; background: conic-gradient(from 0deg, transparent 0deg, rgba(14,143,131,0.35) 60deg, transparent 100deg); animation: scanSweep 1.6s linear infinite; }
   @keyframes scanSweep { to { transform: rotate(360deg); } }
-  .scan-core { position: absolute; inset: 34%; border-radius: 50%; background: linear-gradient(135deg, #0e8f83, #7c6fdb); display: flex; align-items: center; justify-content: center; box-shadow: 0 0 0 8px rgba(14,143,131,0.1), 0 12px 28px -10px rgba(14,143,131,0.5); animation: coreBeat 1.3s ease-in-out infinite; }
+  .scan-core { position: absolute; inset: 34%; border-radius: 50%; background: linear-gradient(135deg, #0e8f83, #7c6fdb); display: flex; align-items: center; justify-content: center; box-shadow: 0 0 0 8px rgba(14,143,131,0.1), 0 12px 28px -10px rgba(14,143,131,0.5); animation: coreBeat 1.3s ease-in-out infinite; transition: transform 0.5s cubic-bezier(.22,1,.36,1), box-shadow 0.5s ease; }
   @keyframes coreBeat { 0%,100% { transform: scale(1); } 50% { transform: scale(1.08); } }
   .scan-core svg { width: 26px; height: 26px; }
-  .scan-status { font-size: 14px; font-weight: 700; color: #100e2a; min-height: 20px; transition: opacity 0.25s ease; }
-  .scan-substatus { font-size: 12px; color: rgba(16,14,42,0.45); margin-top: 4px; }
+  .scan-status { font-size: 15px; font-weight: 700; color: #100e2a; min-height: 20px; transition: opacity 0.25s ease; }
+  .scan-substatus { font-size: 12.5px; color: rgba(16,14,42,0.45); margin-top: 4px; }
+  /* completion flourish: rings fall away, core pulses out and hands off to the reveal */
+  .scan-wrap.scan-done .scan-ring { animation: none; opacity: 0; transition: opacity 0.4s ease; }
+  .scan-wrap.scan-done .scan-sweep { animation: none; opacity: 0; transition: opacity 0.4s ease; }
+  .scan-wrap.scan-done .scan-core { animation: none; transform: scale(1.5); box-shadow: 0 0 0 22px rgba(14,143,131,0), 0 18px 34px -12px rgba(14,143,131,0.4); }
+  /* question phase: same overlay, swapped-in content, no page navigation */
+  .scan-questions-phase { display: none; flex-direction: column; align-items: center; text-align: center; max-width: 420px; width: 100%; animation: qPhaseIn 0.5s cubic-bezier(.22,1,.36,1); }
+  @keyframes qPhaseIn { from { opacity: 0; transform: translateY(14px) scale(0.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
+  .sqp-icon { font-size: 36px; margin-bottom: 10px; }
+  .sqp-title { font-size: 19px; font-weight: 800; color: #100e2a; margin-bottom: 6px; font-family: 'Space Grotesk', sans-serif; }
+  .sqp-sub { font-size: 13px; color: rgba(16,14,42,0.55); margin-bottom: 26px; }
+  .sqp-progress { display: flex; gap: 6px; margin-bottom: 20px; }
+  .sqp-dot { width: 7px; height: 7px; border-radius: 50%; background: rgba(14,143,131,0.22); transition: background 0.2s ease, transform 0.2s ease; }
+  .sqp-dot.sqp-done { background: #0e8f83; transform: scale(1.2); }
+  #sqp-list .qc-question { font-size: 16.5px; }
+  #sqp-list .qc-btns { justify-content: center; margin-bottom: 20px; }
+  .sqp-skip { margin-top: 4px; font-size: 12.5px; font-weight: 600; color: rgba(16,14,42,0.42); background: none; border: none; cursor: pointer; text-decoration: underline; font-family: 'Manrope', sans-serif; }
 
   /* ---- Results ---- */
   .results-wrap { display: none; }
   .results-wrap.show { display: block; }
-  .reveal { opacity: 0; transform: translateY(14px); animation: revealUp 0.5s ease forwards; }
-  @keyframes revealUp { to { opacity: 1; transform: translateY(0); } }
+  .reveal { opacity: 0; animation: revealUp 0.65s cubic-bezier(.22,1,.36,1) forwards; }
+  @keyframes revealUp { 0% { opacity: 0; transform: translateY(22px) scale(0.96); filter: blur(5px); } 55% { filter: blur(0); } 100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); } }
+  .results-wrap.results-live { animation: resultsLiveIn 0.5s ease; }
+  @keyframes resultsLiveIn { from { opacity: 0.4; } to { opacity: 1; } }
 
   .urgency-banner { display: flex; align-items: center; gap: 12px; padding: 16px 20px; border-radius: 16px; margin-bottom: 20px; font-weight: 700; font-size: 15px; }
   .urgency-banner .ub-dot { width: 11px; height: 11px; border-radius: 50%; flex: 0 0 auto; }
@@ -316,17 +339,32 @@
       </div>
 
       <div class="scan-wrap" id="sym-scan">
-        <div class="scan-stage">
-          <div class="scan-ring"></div>
-          <div class="scan-ring"></div>
-          <div class="scan-ring"></div>
-          <div class="scan-sweep"></div>
-          <div class="scan-core">
-            <svg viewBox="0 0 24 24" fill="none"><path d="M20.8 4.6c-1.7-1.5-4.4-1.5-6 .2L12 7.6 9.2 4.8c-1.6-1.7-4.3-1.7-6 -.2-1.9 1.7-2 4.7-.2 6.5l8.6 8.7c.2.2.6.2.8 0l8.6-8.7c1.8-1.8 1.7-4.8-.2-6.5Z" fill="#fff"/><path d="M4 12.5h3l1.6-3.2 2 5.6 1.5-2.4H16" stroke="#100e2a" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" opacity="0.55"/></svg>
+        <div class="scan-phase" id="sym-scan-phase">
+          <div class="scan-stage">
+            <div class="scan-ring"></div>
+            <div class="scan-ring"></div>
+            <div class="scan-ring"></div>
+            <div class="scan-sweep"></div>
+            <div class="scan-core">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M20.8 4.6c-1.7-1.5-4.4-1.5-6 .2L12 7.6 9.2 4.8c-1.6-1.7-4.3-1.7-6 -.2-1.9 1.7-2 4.7-.2 6.5l8.6 8.7c.2.2.6.2.8 0l8.6-8.7c1.8-1.8 1.7-4.8-.2-6.5Z" fill="#fff"/><path d="M4 12.5h3l1.6-3.2 2 5.6 1.5-2.4H16" stroke="#100e2a" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" opacity="0.55"/></svg>
+            </div>
           </div>
+          <div class="scan-status" id="sym-scan-status">Reading what you shared…</div>
+          <div class="scan-substatus">This usually takes a few seconds</div>
         </div>
-        <div class="scan-status" id="sym-scan-status">Reading what you shared…</div>
-        <div class="scan-substatus">This usually takes a few seconds</div>
+
+        <!-- Targeted follow-up questions (generate_clarifying_questions() on the
+             backend) are shown full-screen, inside this same overlay, right
+             after the first scan -- so the person never leaves the immersive
+             flow between "we're reading this" and "one more thing". -->
+        <div class="scan-questions-phase" id="sym-scan-questions">
+          <div class="sqp-icon">🎯</div>
+          <div class="sqp-title">A couple of quick questions</div>
+          <div class="sqp-sub">Answering these helps narrow this down further.</div>
+          <div class="sqp-progress" id="sqp-progress"></div>
+          <div id="sqp-list"></div>
+          <button type="button" class="sqp-skip" id="sqp-skip">Skip and see my results →</button>
+        </div>
       </div>
     </div>
 
@@ -392,22 +430,107 @@ const SCAN_PHRASES = [
   "Weighing your latest vitals…",
   "Putting together your guidance…",
 ];
+const REFINE_PHRASES = [
+  "Factoring in your answers…",
+  "Recalculating the best match…",
+  "Almost there…",
+];
 let scanTimer = null;
-function startScan() {
+
+// Opens the full-screen overlay in its "scan" phase. Called both for the
+// first pass (round is falsy) and for the brief re-scan after the targeted
+// questions are answered (round = 1, using REFINE_PHRASES instead).
+function startScan(round) {
   const scan = document.getElementById("sym-scan");
   const status = document.getElementById("sym-scan-status");
+  const scanPhase = document.getElementById("sym-scan-phase");
+  const qPhase = document.getElementById("sym-scan-questions");
+  scan.classList.remove("scan-done");
   scan.classList.add("show");
+  scanPhase.style.display = "flex";
+  qPhase.style.display = "none";
+
+  const phrases = round ? REFINE_PHRASES : SCAN_PHRASES;
   let i = 0;
-  status.textContent = SCAN_PHRASES[0];
+  status.textContent = phrases[0];
+  if (scanTimer) clearInterval(scanTimer);
   scanTimer = setInterval(() => {
-    i = (i + 1) % SCAN_PHRASES.length;
+    i = (i + 1) % phrases.length;
     status.style.opacity = 0;
-    setTimeout(() => { status.textContent = SCAN_PHRASES[i]; status.style.opacity = 1; }, 220);
+    setTimeout(() => { status.textContent = phrases[i]; status.style.opacity = 1; }, 220);
   }, 1100);
 }
+
+// Plays the completion flourish (rings fall away, core pulses out) then
+// fades the whole overlay away, handing off to the results reveal.
 function stopScan() {
-  document.getElementById("sym-scan").classList.remove("show");
-  if (scanTimer) clearInterval(scanTimer);
+  const scan = document.getElementById("sym-scan");
+  const status = document.getElementById("sym-scan-status");
+  if (scanTimer) { clearInterval(scanTimer); scanTimer = null; }
+  scan.classList.add("scan-done");
+  if (status) status.textContent = "All set — revealing your results…";
+  setTimeout(() => {
+    scan.classList.remove("show");
+    setTimeout(() => { scan.classList.remove("scan-done"); }, 420);
+  }, 550);
+}
+
+// Swaps the overlay from its scan phase into its questions phase (no fade
+// out / back in -- same overlay, same immersive view) and renders the
+// targeted follow-up questions from generate_clarifying_questions() on the
+// backend. Answering all of them, or skipping, re-runs analysis once more
+// (round = 1) with the answers folded into the symptom text.
+function showQuestionPhase(questions, baseText) {
+  if (scanTimer) { clearInterval(scanTimer); scanTimer = null; }
+  const scanPhase = document.getElementById("sym-scan-phase");
+  const qPhase = document.getElementById("sym-scan-questions");
+  scanPhase.style.display = "none";
+  qPhase.style.display = "flex";
+
+  const list = document.getElementById("sqp-list");
+  const progress = document.getElementById("sqp-progress");
+  list.innerHTML = questions.map((q, i) =>
+    '<div class="qc-question">' + escapeHtml(q.question) + '</div>' +
+    '<div class="qc-btns" data-qc-idx="' + i + '">' +
+      '<button type="button" class="qc-btn" data-qc-answer="yes">Yes</button>' +
+      '<button type="button" class="qc-btn" data-qc-answer="no">No</button>' +
+      '<button type="button" class="qc-btn" data-qc-answer="skip">Not sure</button>' +
+    '</div>'
+  ).join("");
+  progress.innerHTML = questions.map(() => '<div class="sqp-dot"></div>').join("");
+
+  const answers = [];
+  const dots = progress.querySelectorAll(".sqp-dot");
+
+  function finish(useAnswers) {
+    const extras = useAnswers ? answers.filter(a => a).join(". ") : "";
+    const refinedText = extras ? (baseText + ". " + extras) : baseText;
+    runAnalysis(refinedText, document.getElementById("sym-btn"), 1);
+  }
+
+  list.querySelectorAll(".qc-btns").forEach((group) => {
+    const idx = parseInt(group.getAttribute("data-qc-idx"), 10);
+    group.querySelectorAll(".qc-btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const choice = btn.getAttribute("data-qc-answer");
+        const q = questions[idx];
+        if (choice === "yes") answers[idx] = q.confirm_phrase || q.symptom_key;
+        else if (choice === "no") answers[idx] = "no " + (q.confirm_phrase || q.symptom_key);
+        else answers[idx] = "";
+
+        group.querySelectorAll(".qc-btn").forEach(b => { b.disabled = true; b.classList.remove("qc-answered"); });
+        btn.classList.add("qc-answered");
+        if (dots[idx]) dots[idx].classList.add("sqp-done");
+
+        if (answers.filter(a => a !== undefined).length === questions.length) {
+          finish(true);
+        }
+      });
+    });
+  });
+
+  const skipBtn = document.getElementById("sqp-skip");
+  if (skipBtn) skipBtn.onclick = () => finish(false);
 }
 
 const URGENCY_COLORS = {
@@ -539,82 +662,19 @@ function renderResult(rawData, baseText, round) {
     html += '<div class="card reveal" ' + step() + '><div class="doctor-callout"><span>🩺</span><span><strong>For your doctor:</strong> ' + mdBold(data.doctor_summary) + '</span></div></div>';
   }
 
-  // Targeted follow-up questions (see generate_clarifying_questions() on the
-  // backend) -- only ever offered for one round, so answering a couple of
-  // quick yes/no questions refines the result once rather than turning this
-  // into an endless interview. rawData.clarifying_questions is only present
-  // when the top two candidates weren't clearly separated.
-  const questions = (rawData && rawData.clarifying_questions) || [];
-  if (questions.length && (round || 0) === 0) {
-    html += '<div class="card quick-check reveal" ' + step() + ' id="qc-panel">' +
-      '<div class="qc-title">🎯 A couple of quick questions</div>' +
-      '<div class="qc-sub">Answering these helps narrow this down further.</div>' +
-      questions.map((q, i) =>
-        '<div class="qc-question">' + escapeHtml(q.question) + '</div>' +
-        '<div class="qc-btns" data-qc-idx="' + i + '">' +
-          '<button type="button" class="qc-btn" data-qc-answer="yes">Yes</button>' +
-          '<button type="button" class="qc-btn" data-qc-answer="no">No</button>' +
-          '<button type="button" class="qc-btn" data-qc-answer="skip">Not sure</button>' +
-        '</div>'
-      ).join("") +
-    '</div>';
-  }
-
   wrap.innerHTML = html;
   wrap.classList.add("show");
+  wrap.classList.add("results-live");
   wrap.scrollIntoView({ behavior: "smooth", block: "start" });
-
-  if (questions.length && (round || 0) === 0) {
-    wireQuickCheck(questions, baseText || (rawData && rawData.input) || "");
-  }
-}
-
-// Wires up the Yes/No/Not sure buttons on the quick-check panel. Each answer
-// appends a guaranteed-matching confirm_phrase (or its negation) onto the
-// original symptom text and re-runs analysis once, refined -- see
-// generate_clarifying_questions()/confirm_phrase on the backend for why a
-// guaranteed-matching phrase (rather than the raw symptom key) is needed.
-function wireQuickCheck(questions, baseText) {
-  const panel = document.getElementById("qc-panel");
-  if (!panel) return;
-  const answers = [];
-
-  function maybeSubmit() {
-    if (answers.filter(a => a !== undefined).length < questions.length) return; // wait for all questions
-    const extras = answers.filter(a => a).join(". ");
-    const refinedText = extras ? (baseText + ". " + extras) : baseText;
-    const btn = document.getElementById("sym-btn");
-    runAnalysis(refinedText, btn, 1);
-  }
-
-  panel.querySelectorAll(".qc-btns").forEach((group) => {
-    const idx = parseInt(group.getAttribute("data-qc-idx"), 10);
-    group.querySelectorAll(".qc-btn").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const choice = btn.getAttribute("data-qc-answer");
-        const q = questions[idx];
-        if (choice === "yes") answers[idx] = q.confirm_phrase || q.symptom_key;
-        else if (choice === "no") answers[idx] = "no " + (q.confirm_phrase || q.symptom_key);
-        else answers[idx] = "";
-
-        group.querySelectorAll(".qc-btn").forEach(b => { b.disabled = true; b.classList.remove("qc-answered"); });
-        btn.classList.add("qc-answered");
-
-        if (answers.filter(a => a !== undefined).length === questions.length) {
-          maybeSubmit();
-        }
-      });
-    });
-  });
 }
 
 async function runAnalysis(text, busyBtn, round) {
   const errEl = document.getElementById("sym-err");
   errEl.textContent = "";
   if (busyBtn) busyBtn.disabled = true;
-  document.getElementById("sym-results").classList.remove("show");
+  document.getElementById("sym-results").classList.remove("show", "results-live");
   document.getElementById("sym-results").innerHTML = "";
-  startScan();
+  startScan(round);
 
   try {
     // Using the lighter /diagnosis/analyse endpoint here (not /fast/analyse):
@@ -630,9 +690,19 @@ async function runAnalysis(text, busyBtn, round) {
       body: JSON.stringify({ text }),
     });
     const data = await res.json();
-    stopScan();
     if (!res.ok || data.ok === false) throw new Error(data.err || data.message || "Couldn't analyze that just now.");
-    renderResult(data, text, round || 0);
+
+    // Offer the targeted follow-up questions full-screen, inside the same
+    // overlay the scan just used, rather than dumping them into the results
+    // -- only on the first round, and only when the backend actually sent
+    // them (top two candidates weren't clearly separated).
+    const questions = data.clarifying_questions || [];
+    if (questions.length && (round || 0) === 0) {
+      showQuestionPhase(questions, text);
+    } else {
+      stopScan();
+      renderResult(data, text, round || 0);
+    }
   } catch (err) {
     stopScan();
     errEl.textContent = err.message || "Something went wrong — please try again.";
