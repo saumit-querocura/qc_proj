@@ -1,0 +1,534 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Insights — QueroCura</title>
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/x-icon" href="../icons/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://app.querocura.com">
+<link rel="dns-prefetch" href="https://app.querocura.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700;800&family=Manrope:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500;1,9..144,600&display=swap" rel="stylesheet">
+<script>
+  (function () {
+    try {
+      if (localStorage.getItem('qc-theme') === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      }
+    } catch (e) {}
+  })();
+</script>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh;
+    font-family: 'Manrope', sans-serif; background: #f6f5f1; color: #100e2a;
+  }
+  h1, h2, h3, .display { font-family: 'Space Grotesk', sans-serif; }
+  a { color: #0e8f83; text-decoration: none; }
+  a:hover { color: #0b6f66; }
+
+  /* ---- Top bar ---- */
+  .topbar {
+    display: flex; align-items: center; justify-content: space-between; gap: 18px; flex-wrap: wrap;
+    padding: 14px clamp(16px,4vw,32px); background: rgba(246,245,241,0.88); backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(16,14,42,0.08); position: sticky; top: 0; z-index: 20;
+  }
+  .logo-wrap { display: flex; align-items: center; gap: 10px; flex: 0 0 auto; }
+  .logo-wrap img { width: 34px; height: 31px; object-fit: contain; }
+  .logo-text { font-size: 18px; font-weight: 700; letter-spacing: -0.02em; font-family: 'Space Grotesk', sans-serif; }
+  .logo-text .ink { color: #100e2a; }
+  .logo-text .teal { color: #0e8f83; }
+  .user-pill { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px 5px 6px; border-radius: 999px; background: rgba(16,14,42,0.05); font-size: 12.5px; font-weight: 700; color: rgba(16,14,42,0.75); margin-left: 4px; }
+  .user-pill .up-dot { width: 20px; height: 20px; border-radius: 50%; background: linear-gradient(135deg,#0e8f83,#2f8fd1); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 10px; }
+
+  .tab-nav { display: flex; align-items: center; gap: 4px; flex: 1 1 auto; justify-content: center; overflow-x: auto; scrollbar-width: none; }
+  .tab-nav::-webkit-scrollbar { display: none; }
+  .tab-link {
+    display: flex; align-items: center; gap: 7px; white-space: nowrap; padding: 9px 15px; border-radius: 999px;
+    font-size: 13.5px; font-weight: 700; color: rgba(16,14,42,0.55); transition: background 0.18s ease, color 0.18s ease;
+  }
+  .tab-link .tl-ic { font-size: 14px; }
+  .tab-link:hover:not(.active):not(.soon) { background: rgba(16,14,42,0.05); color: #100e2a; }
+  .tab-link.active { background: #100e2a; color: #fff; }
+  .tab-link.soon { opacity: 0.45; cursor: default; }
+  .tab-link.soon .soon-tag { font-size: 8.5px; font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase; background: rgba(16,14,42,0.1); padding: 1px 6px; border-radius: 999px; margin-left: 2px; }
+
+  .topbar-right { display: flex; align-items: center; gap: 10px; flex: 0 0 auto; }
+  .signout-btn {
+    background: #100e2a; border: none; color: #fff;
+    font-family: 'Manrope', sans-serif; font-size: 13px; font-weight: 700;
+    padding: 9px 18px; border-radius: 999px; cursor: pointer; transition: transform 0.18s ease, background 0.18s ease;
+  }
+  .signout-btn:hover { background: #221f4d; transform: translateY(-2px); }
+  .theme-toggle {
+    display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px;
+    border-radius: 10px; border: 1.5px solid rgba(16,14,42,0.14); background: #fff; cursor: pointer;
+    padding: 0; transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease; flex: 0 0 auto;
+  }
+  .theme-toggle:hover { transform: translateY(-2px); }
+
+  /* ---- Layout ---- */
+  .shell { max-width: 1180px; margin: 0 auto; padding: 32px 24px 80px; }
+
+  /* ---- Hero: risk score ---- */
+  .hero {
+    position: relative; overflow: hidden; border-radius: 26px; margin-bottom: 24px;
+    background:
+      radial-gradient(circle at 15% 20%, rgba(14,143,131,0.07), transparent 55%),
+      radial-gradient(circle at 90% 15%, rgba(124,111,219,0.08), transparent 50%),
+      #fff;
+    border: 1px solid rgba(16,14,42,0.08); padding: clamp(24px,4vw,40px);
+  }
+  .hero-orb { position: absolute; border-radius: 50%; filter: blur(30px); pointer-events: none; opacity: 0.5; }
+  .hero-orb1 { width: 220px; height: 220px; background: rgba(14,143,131,0.12); top: -80px; right: -60px; }
+  .hero-orb2 { width: 180px; height: 180px; background: rgba(124,111,219,0.12); bottom: -80px; left: -40px; }
+  .hero-inner { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 28px; flex-wrap: wrap; }
+  .hero-eyebrow { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .hero-tag { font-size: 11.5px; font-weight: 800; letter-spacing: 0.05em; text-transform: uppercase; background: rgba(16,14,42,0.06); padding: 5px 12px; border-radius: 999px; }
+  .hero-live { display: inline-flex; align-items: center; gap: 5px; font-size: 11.5px; font-weight: 700; color: rgba(16,14,42,0.5); }
+  .hero-live-dot { width: 6px; height: 6px; border-radius: 50%; background: #0e8f83; box-shadow: 0 0 0 0 rgba(14,143,131,0.5); animation: pulseDot 2s infinite; }
+  @keyframes pulseDot { 0% { box-shadow: 0 0 0 0 rgba(14,143,131,0.4); } 70% { box-shadow: 0 0 0 7px rgba(14,143,131,0); } 100% { box-shadow: 0 0 0 0 rgba(14,143,131,0); } }
+  .hero-greeting { font-size: clamp(26px,3.4vw,34px); margin: 0 0 6px; letter-spacing: -0.01em; }
+  .hero-sub { margin: 0 0 6px; font-size: 15px; color: rgba(16,14,42,0.6); max-width: 480px; }
+  .hero-date { font-size: 12.5px; color: rgba(16,14,42,0.4); font-weight: 600; }
+
+  .hero-score { display: flex; flex-direction: column; align-items: center; gap: 6px; flex: 0 0 auto; position: relative; }
+  .hero-score-ring-wrap { position: relative; width: 128px; height: 128px; }
+  .hero-score-ring-wrap svg { transform: rotate(-90deg); }
+  .hero-score-bg, .hero-score-fg { fill: none; stroke-width: 9; }
+  .hero-score-bg { stroke: rgba(16,14,42,0.08); }
+  .hero-score-fg { stroke-linecap: round; transition: stroke-dashoffset 1s ease, stroke 0.4s ease; }
+  .hero-score-inner { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .hero-score-num { font-family: 'Fraunces', serif; font-size: 34px; font-weight: 600; line-height: 1; }
+  .hero-score-label { font-size: 10.5px; color: rgba(16,14,42,0.45); font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; margin-top: 2px; }
+  .hero-score-status { font-size: 13.5px; font-weight: 800; }
+
+  .factor-list { display: flex; flex-direction: column; gap: 8px; margin-top: 18px; }
+  .factor-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 14px; border-radius: 12px; background: rgba(16,14,42,0.03); font-size: 13px; }
+  .factor-row .fr-label { color: rgba(16,14,42,0.75); }
+  .factor-row .fr-impact { font-weight: 800; font-size: 12.5px; flex: 0 0 auto; }
+
+  /* ---- Cards ---- */
+  .card {
+    position: relative; overflow: hidden;
+    background: #fff; border-radius: 20px; padding: 26px 28px;
+    border: 1px solid rgba(16,14,42,0.08); margin-bottom: 22px;
+    transition: box-shadow 0.25s ease;
+  }
+  .card:hover { box-shadow: 0 20px 44px -26px rgba(16,14,42,0.28); }
+  .card::before { content: ''; position: absolute; top: -44px; right: -44px; width: 150px; height: 150px; border-radius: 50%; background: radial-gradient(circle, rgba(14,143,131,0.06), transparent 70%); pointer-events: none; }
+  .card h2 { font-size: 18px; margin: 0 0 4px; position: relative; }
+  .card .card-sub { font-size: 13px; color: rgba(16,14,42,0.5); margin: 0 0 18px; position: relative; }
+
+  .empty-note { font-size: 14px; color: rgba(16,14,42,0.5); }
+
+  /* ---- Day-range selector ---- */
+  .day-select { display: inline-flex; gap: 4px; background: #fff; border: 1px solid rgba(16,14,42,0.08); border-radius: 999px; padding: 4px; margin-bottom: 16px; }
+  .day-btn { padding: 7px 15px; border-radius: 999px; font-size: 12.5px; font-weight: 700; color: rgba(16,14,42,0.55); cursor: pointer; border: none; background: transparent; font-family: 'Manrope', sans-serif; transition: background 0.18s ease, color 0.18s ease; }
+  .day-btn:hover:not(.active) { color: #100e2a; }
+  .day-btn.active { background: #100e2a; color: #fff; }
+
+  /* ---- Vitals chart grid ---- */
+  .chart-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+  .chart-card { background: #fbfaf6; border: 1px solid rgba(16,14,42,0.08); border-radius: 16px; padding: 16px 18px 12px; }
+  .chart-card .cc-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 4px; }
+  .chart-card .cc-title { font-size: 11.5px; font-weight: 700; color: rgba(16,14,42,0.5); text-transform: uppercase; letter-spacing: 0.03em; }
+  .chart-card .cc-dir { font-size: 12px; font-weight: 700; display: inline-flex; align-items: center; gap: 3px; }
+  .chart-card .cc-value-row { display: flex; align-items: baseline; gap: 6px; margin-bottom: 6px; }
+  .chart-card .cc-value { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 600; }
+  .chart-card .cc-unit { font-size: 11px; color: rgba(16,14,42,0.4); }
+  .chart-card svg { display: block; width: 100%; height: 54px; }
+  .chart-card .cc-stats { display: flex; gap: 12px; margin-top: 8px; font-size: 10.5px; color: rgba(16,14,42,0.5); flex-wrap: wrap; }
+  .chart-card .cc-stats b { color: #100e2a; font-weight: 700; }
+
+  /* ---- Condition frequency ---- */
+  .freq-list { display: flex; flex-direction: column; gap: 10px; }
+  .freq-row { display: flex; align-items: center; gap: 12px; }
+  .freq-row .fq-name { flex: 0 0 auto; width: 140px; font-size: 13.5px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .freq-row .fq-bar-wrap { flex: 1 1 auto; height: 10px; border-radius: 999px; background: rgba(16,14,42,0.06); overflow: hidden; }
+  .freq-row .fq-bar { height: 100%; border-radius: 999px; background: linear-gradient(90deg,#0e8f83,#7c6fdb); }
+  .freq-row .fq-count { flex: 0 0 auto; font-size: 12px; font-weight: 800; color: rgba(16,14,42,0.55); width: 66px; text-align: right; }
+
+  /* ---- Correlation / pattern cards ---- */
+  .insight-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; }
+  .insight-card { background: #fbfaf6; border: 1px solid rgba(16,14,42,0.08); border-radius: 16px; padding: 18px; display: flex; gap: 12px; align-items: flex-start; }
+  .insight-card .ic-emoji { font-size: 22px; line-height: 1; flex: 0 0 auto; }
+  .insight-card .ic-title { font-size: 14px; font-weight: 800; margin-bottom: 4px; }
+  .insight-card .ic-detail { font-size: 12.5px; color: rgba(16,14,42,0.6); line-height: 1.5; }
+
+  /* ---- Empty state ---- */
+  .empty-state { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 28px 12px 14px; gap: 10px; }
+  .empty-state img { width: 64px; height: 64px; object-fit: contain; opacity: 0.9; }
+  .empty-state .es-title { font-weight: 700; font-size: 14.5px; }
+  .empty-state .es-sub { font-size: 13px; color: rgba(16,14,42,0.5); max-width: 320px; }
+  .empty-state .es-cta {
+    background: #100e2a; border: none; color: #fff; font-family: 'Manrope', sans-serif; font-size: 13px; font-weight: 700;
+    padding: 10px 20px; border-radius: 999px; cursor: pointer; transition: transform 0.18s ease, background 0.18s ease; margin-top: 4px;
+  }
+  .empty-state .es-cta:hover { background: #221f4d; transform: translateY(-2px); }
+
+  /* ---- Dark mode ---- */
+  html[data-theme="dark"] body { background: #100e2a; color: #f2f0f8; }
+  html[data-theme="dark"] .topbar { background: rgba(16,14,42,0.88); border-color: rgba(255,255,255,0.08); }
+  html[data-theme="dark"] .logo-text .ink { color: #f2f0f8; }
+  html[data-theme="dark"] .user-pill { background: rgba(255,255,255,0.07); color: rgba(242,240,248,0.8); }
+  html[data-theme="dark"] .tab-link { color: rgba(242,240,248,0.55); }
+  html[data-theme="dark"] .tab-link:hover:not(.active):not(.soon) { background: rgba(255,255,255,0.06); color: #f2f0f8; }
+  html[data-theme="dark"] .tab-link.active { background: #7ee0d4; color: #100e2a; }
+  html[data-theme="dark"] .theme-toggle { background: #18162e; border-color: rgba(255,255,255,0.12); }
+  html[data-theme="dark"] .theme-toggle svg path { stroke: #f2f0f8; }
+  html[data-theme="dark"] .signout-btn { background: #7ee0d4; color: #100e2a; }
+  html[data-theme="dark"] .signout-btn:hover { background: #61c9bd; }
+  html[data-theme="dark"] .hero { background: radial-gradient(circle at 15% 20%, rgba(126,224,212,0.08), transparent 55%), radial-gradient(circle at 90% 15%, rgba(168,155,245,0.1), transparent 50%), #15132c; border-color: rgba(255,255,255,0.08); color: #f2f0f8; }
+  html[data-theme="dark"] .hero-tag { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.12); color: #cfccdf; }
+  html[data-theme="dark"] .hero-live { color: #a9a6bd; }
+  html[data-theme="dark"] .hero-sub { color: #b7b3cc; }
+  html[data-theme="dark"] .hero-date { color: #8f8ba3; }
+  html[data-theme="dark"] .hero-score-bg { stroke: rgba(255,255,255,0.1); }
+  html[data-theme="dark"] .hero-score-label { color: #8f8ba3; }
+  html[data-theme="dark"] .factor-row { background: rgba(255,255,255,0.05); }
+  html[data-theme="dark"] .factor-row .fr-label { color: rgba(242,240,248,0.8); }
+  html[data-theme="dark"] .card { background: #18162e; border-color: rgba(255,255,255,0.1); }
+  html[data-theme="dark"] .card .card-sub { color: #8f8ba3; }
+  html[data-theme="dark"] .empty-note { color: #8f8ba3; }
+  html[data-theme="dark"] .day-select { background: #18162e; border-color: rgba(255,255,255,0.1); }
+  html[data-theme="dark"] .day-btn { color: #a9a6bd; }
+  html[data-theme="dark"] .day-btn:hover:not(.active) { color: #f2f0f8; }
+  html[data-theme="dark"] .day-btn.active { background: #7ee0d4; color: #100e2a; }
+  html[data-theme="dark"] .chart-card { background: #100e2a; border-color: rgba(255,255,255,0.1); }
+  html[data-theme="dark"] .chart-card .cc-unit { color: #8f8ba3; }
+  html[data-theme="dark"] .chart-card .cc-stats { color: #8f8ba3; }
+  html[data-theme="dark"] .chart-card .cc-stats b { color: #f2f0f8; }
+  html[data-theme="dark"] .freq-row .fq-bar-wrap { background: rgba(255,255,255,0.08); }
+  html[data-theme="dark"] .freq-row .fq-count { color: #a9a6bd; }
+  html[data-theme="dark"] .insight-card { background: #100e2a; border-color: rgba(255,255,255,0.1); }
+  html[data-theme="dark"] .insight-card .ic-detail { color: #a9a6bd; }
+  html[data-theme="dark"] .empty-state .es-sub { color: #8f8ba3; }
+
+  @media (max-width: 640px) {
+    .hero-inner { flex-direction: column; align-items: flex-start; }
+    .hero-score { align-self: center; }
+    .freq-row .fq-name { width: 96px; }
+  }
+</style>
+</head>
+<body>
+  <div class="topbar">
+    <a class="logo-wrap" href="../">
+      <img src="../assets/d4f7acc01b9438e998c9e7b9676584b0.png" alt="QueroCura">
+      <span class="logo-text"><span class="ink">Quero</span><span class="teal">Cura</span></span>
+    </a>
+
+    <nav class="tab-nav">
+      <a class="tab-link" href="../symptoms/"><span class="tl-ic">🔍</span>Symptoms</a>
+      <a class="tab-link soon" href="#" onclick="return false;"><span class="tl-ic">💬</span>Dr. Cura<span class="soon-tag">Soon</span></a>
+      <a class="tab-link" href="../vitals/"><span class="tl-ic">❤️</span>Vitals</a>
+      <a class="tab-link" href="../curavault/"><span class="tl-ic">🔒</span>CuraVault</a>
+      <a class="tab-link" href="../dashboard/"><span class="tl-ic">🏠</span>Dashboard</a>
+      <a class="tab-link active" href="#"><span class="tl-ic">✨</span>Insights</a>
+      <a class="tab-link" href="../onboarding/"><span class="tl-ic">👤</span>Profile</a>
+    </nav>
+
+    <div class="topbar-right">
+      <span class="user-pill" id="qc-user-chip"><span class="up-dot" id="qc-user-dot">?</span><span id="qc-user-name"></span></span>
+      <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode" id="theme-toggle-btn">
+        <span id="theme-toggle-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z" stroke="#100e2a" stroke-width="1.7" stroke-linejoin="round"/></svg></span>
+      </button>
+      <button class="signout-btn" id="qc-signout-btn">Sign out</button>
+    </div>
+  </div>
+
+  <div class="shell">
+    <div class="hero">
+      <div class="hero-orb hero-orb1"></div>
+      <div class="hero-orb hero-orb2"></div>
+      <div class="hero-inner">
+        <div class="hero-text">
+          <div class="hero-eyebrow">
+            <span class="hero-tag">Insights</span>
+            <span class="hero-live"><span class="hero-live-dot"></span>Live</span>
+          </div>
+          <h1 class="hero-greeting">Your health, at a glance</h1>
+          <p class="hero-sub">A rollup of your vitals trends, symptom checks and the patterns between them — updated every time you log something new.</p>
+          <div class="hero-date" id="qc-today"></div>
+          <div class="factor-list" id="qc-factor-list"></div>
+        </div>
+
+        <div class="hero-score">
+          <div class="hero-score-ring-wrap">
+            <svg width="128" height="128" viewBox="0 0 128 128">
+              <circle class="hero-score-bg" cx="64" cy="64" r="56"/>
+              <circle class="hero-score-fg" id="hero-score-fg" cx="64" cy="64" r="56" stroke="#0e8f83" stroke-dasharray="352" stroke-dashoffset="352"/>
+            </svg>
+            <div class="hero-score-inner">
+              <span class="hero-score-num" id="hero-score-num">—</span>
+              <span class="hero-score-label">Health score</span>
+            </div>
+          </div>
+          <span class="hero-score-status" id="hero-score-status"></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="day-select" id="qc-day-select">
+      <button class="day-btn" data-days="7">7d</button>
+      <button class="day-btn active" data-days="30">30d</button>
+      <button class="day-btn" data-days="90">90d</button>
+    </div>
+
+    <div class="card">
+      <h2>📈 Vitals trends</h2>
+      <p class="card-sub">Visual trend lines for every vital you've logged in this window.</p>
+      <div id="qc-chart-wrap"><div class="empty-note">Loading…</div></div>
+    </div>
+
+    <div class="card">
+      <h2>🔁 Correlations &amp; patterns</h2>
+      <p class="card-sub">Plain-language observations connecting your vitals and symptom checks — not a diagnosis, just what shows up together.</p>
+      <div id="qc-insight-wrap"><div class="empty-note">Loading…</div></div>
+    </div>
+
+    <div class="card">
+      <h2>🩺 Most frequent symptom checks</h2>
+      <p class="card-sub">What's come up most often in your symptom checks during this window.</p>
+      <div id="qc-freq-wrap"><div class="empty-note">Loading…</div></div>
+    </div>
+  </div>
+
+<script>
+const API_BASE = "https://app.querocura.com/api";
+const STORAGE_KEY = 'qc-theme';
+const SUN_ICON = '<svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z" stroke="#100e2a" stroke-width="1.7" stroke-linejoin="round"/></svg>';
+const MOON_ICON = '<svg width="17" height="17" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="4.4" stroke="#f2f0f8" stroke-width="1.7"/><path d="M12 3v2.4M12 18.6V21M3 12h2.4M18.6 12H21M5.6 5.6l1.7 1.7M16.7 16.7l1.7 1.7M18.4 5.6l-1.7 1.7M7.3 16.7l-1.7 1.7" stroke="#f2f0f8" stroke-width="1.7" stroke-linecap="round"/></svg>';
+
+function applyTheme(dark) {
+  document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+  document.getElementById('theme-toggle-icon').innerHTML = dark ? MOON_ICON : SUN_ICON;
+}
+function toggleTheme() {
+  const dark = document.documentElement.getAttribute('data-theme') !== 'dark';
+  applyTheme(dark);
+  try { localStorage.setItem(STORAGE_KEY, dark ? 'dark' : 'light'); } catch (e) {}
+}
+applyTheme(document.documentElement.getAttribute('data-theme') === 'dark');
+
+function fmtDate(ts) {
+  if (!ts) return "—";
+  const d = new Date((ts || "").replace(" ", "T"));
+  if (isNaN(d.getTime())) return ts;
+  return d.toLocaleDateString(undefined, { day: "numeric", month: "short" });
+}
+
+const LEVEL_META = {
+  normal:    { color: "#0e8f83", word: "Normal" },
+  watch:     { color: "#2f8fd1", word: "Worth watching" },
+  caution:   { color: "#c98a10", word: "Caution" },
+  urgent:    { color: "#d24f28", word: "Urgent" },
+  emergency: { color: "#b3182a", word: "Emergency" },
+};
+const DIR_META = {
+  rising:  { arrow: "↑", color: "#c98a10" },
+  falling: { arrow: "↓", color: "#2f8fd1" },
+  stable:  { arrow: "→", color: "#0e8f83" },
+  single_reading: { arrow: "•", color: "rgba(16,14,42,0.4)" },
+  no_data: { arrow: "—", color: "rgba(16,14,42,0.4)" },
+};
+
+function sparklinePath(values, w, h, pad) {
+  if (!values || values.length < 2) return null;
+  const min = Math.min(...values), max = Math.max(...values);
+  const range = (max - min) || 1;
+  const step = (w - pad * 2) / (values.length - 1);
+  const pts = values.map((v, i) => {
+    const x = pad + i * step;
+    const y = pad + (1 - (v - min) / range) * (h - pad * 2);
+    return [x, y];
+  });
+  const d = pts.map((p, i) => (i === 0 ? "M" : "L") + p[0].toFixed(1) + "," + p[1].toFixed(1)).join(" ");
+  return { d, pts };
+}
+
+function chartCardHtml(card, history, key) {
+  const dir = DIR_META[card.direction] || DIR_META.no_data;
+  const val = card.latest !== null && card.latest !== undefined ? card.latest : "—";
+  const values = (history || []).map(r => r[key]).filter(v => v !== null && v !== undefined && v !== "").map(Number);
+
+  let chartSvg = '<div class="empty-note" style="font-size:11.5px;">Not enough points to chart yet.</div>';
+  const spark = sparklinePath(values, 300, 54, 6);
+  if (spark) {
+    const last = spark.pts[spark.pts.length - 1];
+    const areaD = spark.d + ` L${last[0].toFixed(1)},54 L${spark.pts[0][0].toFixed(1)},54 Z`;
+    chartSvg = '<svg viewBox="0 0 300 54" preserveAspectRatio="none">' +
+      '<path d="' + areaD + '" fill="' + dir.color + '" opacity="0.10"></path>' +
+      '<path d="' + spark.d + '" fill="none" stroke="' + dir.color + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>' +
+      '<circle cx="' + last[0].toFixed(1) + '" cy="' + last[1].toFixed(1) + '" r="3" fill="' + dir.color + '"></circle>' +
+    '</svg>';
+  }
+
+  return '<div class="chart-card">' +
+    '<div class="cc-head">' +
+      '<span class="cc-title">' + card.title + '</span>' +
+      '<span class="cc-dir" style="color:' + dir.color + '">' + dir.arrow + (card.delta !== null && card.delta !== undefined ? ' ' + (card.delta > 0 ? '+' : '') + card.delta : '') + '</span>' +
+    '</div>' +
+    '<div class="cc-value-row">' +
+      '<span class="cc-value">' + val + '</span>' +
+      (val !== "—" ? '<span class="cc-unit">' + card.unit + '</span>' : '') +
+    '</div>' +
+    chartSvg +
+    '<div class="cc-stats">' +
+      '<span>Min <b>' + (card.min ?? "—") + '</b></span>' +
+      '<span>Avg <b>' + (card.avg ?? "—") + '</b></span>' +
+      '<span>Max <b>' + (card.max ?? "—") + '</b></span>' +
+      '<span>' + (card.count || 0) + ' reading' + (card.count === 1 ? '' : 's') + '</span>' +
+    '</div>' +
+  '</div>';
+}
+
+function renderCharts(vitalsDashboard) {
+  const wrap = document.getElementById("qc-chart-wrap");
+  if (!vitalsDashboard || !vitalsDashboard.has_data || !vitalsDashboard.cards || !vitalsDashboard.cards.length) {
+    wrap.innerHTML = '<div class="empty-state">' +
+      '<img src="../assets/6abe27005847b6683a14deef5164e1c7.png" alt="">' +
+      '<div class="es-title">No vitals yet</div>' +
+      '<div class="es-sub">Log a few readings and your trend charts will start filling in here.</div>' +
+      '<button type="button" class="es-cta" onclick="window.location.href=\'../vitals/\';">Add a reading</button>' +
+    '</div>';
+    return;
+  }
+  const history = (vitalsDashboard.analysis && vitalsDashboard.analysis.history) || [];
+  wrap.innerHTML = '<div class="chart-grid">' +
+    vitalsDashboard.cards
+      .filter(c => c.count && c.count > 0)
+      .map(c => chartCardHtml(c, history, c.key)).join("") +
+  '</div>';
+}
+
+function renderRisk(risk) {
+  const C = 2 * Math.PI * 56;
+  const score = (risk && typeof risk.score === "number") ? risk.score : 0;
+  const color = (risk && risk.color) || "#0e8f83";
+  const fg = document.getElementById("hero-score-fg");
+  fg.style.strokeDasharray = C;
+  fg.style.strokeDashoffset = C - (score / 100) * C;
+  fg.setAttribute("stroke", color);
+  document.getElementById("hero-score-num").textContent = (risk && risk.has_data) ? score : "—";
+  const statusEl = document.getElementById("hero-score-status");
+  statusEl.textContent = (risk && risk.has_data) ? (risk.band || "") : "Not enough data yet";
+  statusEl.style.color = color;
+
+  const list = document.getElementById("qc-factor-list");
+  const factors = (risk && risk.factors) || [];
+  if (!factors.length) {
+    list.innerHTML = '';
+    return;
+  }
+  list.innerHTML = factors.map(f => (
+    '<div class="factor-row">' +
+      '<span class="fr-label">' + f.label + '</span>' +
+      '<span class="fr-impact" style="color:' + (f.impact < 0 ? '#d24f28' : '#0e8f83') + '">' + (f.impact > 0 ? '+' : '') + f.impact + '</span>' +
+    '</div>'
+  )).join("");
+}
+
+function renderCorrelations(correlations) {
+  const wrap = document.getElementById("qc-insight-wrap");
+  if (!correlations || !correlations.length) {
+    wrap.innerHTML = '<div class="empty-note">Keep logging vitals and symptom checks — patterns will show up here.</div>';
+    return;
+  }
+  wrap.innerHTML = '<div class="insight-grid">' + correlations.map(c => (
+    '<div class="insight-card">' +
+      '<span class="ic-emoji">' + (c.icon || '💡') + '</span>' +
+      '<div><div class="ic-title">' + c.title + '</div><div class="ic-detail">' + c.detail + '</div></div>' +
+    '</div>'
+  )).join("") + '</div>';
+}
+
+function renderFrequency(freq) {
+  const wrap = document.getElementById("qc-freq-wrap");
+  if (!freq || !freq.length) {
+    wrap.innerHTML = '<div class="empty-state">' +
+      '<img src="../assets/6abe27005847b6683a14deef5164e1c7.png" alt="">' +
+      '<div class="es-title">No symptom checks yet</div>' +
+      '<div class="es-sub">Run a symptom check and it\'ll start showing up here so you can spot recurring patterns.</div>' +
+      '<button type="button" class="es-cta" onclick="window.location.href=\'../symptoms/\';">Check symptoms</button>' +
+    '</div>';
+    return;
+  }
+  const max = Math.max(...freq.map(c => c.count));
+  wrap.innerHTML = '<div class="freq-list">' + freq.map(c => (
+    '<div class="freq-row">' +
+      '<span class="fq-name">' + c.name + '</span>' +
+      '<div class="fq-bar-wrap"><div class="fq-bar" style="width:' + Math.max(6, (c.count / max) * 100) + '%"></div></div>' +
+      '<span class="fq-count">' + c.count + '× · ' + fmtDate(c.last_seen) + '</span>' +
+    '</div>'
+  )).join("") + '</div>';
+}
+
+let qcDays = 30;
+async function loadInsights(days) {
+  qcDays = days || qcDays;
+  ["qc-chart-wrap", "qc-insight-wrap", "qc-freq-wrap"].forEach(id => {
+    document.getElementById(id).innerHTML = '<div class="empty-note">Loading…</div>';
+  });
+  try {
+    const res = await fetch(API_BASE + "/insights/dashboard?days=" + qcDays, { credentials: "include" });
+    const data = await res.json();
+    renderRisk(data.risk);
+    renderCharts(data.vitals);
+    renderCorrelations(data.correlations);
+    renderFrequency(data.condition_frequency);
+  } catch (e) {
+    ["qc-chart-wrap", "qc-insight-wrap", "qc-freq-wrap"].forEach(id => {
+      document.getElementById(id).innerHTML = '<div class="empty-note">Couldn\'t load this right now — try refreshing.</div>';
+    });
+  }
+}
+
+function initDaySelect() {
+  const btns = document.querySelectorAll("#qc-day-select .day-btn");
+  btns.forEach(b => {
+    b.addEventListener("click", () => {
+      btns.forEach(x => x.classList.remove("active"));
+      b.classList.add("active");
+      loadInsights(parseInt(b.getAttribute("data-days"), 10));
+    });
+  });
+}
+
+function setTodayChrome() {
+  document.getElementById("qc-today").textContent = new Date().toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short", year: "numeric" });
+}
+
+document.getElementById("qc-signout-btn").addEventListener("click", async () => {
+  await fetch(API_BASE + "/auth/logout", { method: "POST", credentials: "include" });
+  window.location.href = "../";
+});
+
+(async function init() {
+  const [meData, profResult] = await Promise.all([
+    fetch(API_BASE + "/auth/me", { credentials: "include" }).then(r => r.json()).catch(() => ({ logged_in: false })),
+    fetch(API_BASE + "/profile", { credentials: "include" }).then(r => r.json()).catch(() => null),
+  ]);
+  if (!meData.logged_in) { window.location.href = "../login/"; return; }
+  const user = meData.user;
+  if (profResult && profResult.ok && profResult.profile && !profResult.profile.wizard_done) {
+    window.location.href = "../onboarding/";
+    return;
+  }
+  const profile = (profResult && profResult.ok && profResult.profile) ? profResult.profile : null;
+  const name = (profile && profile.display_name) || user.display_name || user.username || user.email || "";
+  const initials = name ? name.trim().split(/\s+/).slice(0, 2).map(w => w[0].toUpperCase()).join("") : "?";
+  document.getElementById("qc-user-dot").textContent = initials;
+  document.getElementById("qc-user-name").textContent = name ? name.split(" ")[0] : "";
+
+  setTodayChrome();
+  initDaySelect();
+  loadInsights(qcDays);
+})();
+</script>
+</body>
+</html>
