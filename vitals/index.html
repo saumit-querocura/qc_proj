@@ -8,6 +8,8 @@
 <link rel="icon" type="image/x-icon" href="../icons/favicon.ico">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://app.querocura.com">
+<link rel="dns-prefetch" href="https://app.querocura.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700;800&family=Manrope:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500;1,9..144,600&display=swap" rel="stylesheet">
 <script>
   (function () {
@@ -472,16 +474,21 @@ document.getElementById("qc-signout-btn").addEventListener("click", async () => 
 });
 
 (async function init() {
-  const user = await requireSession();
-  if (!user) return;
-  const complete = await requireCompletedProfile();
-  if (!complete) return;
+  const [meData, profData] = await Promise.all([
+    fetch(API_BASE + "/auth/me", { credentials: "include" }).then(r => r.json()).catch(() => ({ logged_in: false })),
+    fetch(API_BASE + "/profile", { credentials: "include" }).then(r => r.json()).catch(() => null),
+  ]);
+  if (!meData.logged_in) { window.location.href = "../login/"; return; }
+  const user = meData.user;
+  if (profData && profData.ok && profData.profile && !profData.profile.wizard_done) {
+    window.location.href = "../onboarding/";
+    return;
+  }
   const name = user.display_name || user.username || user.email || "";
   const initials = name ? name.trim().split(/\s+/).slice(0, 2).map(w => w[0].toUpperCase()).join("") : "?";
   document.getElementById("qc-user-dot").textContent = initials;
   document.getElementById("qc-user-name").textContent = name ? name.split(" ")[0] : "";
-  await loadLatest();
-  await loadHistory();
+  await Promise.all([loadLatest(), loadHistory()]);
 })();
 </script>
 </body>
