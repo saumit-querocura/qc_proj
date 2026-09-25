@@ -114,6 +114,19 @@
   .analyse-btn:disabled { opacity: 0.55; cursor: default; }
   .err-msg { font-size: 13.5px; font-weight: 600; color: #b3401f; }
 
+  /* ---- Quick check: targeted follow-up questions ---- */
+  .quick-check { background: rgba(14,143,131,0.06); border: 1px solid rgba(14,143,131,0.18); }
+  .qc-title { font-size: 13px; font-weight: 800; color: #0e8f83; margin-bottom: 4px; }
+  .qc-sub { font-size: 12.5px; color: rgba(16,14,42,0.55); margin-bottom: 14px; }
+  .qc-question { font-size: 14.5px; font-weight: 700; color: #10142a; margin: 14px 0 8px; }
+  .qc-question:first-of-type { margin-top: 0; }
+  .qc-btns { display: flex; gap: 8px; }
+  .qc-btn { font-size: 13px; font-weight: 700; padding: 8px 20px; border-radius: 999px; cursor: pointer; font-family: 'Manrope', sans-serif; border: 1px solid rgba(16,14,42,0.14); background: #fff; color: #10142a; transition: all 0.15s ease; }
+  .qc-btn:hover:not(:disabled) { border-color: #0e8f83; color: #0e8f83; }
+  .qc-btn:disabled { opacity: 0.5; cursor: default; }
+  .qc-btn.qc-answered { background: #0e8f83; color: #fff; border-color: #0e8f83; }
+  .qc-skip { font-size: 12px; font-weight: 600; color: rgba(16,14,42,0.4); background: none; border: none; cursor: pointer; text-decoration: underline; margin-top: 4px; font-family: 'Manrope', sans-serif; }
+
   /* ---- Blockbuster scan animation ---- */
   .scan-wrap { display: none; flex-direction: column; align-items: center; text-align: center; padding: 40px 10px 30px; }
   .scan-wrap.show { display: flex; }
@@ -198,6 +211,11 @@
   html[data-theme="dark"] .condition-meta { color: #8f8ba3; }
   html[data-theme="dark"] .condition-desc { color: #b7b3cc; }
   html[data-theme="dark"] .section-label { color: #8f8ba3; }
+  html[data-theme="dark"] .quick-check { background: rgba(14,143,131,0.1); border-color: rgba(14,143,131,0.28); }
+  html[data-theme="dark"] .qc-sub { color: #8f8ba3; }
+  html[data-theme="dark"] .qc-question { color: #f2f1fa; }
+  html[data-theme="dark"] .qc-btn { background: rgba(255,255,255,0.06); color: #f2f1fa; border-color: rgba(255,255,255,0.14); }
+  html[data-theme="dark"] .qc-skip { color: #8f8ba3; }
   html[data-theme="dark"] .doctor-callout { background: rgba(47,143,209,0.12); color: #a9d4f0; }
   html[data-theme="dark"] .other-cond-row { border-bottom-color: rgba(255,255,255,0.08); }
   html[data-theme="dark"] .other-cond-urgency { background: rgba(255,255,255,0.08); color: #cfccdf; }
@@ -434,7 +452,7 @@ function normalizeResponse(data) {
   });
 }
 
-function renderResult(rawData) {
+function renderResult(rawData, baseText, round) {
   const data = normalizeResponse(rawData);
   const wrap = document.getElementById("sym-results");
   const raw = data.raw || data.diagnosis || {};
@@ -521,12 +539,76 @@ function renderResult(rawData) {
     html += '<div class="card reveal" ' + step() + '><div class="doctor-callout"><span>🩺</span><span><strong>For your doctor:</strong> ' + mdBold(data.doctor_summary) + '</span></div></div>';
   }
 
+  // Targeted follow-up questions (see generate_clarifying_questions() on the
+  // backend) -- only ever offered for one round, so answering a couple of
+  // quick yes/no questions refines the result once rather than turning this
+  // into an endless interview. rawData.clarifying_questions is only present
+  // when the top two candidates weren't clearly separated.
+  const questions = (rawData && rawData.clarifying_questions) || [];
+  if (questions.length && (round || 0) === 0) {
+    html += '<div class="card quick-check reveal" ' + step() + ' id="qc-panel">' +
+      '<div class="qc-title">🎯 A couple of quick questions</div>' +
+      '<div class="qc-sub">Answering these helps narrow this down further.</div>' +
+      questions.map((q, i) =>
+        '<div class="qc-question">' + escapeHtml(q.question) + '</div>' +
+        '<div class="qc-btns" data-qc-idx="' + i + '">' +
+          '<button type="button" class="qc-btn" data-qc-answer="yes">Yes</button>' +
+          '<button type="button" class="qc-btn" data-qc-answer="no">No</button>' +
+          '<button type="button" class="qc-btn" data-qc-answer="skip">Not sure</button>' +
+        '</div>'
+      ).join("") +
+    '</div>';
+  }
+
   wrap.innerHTML = html;
   wrap.classList.add("show");
   wrap.scrollIntoView({ behavior: "smooth", block: "start" });
+
+  if (questions.length && (round || 0) === 0) {
+    wireQuickCheck(questions, baseText || (rawData && rawData.input) || "");
+  }
 }
 
-async function runAnalysis(text, busyBtn) {
+// Wires up the Yes/No/Not sure buttons on the quick-check panel. Each answer
+// appends a guaranteed-matching confirm_phrase (or its negation) onto the
+// original symptom text and re-runs analysis once, refined -- see
+// generate_clarifying_questions()/confirm_phrase on the backend for why a
+// guaranteed-matching phrase (rather than the raw symptom key) is needed.
+function wireQuickCheck(questions, baseText) {
+  const panel = document.getElementById("qc-panel");
+  if (!panel) return;
+  const answers = [];
+
+  function maybeSubmit() {
+    if (answers.filter(a => a !== undefined).length < questions.length) return; // wait for all questions
+    const extras = answers.filter(a => a).join(". ");
+    const refinedText = extras ? (baseText + ". " + extras) : baseText;
+    const btn = document.getElementById("sym-btn");
+    runAnalysis(refinedText, btn, 1);
+  }
+
+  panel.querySelectorAll(".qc-btns").forEach((group) => {
+    const idx = parseInt(group.getAttribute("data-qc-idx"), 10);
+    group.querySelectorAll(".qc-btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const choice = btn.getAttribute("data-qc-answer");
+        const q = questions[idx];
+        if (choice === "yes") answers[idx] = q.confirm_phrase || q.symptom_key;
+        else if (choice === "no") answers[idx] = "no " + (q.confirm_phrase || q.symptom_key);
+        else answers[idx] = "";
+
+        group.querySelectorAll(".qc-btn").forEach(b => { b.disabled = true; b.classList.remove("qc-answered"); });
+        btn.classList.add("qc-answered");
+
+        if (answers.filter(a => a !== undefined).length === questions.length) {
+          maybeSubmit();
+        }
+      });
+    });
+  });
+}
+
+async function runAnalysis(text, busyBtn, round) {
   const errEl = document.getElementById("sym-err");
   errEl.textContent = "";
   if (busyBtn) busyBtn.disabled = true;
@@ -550,7 +632,7 @@ async function runAnalysis(text, busyBtn) {
     const data = await res.json();
     stopScan();
     if (!res.ok || data.ok === false) throw new Error(data.err || data.message || "Couldn't analyze that just now.");
-    renderResult(data);
+    renderResult(data, text, round || 0);
   } catch (err) {
     stopScan();
     errEl.textContent = err.message || "Something went wrong — please try again.";
