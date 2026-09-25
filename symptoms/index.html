@@ -409,7 +409,33 @@ function listHtml(className, items) {
   return '<ul class="' + className + '">' + items.map(i => "<li>" + mdBold(i) + "</li>").join("") + "</ul>";
 }
 
-function renderResult(data) {
+// Normalizes the thin /api/diagnosis/analyse response (top_condition /
+// clinical_reasoning / overall_urgency) into the same flat shape this
+// renderer already expects from the richer /api/fast/analyse endpoint,
+// so renderResult works unchanged regardless of which one answered.
+function normalizeResponse(data) {
+  if (!data || !data.top_condition) return data; // already flat (fast/analyse shape)
+  const top = data.top_condition || {};
+  const reasoning = data.clinical_reasoning || {};
+  return Object.assign({}, data, {
+    name: top.name,
+    emoji: top.emoji,
+    confidence: undefined,
+    description: top.description,
+    red_flags: top.red_flags,
+    home_care_now: top.home_care_now,
+    avoid: top.avoid,
+    urgency: data.overall_urgency,
+    patient_answer: reasoning.patient_answer,
+    why_it_fits: reasoning.why_it_fits,
+    monitoring_advice: reasoning.monitoring_advice,
+    doctor_summary: reasoning.doctor_summary,
+    possible_conditions: data.possible_conditions,
+  });
+}
+
+function renderResult(rawData) {
+  const data = normalizeResponse(rawData);
   const wrap = document.getElementById("sym-results");
   const raw = data.raw || data.diagnosis || {};
   const board = raw.medical_reasoning_board || null;
@@ -509,7 +535,13 @@ async function runAnalysis(text, busyBtn) {
   startScan();
 
   try {
-    const res = await fetch(API_BASE + "/fast/analyse", {
+    // Using the lighter /diagnosis/analyse endpoint here (not /fast/analyse):
+    // the richer 18-module pipeline behind /fast/analyse loads several large
+    // knowledge files and was pushing the backend's 512MB Render instance
+    // over its memory limit under real traffic (2026-09-25). This endpoint
+    // runs the same core legacy-engine diagnosis without that extra load;
+    // renderResult() normalizes its shape via normalizeResponse() above.
+    const res = await fetch(API_BASE + "/diagnosis/analyse", {
       method: "POST",
       credentials: "include",
       headers: { "Content-Type": "application/json" },
