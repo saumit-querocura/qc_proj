@@ -1,0 +1,487 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vitals — QueroCura</title>
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/x-icon" href="../icons/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700;800&family=Manrope:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500;1,9..144,600&display=swap" rel="stylesheet">
+<script>
+  (function () {
+    try {
+      if (localStorage.getItem('qc-theme') === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      }
+    } catch (e) {}
+  })();
+</script>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh;
+    font-family: 'Manrope', sans-serif; background: #f6f5f1; color: #100e2a;
+  }
+  h1, h2, h3, .display { font-family: 'Space Grotesk', sans-serif; }
+  a { color: #0e8f83; text-decoration: none; }
+  a:hover { color: #0b6f66; }
+
+  /* ---- Top bar (ditto dashboard) ---- */
+  .topbar {
+    display: flex; align-items: center; justify-content: space-between; gap: 18px; flex-wrap: wrap;
+    padding: 14px clamp(16px,4vw,32px); background: rgba(246,245,241,0.88); backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(16,14,42,0.08); position: sticky; top: 0; z-index: 20;
+  }
+  .logo-wrap { display: flex; align-items: center; gap: 10px; flex: 0 0 auto; }
+  .logo-wrap img { width: 34px; height: 31px; object-fit: contain; }
+  .logo-text { font-size: 18px; font-weight: 700; letter-spacing: -0.02em; font-family: 'Space Grotesk', sans-serif; }
+  .logo-text .ink { color: #100e2a; }
+  .logo-text .teal { color: #0e8f83; }
+  .user-pill { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px 5px 6px; border-radius: 999px; background: rgba(16,14,42,0.05); font-size: 12.5px; font-weight: 700; color: rgba(16,14,42,0.75); margin-left: 4px; }
+  .user-pill .up-dot { width: 20px; height: 20px; border-radius: 50%; background: linear-gradient(135deg,#0e8f83,#2f8fd1); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 10px; }
+
+  .tab-nav { display: flex; align-items: center; gap: 4px; flex: 1 1 auto; justify-content: center; overflow-x: auto; scrollbar-width: none; }
+  .tab-nav::-webkit-scrollbar { display: none; }
+  .tab-link {
+    display: flex; align-items: center; gap: 7px; white-space: nowrap; padding: 9px 15px; border-radius: 999px;
+    font-size: 13.5px; font-weight: 700; color: rgba(16,14,42,0.55); transition: background 0.18s ease, color 0.18s ease;
+  }
+  .tab-link .tl-ic { font-size: 14px; }
+  .tab-link:hover:not(.active):not(.soon) { background: rgba(16,14,42,0.05); color: #100e2a; }
+  .tab-link.active { background: #100e2a; color: #fff; }
+  .tab-link.soon { opacity: 0.45; cursor: default; }
+  .tab-link.soon .soon-tag { font-size: 8.5px; font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase; background: rgba(16,14,42,0.1); padding: 1px 6px; border-radius: 999px; margin-left: 2px; }
+
+  .topbar-right { display: flex; align-items: center; gap: 10px; flex: 0 0 auto; }
+  .signout-btn {
+    background: #100e2a; border: none; color: #fff;
+    font-family: 'Manrope', sans-serif; font-size: 13px; font-weight: 700;
+    padding: 9px 18px; border-radius: 999px; cursor: pointer; transition: transform 0.18s ease, background 0.18s ease;
+  }
+  .signout-btn:hover { background: #221f4d; transform: translateY(-2px); }
+  .theme-toggle {
+    display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px;
+    border-radius: 10px; border: 1.5px solid rgba(16,14,42,0.14); background: #fff; cursor: pointer;
+    padding: 0; transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease; flex: 0 0 auto;
+  }
+  .theme-toggle:hover { transform: translateY(-2px); }
+
+  .shell { max-width: 900px; margin: 0 auto; padding: 32px 24px 80px; }
+
+  .page-head { margin-bottom: 22px; }
+  .page-eyebrow { display: inline-flex; align-items: center; gap: 8px; padding: 4px 12px; border-radius: 999px; background: rgba(14,143,131,0.08); border: 1px solid rgba(14,143,131,0.18); color: #0e8f83; font-size: 10.5px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 12px; }
+  .page-title { font-family: 'Fraunces', serif; font-size: clamp(26px,4vw,34px); font-weight: 600; margin: 0 0 8px; }
+  .page-sub { font-size: 14.5px; color: rgba(16,14,42,0.55); margin: 0; max-width: 480px; line-height: 1.5; }
+
+  /* ---- Snapshot ring row (ditto dashboard) ---- */
+  .snapshot-strip { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; margin-bottom: 24px; }
+  .snap-card {
+    position: relative; overflow: hidden; background: #fff; border-radius: 16px; padding: 16px 14px 14px;
+    border: 1px solid rgba(16,14,42,0.08); display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px;
+  }
+  .snap-ring-wrap { position: relative; width: 62px; height: 62px; }
+  .snap-ring-wrap svg { transform: rotate(-90deg); }
+  .snap-ring-bg { fill: none; stroke: rgba(16,14,42,0.08); stroke-width: 5; }
+  .snap-ring-fg { fill: none; stroke-width: 5; stroke-linecap: round; }
+  .snap-ring-inner { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .snap-ring-num { font-family: 'Fraunces', serif; font-size: 14.5px; font-weight: 600; line-height: 1.05; }
+  .snap-ring-unit { font-size: 8.5px; color: rgba(16,14,42,0.4); font-weight: 700; }
+  .snap-card .sc-label { font-size: 11.5px; font-weight: 700; font-family: 'Space Grotesk', sans-serif; }
+
+  .card {
+    position: relative; overflow: hidden;
+    background: #fff; border-radius: 20px; padding: 26px 28px;
+    border: 1px solid rgba(16,14,42,0.08); margin-bottom: 22px;
+  }
+  .card::before { content: ''; position: absolute; top: -44px; right: -44px; width: 150px; height: 150px; border-radius: 50%; background: radial-gradient(circle, rgba(14,143,131,0.06), transparent 70%); pointer-events: none; }
+  .card h2 { font-size: 18px; margin: 0 0 18px; position: relative; }
+  .card > * { position: relative; }
+
+  .vitals-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 14px; }
+  .field label { display: block; font-size: 12.5px; font-weight: 700; margin-bottom: 6px; color: rgba(16,14,42,0.7); }
+  input, textarea {
+    width: 100%; padding: 11px 13px; border-radius: 10px;
+    border: 1.5px solid rgba(16,14,42,0.14); font-family: 'Manrope', sans-serif;
+    font-size: 14.5px; color: #100e2a; background: #fff; outline: none;
+  }
+  input:focus, textarea:focus { border-color: #0e8f83; box-shadow: 0 0 0 3px rgba(14,143,131,0.12); }
+  .notes-field { grid-column: 1 / -1; }
+  .save-btn {
+    position: relative; overflow: hidden;
+    background: #0e8f83; color: #fff; font-size: 15px; font-weight: 700;
+    padding: 12px 28px; border-radius: 999px; border: none; cursor: pointer;
+    font-family: 'Manrope', sans-serif; margin-top: 18px;
+    transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+  }
+  .save-btn::after {
+    content: ''; position: absolute; top: 0; left: -60%; width: 40%; height: 100%;
+    background: linear-gradient(115deg, transparent, rgba(255,255,255,0.35), transparent);
+    transform: skewX(-20deg); transition: left 0.6s ease; pointer-events: none;
+  }
+  .save-btn:hover:not(:disabled)::after { left: 140%; }
+  .save-btn:hover:not(:disabled) { background: #0b6f66; transform: translateY(-2px); box-shadow: 0 12px 24px -8px rgba(14,143,131,0.45); }
+  .save-btn:disabled { opacity: 0.6; cursor: default; }
+  .save-msg { font-size: 13.5px; font-weight: 600; margin-top: 12px; display: none; }
+  .save-msg.ok { color: #0e8f83; display: block; }
+  .save-msg.err { color: #b3401f; display: block; }
+
+  .empty-note { font-size: 14px; color: rgba(16,14,42,0.5); }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  th { text-align: left; padding: 10px 12px; color: rgba(16,14,42,0.55); font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: 0.03em; border-bottom: 1.5px solid rgba(16,14,42,0.08); }
+  td { padding: 12px; border-bottom: 1px solid rgba(16,14,42,0.06); }
+  tr:last-child td { border-bottom: none; }
+  .view-all-row { display: flex; justify-content: flex-end; margin-top: 10px; }
+  .view-all-row a { font-size: 13px; font-weight: 700; }
+
+  .tip-card {
+    display: flex; align-items: center; gap: 12px; padding: 16px 18px; border-radius: 16px;
+    background: linear-gradient(120deg, rgba(14,143,131,0.08), rgba(124,111,219,0.06));
+    border: 1px solid rgba(14,143,131,0.16); margin-bottom: 22px;
+  }
+  .tip-card img { width: 34px; height: 34px; object-fit: contain; flex: 0 0 auto; }
+  .tip-card .tip-text { font-size: 13px; color: rgba(16,14,42,0.68); line-height: 1.5; }
+  .tip-card .tip-label { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: #0e8f83; margin-bottom: 2px; }
+
+  .confetti-piece { position: fixed; top: -12px; width: 8px; height: 8px; border-radius: 2px; pointer-events: none; z-index: 999; animation: confettiFall 1.4s ease-in forwards; }
+  @keyframes confettiFall { to { transform: translateY(100vh) rotate(540deg); opacity: 0; } }
+
+  @media (max-width: 900px) {
+    .tab-nav { order: 3; width: 100%; justify-content: flex-start; }
+  }
+
+  html[data-theme="dark"] body { background: #0d0c1f; color: #f2f0f8; }
+  html[data-theme="dark"] a { color: #7ee0d4; }
+  html[data-theme="dark"] a:hover { color: #9beee0; }
+  html[data-theme="dark"] .topbar { background: rgba(13,12,31,0.88); border-bottom-color: rgba(255,255,255,0.1); }
+  html[data-theme="dark"] .logo-text .ink { color: #f2f0f8; }
+  html[data-theme="dark"] .user-pill { background: rgba(255,255,255,0.06); color: #cfccdf; }
+  html[data-theme="dark"] .tab-link { color: #a9a6bd; }
+  html[data-theme="dark"] .tab-link:hover:not(.active):not(.soon) { background: rgba(255,255,255,0.06); color: #f2f0f8; }
+  html[data-theme="dark"] .tab-link.active { background: #7ee0d4; color: #100e2a; }
+  html[data-theme="dark"] .tab-link.soon .soon-tag { background: rgba(255,255,255,0.1); }
+  html[data-theme="dark"] .signout-btn { background: #7ee0d4; color: #100e2a; }
+  html[data-theme="dark"] .signout-btn:hover { background: #9beee0; }
+  html[data-theme="dark"] .theme-toggle { background: #18162e; border-color: rgba(255,255,255,0.14); }
+  html[data-theme="dark"] .card { background: #18162e; border-color: rgba(255,255,255,0.1); }
+  html[data-theme="dark"] .page-sub { color: #b7b3cc; }
+  html[data-theme="dark"] .page-eyebrow { background: rgba(126,224,212,0.1); border-color: rgba(126,224,212,0.22); color: #7ee0d4; }
+  html[data-theme="dark"] .snap-card { background: #18162e; border-color: rgba(255,255,255,0.1); }
+  html[data-theme="dark"] .snap-ring-bg { stroke: rgba(255,255,255,0.1); }
+  html[data-theme="dark"] .snap-ring-unit { color: #8f8ba3; }
+  html[data-theme="dark"] .field label { color: #b7b3cc; }
+  html[data-theme="dark"] input, html[data-theme="dark"] textarea { background: #100e2a; color: #f2f0f8; border-color: rgba(255,255,255,0.14); }
+  html[data-theme="dark"] .empty-note { color: #8f8ba3; }
+  html[data-theme="dark"] th { color: #a9a6bd; border-bottom-color: rgba(255,255,255,0.12); }
+  html[data-theme="dark"] td { border-bottom-color: rgba(255,255,255,0.08); }
+  html[data-theme="dark"] .tip-card { background: linear-gradient(120deg, rgba(126,224,212,0.08), rgba(124,111,219,0.1)); border-color: rgba(126,224,212,0.18); }
+  html[data-theme="dark"] .tip-card .tip-text { color: #cfccdf; }
+</style>
+</head>
+<body>
+  <div class="topbar">
+    <a class="logo-wrap" href="../">
+      <img src="../assets/d4f7acc01b9438e998c9e7b9676584b0.png" alt="QueroCura">
+      <span class="logo-text"><span class="ink">Quero</span><span class="teal">Cura</span></span>
+    </a>
+
+    <nav class="tab-nav">
+      <a class="tab-link soon" href="#" onclick="return false;"><span class="tl-ic">🔍</span>Symptoms<span class="soon-tag">Soon</span></a>
+      <a class="tab-link soon" href="#" onclick="return false;"><span class="tl-ic">💬</span>Dr. Cura<span class="soon-tag">Soon</span></a>
+      <a class="tab-link active" href="#"><span class="tl-ic">❤️</span>Vitals</a>
+      <a class="tab-link" href="../dashboard/"><span class="tl-ic">🏠</span>Dashboard</a>
+      <a class="tab-link" href="../onboarding/"><span class="tl-ic">👤</span>Profile</a>
+    </nav>
+
+    <div class="topbar-right">
+      <span class="user-pill" id="qc-user-chip"><span class="up-dot" id="qc-user-dot">?</span><span id="qc-user-name"></span></span>
+      <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode" id="theme-toggle-btn">
+        <span id="theme-toggle-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z" stroke="#100e2a" stroke-width="1.7" stroke-linejoin="round"/></svg></span>
+      </button>
+      <button class="signout-btn" id="qc-signout-btn">Sign out</button>
+    </div>
+  </div>
+
+  <div class="shell">
+    <div class="page-head">
+      <span class="page-eyebrow">Vitals</span>
+      <h1 class="page-title">Log how you're doing</h1>
+      <p class="page-sub">A quick reading now helps QueroCura catch changes early — and keeps your trends and Dr. Cura's analysis on the Dashboard up to date.</p>
+    </div>
+
+    <div class="snapshot-strip" id="qc-snapshot"></div>
+
+    <div class="card">
+      <h2>New reading</h2>
+      <form id="qc-vitals-form">
+        <div class="vitals-grid">
+          <div class="field">
+            <label for="v-temp">Temperature (°C)</label>
+            <input type="number" step="0.1" id="v-temp" name="temp">
+          </div>
+          <div class="field">
+            <label for="v-sys">Systolic BP</label>
+            <input type="number" id="v-sys" name="sys_bp">
+          </div>
+          <div class="field">
+            <label for="v-dia">Diastolic BP</label>
+            <input type="number" id="v-dia" name="dia_bp">
+          </div>
+          <div class="field">
+            <label for="v-pulse">Pulse (bpm)</label>
+            <input type="number" id="v-pulse" name="pulse">
+          </div>
+          <div class="field">
+            <label for="v-spo2">SpO₂ (%)</label>
+            <input type="number" id="v-spo2" name="spo2">
+          </div>
+          <div class="field">
+            <label for="v-glucose">Glucose</label>
+            <input type="number" step="0.1" id="v-glucose" name="glucose">
+          </div>
+          <div class="field">
+            <label for="v-weight">Weight (kg)</label>
+            <input type="number" step="0.1" id="v-weight" name="weight">
+          </div>
+          <div class="field notes-field">
+            <label for="v-notes">Notes</label>
+            <textarea id="v-notes" name="notes" rows="2"></textarea>
+          </div>
+        </div>
+        <button type="submit" class="save-btn" id="qc-save-btn">Save reading</button>
+        <div class="save-msg" id="qc-save-msg"></div>
+      </form>
+    </div>
+
+    <div class="tip-card">
+      <img src="../assets/6abe27005847b6683a14deef5164e1c7.png" alt="">
+      <div>
+        <div class="tip-label">Did you know</div>
+        <div class="tip-text" id="qc-tip">A blood pressure reading is best taken seated, after 5 minutes of rest.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Recent readings</h2>
+      <div id="qc-history-wrap"><div class="empty-note">Loading…</div></div>
+      <div class="view-all-row"><a href="../dashboard/">Full history & trends on the Dashboard →</a></div>
+    </div>
+  </div>
+
+<script>
+var STORAGE_KEY = 'qc-theme';
+var root = document.documentElement;
+var SUN_ICON = '<svg width="17" height="17" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="4.2" stroke="#f2f0f8" stroke-width="1.7"/><path d="M12 3v2.2M12 18.8V21M21 12h-2.2M5.2 12H3M18.4 5.6l-1.5 1.5M7.1 16.9l-1.5 1.5M18.4 18.4l-1.5-1.5M7.1 7.1L5.6 5.6" stroke="#f2f0f8" stroke-width="1.7" stroke-linecap="round"/></svg>';
+var MOON_ICON = '<svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z" stroke="#100e2a" stroke-width="1.7" stroke-linejoin="round"/></svg>';
+function applyTheme(dark) {
+  root.setAttribute('data-theme', dark ? 'dark' : 'light');
+  try { localStorage.setItem(STORAGE_KEY, dark ? 'dark' : 'light'); } catch (e) {}
+  var icon = document.getElementById('theme-toggle-icon');
+  if (icon) icon.innerHTML = dark ? SUN_ICON : MOON_ICON;
+}
+window.toggleTheme = function () { applyTheme(root.getAttribute('data-theme') !== 'dark'); };
+if (root.getAttribute('data-theme') === 'dark') applyTheme(true);
+
+const API_BASE = "https://app.querocura.com/api";
+
+function fmt(v) { return (v === null || v === undefined || v === "") ? "—" : v; }
+function fmtDate(ts) {
+  if (!ts) return "—";
+  try { return new Date(ts.replace(" ", "T")).toLocaleString(); }
+  catch (e) { return ts; }
+}
+function clamp01(n) { return Math.max(0, Math.min(1, n)); }
+
+async function requireSession() {
+  const res = await fetch(API_BASE + "/auth/me", { credentials: "include" });
+  const data = await res.json();
+  if (!data.logged_in) {
+    window.location.href = "../login/";
+    return null;
+  }
+  return data.user;
+}
+
+async function requireCompletedProfile() {
+  try {
+    const res = await fetch(API_BASE + "/profile", { credentials: "include" });
+    const data = await res.json();
+    if (data.ok && data.profile && !data.profile.wizard_done) {
+      window.location.href = "../onboarding/";
+      return false;
+    }
+  } catch (e) {}
+  return true;
+}
+
+const RING_RANGES = { temp: [35, 41], pulse: [40, 160], spo2: [80, 100], glucose: [60, 300], weight: [30, 150] };
+const SNAPSHOT_METRICS = [
+  { key: "spo2",    icon: "🫁", label: "SpO₂",    unit: "%",   keywords: ["oxygen", "spo"] },
+  { key: "pulse",   icon: "💓", label: "Pulse",   unit: "bpm", keywords: ["pulse"] },
+  { key: "temp",    icon: "🌡️", label: "Temp",    unit: "°C",  keywords: ["temperature"] },
+  { key: "bp",      icon: "❤️", label: "BP",      unit: "mmHg",keywords: ["blood pressure", "bp"] },
+  { key: "glucose", icon: "🩸", label: "Glucose", unit: "mmol",keywords: ["glucose", "sugar"] },
+];
+function flagSeverityFor(keywords, flags) {
+  if (!flags || !flags.length) return "";
+  for (const f of flags) {
+    const msg = (f.message || "").toLowerCase();
+    if (keywords.some(k => msg.includes(k))) return f.level || "";
+  }
+  return "";
+}
+function severityColor(sev) { return sev === "CRITICAL" ? "#d24f28" : sev === "CAUTION" ? "#c98a10" : "#0e8f83"; }
+
+function ringCardHtml(m, value, unit, sev) {
+  const R = 25, C = 2 * Math.PI * R;
+  let pct;
+  if (m.key === "bp") {
+    pct = sev === "CRITICAL" ? 0.92 : sev === "CAUTION" ? 0.66 : 0.5;
+  } else if (value === "—" || value === null || value === undefined) {
+    pct = 0;
+  } else {
+    const range = RING_RANGES[m.key];
+    pct = range ? clamp01((parseFloat(value) - range[0]) / (range[1] - range[0])) : 0.5;
+    if (pct < 0.12) pct = 0.12;
+  }
+  const color = severityColor(sev);
+  const off = C - pct * C;
+  return '<div class="snap-card">' +
+    '<div class="snap-ring-wrap">' +
+      '<svg width="62" height="62" viewBox="0 0 62 62">' +
+        '<circle class="snap-ring-bg" cx="31" cy="31" r="' + R + '"/>' +
+        '<circle class="snap-ring-fg" cx="31" cy="31" r="' + R + '" stroke="' + color + '" stroke-dasharray="' + C + '" stroke-dashoffset="' + off + '"/>' +
+      '</svg>' +
+      '<div class="snap-ring-inner">' +
+        '<span class="snap-ring-num">' + value + '</span>' +
+        (unit ? '<span class="snap-ring-unit">' + unit + '</span>' : '') +
+      '</div>' +
+    '</div>' +
+    '<div class="sc-label">' + m.label + '</div>' +
+  '</div>';
+}
+
+function renderSnapshot(latest, flags) {
+  const box = document.getElementById("qc-snapshot");
+  latest = latest || {};
+  const hasBp = latest.sys_bp != null && latest.dia_bp != null;
+  box.innerHTML = SNAPSHOT_METRICS.map(m => {
+    let value = "—", unit = m.unit;
+    if (m.key === "bp") { value = hasBp ? (latest.sys_bp + "/" + latest.dia_bp) : "—"; unit = hasBp ? unit : ""; }
+    else if (latest[m.key] !== undefined && latest[m.key] !== null && latest[m.key] !== "") { value = latest[m.key]; }
+    else { unit = ""; }
+    const sev = flagSeverityFor(m.keywords, flags);
+    return ringCardHtml(m, value, unit, sev);
+  }).join("");
+}
+
+async function loadLatest() {
+  const res = await fetch(API_BASE + "/vitals/latest", { credentials: "include" });
+  const data = await res.json();
+  renderSnapshot(data.latest, data.flags);
+}
+
+async function loadHistory() {
+  const res = await fetch(API_BASE + "/vitals/history?limit=6", { credentials: "include" });
+  const data = await res.json();
+  const wrap = document.getElementById("qc-history-wrap");
+  if (!data.history || !data.history.length) {
+    wrap.innerHTML = '<div class="empty-note">No readings yet — the one you save above will show up here.</div>';
+    return;
+  }
+  let rows = data.history.slice().reverse().map(r => (
+    "<tr>" +
+      "<td>" + fmtDate(r.ts) + "</td>" +
+      "<td>" + fmt(r.temp) + "</td>" +
+      "<td>" + (r.sys_bp != null && r.dia_bp != null ? r.sys_bp + "/" + r.dia_bp : "—") + "</td>" +
+      "<td>" + fmt(r.pulse) + "</td>" +
+      "<td>" + fmt(r.spo2) + "</td>" +
+      "<td>" + fmt(r.glucose) + "</td>" +
+      "<td>" + fmt(r.weight) + "</td>" +
+    "</tr>"
+  )).join("");
+  wrap.innerHTML =
+    "<table><thead><tr>" +
+      "<th>When</th><th>Temp</th><th>BP</th><th>Pulse</th><th>SpO₂</th><th>Glucose</th><th>Weight</th>" +
+    "</tr></thead><tbody>" + rows + "</tbody></table>";
+}
+
+function fireConfetti() {
+  const colors = ["#0e8f83", "#7c6fdb", "#2f8fd1", "#e0a52c"];
+  for (let i = 0; i < 26; i++) {
+    const p = document.createElement("div");
+    p.className = "confetti-piece";
+    p.style.left = (45 + Math.random() * 10) + "vw";
+    p.style.background = colors[i % colors.length];
+    p.style.animationDelay = (Math.random() * 0.2) + "s";
+    p.style.animationDuration = (1.1 + Math.random() * 0.6) + "s";
+    document.body.appendChild(p);
+    setTimeout(() => p.remove(), 2000);
+  }
+}
+
+document.getElementById("qc-vitals-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const btn = document.getElementById("qc-save-btn");
+  const msg = document.getElementById("qc-save-msg");
+  btn.disabled = true;
+  btn.textContent = "Saving…";
+  msg.className = "save-msg";
+  msg.textContent = "";
+
+  const payload = {};
+  payload.temp = document.getElementById("v-temp").value || null;
+  payload.sys_bp = document.getElementById("v-sys").value || null;
+  payload.dia_bp = document.getElementById("v-dia").value || null;
+  payload.pulse = document.getElementById("v-pulse").value || null;
+  payload.spo2 = document.getElementById("v-spo2").value || null;
+  payload.glucose = document.getElementById("v-glucose").value || null;
+  payload.weight = document.getElementById("v-weight").value || null;
+  payload.notes = document.getElementById("v-notes").value || "";
+
+  try {
+    const res = await fetch(API_BASE + "/vitals", {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    const data = await res.json();
+    if (!res.ok || !data.ok) throw new Error(data.message || "Couldn't save that reading.");
+
+    msg.classList.add("ok");
+    msg.textContent = "Saved.";
+    document.getElementById("qc-vitals-form").reset();
+    fireConfetti();
+    await loadLatest();
+    await loadHistory();
+  } catch (err) {
+    msg.classList.add("err");
+    msg.textContent = err.message || "Something went wrong.";
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Save reading";
+  }
+});
+
+document.getElementById("qc-signout-btn").addEventListener("click", async () => {
+  await fetch(API_BASE + "/auth/logout", { method: "POST", credentials: "include" });
+  window.location.href = "../";
+});
+
+(async function init() {
+  const user = await requireSession();
+  if (!user) return;
+  const complete = await requireCompletedProfile();
+  if (!complete) return;
+  const name = user.display_name || user.username || user.email || "";
+  const initials = name ? name.trim().split(/\s+/).slice(0, 2).map(w => w[0].toUpperCase()).join("") : "?";
+  document.getElementById("qc-user-dot").textContent = initials;
+  document.getElementById("qc-user-name").textContent = name ? name.split(" ")[0] : "";
+  await loadLatest();
+  await loadHistory();
+})();
+</script>
+</body>
+</html>
