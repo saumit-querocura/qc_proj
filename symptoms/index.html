@@ -8,6 +8,8 @@
 <link rel="icon" type="image/x-icon" href="../icons/favicon.ico">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://app.querocura.com">
+<link rel="dns-prefetch" href="https://app.querocura.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700;800&family=Manrope:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500;1,9..144,600&display=swap" rel="stylesheet">
 <script>
   (function () {
@@ -62,6 +64,47 @@
   .chip-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 4px; }
   .example-chip { font-size: 12.5px; font-weight: 600; color: #0e8f83; background: rgba(14,143,131,0.08); border: 1px solid rgba(14,143,131,0.18); padding: 6px 13px; border-radius: 999px; cursor: pointer; transition: background 0.15s ease, transform 0.15s ease; }
   .example-chip:hover { background: rgba(14,143,131,0.16); transform: translateY(-1px); }
+
+  .or-divider { display: flex; align-items: center; gap: 12px; margin: 26px 0 18px; font-size: 11.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: rgba(16,14,42,0.35); }
+  .or-divider::before, .or-divider::after { content: ''; flex: 1; height: 1px; background: rgba(16,14,42,0.1); }
+
+  /* ---- Tap-to-select symptom picker (ported from the monolith) ---- */
+  .picker-sub { font-size: 13px; color: rgba(16,14,42,0.5); margin-bottom: 16px; }
+  .cat-details { border: 1px solid rgba(16,14,42,0.08); border-radius: 14px; margin-bottom: 10px; overflow: hidden; background: #fbfaf6; }
+  .cat-summary { display: flex; align-items: center; gap: 12px; padding: 13px 16px; cursor: pointer; list-style: none; font-weight: 700; font-size: 14px; user-select: none; }
+  .cat-summary::-webkit-details-marker { display: none; }
+  .cat-summary .cs-ic { width: 32px; height: 32px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex: 0 0 auto; background: rgba(14,143,131,0.1); }
+  .cat-summary .cs-count { margin-left: auto; font-size: 11px; font-weight: 700; color: rgba(16,14,42,0.4); background: rgba(16,14,42,0.05); padding: 2px 9px; border-radius: 999px; }
+  .cat-summary .cs-chevron { transition: transform 0.2s ease; color: rgba(16,14,42,0.35); }
+  .cat-details[open] .cs-chevron { transform: rotate(90deg); }
+  .cat-body { padding: 4px 16px 16px; }
+  .sym-grid { display: flex; flex-wrap: wrap; gap: 7px; }
+  .sym-btn { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 600; color: #100e2a; background: #fff; border: 1.5px solid rgba(16,14,42,0.12); padding: 7px 13px; border-radius: 999px; cursor: pointer; transition: all 0.15s ease; font-family: 'Manrope', sans-serif; }
+  .sym-btn:hover { border-color: rgba(14,143,131,0.4); transform: translateY(-1px); }
+  .sym-btn.sel { background: #0e8f83; border-color: #0e8f83; color: #fff; }
+
+  .cat-details.emergency { background: rgba(210,79,40,0.05); border-color: rgba(210,79,40,0.22); }
+  .cat-details.emergency .cat-summary { color: #b3401f; }
+  .cat-details.emergency .cs-ic { background: rgba(210,79,40,0.12); }
+  .cat-details.emergency .sym-btn { border-color: rgba(210,79,40,0.28); }
+  .cat-details.emergency .sym-btn.sel { background: #d24f28; border-color: #d24f28; }
+
+  .meta-row { display: flex; flex-wrap: wrap; gap: 18px; margin: 16px 0 4px; }
+  .meta-group .mg-label { font-size: 10.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; color: rgba(16,14,42,0.45); margin-bottom: 7px; }
+  .meta-pills { display: flex; flex-wrap: wrap; gap: 6px; }
+  .meta-pill { font-size: 12px; font-weight: 600; color: #100e2a; background: #fff; border: 1.5px solid rgba(16,14,42,0.12); padding: 6px 12px; border-radius: 999px; cursor: pointer; transition: all 0.15s ease; }
+  .meta-pill:hover { border-color: rgba(124,111,219,0.4); }
+  .meta-pill.sel { background: #7c6fdb; border-color: #7c6fdb; color: #fff; }
+
+  .selected-bar { display: none; background: #fff; border: 1px solid rgba(16,14,42,0.1); border-radius: 14px; padding: 14px 16px; margin: 18px 0; }
+  .selected-bar.show { display: block; }
+  .selected-bar .sb-label { font-size: 10.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; color: rgba(16,14,42,0.45); margin-bottom: 9px; }
+  .selected-chips { display: flex; flex-wrap: wrap; gap: 7px; }
+  .selected-chip { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 700; background: rgba(14,143,131,0.1); color: #0e8f83; padding: 5px 6px 5px 11px; border-radius: 999px; }
+  .selected-chip .sc-x { cursor: pointer; opacity: 0.6; width: 16px; height: 16px; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
+  .selected-chip .sc-x:hover { opacity: 1; background: rgba(14,143,131,0.18); }
+
+  .picker-analyse-row { display: flex; align-items: center; gap: 14px; margin-top: 18px; flex-wrap: wrap; }
 
   .analyse-row { display: flex; align-items: center; gap: 14px; margin-top: 18px; flex-wrap: wrap; }
   .analyse-btn { position: relative; overflow: hidden; background: #0e8f83; color: #fff; font-size: 15px; font-weight: 700; padding: 13px 30px; border-radius: 999px; border: none; cursor: pointer; font-family: 'Manrope', sans-serif; transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease; }
@@ -159,6 +202,22 @@
   html[data-theme="dark"] .other-cond-row { border-bottom-color: rgba(255,255,255,0.08); }
   html[data-theme="dark"] .other-cond-urgency { background: rgba(255,255,255,0.08); color: #cfccdf; }
   html[data-theme="dark"] .disclaimer-note { color: #8f8ba3; border-top-color: rgba(255,255,255,0.1); }
+  html[data-theme="dark"] .or-divider { color: #8f8ba3; }
+  html[data-theme="dark"] .or-divider::before, html[data-theme="dark"] .or-divider::after { background: rgba(255,255,255,0.1); }
+  html[data-theme="dark"] .picker-sub { color: #a9a6bd; }
+  html[data-theme="dark"] .cat-details { background: #100e2a; border-color: rgba(255,255,255,0.1); }
+  html[data-theme="dark"] .cat-summary .cs-ic { background: rgba(126,224,212,0.12); }
+  html[data-theme="dark"] .cat-summary .cs-count { background: rgba(255,255,255,0.08); color: #a9a6bd; }
+  html[data-theme="dark"] .sym-btn { background: #18162e; border-color: rgba(255,255,255,0.14); color: #f2f0f8; }
+  html[data-theme="dark"] .sym-btn.sel { background: #0e8f83; border-color: #0e8f83; color: #fff; }
+  html[data-theme="dark"] .cat-details.emergency { background: rgba(210,79,40,0.1); border-color: rgba(210,79,40,0.3); }
+  html[data-theme="dark"] .cat-details.emergency .cat-summary { color: #f0a488; }
+  html[data-theme="dark"] .meta-group .mg-label { color: #8f8ba3; }
+  html[data-theme="dark"] .meta-pill { background: #18162e; border-color: rgba(255,255,255,0.14); color: #f2f0f8; }
+  html[data-theme="dark"] .meta-pill.sel { background: #7c6fdb; border-color: #7c6fdb; color: #fff; }
+  html[data-theme="dark"] .selected-bar { background: #18162e; border-color: rgba(255,255,255,0.1); }
+  html[data-theme="dark"] .selected-bar .sb-label { color: #8f8ba3; }
+  html[data-theme="dark"] .selected-chip { background: rgba(126,224,212,0.14); color: #7ee0d4; }
 </style>
 </head>
 <body>
@@ -203,6 +262,40 @@
           <span class="err-msg" id="sym-err"></span>
         </div>
       </form>
+
+      <div class="or-divider">or tap what applies</div>
+
+      <div class="picker-sub">No typing needed — pick everything that fits across the categories below, then analyze.</div>
+      <div id="sym-cats"></div>
+
+      <div class="meta-row" id="sym-meta">
+        <div class="meta-group">
+          <div class="mg-label">Duration</div>
+          <div class="meta-pills" data-meta="dur">
+            <span class="meta-pill" data-v="just started">Just started</span>
+            <span class="meta-pill" data-v="1-2 days">1–2 days</span>
+            <span class="meta-pill" data-v="3-6 days">3–6 days</span>
+            <span class="meta-pill" data-v="a week or more">A week or more</span>
+          </div>
+        </div>
+        <div class="meta-group">
+          <div class="mg-label">Severity</div>
+          <div class="meta-pills" data-meta="sev">
+            <span class="meta-pill" data-v="mild">Mild</span>
+            <span class="meta-pill" data-v="moderate">Moderate</span>
+            <span class="meta-pill" data-v="severe">Severe</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="selected-bar" id="sym-selbar">
+        <div class="sb-label">Selected</div>
+        <div class="selected-chips" id="sym-selchips"></div>
+      </div>
+
+      <div class="picker-analyse-row">
+        <button type="button" class="analyse-btn" id="sym-picker-btn" disabled>Select symptoms to analyze</button>
+      </div>
 
       <div class="scan-wrap" id="sym-scan">
         <div class="scan-stage">
@@ -318,11 +411,13 @@ function listHtml(className, items) {
 
 function renderResult(data) {
   const wrap = document.getElementById("sym-results");
-  const top = data.top_condition || {};
-  const reasoning = data.clinical_reasoning || {};
-  const urgencyWord = data.overall_urgency || reasoning.urgency || "Unknown";
+  const raw = data.raw || data.diagnosis || {};
+  const board = raw.medical_reasoning_board || null;
+  const governor = raw.final_intelligence_governor || null;
+
+  const urgencyWord = data.urgency || data.triage || "Unknown";
   const uColor = urgencyColor(urgencyWord);
-  const isSevere = /high|urgent|emergency/i.test(urgencyWord);
+  const isSevere = /high|urgent|emergency/i.test(urgencyWord) || (board && board.safety_override);
 
   let html = "";
   let delay = 0;
@@ -331,55 +426,73 @@ function renderResult(data) {
   html += '<div class="urgency-banner reveal ' + (isSevere ? "pulse" : "") + '" ' + step() + ' style="background:' + uColor + '1a; color:' + uColor + '; animation-delay:' + (delay - 90) + 'ms">' +
     '<span class="ub-dot" style="background:' + uColor + '"></span>' +
     'Urgency: ' + escapeHtml(urgencyWord) +
+    (governor && governor.confidence_band ? '<span style="margin-left:auto;font-weight:600;font-size:12.5px;opacity:0.8;text-transform:none;">' + escapeHtml(governor.confidence_band) + ' confidence' + (governor.confidence_score ? ' · ' + Math.round(governor.confidence_score) + '%' : '') + '</span>' : '') +
   '</div>';
 
-  if (reasoning.patient_answer) {
-    html += '<div class="card reveal" ' + step() + '><div class="patient-answer">' + mdBold(reasoning.patient_answer).replace(/\n\n/g, "<br><br>") + '</div></div>';
+  if (data.patient_answer || data.summary) {
+    html += '<div class="card reveal" ' + step() + '><div class="patient-answer">' + mdBold(data.patient_answer || data.summary).replace(/\n\n/g, "<br><br>") + '</div></div>';
   }
 
-  if (top.name) {
+  if (data.name) {
     html += '<div class="card reveal" ' + step() + '>' +
       '<div class="condition-head">' +
-        '<div class="condition-emoji">' + (top.emoji || "🩺") + '</div>' +
-        '<div><div class="condition-name">' + escapeHtml(top.name) + '</div>' +
-        '<div class="condition-meta">' + (top.confidence_band ? escapeHtml(top.confidence_band) + " match · " : "") + (top.specialist ? "Best seen by a " + escapeHtml(top.specialist) : "") + '</div></div>' +
+        '<div class="condition-emoji">' + (data.emoji || "🩺") + '</div>' +
+        '<div><div class="condition-name">' + escapeHtml(data.name) + '</div>' +
+        '<div class="condition-meta">' + (data.confidence ? data.confidence + "% match" : "") + '</div></div>' +
       '</div>' +
-      (top.description ? '<div class="condition-desc">' + escapeHtml(top.description) + '</div>' : '');
+      (data.description ? '<div class="condition-desc">' + escapeHtml(data.description) + '</div>' : '');
 
-    const chips = (top.signals || []).map(s => '<span class="info-chip">' + escapeHtml(s) + '</span>').join("");
-    const redChips = (top.red_flags || []).map(s => '<span class="info-chip red">⚠ ' + escapeHtml(s) + '</span>').join("");
-    if (chips || redChips) html += '<div class="chip-list">' + chips + redChips + '</div>';
+    const redChips = (data.red_flags || []).map(s => '<span class="info-chip red">⚠ ' + escapeHtml(s) + '</span>').join("");
+    if (redChips) html += '<div class="chip-list">' + redChips + '</div>';
 
-    if ((top.home_care_now && top.home_care_now.length) || (top.avoid && top.avoid.length)) {
+    const careNow = data.home_care_now || data.care || [];
+    if ((careNow && careNow.length) || (data.avoid && data.avoid.length)) {
       html += '<div class="section-label">What you can do</div><div class="care-cols">' +
-        '<div>' + listHtml("care-list do", top.home_care_now) + listHtml("care-list do", top.home_care_ongoing) + '</div>' +
-        '<div>' + listHtml("care-list avoid", top.avoid) + '</div>' +
+        '<div>' + listHtml("care-list do", careNow) + '</div>' +
+        '<div>' + listHtml("care-list avoid", data.avoid) + '</div>' +
       '</div>';
-    }
-
-    if (top.when_doctor) {
-      html += '<div class="doctor-callout"><span>🩺</span><span><strong>See a doctor if:</strong> ' + mdBold(top.when_doctor) + '</span></div>';
     }
     html += '</div>';
   }
 
-  const others = (data.possible_conditions || []).filter(c => c.name && c.name !== top.name).slice(0, 4);
+  // "How QueroCura reasoned" — surfaces the medical-reasoning-board's trace
+  // when a danger-signature pattern actually fired, so the extra layers of
+  // analysis running behind the scenes are visible, not just a black box.
+  if (board && ((board.reasoning_trace && board.reasoning_trace.length) || (board.must_not_miss && board.must_not_miss.length))) {
+    html += '<div class="card reveal" ' + step() + '>' +
+      '<div class="section-label" style="margin-top:0;">How QueroCura reasoned about this</div>';
+    if (board.reasoning_trace && board.reasoning_trace.length) {
+      html += '<ul class="monitor-list">' + board.reasoning_trace.map(t => '<li>' + escapeHtml(String(t)) + '</li>').join("") + '</ul>';
+    }
+    if (board.must_not_miss && board.must_not_miss.length) {
+      html += '<div class="chip-list" style="margin-top:10px;">' +
+        board.must_not_miss.map(m => '<span class="info-chip red">👁 Don\'t miss: ' + escapeHtml(m.name || "") + '</span>').join("") +
+      '</div>';
+    }
+    html += '</div>';
+  }
+
+  const others = (data.possible_conditions || data.alternatives || []).filter(c => c.name && c.name !== data.name).slice(0, 4);
   if (others.length) {
     html += '<div class="card reveal" ' + step() + '>' +
       '<div class="section-label" style="margin-top:0;">Other possibilities</div>' +
-      others.map(c => '<div class="other-cond-row"><span class="other-cond-name">' + escapeHtml(c.name) + '</span><span class="other-cond-urgency">' + escapeHtml(c.urgency || "—") + '</span></div>').join("") +
+      others.map(c => '<div class="other-cond-row"><span class="other-cond-name">' + escapeHtml(c.name) + '</span><span class="other-cond-urgency">' + escapeHtml(c.urgency || c.risk || "—") + '</span></div>').join("") +
     '</div>';
   }
 
-  if ((reasoning.follow_up_questions && reasoning.follow_up_questions.length) || (reasoning.monitoring_advice && reasoning.monitoring_advice.length)) {
+  if ((data.why_it_fits && data.why_it_fits.length) || (data.monitoring_advice && data.monitoring_advice.length)) {
     html += '<div class="card reveal" ' + step() + '>';
-    if (reasoning.follow_up_questions && reasoning.follow_up_questions.length) {
-      html += '<div class="section-label" style="margin-top:0;">Worth thinking about</div>' + listHtml("followup-list", reasoning.follow_up_questions);
+    if (data.why_it_fits && data.why_it_fits.length) {
+      html += '<div class="section-label" style="margin-top:0;">Why this fits</div>' + listHtml("followup-list", data.why_it_fits);
     }
-    if (reasoning.monitoring_advice && reasoning.monitoring_advice.length) {
-      html += '<div class="section-label">Keep an eye on</div>' + listHtml("monitor-list", reasoning.monitoring_advice);
+    if (data.monitoring_advice && data.monitoring_advice.length) {
+      html += '<div class="section-label">Keep an eye on</div>' + listHtml("monitor-list", data.monitoring_advice);
     }
     html += '</div>';
+  }
+
+  if (data.doctor_summary) {
+    html += '<div class="card reveal" ' + step() + '><div class="doctor-callout"><span>🩺</span><span><strong>For your doctor:</strong> ' + mdBold(data.doctor_summary) + '</span></div></div>';
   }
 
   wrap.innerHTML = html;
@@ -387,21 +500,16 @@ function renderResult(data) {
   wrap.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
-document.getElementById("sym-form").addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const text = document.getElementById("sym-input").value.trim();
+async function runAnalysis(text, busyBtn) {
   const errEl = document.getElementById("sym-err");
   errEl.textContent = "";
-  if (!text) return;
-
-  const btn = document.getElementById("sym-btn");
-  btn.disabled = true;
+  if (busyBtn) busyBtn.disabled = true;
   document.getElementById("sym-results").classList.remove("show");
   document.getElementById("sym-results").innerHTML = "";
   startScan();
 
   try {
-    const res = await fetch(API_BASE + "/diagnosis/analyse", {
+    const res = await fetch(API_BASE + "/fast/analyse", {
       method: "POST",
       credentials: "include",
       headers: { "Content-Type": "application/json" },
@@ -409,15 +517,178 @@ document.getElementById("sym-form").addEventListener("submit", async (e) => {
     });
     const data = await res.json();
     stopScan();
-    if (!res.ok || data.ok === false) throw new Error(data.message || "Couldn't analyze that just now.");
+    if (!res.ok || data.ok === false) throw new Error(data.err || data.message || "Couldn't analyze that just now.");
     renderResult(data);
   } catch (err) {
     stopScan();
     errEl.textContent = err.message || "Something went wrong — please try again.";
   } finally {
-    btn.disabled = false;
+    if (busyBtn) busyBtn.disabled = false;
+    updatePickerBtn();
   }
+}
+
+document.getElementById("sym-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const text = document.getElementById("sym-input").value.trim();
+  if (!text) return;
+  await runAnalysis(text, document.getElementById("sym-btn"));
 });
+
+/* ---- Tap-to-select symptom picker (ported from the monolith's /symptoms page) ---- */
+const SYMPTOM_CATS = [
+  { name: "General", icon: "🌡️", items: [
+    ["fever","🤒","Fever"], ["low grade fever","🌡️","Low-Grade Fever"], ["fatigue","😴","Fatigue / No energy"],
+    ["body ache","🦴","Body / Muscle Ache"], ["chills","🥶","Chills / Shivering"], ["sweating","💧","Sweating"],
+    ["loss of appetite","😶","No Appetite"], ["sudden onset","⚡","Started Suddenly"],
+    ["unexplained weight loss","⚖️","Unexplained Weight Loss"], ["unexplained weight gain","⚖️","Unexplained Weight Gain"],
+  ]},
+  { name: "Head & Mind", icon: "🧠", items: [
+    ["headache","🤕","Headache"], ["severe headache","💥","Severe / Worst Headache"], ["thunderclap headache","⚡","Thunderclap Headache"],
+    ["dizziness","💫","Dizziness"], ["positional dizziness","🌀","Room Spinning / Vertigo"], ["confusion","😵","Confusion / Brain fog"],
+    ["fainting","😶‍🌫️","Fainting"], ["photophobia","😎","Sensitive to Light"], ["numbness","🫷","Numbness / Tingling"],
+    ["visual disturbance","👁️","Visual Disturbance / Blurred"],
+  ]},
+  { name: "Nose, Throat & Sinuses", icon: "🤧", items: [
+    ["sore throat","😮‍💨","Sore Throat"], ["runny nose","🤧","Runny Nose"], ["nasal congestion","😤","Blocked Nose"],
+    ["sneezing","🤣","Sneezing"], ["facial pain","😣","Facial / Sinus Pain"], ["coloured nasal discharge","💛","Green / Yellow Discharge"],
+    ["loss of smell","👃","Loss of Smell"], ["loss of taste","👅","Loss of Taste"], ["stiff neck","😬","Stiff Neck"],
+    ["neck lump","🔵","Lump in Neck"], ["nosebleed","🩸","Nosebleed"],
+  ]},
+  { name: "Ears", icon: "👂", items: [
+    ["ear pain","👂","Ear Pain / Earache"], ["ear discharge","💧","Discharge from Ear"],
+  ]},
+  { name: "Chest & Breathing", icon: "🫁", items: [
+    ["chest pain","💔","Chest Pain"], ["pleuritic chest pain","🔪","Sharp Pain with Breathing"], ["chest wall pain","🤚","Chest Wall Tender to Touch"],
+    ["chest tightness","🫶","Chest Tightness"], ["breathlessness","😮","Breathlessness"], ["shortness of breath lying","🛌","Worse Lying Flat"],
+    ["cough","😷","Cough"], ["wheezing","🌬️","Wheezing"], ["palpitations","💓","Palpitations"],
+    ["palpitations at rest","💓","Palpitations at Rest"], ["radiating pain","💪","Pain to Arm or Jaw"],
+    ["sharp chest worse lying","📐","Sharp Chest — Worse Lying Down"], ["better sitting forward","🪑","Better Leaning Forward"],
+  ]},
+  { name: "Stomach & Gut", icon: "🤢", items: [
+    ["nausea","🤢","Nausea"], ["vomiting","🤮","Vomiting"], ["diarrhea","🚽","Diarrhoea"], ["abdominal pain","🫃","Stomach Pain"],
+    ["right lower abdominal pain","📍","Lower Right Pain"], ["periumbilical pain","🫄","Pain Around Belly Button"],
+    ["stomach cramps","😣","Stomach Cramps"], ["heartburn","🔥","Heartburn / Acid Taste"],
+    ["rebound tenderness","🤚","Worse When You Release Pressure"], ["blood in stool","🩸","Blood in Stool"],
+    ["rapid onset","⚡","Started Suddenly After Eating"],
+  ]},
+  { name: "Urinary", icon: "💧", items: [
+    ["burning urination","🔥","Burning When Peeing"], ["frequent urination","🔄","Peeing Very Often"],
+    ["flank pain","🤚","Side / Kidney Pain"], ["blood in urine","🩸","Blood in Urine"],
+  ]},
+  { name: "Joints & Muscles", icon: "🦴", items: [
+    ["back pain","🦴","Back Pain"], ["worse with touch","🤚","Worse When Pressed"], ["severe bone pain","💥","Severe Bone / Joint Pain"],
+    ["hot joint","🔴","Hot, Red, Swollen Joint"], ["joint swelling","💢","Joint Swelling"], ["big toe pain","🦶","Big Toe / Foot Pain"],
+    ["neck pain","😬","Neck Pain / Stiffness"],
+  ]},
+  { name: "Legs & Circulation", icon: "🦵", items: [
+    ["leg swelling","🦵","Swollen Leg / Ankle"], ["calf pain","🦴","Calf Pain / Tenderness"], ["ankle swelling","🦵","Ankle Swelling"],
+  ]},
+  { name: "Skin", icon: "🩹", items: [
+    ["rash","🔴","Rash"], ["unilateral rash","↔️","Rash on One Side Only"], ["painful rash","🔥","Painful Rash"],
+    ["skin blisters","🫧","Blisters on Skin"], ["burning skin","🔥","Burning / Tingling Skin"], ["cellulitis rash","🟥","Spreading Red / Hot Skin"],
+    ["itching","🫷","Itching"], ["hives","🐝","Hives / Welts"], ["swelling lips","👄","Swollen Face or Lips"],
+    ["rash with fever","🌡️","Rash with Fever"],
+  ]},
+  { name: "Eyes", icon: "👁️", items: [
+    ["eye redness","👁️","Red / Pink Eyes"], ["eye discharge","💛","Eye Discharge"], ["eye itching","😣","Itchy Eyes"], ["eye pain","😩","Eye Pain"],
+  ]},
+  { name: "Thyroid & Hormones", icon: "🦋", items: [
+    ["heat intolerance","🥵","Heat Intolerance"], ["cold intolerance","🥶","Cold Intolerance"],
+    ["hair loss","💇","Hair Loss / Thinning"], ["heart rate fast","💓","Heart Racing / Fast Pulse"],
+  ]},
+  { name: "Dental", icon: "🦷", items: [
+    ["tooth pain","🦷","Toothache"], ["gum swelling","🫦","Swollen Gums"],
+  ]},
+  { name: "Emergency Signs", icon: "🚨", emergency: true, items: [
+    ["slurred speech","🗣️","Slurred Speech"], ["face droop","😶","Face Drooping"], ["one side weakness","💪","One-Side Weakness"],
+    ["stiff neck fever","😬","Stiff Neck + Fever"], ["swelling lips","😮","Throat / Lip Swelling"],
+    ["thunderclap headache","⚡","Sudden Worst Headache Ever"],
+  ]},
+];
+
+const pickerState = { symptoms: {}, dur: "", sev: "" };
+
+function renderCats() {
+  const box = document.getElementById("sym-cats");
+  box.innerHTML = SYMPTOM_CATS.map((cat, ci) => {
+    const btns = cat.items.map(([key, emoji, label]) =>
+      '<button type="button" class="sym-btn" data-s="' + escapeHtml(key) + '" data-label="' + escapeHtml(emoji + " " + label) + '">' +
+        '<span>' + emoji + '</span><span>' + escapeHtml(label) + '</span>' +
+      '</button>'
+    ).join("");
+    return '<details class="cat-details' + (cat.emergency ? ' emergency' : '') + '"' + (cat.emergency ? ' open' : '') + '>' +
+      '<summary class="cat-summary"><span class="cs-ic">' + cat.icon + '</span>' + escapeHtml(cat.name) +
+      '<span class="cs-count">' + cat.items.length + '</span><span class="cs-chevron">›</span></summary>' +
+      '<div class="cat-body"><div class="sym-grid">' + btns + '</div></div>' +
+    '</details>';
+  }).join("");
+
+  box.querySelectorAll(".sym-btn").forEach(btn => {
+    btn.addEventListener("click", () => toggleSymBtn(btn));
+  });
+}
+
+function toggleSymBtn(btn) {
+  const s = btn.getAttribute("data-s"), l = btn.getAttribute("data-label");
+  if (pickerState.symptoms[s]) { delete pickerState.symptoms[s]; btn.classList.remove("sel"); }
+  else { pickerState.symptoms[s] = l; btn.classList.add("sel"); }
+  updateSelectedBar();
+}
+
+function removeSym(key) {
+  delete pickerState.symptoms[key];
+  document.querySelectorAll('.sym-btn[data-s="' + CSS.escape(key) + '"]').forEach(b => b.classList.remove("sel"));
+  updateSelectedBar();
+}
+
+function updateSelectedBar() {
+  const keys = Object.keys(pickerState.symptoms);
+  const bar = document.getElementById("sym-selbar");
+  const chips = document.getElementById("sym-selchips");
+  if (keys.length) {
+    bar.classList.add("show");
+    chips.innerHTML = keys.map(k =>
+      '<span class="selected-chip">' + escapeHtml(pickerState.symptoms[k]) +
+      '<span class="sc-x" data-key="' + escapeHtml(k) + '">✕</span></span>'
+    ).join("");
+    chips.querySelectorAll(".sc-x").forEach(x => x.addEventListener("click", () => removeSym(x.getAttribute("data-key"))));
+  } else {
+    bar.classList.remove("show");
+    chips.innerHTML = "";
+  }
+  updatePickerBtn();
+}
+
+function updatePickerBtn() {
+  const n = Object.keys(pickerState.symptoms).length;
+  const btn = document.getElementById("sym-picker-btn");
+  btn.disabled = n === 0;
+  btn.textContent = n === 0 ? "Select symptoms to analyze" : "Analyze " + n + " symptom" + (n > 1 ? "s" : "") + " →";
+}
+
+document.querySelectorAll('.meta-pills').forEach(group => {
+  const type = group.getAttribute("data-meta");
+  group.querySelectorAll(".meta-pill").forEach(pill => {
+    pill.addEventListener("click", () => {
+      const already = pill.classList.contains("sel");
+      group.querySelectorAll(".meta-pill").forEach(p => p.classList.remove("sel"));
+      if (!already) { pill.classList.add("sel"); pickerState[type] = pill.getAttribute("data-v"); }
+      else { pickerState[type] = ""; }
+    });
+  });
+});
+
+document.getElementById("sym-picker-btn").addEventListener("click", async () => {
+  const labels = Object.values(pickerState.symptoms);
+  if (!labels.length) return;
+  let text = "I'm experiencing: " + labels.map(l => l.replace(/^\S+\s/, "")).join(", ") + ".";
+  if (pickerState.dur) text += " Duration: " + pickerState.dur + ".";
+  if (pickerState.sev) text += " Severity: " + pickerState.sev + ".";
+  await runAnalysis(text, document.getElementById("sym-picker-btn"));
+});
+
+renderCats();
 
 document.getElementById("qc-signout-btn").addEventListener("click", async () => {
   await fetch(API_BASE + "/auth/logout", { method: "POST", credentials: "include" });
@@ -425,10 +696,16 @@ document.getElementById("qc-signout-btn").addEventListener("click", async () => 
 });
 
 (async function init() {
-  const user = await requireSession();
-  if (!user) return;
-  const complete = await requireCompletedProfile();
-  if (!complete) return;
+  const [meData, profData] = await Promise.all([
+    fetch(API_BASE + "/auth/me", { credentials: "include" }).then(r => r.json()).catch(() => ({ logged_in: false })),
+    fetch(API_BASE + "/profile", { credentials: "include" }).then(r => r.json()).catch(() => null),
+  ]);
+  if (!meData.logged_in) { window.location.href = "../login/"; return; }
+  const user = meData.user;
+  if (profData && profData.ok && profData.profile && !profData.profile.wizard_done) {
+    window.location.href = "../onboarding/";
+    return;
+  }
   const name = user.display_name || user.username || user.email || "";
   const initials = name ? name.trim().split(/\s+/).slice(0, 2).map(w => w[0].toUpperCase()).join("") : "?";
   document.getElementById("qc-user-dot").textContent = initials;
