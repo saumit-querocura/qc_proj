@@ -163,6 +163,9 @@
   #sqp-list .qc-question { font-size: 16.5px; }
   #sqp-list .qc-btns { justify-content: center; margin-bottom: 20px; }
   .sqp-skip { margin-top: 4px; font-size: 12.5px; font-weight: 600; color: rgba(16,14,42,0.42); background: none; border: none; cursor: pointer; text-decoration: underline; font-family: 'Manrope', sans-serif; }
+  .sqp-counter { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; color: rgba(16,14,42,0.4); margin-bottom: 14px; }
+  .sqp-step { animation: sqpStepIn 0.35s cubic-bezier(.22,1,.36,1); }
+  @keyframes sqpStepIn { from { opacity: 0; transform: translateX(16px); } to { opacity: 1; transform: translateX(0); } }
 
   /* ---- Results ---- */
   .results-wrap { display: none; }
@@ -259,6 +262,14 @@
   html[data-theme="dark"] .selected-bar { background: #18162e; border-color: rgba(255,255,255,0.1); }
   html[data-theme="dark"] .selected-bar .sb-label { color: #8f8ba3; }
   html[data-theme="dark"] .selected-chip { background: rgba(126,224,212,0.14); color: #7ee0d4; }
+  html[data-theme="dark"] .scan-wrap { background: radial-gradient(circle at 50% 38%, #15132b 0%, #0d0c1f 62%, #0d0c1f 100%); }
+  html[data-theme="dark"] .scan-wrap::before { background-image: radial-gradient(rgba(126,224,212,0.14) 1.5px, transparent 1.5px); }
+  html[data-theme="dark"] .sqp-title { color: #f2f0f8; }
+  html[data-theme="dark"] .sqp-sub { color: #8f8ba3; }
+  html[data-theme="dark"] .sqp-counter { color: #8f8ba3; }
+  html[data-theme="dark"] .sqp-skip { color: #8f8ba3; }
+  html[data-theme="dark"] .sqp-dot { background: rgba(126,224,212,0.18); }
+  html[data-theme="dark"] .sqp-dot.sqp-done { background: #7ee0d4; }
 </style>
 </head>
 <body>
@@ -362,6 +373,7 @@
           <div class="sqp-title">A couple of quick questions</div>
           <div class="sqp-sub">Answering these helps narrow this down further.</div>
           <div class="sqp-progress" id="sqp-progress"></div>
+          <div class="sqp-counter" id="sqp-counter"></div>
           <div id="sqp-list"></div>
           <button type="button" class="sqp-skip" id="sqp-skip">Skip and see my results →</button>
         </div>
@@ -489,18 +501,13 @@ function showQuestionPhase(questions, baseText) {
 
   const list = document.getElementById("sqp-list");
   const progress = document.getElementById("sqp-progress");
-  list.innerHTML = questions.map((q, i) =>
-    '<div class="qc-question">' + escapeHtml(q.question) + '</div>' +
-    '<div class="qc-btns" data-qc-idx="' + i + '">' +
-      '<button type="button" class="qc-btn" data-qc-answer="yes">Yes</button>' +
-      '<button type="button" class="qc-btn" data-qc-answer="no">No</button>' +
-      '<button type="button" class="qc-btn" data-qc-answer="skip">Not sure</button>' +
-    '</div>'
-  ).join("");
+  const counter = document.getElementById("sqp-counter");
+  const skipBtn = document.getElementById("sqp-skip");
   progress.innerHTML = questions.map(() => '<div class="sqp-dot"></div>').join("");
+  const dots = progress.querySelectorAll(".sqp-dot");
 
   const answers = [];
-  const dots = progress.querySelectorAll(".sqp-dot");
+  let step = 0;
 
   function finish(useAnswers) {
     const extras = useAnswers ? answers.filter(a => a).join(". ") : "";
@@ -508,29 +515,40 @@ function showQuestionPhase(questions, baseText) {
     runAnalysis(refinedText, document.getElementById("sym-btn"), 1);
   }
 
-  list.querySelectorAll(".qc-btns").forEach((group) => {
-    const idx = parseInt(group.getAttribute("data-qc-idx"), 10);
-    group.querySelectorAll(".qc-btn").forEach((btn) => {
+  // Renders exactly one question at a time -- a real back-and-forth rather
+  // than a wall of questions dropped on the person at once. Order is the
+  // discriminative ranking generate_clarifying_questions() already computed
+  // on the backend; this just paces it out one step per answer.
+  function renderStep() {
+    if (step >= questions.length) { finish(true); return; }
+    const q = questions[step];
+    counter.textContent = "Question " + (step + 1) + " of " + questions.length;
+    list.innerHTML =
+      '<div class="qc-question sqp-step">' + escapeHtml(q.question) + '</div>' +
+      '<div class="qc-btns sqp-step">' +
+        '<button type="button" class="qc-btn" data-qc-answer="yes">Yes</button>' +
+        '<button type="button" class="qc-btn" data-qc-answer="no">No</button>' +
+        '<button type="button" class="qc-btn" data-qc-answer="skip">Not sure</button>' +
+      '</div>';
+    list.querySelectorAll(".qc-btn").forEach((btn) => {
       btn.addEventListener("click", () => {
         const choice = btn.getAttribute("data-qc-answer");
-        const q = questions[idx];
-        if (choice === "yes") answers[idx] = q.confirm_phrase || q.symptom_key;
-        else if (choice === "no") answers[idx] = "no " + (q.confirm_phrase || q.symptom_key);
-        else answers[idx] = "";
+        if (choice === "yes") answers[step] = q.confirm_phrase || q.symptom_key;
+        else if (choice === "no") answers[step] = "no " + (q.confirm_phrase || q.symptom_key);
+        else answers[step] = "";
 
-        group.querySelectorAll(".qc-btn").forEach(b => { b.disabled = true; b.classList.remove("qc-answered"); });
-        btn.classList.add("qc-answered");
-        if (dots[idx]) dots[idx].classList.add("sqp-done");
-
-        if (answers.filter(a => a !== undefined).length === questions.length) {
-          finish(true);
-        }
+        if (dots[step]) dots[step].classList.add("sqp-done");
+        step++;
+        renderStep();
       });
     });
-  });
+  }
 
-  const skipBtn = document.getElementById("sqp-skip");
-  if (skipBtn) skipBtn.onclick = () => finish(false);
+  renderStep();
+
+  // Skip stops the interview where it stands and refines with whatever was
+  // answered so far -- it doesn't discard already-given answers.
+  if (skipBtn) skipBtn.onclick = () => finish(true);
 }
 
 const URGENCY_COLORS = {
