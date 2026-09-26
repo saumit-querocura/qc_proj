@@ -345,6 +345,26 @@
   html[data-theme="dark"] .empty-state .es-sub { color: #8f8ba3; }
   html[data-theme="dark"] .tip-card { background: linear-gradient(120deg, rgba(126,224,212,0.08), rgba(124,111,219,0.1)); border-color: rgba(126,224,212,0.18); }
   html[data-theme="dark"] .tip-card .tip-text { color: #cfccdf; }
+
+  /* ---- "How are you feeling now?" check-in banner (smart follow-up) ---- */
+  .checkin-banner { display: none; align-items: flex-start; gap: 14px; padding: 18px 20px; border-radius: 18px; background: linear-gradient(120deg, rgba(14,143,131,0.10), rgba(124,111,219,0.07)); border: 1px solid rgba(14,143,131,0.2); margin-bottom: 22px; }
+  .checkin-icon { font-size: 22px; line-height: 1; flex: 0 0 auto; margin-top: 2px; }
+  .checkin-body { flex: 1; min-width: 0; }
+  .checkin-label { font-size: 10.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: #0e8f83; margin-bottom: 4px; }
+  .checkin-question { font-size: 14.5px; font-weight: 600; color: #100e2a; line-height: 1.45; margin-bottom: 12px; }
+  .checkin-options { display: flex; flex-wrap: wrap; gap: 8px; }
+  .checkin-opt-btn { font-size: 13px; font-weight: 700; color: #0e8f83; background: #fff; border: 1.5px solid rgba(14,143,131,0.3); padding: 8px 16px; border-radius: 999px; cursor: pointer; font-family: 'Manrope', sans-serif; transition: all 0.15s ease; }
+  .checkin-opt-btn:hover:not(:disabled) { background: #0e8f83; color: #fff; transform: translateY(-1px); }
+  .checkin-opt-btn:disabled { opacity: 0.5; cursor: default; }
+  .checkin-dismiss { flex: 0 0 auto; background: transparent; border: none; color: rgba(16,14,42,0.35); font-size: 15px; cursor: pointer; padding: 2px 4px; line-height: 1; }
+  .checkin-dismiss:hover { color: rgba(16,14,42,0.6); }
+  html[data-theme="dark"] .checkin-banner { background: linear-gradient(120deg, rgba(126,224,212,0.08), rgba(124,111,219,0.1)); border-color: rgba(126,224,212,0.2); }
+  html[data-theme="dark"] .checkin-label { color: #7ee0d4; }
+  html[data-theme="dark"] .checkin-question { color: #f2f0f8; }
+  html[data-theme="dark"] .checkin-opt-btn { background: #18162e; color: #7ee0d4; border-color: rgba(126,224,212,0.3); }
+  html[data-theme="dark"] .checkin-opt-btn:hover:not(:disabled) { background: #7ee0d4; color: #100e2a; }
+  html[data-theme="dark"] .checkin-dismiss { color: #8f8ba3; }
+  html[data-theme="dark"] .checkin-dismiss:hover { color: #cfccdf; }
 </style>
 </head>
 <body>
@@ -415,6 +435,16 @@
           </svg>
         </div>
       </div>
+    </div>
+
+    <div class="checkin-banner" id="qc-checkin">
+      <span class="checkin-icon">💬</span>
+      <div class="checkin-body">
+        <div class="checkin-label">Quick check-in</div>
+        <div class="checkin-question" id="qc-checkin-question"></div>
+        <div class="checkin-options" id="qc-checkin-options"></div>
+      </div>
+      <button type="button" class="checkin-dismiss" id="qc-checkin-dismiss" aria-label="Not now">✕</button>
     </div>
 
     <div class="snapshot-strip" id="qc-snapshot"></div>
@@ -880,6 +910,82 @@ document.getElementById("qc-signout-btn").addEventListener("click", async () => 
   window.location.href = "../";
 });
 
+/* ---- "How are you feeling now?" check-in banner ---- */
+/* Dismissing only hides it for this tab's session -- it's still due next
+   visit. Answering actually resolves the follow-up task server-side (see
+   smart-followups/answer -> followup_notification_service.answer_followup),
+   which feeds the case-state/outcome signal into the health score. */
+const CHECKIN_DISMISS_KEY = "qc-checkin-dismissed";
+let qcCheckinItemId = null;
+
+async function loadCheckin() {
+  try {
+    const res = await fetch(API_BASE + "/smart-followups/due", { credentials: "include" });
+    const data = await res.json();
+    if (!data.ok || !data.items || !data.items.length) return;
+
+    let dismissed = [];
+    try { dismissed = JSON.parse(sessionStorage.getItem(CHECKIN_DISMISS_KEY) || "[]"); } catch (e) {}
+
+    const item = data.items.find(it => !dismissed.includes(it.id));
+    if (item) renderCheckin(item);
+  } catch (e) {}
+}
+
+function renderCheckin(item) {
+  qcCheckinItemId = item.id;
+  const banner = document.getElementById("qc-checkin");
+  const qEl = document.getElementById("qc-checkin-question");
+  const optsEl = document.getElementById("qc-checkin-options");
+
+  const anchorName = item.anchor_condition_name;
+  qEl.textContent = item.question
+    ? (item.question + (anchorName ? " (about your " + anchorName.toLowerCase() + " check)" : ""))
+    : "How are you feeling now compared with your last check?";
+
+  const options = (item.options && item.options.length) ? item.options : ["Better", "Same", "Worse", "New symptom appeared"];
+  optsEl.innerHTML = "";
+  options.forEach(opt => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "checkin-opt-btn";
+    btn.textContent = opt;
+    btn.addEventListener("click", () => answerCheckin(item.id, opt));
+    optsEl.appendChild(btn);
+  });
+
+  banner.style.display = "flex";
+}
+
+async function answerCheckin(taskId, optionText) {
+  const banner = document.getElementById("qc-checkin");
+  banner.querySelectorAll(".checkin-opt-btn").forEach(b => { b.disabled = true; });
+
+  try {
+    await fetch(API_BASE + "/smart-followups/answer", {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: taskId, answer_text: optionText, answer_payload: { option: optionText } }),
+    });
+  } catch (e) {}
+
+  document.getElementById("qc-checkin-question").textContent = "Thanks — that helps keep your health score accurate. 💛";
+  document.getElementById("qc-checkin-options").innerHTML = "";
+  setTimeout(() => { banner.style.display = "none"; }, 2200);
+}
+
+document.getElementById("qc-checkin-dismiss").addEventListener("click", () => {
+  if (qcCheckinItemId != null) {
+    try {
+      const dismissed = JSON.parse(sessionStorage.getItem(CHECKIN_DISMISS_KEY) || "[]");
+      dismissed.push(qcCheckinItemId);
+      sessionStorage.setItem(CHECKIN_DISMISS_KEY, JSON.stringify(dismissed));
+    } catch (e) {}
+  }
+  document.getElementById("qc-checkin").style.display = "none";
+});
+
 (async function init() {
   // Auth check and profile check both just need the session cookie — fire
   // them together instead of waiting on one before starting the other.
@@ -907,8 +1013,8 @@ document.getElementById("qc-signout-btn").addEventListener("click", async () => 
   initSectionTabs();
   initDaySelect();
   startTipRotator();
-  // These three don't depend on each other — load them together.
-  await Promise.all([loadLatest(), loadHistory(), loadInsights(14)]);
+  // These four don't depend on each other — load them together.
+  await Promise.all([loadLatest(), loadHistory(), loadInsights(14), loadCheckin()]);
 })();
 </script>
 </body>
