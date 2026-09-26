@@ -116,6 +116,19 @@
   .doctor-callout { display: flex; gap: 10px; padding: 14px 16px; border-radius: 12px; background: rgba(47,143,209,0.08); border: 1px solid rgba(47,143,209,0.2); font-size: 13.5px; color: #1e5f8a; line-height: 1.55; margin-top: 16px; }
   .reasoning-callout { display: flex; gap: 10px; padding: 14px 16px; border-radius: 12px; background: rgba(14,143,131,0.08); border: 1px solid rgba(14,143,131,0.2); font-size: 13.5px; color: #0e6f66; line-height: 1.6; }
   .comorbidity-callout { display: flex; gap: 10px; padding: 14px 16px; border-radius: 12px; background: rgba(197,138,15,0.1); border: 1px solid rgba(197,138,15,0.24); font-size: 13.5px; color: #8a5f0a; line-height: 1.6; }
+  .when-doctor-callout { display: flex; gap: 10px; padding: 14px 16px; border-radius: 12px; background: rgba(210,79,40,0.06); border: 1px solid rgba(210,79,40,0.2); font-size: 13.5px; color: #9a3c1f; line-height: 1.55; }
+
+  .med-list { display: flex; flex-direction: column; gap: 12px; }
+  .med-item { padding: 12px 14px; border-radius: 12px; background: rgba(16,14,42,0.03); border: 1px solid rgba(16,14,42,0.07); }
+  .med-item.warn { background: rgba(210,79,40,0.06); border-color: rgba(210,79,40,0.22); }
+  .med-name { font-weight: 700; font-size: 13.5px; color: #10142a; }
+  .med-when { font-size: 12.5px; color: rgba(16,14,42,0.6); margin-top: 2px; }
+  .med-avoid { font-size: 12.5px; margin-top: 6px; display: flex; gap: 6px; }
+  .med-avoid .tag { flex-shrink: 0; font-weight: 700; }
+  .med-avoid.warn { color: #b3401f; font-weight: 600; }
+  .med-avoid:not(.warn) { color: rgba(16,14,42,0.55); }
+  .med-specialist { font-size: 12.5px; color: rgba(16,14,42,0.55); margin-top: 4px; }
+  .med-disclaimer { font-size: 11.5px; color: rgba(16,14,42,0.45); margin-top: 10px; line-height: 1.5; }
 
   .other-cond-row { display: flex; align-items: center; justify-content: space-between; padding: 11px 0; border-bottom: 1px solid rgba(16,14,42,0.06); font-size: 13.5px; }
   .other-cond-row:last-child { border-bottom: none; }
@@ -170,6 +183,14 @@
   html[data-theme="dark"] .doctor-callout { background: rgba(47,143,209,0.12); color: #a9d4f0; }
   html[data-theme="dark"] .reasoning-callout { background: rgba(126,224,212,0.1); color: #7ee0d4; }
   html[data-theme="dark"] .comorbidity-callout { background: rgba(240,180,60,0.12); color: #f0c060; }
+  html[data-theme="dark"] .when-doctor-callout { background: rgba(210,79,40,0.12); border-color: rgba(240,120,90,0.3); color: #f0a080; }
+  html[data-theme="dark"] .med-item { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.1); }
+  html[data-theme="dark"] .med-item.warn { background: rgba(210,79,40,0.1); border-color: rgba(240,120,90,0.3); }
+  html[data-theme="dark"] .med-name { color: #f2f0f8; }
+  html[data-theme="dark"] .med-when, html[data-theme="dark"] .med-specialist { color: #8f8ba3; }
+  html[data-theme="dark"] .med-avoid.warn { color: #f0a080; }
+  html[data-theme="dark"] .med-avoid:not(.warn) { color: #8f8ba3; }
+  html[data-theme="dark"] .med-disclaimer { color: #8f8ba3; }
   html[data-theme="dark"] .other-cond-row { border-bottom-color: rgba(255,255,255,0.08); }
   html[data-theme="dark"] .other-cond-urgency { background: rgba(255,255,255,0.08); color: #cfccdf; }
   html[data-theme="dark"] .disclaimer-note { color: #8f8ba3; border-top-color: rgba(255,255,255,0.1); }
@@ -321,7 +342,11 @@ function normalizeResponse(data) {
     description: top.description,
     red_flags: top.red_flags,
     home_care_now: top.home_care_now,
+    home_care_ongoing: top.home_care_ongoing,
     avoid: top.avoid,
+    when_doctor: top.when_doctor,
+    otc: top.otc,
+    specialist: top.specialist,
     urgency: data.overall_urgency,
     patient_answer: reasoning.patient_answer,
     why_it_fits: reasoning.why_it_fits,
@@ -365,6 +390,10 @@ function renderResult(rawData) {
     '</div>';
   }
 
+  if (data.when_doctor) {
+    html += '<div class="card reveal" ' + step() + '><div class="when-doctor-callout"><span>🩺</span><span><strong>See a doctor:</strong> ' + mdBold(data.when_doctor) + (data.specialist ? ' <span style="opacity:0.75;">(' + escapeHtml(data.specialist) + ')</span>' : '') + '</span></div></div>';
+  }
+
   if (data.patient_answer || data.summary) {
     html += '<div class="card reveal" ' + step() + '><div class="patient-answer">' + mdBold(data.patient_answer || data.summary).replace(/\n\n/g, "<br><br>") + '</div></div>';
   }
@@ -386,7 +415,29 @@ function renderResult(rawData) {
         '<div>' + listHtml("care-list avoid", data.avoid) + '</div>' +
       '</div>';
     }
+    if (data.home_care_ongoing && data.home_care_ongoing.length) {
+      html += '<div class="section-label">Ongoing care</div>' + listHtml("care-list do", data.home_care_ongoing);
+    }
     html += '</div>';
+  }
+
+  if (data.otc && data.otc.length) {
+    const medHtml = data.otc.map(function (o) {
+      const flagged = !!(o.allergy_conflict || o.condition_conflict);
+      let row = '<div class="med-item' + (flagged ? " warn" : "") + '">' +
+        '<div class="med-name">' + escapeHtml(o.name || "") + '</div>';
+      if (o.when) row += '<div class="med-when">' + escapeHtml(o.when) + '</div>';
+      if (o.avoid_if) {
+        row += '<div class="med-avoid' + (flagged ? " warn" : "") + '"><span class="tag">' + (flagged ? "⚠" : "Avoid if:") + '</span><span>' + escapeHtml(o.avoid_if) + '</span></div>';
+      }
+      row += '</div>';
+      return row;
+    }).join("");
+    html += '<div class="card reveal" ' + step() + '>' +
+      '<div class="section-label" style="margin-top:0;">💊 Medication guidance</div>' +
+      '<div class="med-list">' + medHtml + '</div>' +
+      '<div class="med-disclaimer">This is general guidance, not a prescription — check with a pharmacist or doctor before starting any new medicine, especially if you\'re pregnant, on other medication, or have an existing health condition.</div>' +
+    '</div>';
   }
 
   if (data.reasoning_explanation) {
