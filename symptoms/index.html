@@ -176,72 +176,7 @@
   .sqp-step { animation: sqpStepIn 0.35s cubic-bezier(.22,1,.36,1); }
   @keyframes sqpStepIn { from { opacity: 0; transform: translateX(16px); } to { opacity: 1; transform: translateX(0); } }
 
-  /* ---- Results ---- */
-  .results-wrap { display: none; }
-  .results-wrap.show { display: block; }
-  .reveal { opacity: 0; animation: revealUp 0.65s cubic-bezier(.22,1,.36,1) forwards; }
-  @keyframes revealUp { 0% { opacity: 0; transform: translateY(22px) scale(0.96); filter: blur(5px); } 55% { filter: blur(0); } 100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); } }
-  .results-wrap.results-live { animation: resultsLiveIn 0.5s ease; }
-  @keyframes resultsLiveIn { from { opacity: 0.4; } to { opacity: 1; } }
-
-  .urgency-banner { display: flex; align-items: center; gap: 12px; padding: 16px 20px; border-radius: 16px; margin-bottom: 20px; font-weight: 700; font-size: 15px; }
-  .urgency-banner .ub-dot { width: 11px; height: 11px; border-radius: 50%; flex: 0 0 auto; }
-  .emergency-alert { border: 1.5px solid rgba(210,79,40,0.3); background: rgba(210,79,40,0.05); }
-  .emergency-alert .section-label { color: #b3401f; }
-  .urgency-banner.pulse .ub-dot { animation: ubBeacon 1.4s ease-out infinite; }
-  @keyframes ubBeacon { 0% { box-shadow: 0 0 0 0 currentColor; opacity: 1; } 100% { box-shadow: 0 0 0 10px transparent; opacity: 0.6; } }
-
-  .patient-answer { font-size: 15px; line-height: 1.7; color: #34324a; }
-  .patient-answer strong { color: #100e2a; }
-
-  .condition-head { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; }
-  .condition-emoji { font-size: 34px; line-height: 1; flex: 0 0 auto; }
-  .condition-name { font-family: 'Fraunces', serif; font-size: 21px; font-weight: 600; }
-  .condition-meta { font-size: 12.5px; color: rgba(16,14,42,0.5); margin-top: 2px; }
-  .condition-desc { font-size: 14px; color: rgba(16,14,42,0.65); line-height: 1.6; margin-bottom: 16px; }
-  .match-visuals { display: flex; align-items: center; gap: 18px; margin: 12px 0 16px; flex-wrap: wrap; }
-  .gauge-wrap { display: flex; align-items: center; gap: 10px; }
-  .gauge-ring { width: 52px; height: 52px; border-radius: 50%; background: conic-gradient(var(--gauge-color, #0e8f83) calc(var(--pct, 0) * 1%), rgba(16,14,42,0.09) 0); display: flex; align-items: center; justify-content: center; flex: 0 0 auto; }
-  .gauge-ring::before { content: ""; }
-  .gauge-inner { width: 40px; height: 40px; border-radius: 50%; background: #fff; display: flex; align-items: center; justify-content: center; font-size: 12.5px; font-weight: 800; color: #10142a; }
-  .gauge-text { display: flex; flex-direction: column; }
-  .gauge-title { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: rgba(16,14,42,0.45); }
-  .gauge-desc { font-size: 12.5px; font-weight: 600; color: #10142a; margin-top: 1px; }
-  .severity-block { display: flex; flex-direction: column; gap: 6px; min-width: 140px; }
-  .severity-title { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: rgba(16,14,42,0.45); }
-  .severity-bar { display: flex; gap: 4px; }
-  .sev-seg { flex: 1; height: 8px; border-radius: 999px; background: rgba(16,14,42,0.1); }
-  .sev-seg.active-low { background: #2f8f5e; }
-  .sev-seg.active-medium { background: #c58a0f; }
-  .sev-seg.active-high { background: #d24f28; }
-  .severity-desc { font-size: 12.5px; font-weight: 600; color: #10142a; }
-
-  .chip-list { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 4px; }
-  .info-chip { font-size: 12px; font-weight: 700; padding: 5px 12px; border-radius: 999px; background: rgba(14,143,131,0.08); color: #0e8f83; border: 1px solid rgba(14,143,131,0.18); }
-  .info-chip.red { background: rgba(210,79,40,0.1); color: #b3401f; border-color: rgba(210,79,40,0.26); }
-
-  .section-label { font-size: 11.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; color: rgba(16,14,42,0.45); margin: 18px 0 8px; }
-  .care-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-  .care-list { list-style: none; margin: 0; padding: 0; font-size: 13.5px; line-height: 1.7; }
-  .care-list li { padding-left: 20px; position: relative; margin-bottom: 4px; }
-  .care-list.do li::before { content: '✓'; position: absolute; left: 0; color: #0e8f83; font-weight: 800; }
-  .care-list.avoid li::before { content: '✕'; position: absolute; left: 0; color: #b3401f; font-weight: 800; }
-  @media (max-width: 560px) { .care-cols { grid-template-columns: 1fr; } }
-
-  .doctor-callout { display: flex; gap: 10px; padding: 14px 16px; border-radius: 12px; background: rgba(47,143,209,0.08); border: 1px solid rgba(47,143,209,0.2); font-size: 13.5px; color: #1e5f8a; line-height: 1.55; margin-top: 16px; }
-  .reasoning-callout { display: flex; gap: 10px; padding: 14px 16px; border-radius: 12px; background: rgba(14,143,131,0.08); border: 1px solid rgba(14,143,131,0.2); font-size: 13.5px; color: #0e6f66; line-height: 1.6; }
-  .comorbidity-callout { display: flex; gap: 10px; padding: 14px 16px; border-radius: 12px; background: rgba(197,138,15,0.1); border: 1px solid rgba(197,138,15,0.24); font-size: 13.5px; color: #8a5f0a; line-height: 1.6; }
-
-  .other-cond-row { display: flex; align-items: center; justify-content: space-between; padding: 11px 0; border-bottom: 1px solid rgba(16,14,42,0.06); font-size: 13.5px; }
-  .other-cond-row:last-child { border-bottom: none; }
-  .other-cond-name { font-weight: 700; }
-  .other-cond-urgency { font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 999px; background: rgba(16,14,42,0.06); color: rgba(16,14,42,0.6); }
-
-  .followup-list, .monitor-list { list-style: none; margin: 0; padding: 0; font-size: 13.5px; line-height: 1.8; }
-  .followup-list li, .monitor-list li { padding-left: 18px; position: relative; }
-  .followup-list li::before { content: '?'; position: absolute; left: 0; color: #7c6fdb; font-weight: 800; }
-  .monitor-list li::before { content: '👁'; position: absolute; left: 0; font-size: 11px; }
-
+  /* ---- Results now render on their own page: results/index.html ---- */
   .disclaimer-note { font-size: 12px; color: rgba(16,14,42,0.45); line-height: 1.6; text-align: center; margin-top: 28px; padding-top: 20px; border-top: 1px solid rgba(16,14,42,0.08); }
 
   html[data-theme="dark"] body { background: #0d0c1f; color: #f2f0f8; }
@@ -264,30 +199,12 @@
   html[data-theme="dark"] textarea#sym-input { background: #100e2a; color: #f2f0f8; border-color: rgba(255,255,255,0.14); }
   html[data-theme="dark"] .scan-status { color: #f2f0f8; }
   html[data-theme="dark"] .scan-substatus { color: #8f8ba3; }
-  html[data-theme="dark"] .patient-answer { color: #cfccdf; }
-  html[data-theme="dark"] .emergency-alert { border-color: rgba(240,120,90,0.35); background: rgba(210,79,40,0.1); }
-  html[data-theme="dark"] .emergency-alert .section-label { color: #f0a080; }
-  html[data-theme="dark"] .patient-answer strong { color: #f2f0f8; }
-  html[data-theme="dark"] .condition-meta { color: #8f8ba3; }
-  html[data-theme="dark"] .condition-desc { color: #b7b3cc; }
-  html[data-theme="dark"] .gauge-inner { background: #1a1830; color: #f2f0f8; }
-  html[data-theme="dark"] .gauge-title { color: #8f8ba3; }
-  html[data-theme="dark"] .gauge-desc { color: #f2f0f8; }
-  html[data-theme="dark"] .severity-title { color: #8f8ba3; }
-  html[data-theme="dark"] .sev-seg { background: rgba(255,255,255,0.1); }
-  html[data-theme="dark"] .severity-desc { color: #f2f0f8; }
-  html[data-theme="dark"] .section-label { color: #8f8ba3; }
   html[data-theme="dark"] .quick-check { background: rgba(14,143,131,0.1); border-color: rgba(14,143,131,0.28); }
   html[data-theme="dark"] .qc-sub { color: #8f8ba3; }
   html[data-theme="dark"] .qc-question { color: #f2f1fa; }
   html[data-theme="dark"] .qc-btn { background: rgba(255,255,255,0.06); color: #f2f1fa; border-color: rgba(255,255,255,0.14); }
   html[data-theme="dark"] .qc-opt-btn { background: rgba(255,255,255,0.06); color: #f2f1fa; border-color: rgba(255,255,255,0.14); }
   html[data-theme="dark"] .qc-skip { color: #8f8ba3; }
-  html[data-theme="dark"] .doctor-callout { background: rgba(47,143,209,0.12); color: #a9d4f0; }
-  html[data-theme="dark"] .reasoning-callout { background: rgba(126,224,212,0.1); color: #7ee0d4; }
-  html[data-theme="dark"] .comorbidity-callout { background: rgba(240,180,60,0.12); color: #f0c060; }
-  html[data-theme="dark"] .other-cond-row { border-bottom-color: rgba(255,255,255,0.08); }
-  html[data-theme="dark"] .other-cond-urgency { background: rgba(255,255,255,0.08); color: #cfccdf; }
   html[data-theme="dark"] .disclaimer-note { color: #8f8ba3; border-top-color: rgba(255,255,255,0.1); }
   html[data-theme="dark"] .or-divider { color: #8f8ba3; }
   html[data-theme="dark"] .or-divider::before, html[data-theme="dark"] .or-divider::after { background: rgba(255,255,255,0.1); }
@@ -428,8 +345,6 @@
         </div>
       </div>
     </div>
-
-    <div class="results-wrap" id="sym-results"></div>
 
     <div class="disclaimer-note">
       QueroCura's symptom checker gives educational guidance only — it is not a clinical diagnosis. Always consult a qualified healthcare professional for medical decisions, and seek emergency care immediately for severe or worsening symptoms.
@@ -624,224 +539,15 @@ function showQuestionPhase(questions, baseText) {
   if (skipBtn) skipBtn.onclick = () => finish(true);
 }
 
-const URGENCY_COLORS = {
-  low: "#0e8f83", medium: "#c98a10", high: "#d24f28", emergency: "#b3182a", unknown: "#2f8fd1",
-};
-function urgencyColor(word) {
-  const w = (word || "").toLowerCase();
-  if (w.includes("emergency")) return URGENCY_COLORS.emergency;
-  if (w.includes("high") || w.includes("urgent")) return URGENCY_COLORS.high;
-  if (w.includes("medium") || w.includes("caution") || w.includes("watch")) return URGENCY_COLORS.medium;
-  if (w.includes("low") || w.includes("routine")) return URGENCY_COLORS.low;
-  return URGENCY_COLORS.unknown;
-}
-
-function listHtml(className, items) {
-  if (!items || !items.length) return "";
-  return '<ul class="' + className + '">' + items.map(i => "<li>" + mdBold(i) + "</li>").join("") + "</ul>";
-}
-
-// Confidence gauge (how strongly the matched symptoms point to this specific
-// condition, from match_strength/confidence_band) + severity scale bar (how
-// serious the condition itself tends to be, from risk) -- two different
-// questions ("how sure are we" vs "how serious is it if we're right"), so
-// they're rendered as two separate visuals rather than folded into one.
-const CONFIDENCE_BAND_TEXT = {
-  narrow: "High confidence match",
-  moderate: "Moderate confidence match",
-  broad: "Broader, less certain match",
-};
-const RISK_LEVEL_TEXT = { Low: "Low severity", Medium: "Moderate severity", High: "High severity" };
-
-function matchVisualsHtml(data) {
-  const hasGauge = typeof data.match_strength === "number";
-  const hasSeverity = data.risk && RISK_LEVEL_TEXT[data.risk];
-  if (!hasGauge && !hasSeverity) return "";
-
-  let html = '<div class="match-visuals">';
-
-  if (hasGauge) {
-    const pct = Math.round(data.match_strength * 100);
-    const gaugeColor = pct >= 62 ? "#0e8f83" : pct >= 35 ? "#c58a0f" : "#8a7bb5";
-    const bandText = CONFIDENCE_BAND_TEXT[data.confidence_band] || "Estimated match";
-    html += '<div class="gauge-wrap">' +
-      '<div class="gauge-ring" style="--pct:' + pct + ';--gauge-color:' + gaugeColor + ';"><div class="gauge-inner">' + pct + '%</div></div>' +
-      '<div class="gauge-text"><div class="gauge-title">Match confidence</div><div class="gauge-desc">' + escapeHtml(bandText) + '</div></div>' +
-    '</div>';
-  }
-
-  if (hasSeverity) {
-    const level = data.risk; // "Low" | "Medium" | "High"
-    const activeClass = "active-" + level.toLowerCase();
-    const segCount = level === "Low" ? 1 : level === "Medium" ? 2 : 3;
-    let segs = "";
-    for (let i = 0; i < 3; i++) {
-      segs += '<div class="sev-seg' + (i < segCount ? " " + activeClass : "") + '"></div>';
-    }
-    html += '<div class="severity-block">' +
-      '<div class="severity-title">Condition severity</div>' +
-      '<div class="severity-bar">' + segs + '</div>' +
-      '<div class="severity-desc">' + escapeHtml(RISK_LEVEL_TEXT[level]) + '</div>' +
-    '</div>';
-  }
-
-  html += '</div>';
-  return html;
-}
-
-// Normalizes the thin /api/diagnosis/analyse response (top_condition /
-// clinical_reasoning / overall_urgency) into the same flat shape this
-// renderer already expects from the richer /api/fast/analyse endpoint,
-// so renderResult works unchanged regardless of which one answered.
-function normalizeResponse(data) {
-  if (!data || !data.top_condition) return data; // already flat (fast/analyse shape)
-  const top = data.top_condition || {};
-  const reasoning = data.clinical_reasoning || {};
-  return Object.assign({}, data, {
-    name: top.name,
-    emoji: top.emoji,
-    confidence: undefined,
-    match_strength: top.match_strength,
-    confidence_band: top.confidence_band,
-    risk: top.risk,
-    description: top.description,
-    red_flags: top.red_flags,
-    home_care_now: top.home_care_now,
-    avoid: top.avoid,
-    urgency: data.overall_urgency,
-    patient_answer: reasoning.patient_answer,
-    why_it_fits: reasoning.why_it_fits,
-    monitoring_advice: reasoning.monitoring_advice,
-    doctor_summary: reasoning.doctor_summary,
-    possible_conditions: data.possible_conditions,
-  });
-}
-
-function renderResult(rawData, baseText, round) {
-  const data = normalizeResponse(rawData);
-  const wrap = document.getElementById("sym-results");
-  const raw = data.raw || data.diagnosis || {};
-  const board = raw.medical_reasoning_board || null;
-  const governor = raw.final_intelligence_governor || null;
-
-  const urgencyWord = data.urgency || data.triage || "Unknown";
-  const uColor = urgencyColor(urgencyWord);
-  const isSevere = /high|urgent|emergency/i.test(urgencyWord) || (board && board.safety_override);
-
-  let html = "";
-  let delay = 0;
-  const step = () => { const d = delay; delay += 90; return 'style="animation-delay:' + d + 'ms"'; };
-
-  html += '<div class="urgency-banner reveal ' + (isSevere ? "pulse" : "") + '" ' + step() + ' style="background:' + uColor + '1a; color:' + uColor + '; animation-delay:' + (delay - 90) + 'ms">' +
-    '<span class="ub-dot" style="background:' + uColor + '"></span>' +
-    'Urgency: ' + escapeHtml(urgencyWord) +
-    (governor && governor.confidence_band ? '<span style="margin-left:auto;font-weight:600;font-size:12.5px;opacity:0.8;text-transform:none;">' + escapeHtml(governor.confidence_band) + ' confidence' + (governor.confidence_score ? ' · ' + Math.round(governor.confidence_score) + '%' : '') + '</span>' : '') +
-  '</div>';
-
-  // Emergency / red-flag symptoms come first, right under the urgency banner
-  // -- if any of these apply, that's the single most important thing on the
-  // page, so it shouldn't be buried below the condition description and
-  // care sections where it's easy to scroll past.
-  const redChips = (data.red_flags || []).map(s => '<span class="info-chip red">⚠ ' + escapeHtml(s) + '</span>').join("");
-  if (redChips) {
-    html += '<div class="card reveal emergency-alert" ' + step() + '>' +
-      '<div class="section-label" style="margin-top:0;">🚨 Seek care now if you notice</div>' +
-      '<div class="chip-list">' + redChips + '</div>' +
-    '</div>';
-  }
-
-  if (data.patient_answer || data.summary) {
-    html += '<div class="card reveal" ' + step() + '><div class="patient-answer">' + mdBold(data.patient_answer || data.summary).replace(/\n\n/g, "<br><br>") + '</div></div>';
-  }
-
-  if (data.name) {
-    html += '<div class="card reveal" ' + step() + '>' +
-      '<div class="condition-head">' +
-        '<div class="condition-emoji">' + (data.emoji || "🩺") + '</div>' +
-        '<div><div class="condition-name">' + escapeHtml(data.name) + '</div>' +
-        '<div class="condition-meta">' + (data.confidence ? data.confidence + "% match" : "") + '</div></div>' +
-      '</div>' +
-      (data.description ? '<div class="condition-desc">' + escapeHtml(data.description) + '</div>' : '') +
-      matchVisualsHtml(data);
-
-    const careNow = data.home_care_now || data.care || [];
-    if ((careNow && careNow.length) || (data.avoid && data.avoid.length)) {
-      html += '<div class="section-label">What you can do</div><div class="care-cols">' +
-        '<div>' + listHtml("care-list do", careNow) + '</div>' +
-        '<div>' + listHtml("care-list avoid", data.avoid) + '</div>' +
-      '</div>';
-    }
-    html += '</div>';
-  }
-
-  // Plain-language reasoning paragraph from build_reasoning_explanation() --
-  // narrates the actual matched symptoms and runner-up comparison behind
-  // the top pick, so the result doesn't read as a bare label.
-  if (data.reasoning_explanation) {
-    html += '<div class="card reveal" ' + step() + '><div class="reasoning-callout"><span>🧠</span><span>' + escapeHtml(data.reasoning_explanation) + '</span></div></div>';
-  }
-
-  // "How QueroCura reasoned" — surfaces the medical-reasoning-board's trace
-  // when a danger-signature pattern actually fired, so the extra layers of
-  // analysis running behind the scenes are visible, not just a black box.
-  if (board && ((board.reasoning_trace && board.reasoning_trace.length) || (board.must_not_miss && board.must_not_miss.length))) {
-    html += '<div class="card reveal" ' + step() + '>' +
-      '<div class="section-label" style="margin-top:0;">How QueroCura reasoned about this</div>';
-    if (board.reasoning_trace && board.reasoning_trace.length) {
-      html += '<ul class="monitor-list">' + board.reasoning_trace.map(t => '<li>' + escapeHtml(String(t)) + '</li>').join("") + '</ul>';
-    }
-    if (board.must_not_miss && board.must_not_miss.length) {
-      html += '<div class="chip-list" style="margin-top:10px;">' +
-        board.must_not_miss.map(m => '<span class="info-chip red">👁 Don\'t miss: ' + escapeHtml(m.name || "") + '</span>').join("") +
-      '</div>';
-    }
-    html += '</div>';
-  }
-
-  const others = (data.possible_conditions || data.alternatives || []).filter(c => c.name && c.name !== data.name).slice(0, 4);
-  if (others.length) {
-    html += '<div class="card reveal" ' + step() + '>' +
-      '<div class="section-label" style="margin-top:0;">Other possibilities</div>' +
-      others.map(c => '<div class="other-cond-row"><span class="other-cond-name">' + escapeHtml(c.name) + '</span><span class="other-cond-urgency">' + escapeHtml(c.urgency || c.risk || "—") + '</span></div>').join("") +
-    '</div>';
-  }
-
-  // Possible-comorbidity note from detect_possible_comorbidity() -- only
-  // present when the top two candidates are both strongly supported by
-  // largely non-overlapping symptoms, i.e. it actually looks like two
-  // separate things rather than one condition explaining everything.
-  const comorbidity = data.possible_comorbidity;
-  if (comorbidity && comorbidity.note) {
-    html += '<div class="card reveal" ' + step() + '><div class="comorbidity-callout"><span>' + (comorbidity.secondary && comorbidity.secondary.emoji ? comorbidity.secondary.emoji : "🔀") + '</span><span><strong>Worth noting:</strong> ' + escapeHtml(comorbidity.note) + '</span></div></div>';
-  }
-
-  if ((data.why_it_fits && data.why_it_fits.length) || (data.monitoring_advice && data.monitoring_advice.length)) {
-    html += '<div class="card reveal" ' + step() + '>';
-    if (data.why_it_fits && data.why_it_fits.length) {
-      html += '<div class="section-label" style="margin-top:0;">Why this fits</div>' + listHtml("followup-list", data.why_it_fits);
-    }
-    if (data.monitoring_advice && data.monitoring_advice.length) {
-      html += '<div class="section-label">Keep an eye on</div>' + listHtml("monitor-list", data.monitoring_advice);
-    }
-    html += '</div>';
-  }
-
-  if (data.doctor_summary) {
-    html += '<div class="card reveal" ' + step() + '><div class="doctor-callout"><span>🩺</span><span><strong>For your doctor:</strong> ' + mdBold(data.doctor_summary) + '</span></div></div>';
-  }
-
-  wrap.innerHTML = html;
-  wrap.classList.add("show");
-  wrap.classList.add("results-live");
-  wrap.scrollIntoView({ behavior: "smooth", block: "start" });
-}
+// Rendering the actual result now lives entirely on results/index.html --
+// this page's job ends at handing the raw analysis response off via
+// sessionStorage and navigating there (see the success branch of
+// runAnalysis() below).
 
 async function runAnalysis(text, busyBtn, round) {
   const errEl = document.getElementById("sym-err");
   errEl.textContent = "";
   if (busyBtn) busyBtn.disabled = true;
-  document.getElementById("sym-results").classList.remove("show", "results-live");
-  document.getElementById("sym-results").innerHTML = "";
   startScan(round);
 
   try {
@@ -850,7 +556,8 @@ async function runAnalysis(text, busyBtn, round) {
     // knowledge files and was pushing the backend's 512MB Render instance
     // over its memory limit under real traffic (2026-09-25). This endpoint
     // runs the same core legacy-engine diagnosis without that extra load;
-    // renderResult() normalizes its shape via normalizeResponse() above.
+    // results/index.html's normalizeResponse() reshapes this response into
+    // the flat shape its renderer expects, regardless of which endpoint answered.
     const res = await fetch(API_BASE + "/diagnosis/analyse", {
       method: "POST",
       credentials: "include",
@@ -868,8 +575,19 @@ async function runAnalysis(text, busyBtn, round) {
     if (questions.length && (round || 0) === 0) {
       showQuestionPhase(questions, text);
     } else {
-      stopScan();
-      renderResult(data, text, round || 0);
+      // Results now live on their own page (results/index.html) instead of
+      // rendering inline below the form, with a clear "Back to Symptom
+      // Analyzer" way back. Hand the analysis off via sessionStorage --
+      // it's a same-origin, one-shot handoff for a page navigated to right
+      // after this fetch resolves, not state meant to persist or be read
+      // back later, so sessionStorage (not an API round-trip) is the right
+      // tool here. The results page redirects back here if it ever finds
+      // this empty (e.g. a stale bookmark or the back button).
+      try {
+        sessionStorage.setItem("qc-symptom-result", JSON.stringify({ data, baseText: text, round: round || 0, ts: Date.now() }));
+      } catch (e) {}
+      window.location.href = "results/";
+      return;
     }
   } catch (err) {
     stopScan();
