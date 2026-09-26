@@ -72,6 +72,12 @@
   .or-divider { display: flex; align-items: center; gap: 12px; margin: 26px 0 18px; font-size: 11.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: rgba(16,14,42,0.35); }
   .or-divider::before, .or-divider::after { content: ''; flex: 1; height: 1px; background: rgba(16,14,42,0.1); }
 
+  /* ---- "Tap the symptoms which apply" callout, pointing at the picker ---- */
+  .tap-hint-row { display: flex; align-items: flex-start; justify-content: flex-end; gap: 8px; margin: 18px 0 -8px; }
+  .tap-hint-text { font-family: 'Fraunces', serif; font-style: italic; font-weight: 600; font-size: 14.5px; color: #c98a10; white-space: nowrap; margin-top: 2px; }
+  .tap-hint-arrow { flex: 0 0 auto; margin-top: -2px; }
+  @media (max-width: 560px) { .tap-hint-row { display: none; } }
+
   /* ---- Tap-to-select symptom picker (ported from the monolith) ---- */
   .picker-sub { font-size: 13px; color: rgba(16,14,42,0.5); margin-bottom: 16px; }
   .cat-details { border: 1px solid rgba(16,14,42,0.08); border-radius: 14px; margin-bottom: 10px; overflow: hidden; background: #fbfaf6; }
@@ -117,6 +123,26 @@
   .analyse-btn:hover:not(:disabled) { background: #0b6f66; transform: translateY(-2px); box-shadow: 0 12px 24px -8px rgba(14,143,131,0.45); }
   .analyse-btn:disabled { opacity: 0.55; cursor: default; }
   .err-msg { font-size: 13.5px; font-weight: 600; color: #b3401f; }
+
+  /* ---- "How are you feeling now?" check-in banner (smart follow-up) ---- */
+  .checkin-banner { display: none; align-items: flex-start; gap: 14px; padding: 18px 20px; border-radius: 18px; background: linear-gradient(120deg, rgba(14,143,131,0.10), rgba(124,111,219,0.07)); border: 1px solid rgba(14,143,131,0.2); margin: -6px 0 22px; }
+  .checkin-icon { font-size: 22px; line-height: 1; flex: 0 0 auto; margin-top: 2px; }
+  .checkin-body { flex: 1; min-width: 0; }
+  .checkin-label { font-size: 10.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: #0e8f83; margin-bottom: 4px; }
+  .checkin-question { font-size: 14.5px; font-weight: 600; color: #100e2a; line-height: 1.45; margin-bottom: 12px; }
+  .checkin-options { display: flex; flex-wrap: wrap; gap: 8px; }
+  .checkin-opt-btn { font-size: 13px; font-weight: 700; color: #0e8f83; background: #fff; border: 1.5px solid rgba(14,143,131,0.3); padding: 8px 16px; border-radius: 999px; cursor: pointer; font-family: 'Manrope', sans-serif; transition: all 0.15s ease; }
+  .checkin-opt-btn:hover:not(:disabled) { background: #0e8f83; color: #fff; transform: translateY(-1px); }
+  .checkin-opt-btn:disabled { opacity: 0.5; cursor: default; }
+  .checkin-dismiss { flex: 0 0 auto; background: transparent; border: none; color: rgba(16,14,42,0.35); font-size: 15px; cursor: pointer; padding: 2px 4px; line-height: 1; }
+  .checkin-dismiss:hover { color: rgba(16,14,42,0.6); }
+  html[data-theme="dark"] .checkin-banner { background: linear-gradient(120deg, rgba(126,224,212,0.08), rgba(124,111,219,0.1)); border-color: rgba(126,224,212,0.2); }
+  html[data-theme="dark"] .checkin-label { color: #7ee0d4; }
+  html[data-theme="dark"] .checkin-question { color: #f2f0f8; }
+  html[data-theme="dark"] .checkin-opt-btn { background: #18162e; color: #7ee0d4; border-color: rgba(126,224,212,0.3); }
+  html[data-theme="dark"] .checkin-opt-btn:hover:not(:disabled) { background: #7ee0d4; color: #100e2a; }
+  html[data-theme="dark"] .checkin-dismiss { color: #8f8ba3; }
+  html[data-theme="dark"] .checkin-dismiss:hover { color: #cfccdf; }
 
   /* ---- Quick check: targeted follow-up questions ---- */
   .quick-check { background: rgba(14,143,131,0.06); border: 1px solid rgba(14,143,131,0.18); }
@@ -209,6 +235,7 @@
   html[data-theme="dark"] .or-divider { color: #8f8ba3; }
   html[data-theme="dark"] .or-divider::before, html[data-theme="dark"] .or-divider::after { background: rgba(255,255,255,0.1); }
   html[data-theme="dark"] .picker-sub { color: #a9a6bd; }
+  html[data-theme="dark"] .tap-hint-text { color: #f0cd8a; }
   html[data-theme="dark"] .cat-details { background: #100e2a; border-color: rgba(255,255,255,0.1); }
   html[data-theme="dark"] .cat-summary .cs-ic { background: rgba(126,224,212,0.12); }
   html[data-theme="dark"] .cat-summary .cs-count { background: rgba(255,255,255,0.08); color: #a9a6bd; }
@@ -245,7 +272,7 @@
       <a class="tab-link" href="../curavault/"><span class="tl-ic">🔒</span>CuraVault</a>
       <a class="tab-link" href="../dashboard/"><span class="tl-ic">🏠</span>Dashboard</a>
       <a class="tab-link" href="../insights/"><span class="tl-ic">✨</span>Insights</a>
-      <a class="tab-link" href="../onboarding/"><span class="tl-ic">👤</span>Profile</a>
+      <a class="tab-link" href="../profile/"><span class="tl-ic">👤</span>Profile</a>
     </nav>
     <div class="topbar-right">
       <span class="user-pill" id="qc-user-chip"><span class="up-dot" id="qc-user-dot">?</span><span id="qc-user-name"></span></span>
@@ -266,6 +293,16 @@
       <span class="cutesy-note-text"><strong>Just a little heads-up!</strong> I'm best buddies with everyday things like colds, tummy aches, and headaches — I'm not set up for long-term or chronic conditions, so for those, please keep your favorite doctor in the loop. 💛</span>
     </div>
 
+    <div class="checkin-banner" id="qc-checkin">
+      <span class="checkin-icon">💬</span>
+      <div class="checkin-body">
+        <div class="checkin-label">Quick check-in</div>
+        <div class="checkin-question" id="qc-checkin-question"></div>
+        <div class="checkin-options" id="qc-checkin-options"></div>
+      </div>
+      <button type="button" class="checkin-dismiss" id="qc-checkin-dismiss" aria-label="Not now">✕</button>
+    </div>
+
     <div class="card">
       <form id="sym-form">
         <textarea id="sym-input" placeholder="e.g. Fever since yesterday evening, around 101°F, with a sore throat and a mild headache…" required></textarea>
@@ -280,6 +317,14 @@
           <span class="err-msg" id="sym-err"></span>
         </div>
       </form>
+
+      <div class="tap-hint-row">
+        <span class="tap-hint-text">Tap the symptoms which apply</span>
+        <svg class="tap-hint-arrow" width="42" height="46" viewBox="0 0 42 46" fill="none">
+          <path d="M36 3 C 37 20, 18 18, 12 36" stroke="#e0a52c" stroke-width="2.2" stroke-linecap="round" stroke-dasharray="1 5.5"/>
+          <path d="M3 27 L11 39 L22 30" stroke="#e0a52c" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        </svg>
+      </div>
 
       <div class="or-divider">or tap what applies</div>
 
@@ -607,6 +652,11 @@ document.getElementById("sym-form").addEventListener("submit", async (e) => {
 
 /* ---- Tap-to-select symptom picker (ported from the monolith's /symptoms page) ---- */
 const SYMPTOM_CATS = [
+  { name: "Emergency Signs", icon: "🚨", emergency: true, items: [
+    ["slurred speech","🗣️","Slurred Speech"], ["face droop","😶","Face Drooping"], ["one side weakness","💪","One-Side Weakness"],
+    ["stiff neck fever","😬","Stiff Neck + Fever"], ["swelling lips","😮","Throat / Lip Swelling"],
+    ["thunderclap headache","⚡","Sudden Worst Headache Ever"],
+  ]},
   { name: "General", icon: "🌡️", items: [
     ["fever","🤒","Fever"], ["low grade fever","🌡️","Low-Grade Fever"], ["fatigue","😴","Fatigue / No energy"],
     ["body ache","🦴","Body / Muscle Ache"], ["chills","🥶","Chills / Shivering"], ["sweating","💧","Sweating"],
@@ -621,7 +671,7 @@ const SYMPTOM_CATS = [
   ]},
   { name: "Nose, Throat & Sinuses", icon: "🧻", items: [
     ["sore throat","😮‍💨","Sore Throat"], ["runny nose","🧻","Runny Nose"], ["nasal congestion","😤","Blocked Nose"],
-    ["sneezing","🤣","Sneezing"], ["facial pain","😣","Facial / Sinus Pain"], ["coloured nasal discharge","💛","Green / Yellow Discharge"],
+    ["sneezing","🤧","Sneezing"], ["facial pain","😣","Facial / Sinus Pain"], ["coloured nasal discharge","💛","Green / Yellow Discharge"],
     ["loss of smell","👃","Loss of Smell"], ["loss of taste","👅","Loss of Taste"], ["stiff neck","😬","Stiff Neck"],
     ["neck lump","🔵","Lump in Neck"], ["nosebleed","🩸","Nosebleed"],
   ]},
@@ -669,11 +719,6 @@ const SYMPTOM_CATS = [
   ]},
   { name: "Dental", icon: "🦷", items: [
     ["tooth pain","🦷","Toothache"], ["gum swelling","🫦","Swollen Gums"],
-  ]},
-  { name: "Emergency Signs", icon: "🚨", emergency: true, items: [
-    ["slurred speech","🗣️","Slurred Speech"], ["face droop","😶","Face Drooping"], ["one side weakness","💪","One-Side Weakness"],
-    ["stiff neck fever","😬","Stiff Neck + Fever"], ["swelling lips","😮","Throat / Lip Swelling"],
-    ["thunderclap headache","⚡","Sudden Worst Headache Ever"],
   ]},
 ];
 
@@ -765,6 +810,91 @@ document.getElementById("qc-signout-btn").addEventListener("click", async () => 
   window.location.href = "../";
 });
 
+/* ---- "How are you feeling now?" check-in banner ---- */
+/* Shown only from time to time (at most once every CHECKIN_INTERVAL_MS),
+   not on every single page load -- qc-checkin-last-shown (localStorage,
+   persists across visits) is the gate. Answering a task resolves it
+   server-side, so once someone says they're okay it naturally stays quiet
+   until a genuinely new check-in gets scheduled (after a later symptom
+   check) -- nothing extra to track for that on the frontend. */
+const CHECKIN_INTERVAL_MS = 6 * 60 * 60 * 1000; // 6 hours
+const CHECKIN_LAST_SHOWN_KEY = "qc-checkin-last-shown";
+let qcCheckinItemId = null;
+
+function checkinDue() {
+  try {
+    const last = parseInt(localStorage.getItem(CHECKIN_LAST_SHOWN_KEY) || "0", 10);
+    return !last || (Date.now() - last) >= CHECKIN_INTERVAL_MS;
+  } catch (e) {
+    return true;
+  }
+}
+
+function markCheckinShown() {
+  try { localStorage.setItem(CHECKIN_LAST_SHOWN_KEY, String(Date.now())); } catch (e) {}
+}
+
+async function loadCheckin() {
+  if (!checkinDue()) return;
+  try {
+    const res = await fetch(API_BASE + "/smart-followups/due", { credentials: "include" });
+    const data = await res.json();
+    if (!data.ok || !data.items || !data.items.length) return;
+    renderCheckin(data.items[0]);
+    markCheckinShown();
+  } catch (e) {}
+}
+
+function renderCheckin(item) {
+  qcCheckinItemId = item.id;
+  const banner = document.getElementById("qc-checkin");
+  const qEl = document.getElementById("qc-checkin-question");
+  const optsEl = document.getElementById("qc-checkin-options");
+
+  const anchorName = item.anchor_condition_name;
+  qEl.textContent = item.question
+    ? (item.question + (anchorName ? " (about your " + anchorName.toLowerCase() + " check)" : ""))
+    : "How are you feeling now compared with your last check?";
+
+  const options = (item.options && item.options.length) ? item.options : ["Better", "Same", "Worse", "New symptom appeared"];
+  optsEl.innerHTML = "";
+  options.forEach(opt => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "checkin-opt-btn";
+    btn.textContent = opt;
+    btn.addEventListener("click", () => answerCheckin(item.id, opt));
+    optsEl.appendChild(btn);
+  });
+
+  banner.style.display = "flex";
+}
+
+async function answerCheckin(taskId, optionText) {
+  const banner = document.getElementById("qc-checkin");
+  banner.querySelectorAll(".checkin-opt-btn").forEach(b => { b.disabled = true; });
+
+  try {
+    await fetch(API_BASE + "/smart-followups/answer", {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: taskId, answer_text: optionText, answer_payload: { option: optionText } }),
+    });
+  } catch (e) {}
+
+  document.getElementById("qc-checkin-question").textContent = "Thanks — that helps keep your health score accurate. 💛";
+  document.getElementById("qc-checkin-options").innerHTML = "";
+  setTimeout(() => { banner.style.display = "none"; }, 2200);
+}
+
+document.getElementById("qc-checkin-dismiss").addEventListener("click", () => {
+  // "Not now" just re-arms the regular interval rather than answering the
+  // task -- markCheckinShown() was already called when it appeared, so
+  // this doesn't change *when* it can show again, it just closes it now.
+  document.getElementById("qc-checkin").style.display = "none";
+});
+
 (async function init() {
   const [meData, profData] = await Promise.all([
     fetch(API_BASE + "/auth/me", { credentials: "include" }).then(r => r.json()).catch(() => ({ logged_in: false })),
@@ -780,6 +910,7 @@ document.getElementById("qc-signout-btn").addEventListener("click", async () => 
   const initials = name ? name.trim().split(/\s+/).slice(0, 2).map(w => w[0].toUpperCase()).join("") : "?";
   document.getElementById("qc-user-dot").textContent = initials;
   document.getElementById("qc-user-name").textContent = name ? name.split(" ")[0] : "";
+  loadCheckin();
 })();
 </script>
 </body>
