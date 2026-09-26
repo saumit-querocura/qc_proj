@@ -381,7 +381,7 @@
       <a class="tab-link" href="../curavault/"><span class="tl-ic">🔒</span>CuraVault</a>
       <a class="tab-link active" href="#"><span class="tl-ic">🏠</span>Dashboard</a>
       <a class="tab-link" href="../insights/"><span class="tl-ic">✨</span>Insights</a>
-      <a class="tab-link" href="../onboarding/"><span class="tl-ic">👤</span>Profile</a>
+      <a class="tab-link" href="../profile/"><span class="tl-ic">👤</span>Profile</a>
     </nav>
 
     <div class="topbar-right">
@@ -472,7 +472,7 @@
           <div class="profile-meta" id="qc-profile-meta">—</div>
           <div class="profile-chips" id="qc-profile-chips"></div>
         </div>
-        <button class="edit-profile-btn" onclick="window.location.href='../onboarding/'">Edit profile</button>
+        <button class="edit-profile-btn" onclick="window.location.href='../profile/'">Edit profile</button>
       </div>
 
       <div class="card">
@@ -911,24 +911,37 @@ document.getElementById("qc-signout-btn").addEventListener("click", async () => 
 });
 
 /* ---- "How are you feeling now?" check-in banner ---- */
-/* Dismissing only hides it for this tab's session -- it's still due next
-   visit. Answering actually resolves the follow-up task server-side (see
-   smart-followups/answer -> followup_notification_service.answer_followup),
-   which feeds the case-state/outcome signal into the health score. */
-const CHECKIN_DISMISS_KEY = "qc-checkin-dismissed";
+/* Shown only from time to time (at most once every CHECKIN_INTERVAL_MS),
+   not on every single page load -- qc-checkin-last-shown (localStorage,
+   persists across visits) is the gate. Answering a task resolves it
+   server-side, so once someone says they're okay it naturally stays quiet
+   until a genuinely new check-in gets scheduled (after a later symptom
+   check) -- nothing extra to track for that on the frontend. */
+const CHECKIN_INTERVAL_MS = 6 * 60 * 60 * 1000; // 6 hours
+const CHECKIN_LAST_SHOWN_KEY = "qc-checkin-last-shown";
 let qcCheckinItemId = null;
 
+function checkinDue() {
+  try {
+    const last = parseInt(localStorage.getItem(CHECKIN_LAST_SHOWN_KEY) || "0", 10);
+    return !last || (Date.now() - last) >= CHECKIN_INTERVAL_MS;
+  } catch (e) {
+    return true;
+  }
+}
+
+function markCheckinShown() {
+  try { localStorage.setItem(CHECKIN_LAST_SHOWN_KEY, String(Date.now())); } catch (e) {}
+}
+
 async function loadCheckin() {
+  if (!checkinDue()) return;
   try {
     const res = await fetch(API_BASE + "/smart-followups/due", { credentials: "include" });
     const data = await res.json();
     if (!data.ok || !data.items || !data.items.length) return;
-
-    let dismissed = [];
-    try { dismissed = JSON.parse(sessionStorage.getItem(CHECKIN_DISMISS_KEY) || "[]"); } catch (e) {}
-
-    const item = data.items.find(it => !dismissed.includes(it.id));
-    if (item) renderCheckin(item);
+    renderCheckin(data.items[0]);
+    markCheckinShown();
   } catch (e) {}
 }
 
@@ -976,13 +989,9 @@ async function answerCheckin(taskId, optionText) {
 }
 
 document.getElementById("qc-checkin-dismiss").addEventListener("click", () => {
-  if (qcCheckinItemId != null) {
-    try {
-      const dismissed = JSON.parse(sessionStorage.getItem(CHECKIN_DISMISS_KEY) || "[]");
-      dismissed.push(qcCheckinItemId);
-      sessionStorage.setItem(CHECKIN_DISMISS_KEY, JSON.stringify(dismissed));
-    } catch (e) {}
-  }
+  // "Not now" just re-arms the regular interval rather than answering the
+  // task -- markCheckinShown() was already called when it appeared, so
+  // this doesn't change *when* it can show again, it just closes it now.
   document.getElementById("qc-checkin").style.display = "none";
 });
 
