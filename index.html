@@ -3,1034 +3,1150 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>CuraVault — QueroCura</title>
-<meta name="robots" content="noindex">
-<link rel="icon" type="image/x-icon" href="../icons/favicon.ico">
+<title>QueroCura — Personalized Care</title>
+<meta name="description" content="Personalized care, right at home. From understanding your symptoms to remembering your next dose, QueroCura keeps your health story in one trusted place.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="QueroCura">
+<meta property="og:title" content="QueroCura — Personalized Care">
+<meta property="og:description" content="Personalized care, right at home. From understanding your symptoms to remembering your next dose, QueroCura keeps your health story in one trusted place.">
+<meta property="og:image" content="https://querocura.com/assets/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:url" content="https://querocura.com/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="QueroCura — Personalized Care">
+<meta name="twitter:description" content="Personalized care, right at home. From understanding your symptoms to remembering your next dose, QueroCura keeps your health story in one trusted place.">
+<meta name="twitter:image" content="https://querocura.com/assets/og-image.png">
+<link rel="canonical" href="https://querocura.com/">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "QueroCura",
+  "url": "https://querocura.com/",
+  "logo": "https://querocura.com/assets/d4f7acc01b9438e998c9e7b9676584b0.png",
+  "description": "QueroCura keeps your health story in one trusted place — from understanding your symptoms to remembering your next dose to fast, informed emergency care.",
+  "founder": [
+    { "@type": "Person", "name": "Udantika Dhar" },
+    { "@type": "Person", "name": "Saumit Pradhan" }
+  ],
+  "email": "hello@querocura.com",
+  "sameAs": [
+    "https://www.producthunt.com/posts/querocura"
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "QueroCura",
+  "url": "https://querocura.com/"
+}
+</script>
+<link rel="icon" type="image/x-icon" href="icons/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="48x48" href="icons/favicon-48x48.png">
+<link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/android-chrome-192x192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icons/android-chrome-512x512.png">
+<meta name="theme-color" content="#0e8f83">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="preconnect" href="https://app.querocura.com">
-<link rel="dns-prefetch" href="https://app.querocura.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700;800&family=Manrope:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500;1,9..144,600&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
-<script>
-  (function () {
-    try {
-      if (localStorage.getItem('qc-theme') === 'dark') {
-        document.documentElement.setAttribute('data-theme', 'dark');
-      }
-    } catch (e) {}
-  })();
-</script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-  * { box-sizing: border-box; }
-  :root {
-    --cv-1: #0b6f66; --cv-2: #12a37e; --cv-3: #22c55e; --cv-4: #4ade80;
-    --cv-grad: linear-gradient(135deg, var(--cv-1) 0%, var(--cv-2) 48%, var(--cv-3) 100%);
-    --cv-grad-soft: linear-gradient(120deg, rgba(18,163,126,0.10), rgba(74,222,128,0.07));
-    --cv-tint: rgba(74,222,128,0.12); --cv-tint-strong: rgba(74,222,128,0.26);
-    --gold: #d4af7a; --gold-soft: rgba(212,175,122,0.3);
-    --ink: #eafff5; --ink-soft: rgba(234,255,245,0.6); --ink-faint: rgba(234,255,245,0.4);
-    --glass: rgba(255,255,255,0.055); --glass-strong: rgba(255,255,255,0.09); --glass-border: rgba(255,255,255,0.12);
-  }
-  body {
-    margin: 0; min-height: 100vh; font-family: 'Manrope', sans-serif; color: var(--ink);
-    background: linear-gradient(125deg, #020b09 0%, #04231d 16%, #0b3f36 34%, #0f6b57 52%, #12a37e 68%, #0b3f36 84%, #020b09 100%);
-    background-size: 340% 340%;
-    animation: cvAurora 26s ease-in-out infinite;
-    position: relative; overflow-x: hidden;
-  }
-  @keyframes cvAurora { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-  body::before, body::after { content: ''; position: fixed; border-radius: 50%; filter: blur(90px); opacity: 0.55; pointer-events: none; z-index: 0; }
-  body::before { width: 520px; height: 520px; background: radial-gradient(circle, rgba(74,222,128,0.35), transparent 70%); top: -160px; left: -120px; animation: cvOrbFloat1 18s ease-in-out infinite; }
-  body::after { width: 620px; height: 620px; background: radial-gradient(circle, rgba(212,175,122,0.16), transparent 70%); bottom: -220px; right: -180px; animation: cvOrbFloat2 22s ease-in-out infinite; }
-  @keyframes cvOrbFloat1 { 0%, 100% { transform: translate(0,0); } 50% { transform: translate(60px,40px); } }
-  @keyframes cvOrbFloat2 { 0%, 100% { transform: translate(0,0); } 50% { transform: translate(-50px,-30px); } }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; font-family: 'Manrope', sans-serif; background: #f6f5f1; color: #100e2a; }
   h1, h2, h3, .display { font-family: 'Space Grotesk', sans-serif; }
-  a { color: var(--cv-4); text-decoration: none; }
-  a:hover { color: #86efac; }
-  ::selection { background: rgba(34,197,94,0.32); }
+  a { color: #0e8f83; text-decoration: none; }
+  a:hover { color: #0b6f66; }
+  .navlink { position: relative; transition: color 0.2s ease; }
+  .navlink:hover { color: #0e8f83 !important; }
+  .navlink::after { content: ''; position: absolute; left: 0; right: 100%; bottom: -4px; height: 2px; background: #0e8f83; transition: right 0.25s ease; }
+  .navlink:hover::after { right: 0; }
+  .cta, .ghost { position: relative; overflow: hidden; transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease; }
+  .cta:hover { background: #0b6f66 !important; transform: translateY(-2px); box-shadow: 0 12px 24px -8px rgba(14,143,131,0.45); }
+  .cta-dark:hover { background: #241f52 !important; transform: translateY(-2px); box-shadow: 0 12px 24px -8px rgba(16,14,42,0.35); }
+  .ghost:hover { background: rgba(16,14,42,0.06) !important; transform: translateY(-2px); }
+  .cta::after { content: ''; position: absolute; top: 0; left: -60%; width: 40%; height: 100%; background: linear-gradient(115deg, transparent, rgba(255,255,255,0.35), transparent); transform: skewX(-20deg); transition: left 0.6s ease; pointer-events: none; }
+  .cta:hover::after { left: 140%; }
+  .gradient-text { background: linear-gradient(95deg, #0e8f83, #2f8fd1); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .step-card, .flow-card, .fact-card, .info-card, .mosaic-tile { transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease; }
+  .step-card:hover, .fact-card:hover, .info-card:hover { transform: translateY(-6px); box-shadow: 0 24px 40px -20px rgba(16,14,42,0.22); border-color: rgba(14,143,131,0.35) !important; }
+  .mosaic-tile:hover { transform: translateY(-4px) scale(1.06) rotate(-2deg); box-shadow: 0 18px 30px -16px rgba(16,14,42,0.28); }
+  .tab-icon-wrap { transition: transform 0.2s ease; }
+  .tab-btn:hover .tab-icon-wrap { transform: scale(1.12) rotate(-4deg); }
+  @keyframes floatSlow {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+  }
+  .floaty { animation: floatSlow 5s ease-in-out infinite; }
+  .reveal { opacity: 0; transform: translateY(26px); transition: opacity 0.7s ease, transform 0.7s ease; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+  @keyframes softPulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(14,143,131,0.25); } 50% { box-shadow: 0 0 0 6px rgba(14,143,131,0); } }
+  .badge-pulse { animation: softPulse 2.6s ease-in-out infinite; }
+  @keyframes drawLine {
+    from { stroke-dashoffset: 340; }
+    to { stroke-dashoffset: 0; }
+  }
+  .heartbeat-path { stroke-dasharray: 340; animation: drawLine 2.4s ease-out forwards; }
+  @keyframes glowPulse {
+    0%, 100% { opacity: 0.55; }
+    50% { opacity: 0.9; }
+  }
+  .brand-glow { animation: glowPulse 4s ease-in-out infinite; }
+  .team-card { transition: transform 0.25s ease, box-shadow 0.25s ease; }
+  .team-card:hover { transform: rotate(0deg) translateY(-6px) !important; box-shadow: 0 26px 44px -18px rgba(0,0,0,0.45); }
+  .team-photo-inner img { transition: transform 0.4s ease; }
+  .team-card:hover .team-photo-inner img { transform: scale(1.4); }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(14px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .fade-in { animation: fadeUp 0.4s ease-out both; }
 
-  /* ---- Top bar (ditto dashboard/vitals) ---- */
-  .topbar { display: flex; align-items: center; justify-content: space-between; gap: 18px; flex-wrap: wrap; padding: 14px clamp(16px,4vw,32px); background: rgba(3,20,17,0.55); backdrop-filter: blur(16px); border-bottom: 1px solid rgba(255,255,255,0.08); position: sticky; top: 0; z-index: 30; }
-  .logo-wrap { display: flex; align-items: center; gap: 10px; flex: 0 0 auto; }
-  .logo-wrap img { width: 34px; height: 31px; object-fit: contain; }
-  .logo-text { font-size: 18px; font-weight: 700; letter-spacing: -0.02em; font-family: 'Space Grotesk', sans-serif; }
-  .logo-text .ink { color: var(--ink); } .logo-text .teal { color: var(--cv-4); }
-  .user-pill { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px 5px 6px; border-radius: 999px; background: rgba(255,255,255,0.08); font-size: 12.5px; font-weight: 700; color: var(--ink-soft); margin-left: 4px; }
-  .user-pill .up-dot { width: 20px; height: 20px; border-radius: 50%; background: linear-gradient(135deg,var(--cv-2),var(--gold)); color: #06251d; display: flex; align-items: center; justify-content: center; font-size: 10px; }
-  .tab-nav { display: flex; align-items: center; gap: 4px; flex: 1 1 auto; justify-content: center; overflow-x: auto; scrollbar-width: none; }
-  .tab-nav::-webkit-scrollbar { display: none; }
-  .tab-link { display: flex; align-items: center; gap: 7px; white-space: nowrap; padding: 9px 15px; border-radius: 999px; font-size: 13.5px; font-weight: 700; color: var(--ink-soft); transition: background 0.18s ease, color 0.18s ease; }
-  .tab-link .tl-ic { font-size: 14px; }
-  .tab-link:hover:not(.active):not(.soon) { background: rgba(255,255,255,0.08); color: var(--ink); }
-  .tab-link.active { background: rgba(255,255,255,0.14); color: var(--ink); border: 1px solid var(--gold-soft); }
-  .tab-link.soon { opacity: 0.45; cursor: default; }
-  .tab-link.soon .soon-tag { font-size: 8.5px; font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase; background: rgba(255,255,255,0.1); padding: 1px 6px; border-radius: 999px; margin-left: 2px; }
-  .topbar-right { display: flex; align-items: center; gap: 10px; flex: 0 0 auto; }
-  .signout-btn { background: linear-gradient(120deg, var(--cv-1), var(--cv-2)); border: none; color: #fff; font-family: 'Manrope', sans-serif; font-size: 13px; font-weight: 700; padding: 9px 18px; border-radius: 999px; cursor: pointer; transition: transform 0.18s ease, filter 0.18s ease; }
-  .signout-btn:hover { filter: brightness(1.1); transform: translateY(-2px); }
-  .theme-toggle { display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 10px; border: 1.5px solid rgba(255,255,255,0.16); background: rgba(255,255,255,0.08); cursor: pointer; padding: 0; transition: transform 0.2s ease, background 0.2s ease; flex: 0 0 auto; }
-  .theme-toggle:hover { transform: translateY(-2px); background: rgba(255,255,255,0.14); }
-  @media (max-width: 900px) { .tab-nav { order: 3; width: 100%; justify-content: flex-start; } }
+  .tab-btn { cursor: pointer; border: 1.5px solid rgba(16,14,42,0.12); background: #fff; transition: all 0.2s ease; }
+  .tab-btn:hover { border-color: rgba(14,143,131,0.5); transform: translateY(-2px); }
+  .tab-btn.active { background: #100e2a; border-color: #100e2a; }
+  .tab-btn.active .tab-label { color: #fff !important; }
+  .tab-btn.active .tab-icon-wrap { background: rgba(255,255,255,0.12) !important; }
+  .email-pill { transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease; }
+  .email-pill:hover { transform: translateY(-2px); }
 
-  .shell { max-width: 960px; margin: 0 auto; padding: 32px 24px 90px; position: relative; z-index: 1; }
+  .flow-connector { width: 3px; height: 44px; position: relative; overflow: hidden; background: rgba(255,255,255,0.08); }
+  .flow-connector::after { content: ''; position: absolute; left: 0; top: -30px; width: 100%; height: calc(100% + 30px); background: repeating-linear-gradient(180deg, #7ee0d4 0px, #7ee0d4 6px, transparent 6px, transparent 16px); animation: flowMove 0.9s linear infinite; }
+  @keyframes flowMove { from { transform: translateY(-16px); } to { transform: translateY(0); } }
+  .flow-step { transition: transform 0.2s ease; }
+  .flow-step:hover { transform: translateX(4px); }
+  .flow-step:hover .flow-icon-ring { border-color: rgba(126,224,212,0.6); box-shadow: 0 0 0 6px rgba(126,224,212,0.1); }
+  .flow-yes-card { transition: transform 0.25s ease; }
+  .flow-yes-card:hover { transform: translateY(-4px) scale(1.02); }
 
-  .page-head { margin-bottom: 20px; }
-  .page-eyebrow { display: inline-flex; align-items: center; gap: 8px; padding: 4px 12px; border-radius: 999px; background: rgba(255,255,255,0.07); border: 1px solid var(--gold-soft); color: var(--gold); font-size: 10.5px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 12px; }
-  .page-eyebrow .eb-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--cv-3); animation: cvBeacon 2s ease-out infinite; }
-  @keyframes cvBeacon { 0% { box-shadow: 0 0 0 0 rgba(34,197,94,0.5); } 100% { box-shadow: 0 0 0 7px rgba(34,197,94,0); } }
-  .page-title { font-family: 'Fraunces', serif; font-size: clamp(26px,4vw,34px); font-weight: 600; margin: 0 0 8px; color: var(--ink); }
-  .page-title em { font-style: italic; background: linear-gradient(120deg, var(--cv-4), var(--gold)); -webkit-background-clip: text; background-clip: text; color: transparent; }
-  .page-sub { font-size: 14.5px; color: var(--ink-soft); margin: 0; max-width: 560px; line-height: 1.5; }
+  .contact-card { transition: transform 0.22s cubic-bezier(0.2,0.9,0.3,1.3), box-shadow 0.22s ease, border-color 0.22s ease; }
+  .contact-card:hover { transform: translateY(-6px) scale(1.02); box-shadow: 0 24px 44px -20px rgba(14,143,131,0.35); border-color: rgba(14,143,131,0.4) !important; }
+  .contact-card:hover .contact-avatar { border-color: #0e8f83 !important; transform: scale(1.08); }
+  .contact-card:hover .contact-arrow { transform: translateX(4px); }
+  .contact-avatar, .contact-arrow { transition: all 0.22s ease; }
 
-  /* ---- internal vault tabs ---- */
-  .vault-tabs { display: flex; gap: 6px; padding: 5px; background: var(--glass); backdrop-filter: blur(14px); border: 1px solid var(--glass-border); border-radius: 999px; margin: 22px 0 24px; overflow-x: auto; scrollbar-width: none; }
-  .vault-tabs::-webkit-scrollbar { display: none; }
-  .vtab { flex: 0 0 auto; display: flex; align-items: center; gap: 7px; white-space: nowrap; padding: 9px 17px; border-radius: 999px; border: none; background: none; font-family: 'Manrope', sans-serif; font-size: 13px; font-weight: 700; color: var(--ink-soft); cursor: pointer; transition: background 0.22s cubic-bezier(.2,.8,.3,1), color 0.22s ease, box-shadow 0.22s ease; }
-  .vtab .vt-ic { font-size: 14px; }
-  .vtab .vt-badge { background: rgba(255,138,101,0.18); color: #ffab8a; font-size: 10px; font-weight: 800; padding: 1px 6px; border-radius: 999px; margin-left: 2px; }
-  .vtab:hover:not(.active) { background: rgba(255,255,255,0.08); color: var(--ink); }
-  .vtab.active { background: var(--cv-grad); color: #06251d; box-shadow: 0 10px 22px -10px rgba(18,163,126,0.55); }
+  .mosaic-tile { cursor: default; }
+  .step-card, .info-card { cursor: default; }
 
-  .tab-panel { display: none; }
-  .tab-panel.show { display: block; animation: panelIn 0.32s cubic-bezier(.2,.8,.3,1); }
-  @keyframes panelIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  /* ---- Mobile responsiveness ---- */
+  @media (max-width: 860px) {
+    .nav-links-desktop, .nav-cta-desktop { display: none !important; }
+    .nav-hamburger { display: flex !important; }
+  }
+  .platform-tab-grid { grid-template-columns: repeat(6, 1fr); }
+  @media (max-width: 760px) {
+    .platform-tab-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+  @media (max-width: 420px) {
+    .platform-tab-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 640px) {
+    .team-card { width: 100% !important; max-width: 260px; }
+  }
+  body { overflow-x: hidden; overflow-y: visible; }
 
-  /* ---- ID card ---- */
-  .idc-wrap { margin-bottom: 14px; perspective: 1200px; }
-  .idc { position: relative; overflow: hidden; border-radius: 22px; padding: 24px 26px; color: #fff; background: linear-gradient(135deg, #04140f 0%, #0a3f34 28%, #0f6b57 58%, #16a06f 84%, #22c55e 100%); border: 1px solid var(--gold-soft); box-shadow: 0 26px 60px -24px rgba(4,20,16,0.7); transition: transform 0.3s ease, box-shadow 0.3s ease; }
-  .idc:hover { transform: translateY(-3px) rotateX(1.5deg); box-shadow: 0 34px 70px -22px rgba(4,20,16,0.75); }
-  .idc::before { content: ''; position: absolute; top: -60px; right: -60px; width: 240px; height: 240px; border-radius: 50%; background: radial-gradient(circle, rgba(255,255,255,0.16), transparent 68%); }
-  .idc::after { content: ''; position: absolute; inset: 0; background-image: radial-gradient(rgba(255,255,255,0.09) 1px, transparent 1px); background-size: 14px 14px; opacity: 0.5; mix-blend-mode: overlay; }
-  .idc-shine { position: absolute; top: 0; left: -150%; width: 55%; height: 100%; background: linear-gradient(100deg, transparent, rgba(255,255,255,0.18), rgba(212,175,122,0.12), transparent); transform: skewX(-20deg); animation: idcShine 7s ease-in-out infinite; pointer-events: none; }
-  @keyframes idcShine { 0% { left: -150%; } 42%, 100% { left: 160%; } }
-  .idc-row1 { display: flex; align-items: center; justify-content: space-between; position: relative; }
-  .idc-brand { display: flex; align-items: center; gap: 8px; font-family: 'Space Grotesk', sans-serif; font-weight: 800; font-size: 13.5px; letter-spacing: 0.02em; opacity: 0.95; }
-  .idc-chip { width: 34px; height: 25px; border-radius: 6px; background: linear-gradient(135deg, rgba(255,255,255,0.85), rgba(255,255,255,0.45)); position: relative; }
-  .idc-chip::before, .idc-chip::after { content: ''; position: absolute; left: 6px; right: 6px; height: 1px; background: rgba(11,111,102,0.5); }
-  .idc-chip::before { top: 8px; } .idc-chip::after { top: 15px; }
-  .idc-mid { display: flex; align-items: center; gap: 14px; margin: 22px 0 20px; position: relative; }
-  .idc-avatar { width: 48px; height: 48px; border-radius: 14px; background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.3); display: flex; align-items: center; justify-content: center; font-family: 'Space Grotesk', sans-serif; font-weight: 800; font-size: 16px; flex: 0 0 auto; }
-  .idc-name { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 17px; margin-bottom: 2px; }
-  .idc-id-row { display: flex; align-items: center; gap: 8px; }
-  .idc-id { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; letter-spacing: 0.04em; opacity: 0.92; }
-  .idc-copy { background: rgba(255,255,255,0.16); border: 1px solid rgba(255,255,255,0.28); color: #fff; width: 22px; height: 22px; border-radius: 7px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; padding: 0; transition: background 0.18s ease, transform 0.18s ease; }
-  .idc-copy:hover { background: rgba(255,255,255,0.28); transform: translateY(-1px); }
-  .idc-bottom { display: flex; gap: 28px; position: relative; }
-  .idc-label { display: block; font-size: 9.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.07em; opacity: 0.65; margin-bottom: 3px; }
-  .idc-value { font-size: 13px; font-weight: 700; }
-  .idc-status-dot { width: 6px; height: 6px; border-radius: 50%; background: #baffd1; display: inline-block; margin-right: 5px; box-shadow: 0 0 0 3px rgba(186,255,209,0.25); }
+  /* ---- Waitlist form ---- */
+  .wl-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 560px) { .wl-grid { grid-template-columns: 1fr; } }
+  .wl-label { display: block; font-size: 13px; font-weight: 700; color: #100e2a; margin-bottom: 6px; }
+  .wl-optional { font-weight: 500; color: #8a879c; }
+  .wl-input { width: 100%; box-sizing: border-box; padding: 13px 16px; border-radius: 12px; border: 1.5px solid rgba(16,14,42,0.14); font-family: 'Manrope', sans-serif; font-size: 15px; color: #100e2a; background: #fff; transition: border-color 0.2s ease, box-shadow 0.2s ease; }
+  .wl-input:focus { outline: none; border-color: #0e8f83; box-shadow: 0 0 0 3px rgba(14,143,131,0.15); }
+  .wl-input::placeholder { color: #a9a6bb; }
+  #wl-submit-btn:disabled { opacity: 0.7; cursor: default; }
 
-  /* ---- EGD / CURA ID strip ---- */
-  .egd-strip { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 22px; padding: 14px 18px; border-radius: 16px; background: var(--glass); backdrop-filter: blur(16px); border: 1px solid var(--gold-soft); box-shadow: 0 14px 34px -22px rgba(0,0,0,0.55); }
-  .egd-left { display: flex; align-items: center; gap: 12px; min-width: 0; }
-  .egd-ic { width: 36px; height: 36px; border-radius: 10px; background: linear-gradient(135deg, rgba(212,175,122,0.28), rgba(212,175,122,0.08)); border: 1px solid var(--gold-soft); display: flex; align-items: center; justify-content: center; font-size: 15px; flex: 0 0 auto; }
-  .egd-text { min-width: 0; }
-  .egd-label { font-size: 10.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; color: var(--gold); }
-  .egd-sub { display: block; font-size: 9.5px; font-weight: 600; text-transform: none; letter-spacing: 0.01em; color: var(--ink-faint); margin-top: 2px; }
-  .egd-id { font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 700; letter-spacing: 0.04em; color: var(--ink); margin-top: 5px; overflow-wrap: anywhere; }
-  .egd-copy { background: rgba(212,175,122,0.14); border: 1px solid var(--gold-soft); color: var(--gold); width: 32px; height: 32px; border-radius: 9px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: background 0.18s ease, transform 0.18s ease; flex: 0 0 auto; }
-  .egd-copy:hover { background: rgba(212,175,122,0.26); transform: translateY(-1px); }
+  /* ---- About tiles ---- */
+  .about-tile { transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease; }
+  .about-tile:hover { background: #211c4d; border-color: rgba(126,224,212,0.3) !important; transform: translateY(-2px); }
+  .about-tile.open { background: #211c4d; border-color: rgba(126,224,212,0.4) !important; }
+  @media (max-width: 900px) { .about-tile-grid { grid-template-columns: repeat(2, 1fr) !important; } }
+  @media (max-width: 520px) { .about-tile-grid { grid-template-columns: 1fr !important; } }
 
-  /* ---- Stat strip ---- */
-  .stat-strip { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; margin-bottom: 22px; }
-  .stat-card { position: relative; overflow: hidden; background: var(--glass); backdrop-filter: blur(16px); border-radius: 16px; padding: 16px 16px 14px; border: 1px solid var(--glass-border); display: flex; flex-direction: column; gap: 6px; transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease; }
-  .stat-card:hover { transform: translateY(-3px); box-shadow: 0 16px 30px -18px rgba(0,0,0,0.5); border-color: var(--cv-tint-strong); }
-  .stat-card .st-ic { font-size: 18px; }
-  .stat-card .st-num { font-family: 'Fraunces', serif; font-size: 21px; font-weight: 600; line-height: 1.1; color: var(--ink); }
-  .stat-card .st-label { font-size: 11px; font-weight: 700; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 0.03em; }
-  .stat-card.warn .st-num { color: #e8b64f; }
-  .stat-card.good .st-num { color: var(--cv-4); }
-
-  /* ---- Recent activity ---- */
-  .activity-list { display: flex; flex-direction: column; gap: 2px; }
-  .activity-row { display: flex; align-items: center; gap: 12px; padding: 11px 4px; border-bottom: 1px solid rgba(255,255,255,0.08); }
-  .activity-row:last-child { border-bottom: none; }
-  .activity-ic { width: 34px; height: 34px; border-radius: 10px; background: rgba(74,222,128,0.14); color: var(--cv-4); display: flex; align-items: center; justify-content: center; font-size: 15px; flex: 0 0 auto; }
-  .activity-text { flex: 1 1 auto; font-size: 13.5px; color: var(--ink); }
-  .activity-text b { font-weight: 700; }
-  .activity-time { font-size: 11.5px; color: var(--ink-faint); white-space: nowrap; }
-
-  .card { position: relative; overflow: hidden; background: var(--glass); backdrop-filter: blur(18px); border-radius: 20px; padding: 26px 28px; border: 1px solid var(--glass-border); margin-bottom: 22px; box-shadow: 0 24px 60px -34px rgba(0,0,0,0.55); }
-  .card::before { content: ''; position: absolute; top: -44px; right: -44px; width: 150px; height: 150px; border-radius: 50%; background: radial-gradient(circle, rgba(34,197,94,0.12), transparent 70%); pointer-events: none; }
-  .card > * { position: relative; }
-  .card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 18px; flex-wrap: wrap; }
-  .card-head h2 { font-size: 18px; margin: 0 0 4px; display: flex; align-items: center; gap: 8px; color: var(--ink); }
-  .card-head .card-sub { font-size: 12.5px; color: var(--ink-soft); margin: 0; max-width: 460px; line-height: 1.5; }
-
-  .field label { display: block; font-size: 12.5px; font-weight: 700; margin-bottom: 6px; color: var(--ink-soft); }
-  input, textarea, select { width: 100%; padding: 11px 13px; border-radius: 10px; border: 1.5px solid rgba(255,255,255,0.16); font-family: 'Manrope', sans-serif; font-size: 14.5px; color: var(--ink); background: rgba(255,255,255,0.05); outline: none; transition: border-color 0.18s ease, box-shadow 0.18s ease; }
-  input::placeholder, textarea::placeholder { color: var(--ink-faint); }
-  input:focus, textarea:focus, select:focus { border-color: var(--cv-4); box-shadow: 0 0 0 3px var(--cv-tint); }
-  input[type="file"] { padding: 9px 10px; font-size: 13px; }
-  select option { background: #0b241d; color: var(--ink); }
-  .upload-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 14px; margin-bottom: 14px; }
-  .upload-grid .notes-field, .upload-grid .file-field { grid-column: 1 / -1; }
-  .vitals-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 14px; }
-  .notes-field { grid-column: 1 / -1; }
-
-  /* drag & drop */
-  .dropzone { border: 1.5px dashed rgba(255,255,255,0.22); border-radius: 14px; padding: 20px; text-align: center; font-size: 13px; color: var(--ink-soft); cursor: pointer; transition: border-color 0.18s ease, background 0.18s ease; }
-  .dropzone.drag { border-color: var(--cv-4); background: var(--cv-tint); color: var(--cv-4); }
-  .dropzone input { display: none; }
-  .dropzone .dz-files { margin-top: 6px; font-weight: 700; color: var(--ink); }
-
-  .save-btn { position: relative; overflow: hidden; background: var(--cv-grad); color: #06251d; font-size: 15px; font-weight: 700; padding: 12px 28px; border-radius: 999px; border: none; cursor: pointer; font-family: 'Manrope', sans-serif; margin-top: 4px; transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease; }
-  .save-btn::after { content: ''; position: absolute; top: 0; left: -60%; width: 40%; height: 100%; background: linear-gradient(115deg, transparent, rgba(255,255,255,0.45), transparent); transform: skewX(-20deg); transition: left 0.6s ease; pointer-events: none; }
-  .save-btn:hover:not(:disabled)::after { left: 140%; }
-  .save-btn:hover:not(:disabled) { filter: brightness(1.06); transform: translateY(-2px); box-shadow: 0 14px 26px -10px rgba(18,163,126,0.5); }
-  .save-btn:disabled { opacity: 0.6; cursor: default; }
-
-  .empty-note { font-size: 14px; color: var(--ink-faint); padding: 6px 0; }
-  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
-  th { text-align: left; padding: 10px 12px; color: var(--ink-faint); font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: 0.03em; border-bottom: 1.5px solid rgba(255,255,255,0.12); }
-  td { padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.08); vertical-align: top; color: var(--ink); }
-  tr { transition: background 0.15s ease; }
-  tbody tr:hover { background: rgba(74,222,128,0.06); }
-  tr:last-child td { border-bottom: none; }
-  .rec-title { font-weight: 700; }
-  .rec-cat { display: inline-block; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; padding: 2px 8px; border-radius: 999px; background: rgba(74,222,128,0.14); color: var(--cv-4); margin-top: 3px; }
-  .pill { display: inline-block; font-size: 10.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; padding: 3px 10px; border-radius: 999px; }
-  .pill.pending { background: rgba(232,182,79,0.16); color: #e8b64f; }
-  .pill.approved { background: rgba(74,222,128,0.16); color: var(--cv-4); }
-  .pill.denied, .pill.expired, .pill.emergency, .pill.urgent { background: rgba(255,138,101,0.16); color: #ff8a65; }
-  .pill.routine, .pill.calm, .pill.low { background: rgba(74,222,128,0.16); color: var(--cv-4); }
-  .pill.moderate, .pill.monitor { background: rgba(232,182,79,0.16); color: #e8b64f; }
-  .row-actions { display: flex; gap: 8px; flex-wrap: wrap; }
-  .row-actions button { font-size: 11.5px; padding: 6px 12px; }
-  .btn-ghost { background: none; border: 1.5px solid rgba(255,255,255,0.2); color: var(--ink); font-family: 'Manrope', sans-serif; font-size: 12.5px; font-weight: 700; padding: 8px 15px; border-radius: 999px; cursor: pointer; transition: border-color 0.18s ease, background 0.18s ease; }
-  .btn-ghost:hover { background: rgba(255,255,255,0.08); }
-  .btn-ghost.go { color: var(--cv-4); border-color: var(--cv-tint-strong); }
-  .btn-ghost.go:hover { background: var(--cv-tint); }
-  .btn-ghost.danger { color: #ff8a65; border-color: rgba(255,138,101,0.32); }
-  .btn-ghost.danger:hover { background: rgba(255,138,101,0.08); }
-  .btn-ghost:disabled { opacity: 0.55; cursor: default; }
-
-  /* ---- symptom-check history cards ---- */
-  .symptom-list { display: flex; flex-direction: column; gap: 10px; }
-  .symptom-card { border: 1px solid rgba(255,255,255,0.1); border-radius: 14px; padding: 14px 16px; transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease; }
-  .symptom-card:hover { transform: translateY(-2px); box-shadow: 0 14px 26px -18px rgba(0,0,0,0.5); border-color: var(--cv-tint-strong); }
-  .sym-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
-  .sym-name { font-weight: 700; font-size: 14.5px; color: var(--ink); }
-  .sym-meta { display: flex; align-items: center; gap: 10px; font-size: 12px; color: var(--ink-faint); margin-top: 4px; }
-  .sym-bar-wrap { width: 100%; height: 5px; border-radius: 999px; background: rgba(255,255,255,0.1); margin-top: 10px; overflow: hidden; }
-  .sym-bar { height: 100%; border-radius: 999px; background: var(--cv-grad); transition: width 0.6s cubic-bezier(.2,.8,.3,1); }
-  .sym-signals { margin-top: 8px; font-size: 12px; color: var(--ink-soft); }
-  .sym-signals summary { cursor: pointer; font-weight: 700; color: var(--cv-4); list-style: none; }
-  .sym-signals summary::-webkit-details-marker { display: none; }
-  .sym-signals[open] summary { margin-bottom: 6px; }
-
-  /* ---- skeleton loaders ---- */
-  .skel { border-radius: 8px; background: linear-gradient(100deg, rgba(255,255,255,0.06) 30%, rgba(255,255,255,0.14) 50%, rgba(255,255,255,0.06) 70%); background-size: 200% 100%; animation: skelShine 1.3s ease-in-out infinite; }
-  @keyframes skelShine { to { background-position: -200% 0; } }
-  .skel-row { height: 44px; margin-bottom: 8px; }
-  .skel-line { height: 14px; width: 60%; margin-bottom: 8px; }
-
-  /* ---- toasts ---- */
-  .toast-stack { position: fixed; bottom: 22px; right: 22px; display: flex; flex-direction: column; gap: 10px; z-index: 999; }
-  .toast { display: flex; align-items: center; gap: 10px; background: #06120e; color: #fff; padding: 12px 18px; border-radius: 12px; font-size: 13.5px; font-weight: 600; box-shadow: 0 16px 34px -12px rgba(0,0,0,0.55); border: 1px solid rgba(255,255,255,0.1); animation: toastIn 0.28s cubic-bezier(.2,.8,.3,1); max-width: 340px; }
-  .toast.ok { background: linear-gradient(120deg, #0b6f66, #12a37e); }
-  .toast.err { background: #7a2c17; }
-  .toast.out { animation: toastOut 0.24s ease forwards; }
-  @keyframes toastIn { from { opacity: 0; transform: translateY(10px) scale(0.97); } to { opacity: 1; transform: none; } }
-  @keyframes toastOut { to { opacity: 0; transform: translateY(6px) scale(0.97); } }
-
-  .confetti-piece { position: fixed; top: -12px; width: 8px; height: 8px; border-radius: 2px; pointer-events: none; z-index: 999; animation: confettiFall 1.4s ease-in forwards; }
-  @keyframes confettiFall { to { transform: translateY(100vh) rotate(540deg); opacity: 0; } }
-
-  /* ---- "Midnight Reserve" — deeper variant via the site's dark-mode toggle ---- */
-  html[data-theme="dark"] body { background: linear-gradient(125deg, #000000 0%, #03120e 18%, #062b23 40%, #0a4a3d 60%, #062b23 82%, #000000 100%); background-size: 340% 340%; }
-  html[data-theme="dark"] body::after { background: radial-gradient(circle, rgba(212,175,122,0.22), transparent 70%); }
-  html[data-theme="dark"] .idc { background: linear-gradient(135deg, #020a08 0%, #073229 30%, #0c5a49 62%, #12a37e 100%); }
-  html[data-theme="dark"] .tab-link.active { background: rgba(255,255,255,0.1); }
+  /* ---- Dark mode ---- */
+  html[data-theme="dark"] body { background: #0d0c1f; color: #f2f0f8; }
+  html[data-theme="dark"] a { color: #7ee0d4; }
+  html[data-theme="dark"] a:hover { color: #9beee0; }
+  .theme-toggle { display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 10px; border: 1.5px solid rgba(16,14,42,0.14); background: #fff; cursor: pointer; padding: 0; transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease; flex: 0 0 auto; }
+  .theme-toggle:hover { transform: translateY(-2px); }
+  html[data-theme="dark"] .theme-toggle { background: #18162e; border-color: rgba(255,255,255,0.14); }
+  html[data-theme="dark"] .tab-btn { background: #18162e; border-color: rgba(255,255,255,0.14); }
+  html[data-theme="dark"] .wl-label { color: #f2f0f8; }
+  html[data-theme="dark"] .wl-optional { color: #a9a6bd; }
+  html[data-theme="dark"] .wl-input { background: #18162e; color: #f2f0f8; border-color: rgba(255,255,255,0.14); }
+  html[data-theme="dark"] .wl-input::placeholder { color: #8f8ba3; }
 </style>
 </head>
 <body>
-  <div class="topbar">
-    <a class="logo-wrap" href="../">
-      <img src="../assets/d4f7acc01b9438e998c9e7b9676584b0.png" alt="QueroCura">
-      <span class="logo-text"><span class="ink">Quero</span><span class="teal">Cura</span></span>
-    </a>
-    <nav class="tab-nav">
-      <a class="tab-link" href="../symptoms/"><span class="tl-ic">🔍</span>Symptoms</a>
-      <a class="tab-link soon" href="#" onclick="return false;"><span class="tl-ic">💬</span>Dr. Cura<span class="soon-tag">Soon</span></a>
-      <a class="tab-link" href="../vitals/"><span class="tl-ic">❤️</span>Vitals</a>
-      <a class="tab-link active" href="#"><span class="tl-ic">🔒</span>CuraVault</a>
-      <a class="tab-link" href="../dashboard/"><span class="tl-ic">🏠</span>Dashboard</a>
-      <a class="tab-link" href="../insights/"><span class="tl-ic">✨</span>Insights</a>
-      <a class="tab-link" href="../profile/"><span class="tl-ic">👤</span>Profile</a>
-    </nav>
-    <div class="topbar-right">
-      <span class="user-pill" id="qc-user-chip"><span class="up-dot" id="qc-user-dot">?</span><span id="qc-user-name"></span></span>
-      <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode" id="theme-toggle-btn">
-        <span id="theme-toggle-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z" stroke="#eafff5" stroke-width="1.7" stroke-linejoin="round"/></svg></span>
-      </button>
-      <button class="signout-btn" id="qc-signout-btn">Sign out</button>
+
+
+<div style="width: 100%; min-height: 100vh; background: #f6f5f1; overflow: hidden;">
+
+  <!-- NAV -->
+  <div style="width: 100%; box-sizing: border-box; padding: 16px clamp(16px, 4vw, 48px); display: flex; align-items: center; justify-content: space-between; background: rgba(246,245,241,0.85); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 30; border-bottom: 1px solid rgba(16,14,42,0.08);">
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <img src="assets/d4f7acc01b9438e998c9e7b9676584b0.png" alt="QueroCura" style="width: 42px; height: 39px; object-fit: contain;">
+      <div style="font-size: 20px; font-weight: 700; letter-spacing: -0.02em;">
+        <span style="color: #100e2a;">Quero</span><span style="color: #0e8f83;">Cura</span>
+      </div>
+    </div>
+    <div class="nav-links-desktop" style="display: flex; align-items: center; gap: 30px;">
+      <a class="navlink" href="#about" style="color: #100e2a; font-size: 15px; font-weight: 600;">About</a>
+      <a class="navlink" href="#services" style="color: #100e2a; font-size: 15px; font-weight: 600;">Our platform</a>
+      <a class="navlink" href="#team" style="color: #100e2a; font-size: 15px; font-weight: 600;">Our team</a>
+      <a class="navlink" href="#reviews" style="color: #100e2a; font-size: 15px; font-weight: 600;">Reviews</a>
+      <a class="navlink" href="blog/" style="color: #100e2a; font-size: 15px; font-weight: 600;">Blog</a>
+      <a class="navlink" href="#waitlist" style="color: #100e2a; font-size: 15px; font-weight: 600;">Waitlist</a>
+      <a class="navlink" href="#contact" style="color: #100e2a; font-size: 15px; font-weight: 600;">Contact</a>
+    </div>
+    <a href="login/" id="nav-signin-link" class="navlink nav-cta-desktop" style="color: #100e2a; font-size: 15px; font-weight: 600;">Sign in</a>
+    <a href="register/" id="nav-cta-btn" class="cta nav-cta-desktop" style="background: #0e8f83; color: #fff; font-size: 14px; font-weight: 700; padding: 11px 22px; border-radius: 999px;">Get started free</a>
+    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode" id="theme-toggle-btn">
+      <span id="theme-toggle-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z" stroke="#100e2a" stroke-width="1.7" stroke-linejoin="round"/></svg></span>
+    </button>
+    <button class="nav-hamburger" onclick="toggleMobileMenu()" aria-label="Open menu" style="display:none; align-items:center; justify-content:center; width:40px; height:40px; border-radius:10px; border:1.5px solid rgba(16,14,42,0.14); background:#fff; cursor:pointer; padding:0;">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4 6h16M4 12h16M4 18h16" stroke="#100e2a" stroke-width="2" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+  <div id="mobile-menu" class="mobile-menu" style="display:none; position: sticky; top: 73px; z-index: 29; width: 100%; box-sizing: border-box; background: #f6f5f1; border-bottom: 1px solid rgba(16,14,42,0.08); box-shadow: 0 14px 24px -18px rgba(16,14,42,0.25);">
+    <div style="display:flex; flex-direction:column; padding: 8px clamp(16px,4vw,48px) 20px;">
+      <a onclick="closeMobileMenu()" href="#about" style="color:#100e2a; font-size:16px; font-weight:600; padding:12px 0; border-bottom:1px solid rgba(16,14,42,0.08);">About</a>
+      <a onclick="closeMobileMenu()" href="#services" style="color:#100e2a; font-size:16px; font-weight:600; padding:12px 0; border-bottom:1px solid rgba(16,14,42,0.08);">Our platform</a>
+      <a onclick="closeMobileMenu()" href="#team" style="color:#100e2a; font-size:16px; font-weight:600; padding:12px 0; border-bottom:1px solid rgba(16,14,42,0.08);">Our team</a>
+      <a onclick="closeMobileMenu()" href="#reviews" style="color:#100e2a; font-size:16px; font-weight:600; padding:12px 0; border-bottom:1px solid rgba(16,14,42,0.08);">Reviews</a>
+      <a onclick="closeMobileMenu()" href="blog/" style="color:#100e2a; font-size:16px; font-weight:600; padding:12px 0; border-bottom:1px solid rgba(16,14,42,0.08);">Blog</a>
+      <a onclick="closeMobileMenu()" href="#waitlist" style="color:#100e2a; font-size:16px; font-weight:600; padding:12px 0; border-bottom:1px solid rgba(16,14,42,0.08);">Waitlist</a>
+      <a onclick="closeMobileMenu()" href="#contact" style="color:#100e2a; font-size:16px; font-weight:600; padding:12px 0;">Contact</a>
+      <a onclick="closeMobileMenu()" href="login/" id="mobile-signin-link" style="color:#100e2a; font-size:16px; font-weight:600; padding:12px 0; border-bottom:1px solid rgba(16,14,42,0.08);">Sign in</a>
+      <a onclick="closeMobileMenu()" href="register/" id="mobile-cta-btn" class="cta" style="margin-top:14px; text-align:center; background: #0e8f83; color: #fff; font-size: 15px; font-weight: 700; padding: 13px 22px; border-radius: 999px;">Get started free</a>
     </div>
   </div>
 
-  <div class="shell">
-    <div class="page-head">
-      <span class="page-eyebrow"><span class="eb-dot"></span>CuraVault</span>
-      <h1 class="page-title">Your health, safely <em>vaulted</em>.</h1>
-      <p class="page-sub">Records, vitals, and every symptom check you've ever run — one consent-first place, nothing shared unless you say so.</p>
-    </div>
+  <!-- HERO -->
+  <div onmousemove="heroMove(event)" style="width: 100%; position: relative; overflow: hidden;">
+    <div id="hero-glow" style="position: absolute; inset: 0; background: radial-gradient(1100px circle at 72% 35%, rgba(14,143,131,0.16), transparent 60%), radial-gradient(900px circle at 8% 70%, rgba(47,143,209,0.10), transparent 60%); pointer-events: none; transition: background 0.15s ease;"></div>
+    <div id="hero-wrap" style="width: 100%; box-sizing: border-box; padding: clamp(48px,10vw,84px) clamp(16px,4vw,48px) clamp(40px,8vw,76px); max-width: 1200px; margin: 0 auto; position: relative;">
+      <svg style="position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0.5; pointer-events: none;" preserveAspectRatio="none">
+        <pattern id="dotgrid" width="28" height="28" patternUnits="userSpaceOnUse">
+          <circle cx="1.5" cy="1.5" r="1.5" fill="#100e2a" opacity="0.06"/>
+        </pattern>
+        <rect x="60%" y="0" width="40%" height="100%" fill="url(#dotgrid)"/>
+      </svg>
+      <div style="display: flex; gap: 48px; align-items: center; flex-wrap: wrap; position: relative;">
+      <div style="flex: 1 1 520px; min-width: 300px;">
+        <div class="badge-pulse" style="display: inline-flex; align-items: center; gap: 8px; background: #fff; border: 1px solid rgba(16,14,42,0.1); border-radius: 999px; padding: 7px 16px; font-size: 13px; font-weight: 700; color: #0e8f83; letter-spacing: 0.02em; margin-bottom: 26px;">
+          <span style="width:7px; height:7px; border-radius:50%; background:#0e8f83; display:inline-block;"></span> SYMPTOM CHECKER &amp; INSIGHTS ARE LIVE
+        </div>
+        <h1 style="margin: 0 0 20px; font-size: clamp(34px, 9vw, 60px); line-height: 1.06; font-weight: 700; letter-spacing: -0.03em;">
+          Caring for you<br>is our <span class="gradient-text">priority</span>.
+        </h1>
+        <img src="assets/30ddfbda2b273df5d62e25adbb87a67e.png" alt="" style="width: 220px; max-width: 50%; height: auto; display: block; margin: 2px 0 26px;">
+        <p style="margin: 0 0 34px; font-size: 19px; line-height: 1.55; color: #34324a; max-width: 460px;">
+          Personalized care, right at home. From understanding your symptoms to remembering your next dose, QueroCura keeps your health story in one trusted place.
+        </p>
+        <div style="display: flex; gap: 16px; flex-wrap: wrap;">
+          <a href="register/" class="cta" style="background: #0e8f83; color: #fff; font-size: 16px; font-weight: 700; padding: 15px 30px; border-radius: 999px;">Sign up free — check your symptoms now</a>
+          <a href="login/" class="ghost" style="background: transparent; color: #100e2a; font-size: 16px; font-weight: 700; padding: 15px 30px; border-radius: 999px; border: 1.5px solid rgba(16,14,42,0.18);">Sign in</a>
+        </div>
+        <p style="margin: 14px 0 0; font-size: 14px; color: #6b6885;">Create a free account to use the Symptom Checker and Insights today — no waitlist.</p>
+      </div>
 
-    <div class="vault-tabs" role="tablist">
-      <button class="vtab active" data-tab="overview" role="tab"><span class="vt-ic">🏠</span>Overview</button>
-      <button class="vtab" data-tab="records" role="tab"><span class="vt-ic">📄</span>Records</button>
-      <button class="vtab" data-tab="vitals" role="tab"><span class="vt-ic">❤️</span>Vitals</button>
-      <button class="vtab" data-tab="symptoms" role="tab"><span class="vt-ic">🩺</span>Symptom History</button>
-      <button class="vtab" data-tab="access" role="tab"><span class="vt-ic">🤝</span>Access<span class="vt-badge" id="qc-access-badge" style="display:none;">0</span></button>
-    </div>
-
-    <!-- OVERVIEW -->
-    <div class="tab-panel show" id="panel-overview">
-      <div class="idc-wrap">
-        <div class="idc">
-          <div class="idc-shine"></div>
-          <div class="idc-row1">
-            <div class="idc-brand">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="4" y="10.5" width="16" height="10" rx="2.4" fill="#fff" fill-opacity="0.92"/><path d="M7.5 10.5V7.8a4.5 4.5 0 0 1 9 0v2.7" stroke="#fff" stroke-opacity="0.92" stroke-width="1.8" fill="none"/><circle cx="12" cy="15" r="1.6" fill="#0b6f66"/></svg>
-              CuraVault ID
-            </div>
-            <div class="idc-chip"></div>
+      <div style="flex: 1 1 400px; min-width: 300px;">
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px;">
+          <div class="mosaic-tile floaty" style="background: #fff; border-radius: 18px; padding: 20px 14px; text-align: center; border: 1px solid rgba(16,14,42,0.06);">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" style="margin: 0 auto 10px;"><circle cx="10.5" cy="10.5" r="6.5" stroke="#0e8f83" stroke-width="1.8"/><path d="M15.5 15.5L21 21" stroke="#0e8f83" stroke-width="1.8" stroke-linecap="round"/><path d="M6.5 10.5H9L10 8L12 13L13 10.5H14.5" stroke="#0e8f83" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <div style="font-size: 12px; font-weight: 700; color: #100e2a; line-height: 1.3;">Symptom Intelligence</div>
           </div>
-          <div class="idc-mid">
-            <div class="idc-avatar" id="idc-avatar">?</div>
-            <div>
-              <div class="idc-name" id="idc-name">—</div>
-              <div class="idc-id-row">
-                <span class="idc-id" id="idc-id">—</span>
-                <button class="idc-copy" id="idc-copy-btn" title="Copy ID" aria-label="Copy ID">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><rect x="9" y="9" width="12" height="12" rx="2" stroke="#fff" stroke-width="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" stroke="#fff" stroke-width="2"/></svg>
-                </button>
+          <div class="mosaic-tile floaty" style="background: #fff; border-radius: 18px; padding: 20px 14px; text-align: center; border: 1px solid rgba(16,14,42,0.06); animation-delay: -1s;">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" style="margin: 0 auto 10px;"><path d="M4 10a8 8 0 1 1 3 6.2L4 20l1.2-3.6A7.96 7.96 0 0 1 4 10z" stroke="#7c6fdb" stroke-width="1.8" stroke-linejoin="round"/><path d="M12 7.5v3.5M12 14v.01" stroke="#7c6fdb" stroke-width="1.8" stroke-linecap="round"/></svg>
+            <div style="font-size: 12px; font-weight: 700; color: #100e2a; line-height: 1.3;">Clinical Interview</div>
+          </div>
+          <div class="mosaic-tile floaty" style="background: #fff; border-radius: 18px; padding: 20px 14px; text-align: center; border: 1px solid rgba(16,14,42,0.06); animation-delay: -2s;">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" style="margin: 0 auto 10px;"><path d="M4 17l4.5-5 3.5 3 5.5-7" stroke="#f0765a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M14 8h4v4" stroke="#f0765a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 20h16" stroke="#100e2a" stroke-width="1.5" stroke-linecap="round" opacity="0.3"/></svg>
+            <div style="font-size: 12px; font-weight: 700; color: #100e2a; line-height: 1.3;">Specialized Insights</div>
+          </div>
+          <div class="mosaic-tile floaty" style="background: #fff; border-radius: 18px; padding: 20px 14px; text-align: center; border: 1px solid rgba(16,14,42,0.06); animation-delay: -3s;">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" style="margin: 0 auto 10px;"><path d="M12 3l7 3v5c0 4.6-3 7.9-7 10-4-2.1-7-5.4-7-10V6l7-3z" stroke="#2f8fd1" stroke-width="1.8" stroke-linejoin="round"/><circle cx="12" cy="11" r="2" stroke="#2f8fd1" stroke-width="1.6"/><path d="M12 13v3" stroke="#2f8fd1" stroke-width="1.6" stroke-linecap="round"/></svg>
+            <div style="font-size: 12px; font-weight: 700; color: #100e2a; line-height: 1.3;">CuraVault</div>
+          </div>
+          <div class="mosaic-tile floaty" style="background: #fff; border-radius: 18px; padding: 20px 14px; text-align: center; border: 1px solid rgba(16,14,42,0.06); animation-delay: -1.5s;">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" style="margin: 0 auto 10px;"><path d="M18 8a6 6 0 1 0-12 0c0 3.5-1 5.5-1.8 6.6a1 1 0 0 0 .8 1.6h14a1 1 0 0 0 .8-1.6C18.9 13.5 18 11.5 18 8z" stroke="#e0a52c" stroke-width="1.7" stroke-linejoin="round"/><path d="M9.5 18.5a2.5 2.5 0 0 0 5 0" stroke="#e0a52c" stroke-width="1.7" stroke-linecap="round"/></svg>
+            <div style="font-size: 12px; font-weight: 700; color: #100e2a; line-height: 1.3;">Medicine Reminders</div>
+          </div>
+          <div class="mosaic-tile floaty" style="background: #100e2a; border-radius: 18px; padding: 20px 14px; text-align: center; border: 1px solid transparent; animation-delay: -2.5s;">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" style="margin: 0 auto 10px;"><path d="M12 2L4 5v6c0 5 3.4 8.7 8 9 4.6-.3 8-4 8-9V5l-8-3z" stroke="#5fc9bd" stroke-width="1.7" stroke-linejoin="round"/><path d="M9 12l2 2 4-4.5" stroke="#5fc9bd" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <div style="font-size: 12px; font-weight: 700; color: #fff; line-height: 1.3;">Emergency Glass Door</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+
+  <!-- ABOUT -->
+  <div id="about" class="reveal" style="width: 100%; background: #100e2a; box-sizing: border-box; padding: clamp(48px,10vw,88px) clamp(16px,4vw,48px);">
+    <div style="max-width: 1180px; margin: 0 auto; display: flex; gap: 64px; align-items: center; flex-wrap: wrap;">
+      <div style="flex: 1 1 340px; min-width: 300px;">
+        <div class="floaty" style="width: 100%; max-width: 420px; aspect-ratio: 4/3; background: #1a1740; border-radius: 20px; display: flex; align-items: center; justify-content: center;">
+          <svg width="70%" viewBox="0 0 200 120" fill="none">
+            <rect x="8" y="46" width="150" height="52" rx="8" fill="#e9e7f5"/>
+            <rect x="8" y="46" width="150" height="14" fill="#0e8f83"/>
+            <rect x="118" y="60" width="28" height="24" rx="3" fill="#7db8e8"/>
+            <rect x="150" y="60" width="8" height="38" rx="2" fill="#f0765a"/>
+            <circle cx="40" cy="98" r="14" fill="#100e2a"/>
+            <circle cx="40" cy="98" r="6" fill="#e9e7f5"/>
+            <circle cx="130" cy="98" r="14" fill="#100e2a"/>
+            <circle cx="130" cy="98" r="6" fill="#e9e7f5"/>
+            <rect x="26" y="58" width="24" height="24" fill="#100e2a" opacity="0.08"/>
+            <path d="M28 68H36L40 60L46 78L50 68H56" stroke="#f0765a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          </svg>
+        </div>
+      </div>
+      <div style="flex: 1 1 420px; min-width: 300px;">
+        <div style="font-size: 14px; font-weight: 700; letter-spacing: 0.08em; color: #7ee0d4; margin-bottom: 14px;">ABOUT QUEROCURA</div>
+        <h2 style="margin: 0 0 24px; font-size: clamp(26px, 5.5vw, 40px); line-height: 1.1; font-weight: 700; color: #fff; letter-spacing: -0.02em;">
+          Health information shouldn't be scattered — or silent when it matters most.
+        </h2>
+        <p style="margin: 0 0 18px; font-size: 18px; line-height: 1.6; color: #c8c6de;">
+          QueroCura brings your symptoms, your records and your routine into one place — reading what your body is telling you, remembering what your doctor prescribed, and surfacing it the instant someone needs it.
+        </p>
+        <p style="margin: 0; font-size: 18px; line-height: 1.6; color: #c8c6de;">
+          From a first symptom to an emergency room, we're built to close the gap between what's known about you and what's in reach.
+        </p>
+      </div>
+    </div>
+
+    <div style="max-width: 1180px; margin: 56px auto 0;">
+      <div class="about-tile-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;">
+
+        <div class="about-tile" id="about-tile-0" onclick="toggleAboutTile(0)" style="background: #1a1740; border: 1.5px solid rgba(255,255,255,0.08); border-radius: 18px; padding: 22px; cursor: pointer;">
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <div style="width: 38px; height: 38px; border-radius: 11px; background: rgba(126,224,212,0.12); display: flex; align-items: center; justify-content: center; flex: 0 0 auto;">
+                <svg width="19" height="19" viewBox="0 0 24 24" fill="none"><path d="M12 2l2.9 6.6L22 9.3l-5 4.9 1.2 7-6.2-3.4L5.8 21.2 7 14.2l-5-4.9 7.1-.7L12 2z" stroke="#7ee0d4" stroke-width="1.7" stroke-linejoin="round"/></svg>
               </div>
+              <div style="font-size: 16px; font-weight: 700; color: #fff;">Mission</div>
             </div>
+            <svg id="about-chevron-0" width="16" height="16" viewBox="0 0 24 24" fill="none" style="transition: transform 0.25s ease; flex: 0 0 auto;"><path d="M6 9l6 6 6-6" stroke="#7ee0d4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </div>
-          <div class="idc-bottom">
-            <div><span class="idc-label">Member since</span><span class="idc-value" id="idc-since">—</span></div>
-            <div><span class="idc-label">Status</span><span class="idc-value"><span class="idc-status-dot"></span>Active</span></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="egd-strip" id="egd-strip">
-        <div class="egd-left">
-          <span class="egd-ic">🛡️</span>
-          <div class="egd-text">
-            <div class="egd-label">CURA ID<span class="egd-sub">Your identifier for EGD</span></div>
-            <div class="egd-id" id="egd-id">—</div>
+          <div class="about-tile-body" id="about-body-0" style="max-height: 0; overflow: hidden; transition: max-height 0.35s ease;">
+            <p style="margin: 0; padding-top: 16px; font-size: 14.5px; line-height: 1.65; color: #c8c6de;">To close the gap between what's known about a patient and what's in reach — putting the right health information in the right hands, at the moment it matters most.</p>
           </div>
         </div>
-        <button class="egd-copy" id="egd-copy-btn" title="Copy CURA ID" aria-label="Copy CURA ID">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><rect x="9" y="9" width="12" height="12" rx="2" stroke="currentColor" stroke-width="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" stroke="currentColor" stroke-width="2"/></svg>
-        </button>
-      </div>
 
-      <div class="stat-strip" id="qc-stats">
-        <div class="stat-card"><div class="skel skel-line" style="width:30px;"></div><div class="skel skel-line" style="width:70px;height:11px;"></div></div>
-        <div class="stat-card"><div class="skel skel-line" style="width:30px;"></div><div class="skel skel-line" style="width:70px;height:11px;"></div></div>
-        <div class="stat-card"><div class="skel skel-line" style="width:30px;"></div><div class="skel skel-line" style="width:70px;height:11px;"></div></div>
-        <div class="stat-card"><div class="skel skel-line" style="width:30px;"></div><div class="skel skel-line" style="width:70px;height:11px;"></div></div>
-      </div>
-
-      <div class="card">
-        <div class="card-head">
-          <div><h2>Recent activity</h2><p class="card-sub">Everything that's landed in your Vault lately.</p></div>
-        </div>
-        <div class="activity-list" id="qc-activity"><div class="skel skel-row"></div><div class="skel skel-row"></div><div class="skel skel-row"></div></div>
-      </div>
-    </div>
-
-    <!-- RECORDS -->
-    <div class="tab-panel" id="panel-records">
-      <div class="card">
-        <div class="card-head">
-          <div><h2>📄 Upload a record</h2><p class="card-sub">A prescription, lab report, or scan — encrypted and yours alone.</p></div>
-        </div>
-        <form id="cv-upload-form">
-          <div class="upload-grid">
-            <div class="field">
-              <label for="cv-rec-title">Title</label>
-              <input type="text" id="cv-rec-title" placeholder="e.g. Blood panel — Sept 2026">
-            </div>
-            <div class="field">
-              <label for="cv-rec-category">Category</label>
-              <select id="cv-rec-category">
-                <option value="lab_report">Lab report</option>
-                <option value="prescription">Prescription</option>
-                <option value="scan">Scan / imaging</option>
-                <option value="discharge_summary">Discharge summary</option>
-                <option value="vaccination">Vaccination</option>
-                <option value="other">Other</option>
-              </select>
-            </div>
-            <div class="field file-field">
-              <label>File</label>
-              <div class="dropzone" id="cv-dropzone">
-                <input type="file" id="cv-rec-file" multiple>
-                <span id="cv-dz-label">Drag files here, or click to browse</span>
-                <div class="dz-files" id="cv-dz-files"></div>
+        <div class="about-tile" id="about-tile-1" onclick="toggleAboutTile(1)" style="background: #1a1740; border: 1.5px solid rgba(255,255,255,0.08); border-radius: 18px; padding: 22px; cursor: pointer;">
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <div style="width: 38px; height: 38px; border-radius: 11px; background: rgba(126,224,212,0.12); display: flex; align-items: center; justify-content: center; flex: 0 0 auto;">
+                <svg width="19" height="19" viewBox="0 0 24 24" fill="none"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z" stroke="#7ee0d4" stroke-width="1.7" stroke-linejoin="round"/><circle cx="12" cy="12" r="3.2" stroke="#7ee0d4" stroke-width="1.7"/></svg>
               </div>
+              <div style="font-size: 16px; font-weight: 700; color: #fff;">Vision</div>
             </div>
-            <div class="field notes-field">
-              <label for="cv-rec-notes">Notes (optional)</label>
-              <textarea id="cv-rec-notes" rows="2"></textarea>
+            <svg id="about-chevron-1" width="16" height="16" viewBox="0 0 24 24" fill="none" style="transition: transform 0.25s ease; flex: 0 0 auto;"><path d="M6 9l6 6 6-6" stroke="#7ee0d4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="about-tile-body" id="about-body-1" style="max-height: 0; overflow: hidden; transition: max-height 0.35s ease;">
+            <p style="margin: 0; padding-top: 16px; font-size: 14.5px; line-height: 1.65; color: #c8c6de;">A world where no patient's history is a mystery to the people trying to save them — and where staying on top of your own health is as simple as checking your phone.</p>
+          </div>
+        </div>
+
+        <div class="about-tile" id="about-tile-2" onclick="toggleAboutTile(2)" style="background: #1a1740; border: 1.5px solid rgba(255,255,255,0.08); border-radius: 18px; padding: 22px; cursor: pointer;">
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <div style="width: 38px; height: 38px; border-radius: 11px; background: rgba(126,224,212,0.12); display: flex; align-items: center; justify-content: center; flex: 0 0 auto;">
+                <svg width="19" height="19" viewBox="0 0 24 24" fill="none"><path d="M12 8v5l3.5 2" stroke="#7ee0d4" stroke-width="1.7" stroke-linecap="round"/><circle cx="12" cy="13" r="8" stroke="#7ee0d4" stroke-width="1.7"/><path d="M9 2h6M12 2v2" stroke="#7ee0d4" stroke-width="1.7" stroke-linecap="round"/></svg>
+              </div>
+              <div style="font-size: 16px; font-weight: 700; color: #fff;">Background</div>
+            </div>
+            <svg id="about-chevron-2" width="16" height="16" viewBox="0 0 24 24" fill="none" style="transition: transform 0.25s ease; flex: 0 0 auto;"><path d="M6 9l6 6 6-6" stroke="#7ee0d4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="about-tile-body" id="about-body-2" style="max-height: 0; overflow: hidden; transition: max-height 0.35s ease;">
+            <p style="margin: 0; padding-top: 16px; font-size: 14.5px; line-height: 1.65; color: #c8c6de;">QueroCura started with a simple observation: how much time it takes for doctors to even begin treatment, and how much hassle it takes just to retrieve a patient's information before care can start at all. We built QueroCura to close that gap.</p>
+          </div>
+        </div>
+
+        <div class="about-tile" id="about-tile-3" onclick="toggleAboutTile(3)" style="background: #1a1740; border: 1.5px solid rgba(255,255,255,0.08); border-radius: 18px; padding: 22px; cursor: pointer;">
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <div style="width: 38px; height: 38px; border-radius: 11px; background: rgba(126,224,212,0.12); display: flex; align-items: center; justify-content: center; flex: 0 0 auto;">
+                <svg width="19" height="19" viewBox="0 0 24 24" fill="none"><path d="M12 21s-7-4.35-9.5-8.5C.8 8.8 2.4 5 6 5c2 0 3.5 1.2 4 2.4C10.5 6.2 12 5 14 5c3.6 0 5.2 3.8 3.5 7.5C19 16.65 12 21 12 21z" stroke="#7ee0d4" stroke-width="1.7" stroke-linejoin="round"/></svg>
+              </div>
+              <div style="font-size: 16px; font-weight: 700; color: #fff;">Values</div>
+            </div>
+            <svg id="about-chevron-3" width="16" height="16" viewBox="0 0 24 24" fill="none" style="transition: transform 0.25s ease; flex: 0 0 auto;"><path d="M6 9l6 6 6-6" stroke="#7ee0d4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="about-tile-body" id="about-body-3" style="max-height: 0; overflow: hidden; transition: max-height 0.35s ease;">
+            <div style="padding-top: 16px; display: flex; flex-direction: column; gap: 8px;">
+              <p style="margin: 0; font-size: 14.5px; line-height: 1.5; color: #c8c6de;"><strong style="color:#fff;">Privacy first.</strong> Your data is yours — encrypted, and shown only when it needs to be.</p>
+              <p style="margin: 0; font-size: 14.5px; line-height: 1.5; color: #c8c6de;"><strong style="color:#fff;">Clarity over jargon.</strong> Health information should make sense to the person it's about.</p>
+              <p style="margin: 0; font-size: 14.5px; line-height: 1.5; color: #c8c6de;"><strong style="color:#fff;">Built with clinicians.</strong> Not guessed at — shaped by the people who treat patients every day.</p>
+              <p style="margin: 0; font-size: 14.5px; line-height: 1.5; color: #c8c6de;"><strong style="color:#fff;">Seconds matter.</strong> In an emergency, speed isn't a feature — it's the whole point.</p>
             </div>
           </div>
-          <button type="submit" class="save-btn" id="cv-upload-btn">Upload</button>
-        </form>
-      </div>
-      <div class="card">
-        <div class="card-head"><div><h2>Your records</h2></div></div>
-        <div id="cv-records-wrap"><div class="skel skel-row"></div><div class="skel skel-row"></div></div>
-      </div>
-    </div>
+        </div>
 
-    <!-- VITALS -->
-    <div class="tab-panel" id="panel-vitals">
-      <div class="card">
-        <div class="card-head">
-          <div><h2>❤️ Vitals in your Vault</h2><p class="card-sub">A longitudinal log kept with your records — separate from the quick daily check on the Vitals tab.</p></div>
-        </div>
-        <form id="cv-vitals-form">
-          <div class="vitals-grid">
-            <div class="field"><label for="cv-v-hr">Heart rate (bpm)</label><input type="number" id="cv-v-hr"></div>
-            <div class="field"><label for="cv-v-sys">Systolic BP</label><input type="number" id="cv-v-sys"></div>
-            <div class="field"><label for="cv-v-dia">Diastolic BP</label><input type="number" id="cv-v-dia"></div>
-            <div class="field"><label for="cv-v-spo2">SpO₂ (%)</label><input type="number" id="cv-v-spo2"></div>
-            <div class="field"><label for="cv-v-temp">Temperature (°C)</label><input type="number" step="0.1" id="cv-v-temp"></div>
-            <div class="field"><label for="cv-v-glucose">Glucose (mg/dL)</label><input type="number" step="0.1" id="cv-v-glucose"></div>
-            <div class="field"><label for="cv-v-weight">Weight (kg)</label><input type="number" step="0.1" id="cv-v-weight"></div>
-            <div class="field"><label for="cv-v-resp">Respiratory rate</label><input type="number" id="cv-v-resp"></div>
-            <div class="field notes-field"><label for="cv-v-notes">Notes</label><textarea id="cv-v-notes" rows="2"></textarea></div>
-          </div>
-          <button type="submit" class="save-btn" id="cv-vitals-btn">Save to Vault</button>
-        </form>
-      </div>
-      <div class="card">
-        <div class="card-head"><div><h2>Recent readings</h2></div></div>
-        <div id="cv-vitals-wrap"><div class="skel skel-row"></div><div class="skel skel-row"></div></div>
-      </div>
-    </div>
-
-    <!-- SYMPTOM HISTORY -->
-    <div class="tab-panel" id="panel-symptoms">
-      <div class="card">
-        <div class="card-head">
-          <div><h2>🩺 Symptom check history</h2><p class="card-sub">Every symptom check you've run, kept here so you and a doctor can see the pattern over time.</p></div>
-        </div>
-        <div id="cv-symptoms-wrap"><div class="skel skel-row"></div><div class="skel skel-row"></div><div class="skel skel-row"></div></div>
-      </div>
-    </div>
-
-    <!-- ACCESS -->
-    <div class="tab-panel" id="panel-access">
-      <div class="card">
-        <div class="card-head">
-          <div><h2>Access requests</h2><p class="card-sub">When a provider asks to view your Vault, it lands here — nothing is shared until you approve it.</p></div>
-        </div>
-        <div id="cv-consent-wrap"><div class="skel skel-row"></div></div>
-      </div>
-      <div class="card">
-        <div class="card-head">
-          <div><h2>Access log</h2><p class="card-sub">Every time your Vault is opened by someone other than you, it's recorded here.</p></div>
-        </div>
-        <div id="cv-logs-wrap"><div class="skel skel-row"></div></div>
       </div>
     </div>
   </div>
 
-  <div class="toast-stack" id="qc-toast-stack"></div>
+  <!-- SERVICES / PLATFORM TABS -->
+  <div id="services" class="reveal" style="width: 100%; box-sizing: border-box; padding: clamp(48px,10vw,96px) clamp(16px,4vw,48px);">
+    <div style="max-width: 1180px; margin: 0 auto;">
+      <div style="font-size: 14px; font-weight: 700; letter-spacing: 0.08em; color: #0e8f83; margin-bottom: 14px; text-align: center;">OUR PLATFORM</div>
+      <h2 style="margin: 0 0 16px; font-size: clamp(28px, 6vw, 42px); font-weight: 700; letter-spacing: -0.02em; text-align: center;">One platform, six ways we help.</h2>
+      <p style="margin: 0 auto 48px; font-size: 18px; color: #46435f; text-align: center; max-width: 640px;">Everything you see here feeds one record — the one Emergency Glass Door puts in front of a care team in seconds. Tap a pillar to see what it does.</p>
 
+      <div class="platform-tab-grid" style="display: grid; gap: 12px; margin-bottom: 8px;">
+        <div onclick="showTab(0)" class="tab-btn active" id="tab-btn-0" style="border-radius: 16px; padding: 18px 10px; text-align: center;">
+          <div class="tab-icon-wrap" style="width: 40px; height: 40px; border-radius: 12px; background: #e6f6f4; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 2L4 5v6c0 5 3.4 8.7 8 9 4.6-.3 8-4 8-9V5l-8-3z" stroke="#0e8f83" stroke-width="1.9" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="tab-label" style="font-size: 12px; font-weight: 700; color: #100e2a;">Emergency<br>Glass Door</div>
+        </div>
+        <div onclick="showTab(1)" class="tab-btn" id="tab-btn-1" style="border-radius: 16px; padding: 18px 10px; text-align: center;">
+          <div class="tab-icon-wrap" style="width: 40px; height: 40px; border-radius: 12px; background: #e6f6f4; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="10.5" cy="10.5" r="6.5" stroke="#0e8f83" stroke-width="1.8"/><path d="M15.5 15.5L21 21" stroke="#0e8f83" stroke-width="1.8" stroke-linecap="round"/></svg>
+          </div>
+          <div class="tab-label" style="font-size: 12px; font-weight: 700; color: #100e2a;">Symptom<br>Intelligence</div>
+        </div>
+        <div onclick="showTab(2)" class="tab-btn" id="tab-btn-2" style="border-radius: 16px; padding: 18px 10px; text-align: center;">
+          <div class="tab-icon-wrap" style="width: 40px; height: 40px; border-radius: 12px; background: #eae8fb; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4 10a8 8 0 1 1 3 6.2L4 20l1.2-3.6A7.96 7.96 0 0 1 4 10z" stroke="#7c6fdb" stroke-width="1.8" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="tab-label" style="font-size: 12px; font-weight: 700; color: #100e2a;">Clinical<br>Interview</div>
+        </div>
+        <div onclick="showTab(3)" class="tab-btn" id="tab-btn-3" style="border-radius: 16px; padding: 18px 10px; text-align: center;">
+          <div class="tab-icon-wrap" style="width: 40px; height: 40px; border-radius: 12px; background: #fdece7; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4 17l4.5-5 3.5 3 5.5-7" stroke="#f0765a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M14 8h4v4" stroke="#f0765a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="tab-label" style="font-size: 12px; font-weight: 700; color: #100e2a;">Specialized<br>Insights</div>
+        </div>
+        <div onclick="showTab(4)" class="tab-btn" id="tab-btn-4" style="border-radius: 16px; padding: 18px 10px; text-align: center;">
+          <div class="tab-icon-wrap" style="width: 40px; height: 40px; border-radius: 12px; background: #e4f1fb; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 3l7 3v5c0 4.6-3 7.9-7 10-4-2.1-7-5.4-7-10V6l7-3z" stroke="#2f8fd1" stroke-width="1.8" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="tab-label" style="font-size: 12px; font-weight: 700; color: #100e2a;">CuraVault</div>
+        </div>
+        <div onclick="showTab(5)" class="tab-btn" id="tab-btn-5" style="border-radius: 16px; padding: 18px 10px; text-align: center;">
+          <div class="tab-icon-wrap" style="width: 40px; height: 40px; border-radius: 12px; background: #fbf1dc; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M18 8a6 6 0 1 0-12 0c0 3.5-1 5.5-1.8 6.6a1 1 0 0 0 .8 1.6h14a1 1 0 0 0 .8-1.6C18.9 13.5 18 11.5 18 8z" stroke="#e0a52c" stroke-width="1.7" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="tab-label" style="font-size: 12px; font-weight: 700; color: #100e2a;">Medicine<br>Reminders</div>
+        </div>
+      </div>
+
+      <!-- DETAIL PANEL -->
+      <div style="background: #ebe9e2; border-radius: 28px; padding: clamp(20px,6vw,48px); margin-top: 28px;">
+
+        <div class="fade-in" id="panel-0">
+            <div style="flex: 1 1 260px; min-width: 220px; display: flex; gap: 20px; justify-content: center;">
+              <img src="assets/6a378981d2c2ab0d4c61291275916505.png" alt="" style="width: 110px; height: auto; align-self: flex-end;">
+              <img src="assets/6abe27005847b6683a14deef5164e1c7.png" alt="" class="floaty" style="width: 110px; height: auto; align-self: flex-start; animation-delay: -2s;">
+            </div>
+            <div style="flex: 2 1 480px; min-width: 300px;">
+              <div style="display: inline-flex; align-items: center; gap: 8px; background: #0e8f83; border-radius: 999px; padding: 6px 14px; font-size: 12px; font-weight: 700; color: #fff; letter-spacing: 0.03em; margin-bottom: 16px;">FLAGSHIP · LIVE</div>
+              <h3 style="margin: 0 0 16px; font-size: clamp(22px, 4.5vw, 30px); font-weight: 700; letter-spacing: -0.02em;">Emergency Glass Door</h3>
+              <p style="margin: 0 0 14px; font-size: 17px; line-height: 1.6; color: #34324a;">
+                A project which aims to increase the speed of medical response for a patient who reaches the hospital in an emergency situation.
+              </p>
+              <p style="margin: 0 0 26px; font-size: 17px; line-height: 1.6; color: #34324a;">
+                A detailed summary of the patient's medical information reaches first responders immediately — biometrically verified, nothing to fill out.
+              </p>
+              <a href="#egd-how" class="cta" style="display: inline-block; background: #0e8f83; color: #fff; font-size: 15px; font-weight: 700; padding: 13px 26px; border-radius: 999px;">See the full breakdown</a>
+            </div>
+          </div>
+
+        <div class="fade-in" id="panel-1" style="display:none;">
+            <div style="flex: 0 0 auto;">
+              <div style="width: 130px; height: 130px; border-radius: 28px; background: linear-gradient(160deg, #fff, #eafaf7); box-shadow: 0 14px 28px -18px rgba(14,143,131,0.45); display: flex; align-items: center; justify-content: center;">
+                <svg width="92" height="92" viewBox="0 0 100 100" fill="none">
+                  <circle cx="50" cy="50" r="46" fill="#e6f6f4"/>
+                  <path d="M18 55h13l6-19 11 35 8-25 6 9h20" stroke="#0e8f83" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+                  <circle cx="67" cy="65" r="18" fill="#fff" stroke="#100e2a" stroke-width="4.5"/>
+                  <circle cx="67" cy="65" r="8" fill="#0e8f83"/>
+                  <line x1="79.5" y1="77.5" x2="90" y2="88" stroke="#100e2a" stroke-width="6" stroke-linecap="round"/>
+                </svg>
+              </div>
+            </div>
+            <div style="flex: 1 1 480px; min-width: 300px;">
+              <div style="display: inline-flex; align-items: center; gap: 8px; background: #0e8f83; border-radius: 999px; padding: 6px 14px; font-size: 12px; font-weight: 700; color: #fff; letter-spacing: 0.03em; margin-bottom: 16px;">LIVE</div>
+              <h3 style="margin: 0 0 16px; font-size: clamp(22px, 4.5vw, 30px); font-weight: 700; letter-spacing: -0.02em;">Symptom Intelligence</h3>
+              <p style="margin: 0 0 22px; font-size: 17px; line-height: 1.6; color: #34324a;">
+                Describe how you're feeling in your own words. QueroCura maps what you describe against clinical patterns to help narrow down what might be going on — and feeds straight into the record Emergency Glass Door can surface later, not a one-off answer you throw away.
+              </p>
+              <div style="display: flex; flex-direction: column; gap: 10px;">
+                <div style="display: flex; gap: 10px; align-items: flex-start;"><div style="width: 6px; height: 6px; border-radius: 50%; background: #0e8f83; margin-top: 8px; flex: 0 0 auto;"></div><p style="margin: 0; font-size: 15px; color: #46435f;">Plain-language symptom input — no medical jargon required</p></div>
+                <div style="display: flex; gap: 10px; align-items: flex-start;"><div style="width: 6px; height: 6px; border-radius: 50%; background: #0e8f83; margin-top: 8px; flex: 0 0 auto;"></div><p style="margin: 0; font-size: 15px; color: #46435f;">Pattern-matched against known clinical presentations</p></div>
+                <div style="display: flex; gap: 10px; align-items: flex-start;"><div style="width: 6px; height: 6px; border-radius: 50%; background: #0e8f83; margin-top: 8px; flex: 0 0 auto;"></div><p style="margin: 0; font-size: 15px; color: #46435f;">A starting point for the clinical interview that follows</p></div>
+              </div>
+              <a href="register/" class="cta" style="display: inline-block; margin-top: 22px; background: #0e8f83; color: #fff; font-size: 15px; font-weight: 700; padding: 13px 26px; border-radius: 999px;">Try the Symptom Checker — sign up free</a>
+            </div>
+          </div>
+
+        <div class="fade-in" id="panel-2" style="display:none;">
+            <div style="flex: 0 0 auto;">
+              <div style="width: 130px; height: 130px; border-radius: 28px; background: linear-gradient(160deg, #fff, #f1effc); box-shadow: 0 14px 28px -18px rgba(124,111,219,0.45); display: flex; align-items: center; justify-content: center;">
+                <svg width="92" height="92" viewBox="0 0 100 100" fill="none">
+                  <circle cx="50" cy="50" r="46" fill="#eae8fb"/>
+                  <path d="M22 26h52a12 12 0 0 1 12 12v14a12 12 0 0 1-12 12H40l-16 14v-14h-2a12 12 0 0 1-12-12V38a12 12 0 0 1 12-12z" fill="#fff" stroke="#100e2a" stroke-width="4.5" stroke-linejoin="round"/>
+                  <circle cx="35" cy="45" r="4.5" fill="#7c6fdb"/>
+                  <circle cx="50" cy="45" r="4.5" fill="#7c6fdb"/>
+                  <circle cx="65" cy="45" r="4.5" fill="#7c6fdb"/>
+                </svg>
+              </div>
+            </div>
+            <div style="flex: 1 1 480px; min-width: 300px;">
+              <div style="display: inline-flex; align-items: center; gap: 8px; background: #0e8f83; border-radius: 999px; padding: 6px 14px; font-size: 12px; font-weight: 700; color: #fff; letter-spacing: 0.03em; margin-bottom: 16px;">LIVE</div>
+              <h3 style="margin: 0 0 16px; font-size: clamp(22px, 4.5vw, 30px); font-weight: 700; letter-spacing: -0.02em;">Clinical Interview Model</h3>
+              <p style="margin: 0 0 22px; font-size: 17px; line-height: 1.6; color: #34324a;">
+                Instead of a static checklist, QueroCura asks the follow-up questions a clinician would — a guided, conversational interview built to increase the certainty of every prediction it makes, before anything is added to your record.
+              </p>
+              <div style="display: flex; flex-direction: column; gap: 10px;">
+                <div style="display: flex; gap: 10px; align-items: flex-start;"><div style="width: 6px; height: 6px; border-radius: 50%; background: #7c6fdb; margin-top: 8px; flex: 0 0 auto;"></div><p style="margin: 0; font-size: 15px; color: #46435f;">Dynamic follow-ups, not a fixed questionnaire</p></div>
+                <div style="display: flex; gap: 10px; align-items: flex-start;"><div style="width: 6px; height: 6px; border-radius: 50%; background: #7c6fdb; margin-top: 8px; flex: 0 0 auto;"></div><p style="margin: 0; font-size: 15px; color: #46435f;">Each answer narrows down the range of likely explanations</p></div>
+                <div style="display: flex; gap: 10px; align-items: flex-start;"><div style="width: 6px; height: 6px; border-radius: 50%; background: #7c6fdb; margin-top: 8px; flex: 0 0 auto;"></div><p style="margin: 0; font-size: 15px; color: #46435f;">Designed to raise confidence before a prediction is shown</p></div>
+              </div>
+              <a href="register/" class="cta" style="display: inline-block; margin-top: 22px; background: #7c6fdb; color: #fff; font-size: 15px; font-weight: 700; padding: 13px 26px; border-radius: 999px;">Start a Clinical Interview — sign up free</a>
+            </div>
+          </div>
+
+        <div class="fade-in" id="panel-3" style="display:none;">
+            <div style="flex: 0 0 auto;">
+              <div style="width: 130px; height: 130px; border-radius: 28px; background: linear-gradient(160deg, #fff, #fdf0eb); box-shadow: 0 14px 28px -18px rgba(240,118,90,0.45); display: flex; align-items: center; justify-content: center;">
+                <svg width="92" height="92" viewBox="0 0 100 100" fill="none">
+                  <circle cx="50" cy="50" r="46" fill="#fdece7"/>
+                  <rect x="22" y="14" width="40" height="56" rx="5" fill="#fff" stroke="#100e2a" stroke-width="4"/>
+                  <line x1="29" y1="26" x2="55" y2="26" stroke="#100e2a" stroke-width="3" stroke-linecap="round" opacity="0.3"/>
+                  <line x1="29" y1="34" x2="49" y2="34" stroke="#100e2a" stroke-width="3" stroke-linecap="round" opacity="0.3"/>
+                  <rect x="29" y="46" width="6" height="16" rx="1.5" fill="#f0765a"/>
+                  <rect x="38.5" y="52" width="6" height="10" rx="1.5" fill="#f0765a" opacity="0.55"/>
+                  <rect x="48" y="42" width="6" height="20" rx="1.5" fill="#f0765a"/>
+                  <circle cx="69" cy="67" r="18" fill="#fff" stroke="#100e2a" stroke-width="4.5"/>
+                  <circle cx="69" cy="67" r="8" fill="#f0765a"/>
+                  <line x1="81.5" y1="79.5" x2="92" y2="90" stroke="#100e2a" stroke-width="6" stroke-linecap="round"/>
+                </svg>
+              </div>
+            </div>
+            <div style="flex: 1 1 480px; min-width: 300px;">
+              <div style="display: inline-flex; align-items: center; gap: 8px; background: #0e8f83; border-radius: 999px; padding: 6px 14px; font-size: 12px; font-weight: 700; color: #fff; letter-spacing: 0.03em; margin-bottom: 16px;">LIVE</div>
+              <h3 style="margin: 0 0 16px; font-size: clamp(22px, 4.5vw, 30px); font-weight: 700; letter-spacing: -0.02em;">Specialized Insights</h3>
+              <p style="margin: 0 0 22px; font-size: 17px; line-height: 1.6; color: #34324a;">
+                QueroCura reads your reports and tracks your health over time, surfacing insights that a single report on its own wouldn't show — the trend behind the number, not just the number, and one more input into the record a care team can reach in an emergency.
+              </p>
+              <div style="display: flex; flex-direction: column; gap: 10px;">
+                <div style="display: flex; gap: 10px; align-items: flex-start;"><div style="width: 6px; height: 6px; border-radius: 50%; background: #f0765a; margin-top: 8px; flex: 0 0 auto;"></div><p style="margin: 0; font-size: 15px; color: #46435f;">Reads uploaded lab and diagnostic reports automatically</p></div>
+                <div style="display: flex; gap: 10px; align-items: flex-start;"><div style="width: 6px; height: 6px; border-radius: 50%; background: #f0765a; margin-top: 8px; flex: 0 0 auto;"></div><p style="margin: 0; font-size: 15px; color: #46435f;">Tracks how key markers move across every visit, not just one</p></div>
+                <div style="display: flex; gap: 10px; align-items: flex-start;"><div style="width: 6px; height: 6px; border-radius: 50%; background: #f0765a; margin-top: 8px; flex: 0 0 auto;"></div><p style="margin: 0; font-size: 15px; color: #46435f;">Surfaces what's worth a closer look, in plain language</p></div>
+              </div>
+              <a href="register/" class="cta" style="display: inline-block; margin-top: 22px; background: #f0765a; color: #fff; font-size: 15px; font-weight: 700; padding: 13px 26px; border-radius: 999px;">See your Insights — sign up free</a>
+            </div>
+          </div>
+
+        <div class="fade-in" id="panel-4" style="display:none;">
+            <div style="flex: 0 0 auto;">
+              <div style="width: 130px; height: 130px; border-radius: 28px; background: linear-gradient(160deg, #fff, #eaf3fc); box-shadow: 0 14px 28px -18px rgba(47,143,209,0.45); display: flex; align-items: center; justify-content: center;">
+                <svg width="92" height="92" viewBox="0 0 100 100" fill="none">
+                  <circle cx="50" cy="50" r="46" fill="#e4f1fb"/>
+                  <rect x="18" y="26" width="64" height="50" rx="10" fill="#fff" stroke="#100e2a" stroke-width="4.5"/>
+                  <rect x="18" y="26" width="64" height="12" rx="6" fill="#2f8fd1"/>
+                  <circle cx="50" cy="55" r="16" fill="#2f8fd1" stroke="#100e2a" stroke-width="4"/>
+                  <circle cx="50" cy="55" r="5.5" fill="#fff"/>
+                  <rect x="47" y="55" width="6" height="11" rx="2" fill="#fff"/>
+                </svg>
+              </div>
+            </div>
+            <div style="flex: 1 1 480px; min-width: 300px;">
+              <div style="display: inline-flex; align-items: center; gap: 8px; background: #fff; border: 1px solid rgba(16,14,42,0.12); border-radius: 999px; padding: 6px 14px; font-size: 12px; font-weight: 700; color: #6b6885; letter-spacing: 0.03em; margin-bottom: 16px;">IN DEVELOPMENT</div>
+              <h3 style="margin: 0 0 16px; font-size: clamp(22px, 4.5vw, 30px); font-weight: 700; letter-spacing: -0.02em;">CuraVault</h3>
+              <p style="margin: 0 0 22px; font-size: 17px; line-height: 1.6; color: #34324a;">
+                Every report, prescription and record lives in CuraVault — stored securely and analyzed over time, so your history travels with you instead of staying locked in a drawer or one clinic's system.
+              </p>
+              <div style="display: flex; flex-direction: column; gap: 10px;">
+                <div style="display: flex; gap: 10px; align-items: flex-start;"><div style="width: 6px; height: 6px; border-radius: 50%; background: #2f8fd1; margin-top: 8px; flex: 0 0 auto;"></div><p style="margin: 0; font-size: 15px; color: #46435f;">One secure vault for every report, scan and prescription</p></div>
+                <div style="display: flex; gap: 10px; align-items: flex-start;"><div style="width: 6px; height: 6px; border-radius: 50%; background: #2f8fd1; margin-top: 8px; flex: 0 0 auto;"></div><p style="margin: 0; font-size: 15px; color: #46435f;">Analyzed over time, so trends surface on their own</p></div>
+                <div style="display: flex; gap: 10px; align-items: flex-start;"><div style="width: 6px; height: 6px; border-radius: 50%; background: #2f8fd1; margin-top: 8px; flex: 0 0 auto;"></div><p style="margin: 0; font-size: 15px; color: #46435f;">Built on the same encryption model as Emergency Glass Door</p></div>
+              </div>
+            </div>
+          </div>
+
+        <div class="fade-in" id="panel-5" style="display:none;">
+            <div style="flex: 0 0 auto;">
+              <div style="width: 130px; height: 130px; border-radius: 28px; background: linear-gradient(160deg, #fff, #fbf3e0); box-shadow: 0 14px 28px -18px rgba(224,165,44,0.45); display: flex; align-items: center; justify-content: center;">
+                <svg width="92" height="92" viewBox="0 0 100 100" fill="none">
+                  <circle cx="50" cy="50" r="46" fill="#fbf1dc"/>
+                  <rect x="32" y="12" width="18" height="10" rx="3" fill="#e0a52c" stroke="#100e2a" stroke-width="3.5"/>
+                  <rect x="23" y="22" width="36" height="48" rx="9" fill="#fff" stroke="#100e2a" stroke-width="4.5"/>
+                  <rect x="23" y="40" width="36" height="12" fill="#e0a52c"/>
+                  <circle cx="70" cy="66" r="17" fill="#fff" stroke="#100e2a" stroke-width="4.5"/>
+                  <path d="M70 57a9 9 0 0 1 9 9v3.5l2.5 3.5H58.5L61 69.5V66a9 9 0 0 1 9-9z" fill="#e0a52c" stroke="#100e2a" stroke-width="3" stroke-linejoin="round"/>
+                  <path d="M66.5 75.5a3.5 3.5 0 0 0 7 0" stroke="#100e2a" stroke-width="3" stroke-linecap="round"/>
+                </svg>
+              </div>
+            </div>
+            <div style="flex: 1 1 480px; min-width: 300px;">
+              <div style="display: inline-flex; align-items: center; gap: 8px; background: #fff; border: 1px solid rgba(16,14,42,0.12); border-radius: 999px; padding: 6px 14px; font-size: 12px; font-weight: 700; color: #6b6885; letter-spacing: 0.03em; margin-bottom: 16px;">IN DEVELOPMENT</div>
+              <h3 style="margin: 0 0 16px; font-size: clamp(22px, 4.5vw, 30px); font-weight: 700; letter-spacing: -0.02em;">Prescription Reminders</h3>
+              <p style="margin: 0 0 22px; font-size: 17px; line-height: 1.6; color: #34324a;">
+                Prescriptions come with timing that's easy to miss. QueroCura reminds you to take the right medicine at the right time, every time — pulled straight from what's already in CuraVault.
+              </p>
+              <div style="display: flex; flex-direction: column; gap: 10px;">
+                <div style="display: flex; gap: 10px; align-items: flex-start;"><div style="width: 6px; height: 6px; border-radius: 50%; background: #e0a52c; margin-top: 8px; flex: 0 0 auto;"></div><p style="margin: 0; font-size: 15px; color: #46435f;">Reminders timed to your actual prescription, not guesswork</p></div>
+                <div style="display: flex; gap: 10px; align-items: flex-start;"><div style="width: 6px; height: 6px; border-radius: 50%; background: #e0a52c; margin-top: 8px; flex: 0 0 auto;"></div><p style="margin: 0; font-size: 15px; color: #46435f;">Works off prescriptions already stored in CuraVault</p></div>
+                <div style="display: flex; gap: 10px; align-items: flex-start;"><div style="width: 6px; height: 6px; border-radius: 50%; background: #e0a52c; margin-top: 8px; flex: 0 0 auto;"></div><p style="margin: 0; font-size: 15px; color: #46435f;">One less thing to remember during recovery</p></div>
+              </div>
+            </div>
+          </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- INFORMATION -->
+  <div style="width: 100%; background: #ebe9e2; box-sizing: border-box; padding: clamp(48px,10vw,88px) clamp(16px,4vw,48px);">
+    <div style="max-width: 1180px; margin: 0 auto; display: flex; gap: 64px; align-items: flex-start; flex-wrap: wrap;">
+      <div style="flex: 0 0 auto;">
+        <div style="width: 88px; height: 88px; border-radius: 22px; background: #fff; display: flex; align-items: center; justify-content: center;">
+          <svg width="44" height="44" viewBox="0 0 24 24" fill="none">
+            <path d="M9 3v4M15 3v4M6 21v-6a6 6 0 0 1 12 0v6" stroke="#0e8f83" stroke-width="1.8" stroke-linecap="round"/>
+            <circle cx="12" cy="13" r="2" stroke="#0e8f83" stroke-width="1.8"/>
+            <path d="M4 21h16" stroke="#0e8f83" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+        </div>
+      </div>
+      <div style="flex: 1 1 500px; min-width: 300px;">
+        <h2 style="margin: 0 0 26px; font-size: clamp(22px, 5vw, 34px); font-weight: 700; letter-spacing: -0.02em;">Who decides what's shown?</h2>
+        <div style="display: flex; flex-direction: column; gap: 18px;">
+          <div style="display: flex; gap: 14px; align-items: flex-start;">
+            <div style="width: 8px; height: 8px; border-radius: 50%; background: #0e8f83; margin-top: 10px; flex: 0 0 auto;"></div>
+            <p style="margin: 0; font-size: 18px; line-height: 1.6; color: #34324a;">You might ask, how do we decide what information to display in an emergency?</p>
+          </div>
+          <div style="display: flex; gap: 14px; align-items: flex-start;">
+            <div style="width: 8px; height: 8px; border-radius: 50%; background: #0e8f83; margin-top: 10px; flex: 0 0 auto;"></div>
+            <p style="margin: 0; font-size: 18px; line-height: 1.6; color: #34324a;">We don't. Every field is entered by the user's own physician(s), beforehand, during onboarding — the same records CuraVault keeps for you over time.</p>
+          </div>
+          <div style="display: flex; gap: 14px; align-items: flex-start;">
+            <div style="width: 8px; height: 8px; border-radius: 50%; background: #0e8f83; margin-top: 10px; flex: 0 0 auto;"></div>
+            <p style="margin: 0; font-size: 18px; line-height: 1.6; color: #34324a;">That gives medical teams the most accurate, required and relevant data for the emergency at hand.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HOW IT WORKS -->
+  <div id="egd-how" class="reveal" style="width: 100%; box-sizing: border-box; padding: clamp(48px,10vw,96px) clamp(16px,4vw,48px);">
+    <div style="max-width: 1180px; margin: 0 auto;">
+      <div style="font-size: 14px; font-weight: 700; letter-spacing: 0.08em; color: #0e8f83; margin-bottom: 14px; text-align: center;">EMERGENCY GLASS DOOR — THE FULL PICTURE</div>
+      <h2 style="margin: 0 0 56px; font-size: clamp(28px, 6vw, 42px); font-weight: 700; letter-spacing: -0.02em; text-align: center;">Three steps, seconds apart.</h2>
+      <div style="display: flex; gap: 28px; flex-wrap: wrap; margin-bottom: 64px;">
+        <div class="step-card" style="flex: 1 1 280px; min-width: 260px; background: #fff; border-radius: 20px; padding: 36px 30px; border: 1px solid rgba(16,14,42,0.08);">
+          <div style="width: 46px; height: 46px; border-radius: 12px; background: #e6f6f4; display: flex; align-items: center; justify-content: center; font-family: 'Space Grotesk', sans-serif; font-weight: 700; color: #0e8f83; font-size: 18px; margin-bottom: 22px;">1</div>
+          <h3 style="margin: 0 0 12px; font-size: 20px; font-weight: 700;">Scan</h3>
+          <p style="margin: 0; font-size: 16px; line-height: 1.6; color: #46435f;">A medical professional scans the patient's fingerprint or iris — no forms, no delay.</p>
+        </div>
+        <div class="step-card" style="flex: 1 1 280px; min-width: 260px; background: #fff; border-radius: 20px; padding: 36px 30px; border: 1px solid rgba(16,14,42,0.08);">
+          <div style="width: 46px; height: 46px; border-radius: 12px; background: #eae8fb; display: flex; align-items: center; justify-content: center; font-family: 'Space Grotesk', sans-serif; font-weight: 700; color: #7c6fdb; font-size: 18px; margin-bottom: 22px;">2</div>
+          <h3 style="margin: 0 0 12px; font-size: 20px; font-weight: 700;">Match</h3>
+          <p style="margin: 0; font-size: 16px; line-height: 1.6; color: #46435f;">The scan is matched against the patient's biometrics linked to their Aadhaar card.</p>
+        </div>
+        <div class="step-card" style="flex: 1 1 280px; min-width: 260px; background: #fff; border-radius: 20px; padding: 36px 30px; border: 1px solid rgba(16,14,42,0.08);">
+          <div style="width: 46px; height: 46px; border-radius: 12px; background: #fdece7; display: flex; align-items: center; justify-content: center; font-family: 'Space Grotesk', sans-serif; font-weight: 700; color: #f0765a; font-size: 18px; margin-bottom: 22px;">3</div>
+          <h3 style="margin: 0 0 12px; font-size: 20px; font-weight: 700;">Access</h3>
+          <p style="margin: 0; font-size: 16px; line-height: 1.6; color: #46435f;">On a successful match, the care team gets emergency data straight from CuraVault.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FLOWCHART -->
+  <div style="width: 100%; background: linear-gradient(165deg, #100e2a 0%, #1a1550 100%); box-sizing: border-box; padding: clamp(56px,10vw,100px) clamp(16px,4vw,48px); position: relative; overflow: hidden;">
+    <svg style="position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0.35; pointer-events: none;">
+      <pattern id="dotgrid2" width="26" height="26" patternUnits="userSpaceOnUse">
+        <circle cx="1.3" cy="1.3" r="1.3" fill="#ffffff" opacity="0.08"/>
+      </pattern>
+      <rect width="100%" height="100%" fill="url(#dotgrid2)"/>
+    </svg>
+    <div style="max-width: 720px; margin: 0 auto; position: relative;">
+      <div style="font-size: 14px; font-weight: 700; letter-spacing: 0.08em; color: #7ee0d4; margin-bottom: 14px; text-align: center;">THE FLOW, END TO END</div>
+      <h2 style="margin: 0 0 64px; font-size: clamp(26px, 5.5vw, 38px); font-weight: 700; letter-spacing: -0.02em; text-align: center; color: #fff;">From emergency to answer, live.</h2>
+
+      <div style="display: flex; flex-direction: column; align-items: center;">
+
+        <div class="flow-step" style="display: flex; align-items: center; gap: 20px; width: 100%; max-width: 460px;">
+          <div class="flow-icon-ring" style="position: relative; width: 62px; height: 62px; border-radius: 50%; background: #1a1740; border: 1.5px solid rgba(255,255,255,0.12); display: flex; align-items: center; justify-content: center; flex: 0 0 auto;">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="7.5" r="3.3" stroke="#7ee0d4" stroke-width="1.8"/><path d="M5 20c0-3.6 3.2-6 7-6s7 2.4 7 6" stroke="#7ee0d4" stroke-width="1.8" stroke-linecap="round"/></svg>
+            <div style="position: absolute; top: -6px; right: -6px; width: 20px; height: 20px; border-radius: 50%; background: #0e8f83; color: #fff; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; font-family: 'Space Grotesk', sans-serif;">1</div>
+          </div>
+          <div style="background: #1a1740; border-radius: 16px; padding: 16px 22px; flex: 1 1 auto; border: 1px solid rgba(255,255,255,0.06);">
+            <div style="font-size: 15px; font-weight: 700; color: #fff;">A medical emergency happens</div>
+            <div style="font-size: 13px; color: #a9a6c2; margin-top: 2px;">Every second before care starts is a second working against the patient.</div>
+          </div>
+        </div>
+
+        <div class="flow-connector"></div>
+
+        <div class="flow-step" style="display: flex; align-items: center; gap: 20px; width: 100%; max-width: 460px;">
+          <div class="flow-icon-ring" style="position: relative; width: 62px; height: 62px; border-radius: 50%; background: #1a1740; border: 1.5px solid rgba(255,255,255,0.12); display: flex; align-items: center; justify-content: center; flex: 0 0 auto;">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><rect x="4" y="9" width="16" height="11" rx="1.5" stroke="#7ee0d4" stroke-width="1.7"/><path d="M12 3v6M9 6h6" stroke="#7ee0d4" stroke-width="1.7" stroke-linecap="round"/><path d="M9.5 20v-4a2.5 2.5 0 0 1 5 0v4" stroke="#7ee0d4" stroke-width="1.5"/></svg>
+            <div style="position: absolute; top: -6px; right: -6px; width: 20px; height: 20px; border-radius: 50%; background: #0e8f83; color: #fff; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; font-family: 'Space Grotesk', sans-serif;">2</div>
+          </div>
+          <div style="background: #1a1740; border-radius: 16px; padding: 16px 22px; flex: 1 1 auto; border: 1px solid rgba(255,255,255,0.06);">
+            <div style="font-size: 15px; font-weight: 700; color: #fff;">They reach an ambulance or hospital</div>
+            <div style="font-size: 13px; color: #a9a6c2; margin-top: 2px;">First responders take over — often with no history on the patient at all.</div>
+          </div>
+        </div>
+
+        <div class="flow-connector"></div>
+
+        <div class="flow-step" style="display: flex; align-items: center; gap: 20px; width: 100%; max-width: 460px;">
+          <div class="flow-icon-ring" style="position: relative; width: 62px; height: 62px; border-radius: 50%; background: #1a1740; border: 1.5px solid rgba(255,255,255,0.12); display: flex; align-items: center; justify-content: center; flex: 0 0 auto;">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M6 15a6 6 0 0 1 12 0" stroke="#7ee0d4" stroke-width="1.6"/><path d="M4 13a8 8 0 0 1 16 0" stroke="#7ee0d4" stroke-width="1.6" opacity="0.55"/><path d="M8.5 17.5a3.5 3.5 0 0 1 7 0" stroke="#7ee0d4" stroke-width="1.6"/><path d="M12 18v2" stroke="#7ee0d4" stroke-width="1.8" stroke-linecap="round"/></svg>
+            <div style="position: absolute; top: -6px; right: -6px; width: 20px; height: 20px; border-radius: 50%; background: #0e8f83; color: #fff; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; font-family: 'Space Grotesk', sans-serif;">3</div>
+          </div>
+          <div style="background: #1a1740; border-radius: 16px; padding: 16px 22px; flex: 1 1 auto; border: 1px solid rgba(255,255,255,0.06);">
+            <div style="font-size: 15px; font-weight: 700; color: #fff;">A fingerprint or iris is scanned</div>
+            <div style="font-size: 13px; color: #a9a6c2; margin-top: 2px;">Checked against biometrics linked to the patient's Aadhaar card.</div>
+          </div>
+        </div>
+
+        <div class="flow-connector flow-connector-decision"></div>
+
+        <div class="flow-step" style="width: 100%; max-width: 460px; display: flex; justify-content: center;">
+          <div style="background: linear-gradient(135deg, #1e1a52, #241f52); border: 1.5px solid rgba(126,224,212,0.35); border-radius: 18px; padding: 18px 26px; text-align: center; box-shadow: 0 0 0 6px rgba(126,224,212,0.06);">
+            <div style="font-size: 12px; font-weight: 700; letter-spacing: 0.06em; color: #7ee0d4; margin-bottom: 4px;">DECISION POINT</div>
+            <div style="font-size: 16px; font-weight: 700; color: #fff;">Does it match?</div>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; width: 100%; max-width: 560px; margin-top: 32px;">
+
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 10px;">
+            <div style="display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 700; color: #6b6885;">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#6b6885" stroke-width="2.4" stroke-linecap="round"/></svg>
+              NO MATCH
+            </div>
+            <div style="background: rgba(255,255,255,0.04); border: 1px dashed rgba(255,255,255,0.18); border-radius: 16px; padding: 22px 18px; text-align: center; width: 100%; box-sizing: border-box;">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" style="margin: 0 auto 10px;"><rect x="5" y="10" width="14" height="10" rx="2" stroke="#8b88a3" stroke-width="1.7"/><path d="M8 10V7a4 4 0 0 1 7.5-2" stroke="#8b88a3" stroke-width="1.7" stroke-linecap="round"/></svg>
+              <div style="font-size: 14px; font-weight: 700; color: #c8c6de;">No access granted</div>
+              <div style="font-size: 12px; color: #6b6885; margin-top: 4px;">Nothing about the patient is exposed.</div>
+            </div>
+          </div>
+
+          <div class="flow-yes-card" style="display: flex; flex-direction: column; align-items: center; gap: 10px;">
+            <div style="display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 700; color: #7ee0d4;">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M5 12l5 5L20 7" stroke="#7ee0d4" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              MATCH FOUND
+            </div>
+            <div style="background: linear-gradient(160deg, #0e8f83, #0b6f66); border-radius: 16px; padding: 22px 18px; text-align: center; width: 100%; box-sizing: border-box; box-shadow: 0 20px 40px -16px rgba(14,143,131,0.55);">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" style="margin: 0 auto 10px;"><rect x="5" y="10" width="14" height="10" rx="2" stroke="#fff" stroke-width="1.7"/><path d="M8 10V7a4 4 0 0 1 8 0" stroke="#fff" stroke-width="1.7" stroke-linecap="round"/></svg>
+              <div style="font-size: 14px; font-weight: 700; color: #fff;">Emergency data displayed</div>
+              <div style="font-size: 12px; color: #d6f3ef; margin-top: 4px;">Straight from CuraVault, instantly.</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECURITY -->
+  <div id="security" class="reveal" style="width: 100%; background: #100e2a; box-sizing: border-box; padding: clamp(48px,10vw,96px) clamp(16px,4vw,48px);">
+    <div style="max-width: 1180px; margin: 0 auto; display: flex; gap: 64px; align-items: center; flex-wrap: wrap;">
+      <div style="flex: 0 0 auto;">
+        <div class="floaty" style="width: 120px; height: 120px; border-radius: 28px; background: #1a1740; display: flex; align-items: center; justify-content: center;">
+          <svg width="56" height="56" viewBox="0 0 24 24" fill="none">
+            <path d="M12 2L4 5v6c0 5 3.4 8.7 8 9 4.6-.3 8-4 8-9V5l-8-3z" stroke="#5fc9bd" stroke-width="1.7" stroke-linejoin="round"/>
+            <path d="M9 12l2 2 4-4.5" stroke="#5fc9bd" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+      </div>
+      <div style="flex: 1 1 500px; min-width: 300px;">
+        <div style="font-size: 14px; font-weight: 700; letter-spacing: 0.08em; color: #7ee0d4; margin-bottom: 14px;">SECURITY</div>
+        <h2 style="margin: 0 0 24px; font-size: clamp(26px, 5.5vw, 38px); line-height: 1.15; font-weight: 700; color: #fff; letter-spacing: -0.02em;">
+          Addressing the elephant in the room — how do we keep your data safe?
+        </h2>
+        <p style="margin: 0 0 18px; font-size: 19px; line-height: 1.6; color: #c8c6de; max-width: 640px;">
+          Everything in CuraVault — emergency records, reports, prescriptions — is linearly homomorphically encrypted and accessible only through biometric verification. Not even we can see our users' data.
+        </p>
+        <a href="legal/aadhaar-pathway/" style="display: inline-flex; align-items: center; gap: 6px; font-size: 15px; font-weight: 700; color: #7ee0d4;">
+          Read the Aadhaar legal pathway
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="#7ee0d4" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- OUR TEAM -->
+  <div id="team" class="reveal" style="width: 100%; background: #33422f; box-sizing: border-box; padding: clamp(56px,10vw,100px) clamp(16px,4vw,48px); position: relative; overflow: hidden;">
+    <svg style="position: absolute; top: 60px; right: 90px; opacity: 0.5;" width="140" height="140" viewBox="0 0 140 140" fill="none">
+      <path d="M10 60C10 30 40 15 65 25C90 35 60 55 75 50C100 42 130 55 125 85" stroke="#dcefd9" stroke-width="2" fill="none"/>
+    </svg>
+    <svg style="position: absolute; bottom: 50px; left: 60px; opacity: 0.4;" width="130" height="90" viewBox="0 0 130 90" fill="none">
+      <path d="M5 82C25 30 70 30 90 55C110 78 55 50 75 20" stroke="#dcefd9" stroke-width="2" fill="none"/>
+    </svg>
+    <div style="max-width: 1180px; margin: 0 auto; position: relative;">
+      <div style="font-size: 14px; font-weight: 700; letter-spacing: 0.08em; color: #b9e0b4; margin-bottom: 14px;">OUR TEAM</div>
+      <h2 style="margin: 0 0 64px; font-size: clamp(28px, 6vw, 42px); font-weight: 700; letter-spacing: -0.02em; color: #eef6ea;">The people behind QueroCura.</h2>
+      <div style="display: flex; gap: 72px; flex-wrap: wrap; align-items: flex-start;">
+
+        <div class="team-card" style="transform: rotate(-4deg); background: #fff; padding: 10px 10px 26px; border-radius: 6px; box-shadow: 0 18px 34px -16px rgba(0,0,0,0.4); width: 220px;">
+          <div class="team-photo-inner" style="width: 200px; height: 200px; border-radius: 3px; overflow: hidden;">
+            <img src="assets/0ab1e8250bd34d40919e07020aa459e5.jpg" alt="Udantika Dhar" style="width: 100%; height: 100%; object-fit: cover; display: block; transform: scale(1.28);">
+          </div>
+          <div style="text-align: center; margin-top: 16px; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 17px; color: #100e2a;">Udantika Dhar</div>
+          <div style="text-align: center; font-size: 13px; color: #6b6b6b; margin-top: 2px;">Chief Executive Officer</div>
+        </div>
+
+        <div class="team-card" style="transform: rotate(3deg); background: #fff; padding: 10px 10px 26px; border-radius: 6px; box-shadow: 0 18px 34px -16px rgba(0,0,0,0.4); width: 220px; margin-top: 36px;">
+          <div class="team-photo-inner" style="width: 200px; height: 200px; border-radius: 3px; overflow: hidden;">
+            <img src="assets/5321c7b8f06466de394304fe60d1a834.jpg" alt="Saumit Pradhan" style="width: 100%; height: 100%; object-fit: cover; display: block; transform: scale(1.28);">
+          </div>
+          <div style="text-align: center; margin-top: 16px; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 17px; color: #100e2a;">Saumit Pradhan</div>
+          <div style="text-align: center; font-size: 13px; color: #6b6b6b; margin-top: 2px;">Chief Technology Officer</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- FAQ -->
+  <div style="width: 100%; background: #ebe9e2; box-sizing: border-box; padding: clamp(48px,10vw,96px) clamp(16px,4vw,48px);">
+    <div style="max-width: 780px; margin: 0 auto;">
+      <div style="font-size: 14px; font-weight: 700; letter-spacing: 0.08em; color: #0e8f83; margin-bottom: 14px; text-align: center;">GOOD TO KNOW</div>
+      <h2 style="margin: 0 0 48px; font-size: clamp(24px, 5vw, 36px); font-weight: 700; letter-spacing: -0.02em; text-align: center;">A few things people ask.</h2>
+
+      <div style="display: flex; flex-direction: column; gap: 14px;">
+        <div class="info-card" style="background: #fff; border-radius: 16px; padding: 24px 28px; border: 1px solid rgba(16,14,42,0.08);">
+          <div style="font-size: 16px; font-weight: 700; margin-bottom: 8px;">What happens if there's no biometric match?</div>
+          <div style="font-size: 15px; line-height: 1.6; color: #46435f;">Access is simply denied. Nothing about the patient is shown or exposed either way — a failed match looks identical to no record existing at all.</div>
+        </div>
+        <div class="info-card" style="background: #fff; border-radius: 16px; padding: 24px 28px; border: 1px solid rgba(16,14,42,0.08);">
+          <div style="font-size: 16px; font-weight: 700; margin-bottom: 8px;">Who's allowed to enter my medical information?</div>
+          <div style="font-size: 15px; line-height: 1.6; color: #46435f;">Only your own physician(s), during onboarding. QueroCura never generates or guesses what goes into your record — it's exactly what your doctor put there.</div>
+        </div>
+        <div class="info-card" style="background: #fff; border-radius: 16px; padding: 24px 28px; border: 1px solid rgba(16,14,42,0.08);">
+          <div style="font-size: 16px; font-weight: 700; margin-bottom: 8px;">How is CuraVault different from a regular medical records app?</div>
+          <div style="font-size: 15px; line-height: 1.6; color: #46435f;">Most records apps store a file. CuraVault stores it, encrypts it so nobody — including us — can read it directly, and analyzes it over time to surface trends, all behind the same biometric gate as Emergency Glass Door.</div>
+        </div>
+        <div class="info-card" style="background: #fff; border-radius: 16px; padding: 24px 28px; border: 1px solid rgba(16,14,42,0.08);">
+          <div style="font-size: 16px; font-weight: 700; margin-bottom: 8px;">Does this replace the paperwork at check-in?</div>
+          <div style="font-size: 15px; line-height: 1.6; color: #46435f;">For the emergency moment, yes — that's the entire point of the glass door. A scan replaces the form.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- REVIEWS -->
+  <div id="reviews" class="reveal" style="width: 100%; box-sizing: border-box; padding: clamp(48px,10vw,96px) clamp(16px,4vw,48px);">
+    <div style="max-width: 760px; margin: 0 auto; text-align: center;">
+      <div style="font-size: 14px; font-weight: 700; letter-spacing: 0.08em; color: #0e8f83; margin-bottom: 14px;">REVIEWS</div>
+      <h2 style="margin: 0 0 20px; font-size: clamp(24px, 5vw, 36px); font-weight: 700; letter-spacing: -0.02em;">We're just getting started.</h2>
+      <p style="margin: 0; font-size: 17px; line-height: 1.6; color: #46435f;">
+        QueroCura is early — we haven't onboarded our first hospitals yet. Real reviews from real care teams will show up here as we do. If you'd like to be one of the first, we'd love to hear from you.
+      </p>
+    </div>
+  </div>
+
+  <!-- WAITLIST -->
+  <div id="waitlist" class="reveal" style="width: 100%; background: #ebe9e2; box-sizing: border-box; padding: clamp(48px,10vw,96px) clamp(16px,4vw,48px);">
+    <div style="max-width: 640px; margin: 0 auto; text-align: center;">
+      <div style="font-size: 14px; font-weight: 700; letter-spacing: 0.08em; color: #0e8f83; margin-bottom: 14px;">JOIN THE WAITLIST</div>
+      <h2 style="margin: 0 0 16px; font-size: clamp(26px, 5.5vw, 38px); font-weight: 700; letter-spacing: -0.02em;">Be first in line when we launch.</h2>
+      <p style="margin: 0 auto 40px; font-size: 17px; line-height: 1.6; color: #46435f; max-width: 480px;">
+        Leave your details and we'll reach out the moment QueroCura — and Emergency Glass Door — is ready for real users.
+      </p>
+    </div>
+    <div style="max-width: 560px; margin: 0 auto; background: #fff; border-radius: 28px; padding: clamp(24px,5vw,40px); box-shadow: 0 24px 48px -28px rgba(16,14,42,0.25); border: 1px solid rgba(16,14,42,0.06);">
+
+      <form id="waitlist-form" action="https://script.google.com/macros/s/AKfycbwW5q1uFKykgKzdoXQgHqqHSFzEe9WTDnA60Ol51cVOqPad6kXm1DG7_MWj460hcADC/exec" method="POST" target="hidden_iframe" onsubmit="handleWaitlistSubmit(event)">
+        <input type="text" name="hp" id="wl-hp" tabindex="-1" autocomplete="off" style="position:absolute; left:-9999px; width:1px; height:1px; opacity:0;">
+
+        <div style="margin-bottom: 16px;">
+          <label class="wl-label" for="wl-audience">I'm reaching out as a…</label>
+          <select class="wl-input" id="wl-audience" name="audience" required style="appearance: auto;">
+            <option value="" disabled selected>Choose one</option>
+            <option value="hospital">Hospital / clinical decision-maker</option>
+            <option value="clinician">Clinician or doctor</option>
+            <option value="patient">Patient</option>
+            <option value="caregiver">Caregiver managing someone else's care</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+
+        <div class="wl-grid" style="margin-bottom: 16px;">
+          <div>
+            <label class="wl-label" for="wl-name">Name</label>
+            <input class="wl-input" type="text" id="wl-name" name="name" required placeholder="Your full name">
+          </div>
+          <div>
+            <label class="wl-label" for="wl-email">Email</label>
+            <input class="wl-input" type="email" id="wl-email" name="email" required placeholder="you@example.com">
+          </div>
+        </div>
+
+        <div class="wl-grid" style="margin-bottom: 16px;">
+          <div>
+            <label class="wl-label" for="wl-phone">Phone <span class="wl-optional">(optional)</span></label>
+            <input class="wl-input" type="tel" id="wl-phone" name="phone" placeholder="+91 00000 00000">
+          </div>
+          <div>
+            <label class="wl-label" for="wl-source">How did you hear about us? <span class="wl-optional">(optional)</span></label>
+            <input class="wl-input" type="text" id="wl-source" name="source" placeholder="Friend, social media, search…">
+          </div>
+        </div>
+
+        <div style="margin-bottom: 24px;">
+          <label class="wl-label" for="wl-note">A little note <span class="wl-optional">(optional)</span></label>
+          <textarea class="wl-input" id="wl-note" name="note" rows="3" placeholder="Anything you'd like us to know" style="resize: vertical; font-family: 'Manrope', sans-serif;"></textarea>
+        </div>
+
+        <button type="submit" id="wl-submit-btn" class="cta" style="width: 100%; background: #0e8f83; color: #fff; font-size: 16px; font-weight: 700; padding: 15px 30px; border-radius: 999px; border: none; cursor: pointer;">Join the waitlist</button>
+      </form>
+
+      <div id="waitlist-success" style="display:none; text-align: center; padding: 20px 0;">
+        <div style="width: 60px; height: 60px; border-radius: 50%; background: #e6f6f4; display: flex; align-items: center; justify-content: center; margin: 0 auto 18px;">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M5 12l5 5L20 7" stroke="#0e8f83" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <h3 style="margin: 0 0 10px; font-size: 22px; font-weight: 700;">You're on the list!</h3>
+        <p style="margin: 0; font-size: 15px; color: #46435f;">We'll reach out the moment QueroCura is ready for you.</p>
+      </div>
+    </div>
+    <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
+  </div>
+
+  <!-- BRAND BAND -->
+  <div style="width: 100%; background: #0a0918; box-sizing: border-box; padding: clamp(48px,10vw,90px) clamp(16px,4vw,48px); position: relative; overflow: hidden; text-align: center;">
+    <div style="position: absolute; left: 50%; top: 50%; width: 520px; height: 300px; transform: translate(-50%, -50%); background: radial-gradient(ellipse at center, rgba(14,143,131,0.35), transparent 70%); filter: blur(30px); pointer-events: none;" class="brand-glow"></div>
+    <img src="assets/e714e789f56361ecddc2f49ab568bcd2.png" alt="QueroCura" style="position: relative; width: 100%; max-width: 460px; height: auto;">
+  </div>
+
+  <!-- CTA / FOOTER -->
+  <div id="contact" class="reveal" style="width: 100%; box-sizing: border-box; padding: clamp(48px,10vw,96px) clamp(16px,4vw,48px) 40px; position: relative; overflow: hidden;">
+    <div style="position: absolute; top: -80px; left: -60px; width: 320px; height: 320px; border-radius: 50%; background: radial-gradient(circle, rgba(14,143,131,0.18), transparent 70%); filter: blur(10px); pointer-events: none;"></div>
+    <div style="position: absolute; bottom: -100px; right: -60px; width: 380px; height: 380px; border-radius: 50%; background: radial-gradient(circle, rgba(124,111,219,0.14), transparent 70%); filter: blur(10px); pointer-events: none;"></div>
+    <div style="max-width: 900px; margin: 0 auto; text-align: center; padding-bottom: 72px; position: relative;">
+      <div style="font-size: 14px; font-weight: 700; letter-spacing: 0.08em; color: #0e8f83; margin-bottom: 14px;">SAY HELLO</div>
+      <h2 style="margin: 0 0 20px; font-size: clamp(28px, 6vw, 42px); font-weight: 700; letter-spacing: -0.02em;">We'd genuinely love to hear from you.</h2>
+      <p style="margin: 0 0 48px; font-size: 18px; color: #46435f; max-width: 560px; margin-left: auto; margin-right: auto;">Whichever card you tap, one email opens — addressed to both of us. No picking the "right" inbox.</p>
+
+      <div style="display: flex; gap: 24px; flex-wrap: wrap; justify-content: center;">
+        <a href="https://mail.google.com/mail/?view=cm&fs=1&to=saumit@querocura.com,udantika@querocura.com&su=Hi%20QueroCura" onclick="openMail(event)" class="contact-card" style="display: flex; align-items: center; gap: 16px; background: #fff; border-radius: 20px; padding: 18px 26px 18px 18px; border: 1px solid rgba(16,14,42,0.08); text-align: left; min-width: 260px;">
+          <img src="assets/5321c7b8f06466de394304fe60d1a834.jpg" alt="Saumit Pradhan" class="contact-avatar" style="width: 58px; height: 58px; border-radius: 50%; object-fit: cover; flex: 0 0 auto; border: 2px solid rgba(14,143,131,0.25);">
+          <div>
+            <div style="font-size: 16px; font-weight: 700; color: #100e2a;">Saumit Pradhan</div>
+            <div style="font-size: 13px; color: #6b6b6b; margin-bottom: 4px;">Chief Technology Officer</div>
+            <div style="font-size: 13px; font-weight: 700; color: #0e8f83; display: flex; align-items: center; gap: 5px;">
+              Say hi
+              <svg class="contact-arrow" width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="#0e8f83" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+          </div>
+        </a>
+
+        <a href="https://mail.google.com/mail/?view=cm&fs=1&to=saumit@querocura.com,udantika@querocura.com&su=Hi%20QueroCura" onclick="openMail(event)" class="contact-card" style="display: flex; align-items: center; gap: 16px; background: #fff; border-radius: 20px; padding: 18px 26px 18px 18px; border: 1px solid rgba(16,14,42,0.08); text-align: left; min-width: 260px;">
+          <img src="assets/0ab1e8250bd34d40919e07020aa459e5.jpg" alt="Udantika Dhar" class="contact-avatar" style="width: 58px; height: 58px; border-radius: 50%; object-fit: cover; flex: 0 0 auto; border: 2px solid rgba(14,143,131,0.25);">
+          <div>
+            <div style="font-size: 16px; font-weight: 700; color: #100e2a;">Udantika Dhar</div>
+            <div style="font-size: 13px; color: #6b6b6b; margin-bottom: 4px;">Chief Executive Officer</div>
+            <div style="font-size: 13px; font-weight: 700; color: #0e8f83; display: flex; align-items: center; gap: 5px;">
+              Say hi
+              <svg class="contact-arrow" width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="#0e8f83" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+    <div style="max-width: 1180px; margin: 0 auto; border-top: 1px solid rgba(16,14,42,0.1); padding-top: 28px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <img src="assets/d4f7acc01b9438e998c9e7b9676584b0.png" alt="QueroCura" style="width: 22px; height: 20px; object-fit: contain;">
+        <span style="font-size: 14px; font-weight: 700; color: #46435f;">QueroCura · querocura.com</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 18px;">
+        <a href="https://www.producthunt.com/posts/querocura" target="_blank" rel="noopener" style="font-size: 13px; font-weight: 700; color: #6b6885; display: inline-flex; align-items: center; gap: 6px;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M13.604 8.4H10.5v5.4h3.104a2.7 2.7 0 0 0 0-5.4Z" stroke="#6b6885" stroke-width="1.6"/><path d="M10.5 8.4V17M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20Z" stroke="#6b6885" stroke-width="1.6"/></svg>
+          Find us on Product Hunt
+        </a>
+        <span style="font-size: 13px; color: #8a879c;">© 2026 QueroCura. All rights reserved.</span>
+      </div>
+    </div>
+  </div>
+
+</div>
 <script>
-var STORAGE_KEY = 'qc-theme';
-var root = document.documentElement;
-var SUN_ICON = '<svg width="17" height="17" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="4.2" stroke="#f2f0f8" stroke-width="1.7"/><path d="M12 3v2.2M12 18.8V21M21 12h-2.2M5.2 12H3M18.4 5.6l-1.5 1.5M7.1 16.9l-1.5 1.5M18.4 18.4l-1.5-1.5M7.1 7.1L5.6 5.6" stroke="#f2f0f8" stroke-width="1.7" stroke-linecap="round"/></svg>';
-var MOON_ICON = '<svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z" stroke="#eafff5" stroke-width="1.7" stroke-linejoin="round"/></svg>';
-function applyTheme(dark) {
-  root.setAttribute('data-theme', dark ? 'dark' : 'light');
-  try { localStorage.setItem(STORAGE_KEY, dark ? 'dark' : 'light'); } catch (e) {}
-  var icon = document.getElementById('theme-toggle-icon');
-  if (icon) icon.innerHTML = dark ? SUN_ICON : MOON_ICON;
-}
-window.toggleTheme = function () { applyTheme(root.getAttribute('data-theme') !== 'dark'); };
-if (root.getAttribute('data-theme') === 'dark') applyTheme(true);
-
-const API_ROOT = "https://app.querocura.com";
-const API_BASE = API_ROOT + "/api";
-const CV = API_BASE + "/curavault";
-
-function fmt(v) { return (v === null || v === undefined || v === "") ? "—" : v; }
-function fmtDate(ts) {
-  if (!ts) return "—";
-  try { return new Date(ts.replace(" ", "T")).toLocaleString(); }
-  catch (e) { return ts; }
-}
-function fmtDateShort(ts) {
-  if (!ts) return "—";
-  try { return new Date(ts.replace(" ", "T")).toLocaleDateString(undefined, { month: "short", day: "numeric" }); }
-  catch (e) { return ts; }
-}
-function fmtMonthYear(ts) {
-  if (!ts) return "—";
-  try { return new Date(ts.replace(" ", "T")).toLocaleDateString(undefined, { month: "short", year: "numeric" }); }
-  catch (e) { return "—"; }
-}
-function timeAgo(ts) {
-  if (!ts) return "—";
-  try {
-    const then = new Date(ts.replace(" ", "T")).getTime();
-    const diff = Math.max(0, Date.now() - then);
-    const mins = Math.floor(diff / 60000);
-    if (mins < 1) return "just now";
-    if (mins < 60) return mins + "m ago";
-    const hrs = Math.floor(mins / 60);
-    if (hrs < 24) return hrs + "h ago";
-    const days = Math.floor(hrs / 24);
-    if (days < 30) return days + "d ago";
-    return fmtDateShort(ts);
-  } catch (e) { return "—"; }
-}
-function esc(s) {
-  return String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-}
-function bytesToSize(n) {
-  n = Number(n) || 0;
-  if (n < 1024) return n + " B";
-  if (n < 1024 * 1024) return (n / 1024).toFixed(1) + " KB";
-  return (n / (1024 * 1024)).toFixed(1) + " MB";
-}
-function formatVaultId(raw) {
-  const s = String(raw || "").replace(/[^a-zA-Z0-9]/g, "").toUpperCase();
-  if (!s) return "—";
-  return "CV-" + (s.slice(0, 12).match(/.{1,4}/g) || []).join("-");
-}
-// ---- CURA ID (for EGD) ----
-// Deterministically derived from the patient's stable curasense_id, so the
-// same person always gets the same CURA ID without needing a separate
-// backend field — a 53-bit string hash (cyrb53) seeds a small, fast PRNG
-// (mulberry32) that's walked 16 times over an unambiguous alphanumeric set.
-function cyrb53(str, seed) {
-  seed = seed || 0;
-  let h1 = 0xdeadbeef ^ seed, h2 = 0x41c6ce57 ^ seed;
-  for (let i = 0, ch; i < str.length; i++) {
-    ch = str.charCodeAt(i);
-    h1 = Math.imul(h1 ^ ch, 2654435761);
-    h2 = Math.imul(h2 ^ ch, 1597334677);
-  }
-  h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
-  h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
-  return 4294967296 * (2097151 & h2) + (h1 >>> 0);
-}
-function mulberry32(a) {
-  return function () {
-    a |= 0; a = (a + 0x6D2B79F5) | 0;
-    let t = Math.imul(a ^ (a >>> 15), 1 | a);
-    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
-function formatCuraId(raw) {
-  const seedStr = String(raw || "").trim();
-  if (!seedStr) return "—";
-  const CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // no 0/O/1/I ambiguity
-  const rand = mulberry32((cyrb53(seedStr + "::CURA-EGD-v1") >>> 0));
-  let out = "";
-  for (let i = 0; i < 16; i++) out += CHARS[Math.floor(rand() * CHARS.length)];
-  return "CURA-" + out;
-}
-function triageClass(t) {
-  const s = String(t || "").toLowerCase();
-  if (s.includes("emerg")) return "emergency";
-  if (s.includes("urgent")) return "urgent";
-  if (s.includes("moderate") || s.includes("monitor")) return "monitor";
-  return "routine";
-}
-
-// ---- toasts ----
-function toast(msg, type) {
-  const stack = document.getElementById("qc-toast-stack");
-  const el = document.createElement("div");
-  el.className = "toast" + (type ? " " + type : "");
-  el.textContent = msg;
-  stack.appendChild(el);
-  setTimeout(() => {
-    el.classList.add("out");
-    setTimeout(() => el.remove(), 260);
-  }, 3200);
-}
-
-async function cvGet(path) {
-  // Never throws: a network failure or a non-JSON error page from the
-  // server degrades to { ok: false }, which every caller below already
-  // knows how to render as an empty/error state, instead of rejecting
-  // and taking down whatever Promise.all/allSettled batch it's part of.
-  try {
-    const res = await fetch(CV + path, { credentials: "include" });
-    return await res.json();
-  } catch (e) {
-    return { ok: false, error: "Couldn't reach CuraVault." };
+function showTab(n) {
+  for (let i = 0; i < 6; i++) {
+    document.getElementById('panel-' + i).style.display = (i === n) ? '' : 'none';
+    document.getElementById('tab-btn-' + i).classList.toggle('active', i === n);
   }
 }
-async function cvPost(path, body) {
-  const res = await fetch(CV + path, {
-    method: "POST", credentials: "include",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body || {}),
-  });
-  const data = await res.json().catch(() => ({}));
-  return { ok: res.ok, status: res.status, data };
+function heroMove(e) {
+  const glow = document.getElementById('hero-glow');
+  if (!glow) return;
+  // Percentages are computed against the glow layer's own box (which now
+  // spans the full page width), not the narrower centered content column,
+  // so the glow tracks the cursor correctly across the whole hero width.
+  const rect = glow.getBoundingClientRect();
+  const x = ((e.clientX - rect.left) / rect.width) * 100;
+  const y = ((e.clientY - rect.top) / rect.height) * 100;
+  // Keep the second, static ambient blob (lower-left) in place so the glow
+  // still reaches the far side of very wide screens even while the first
+  // blob tracks the cursor.
+  glow.style.background = `radial-gradient(1100px circle at ${x}% ${y}%, rgba(14,143,131,0.16), transparent 60%), radial-gradient(900px circle at 8% 70%, rgba(47,143,209,0.10), transparent 60%)`;
 }
 
-function fireConfetti() {
-  const colors = ["#0b6f66", "#12a37e", "#22c55e", "#4ade80"];
-  for (let i = 0; i < 26; i++) {
-    const p = document.createElement("div");
-    p.className = "confetti-piece";
-    p.style.left = (45 + Math.random() * 10) + "vw";
-    p.style.background = colors[i % colors.length];
-    p.style.animationDelay = (Math.random() * 0.2) + "s";
-    p.style.animationDuration = (1.1 + Math.random() * 0.6) + "s";
-    document.body.appendChild(p);
-    setTimeout(() => p.remove(), 2000);
+
+// ---- Dark mode ----
+(function () {
+  var STORAGE_KEY = 'qc-theme';
+  var root = document.documentElement;
+
+  function darkenStyle(style) {
+    return style
+      .replace(/background(-color)?:\s*#f6f5f1/gi, 'background$1: #0d0c1f')
+      .replace(/background(-color)?:\s*#fff(?:fff)?(?![0-9a-f])/gi, 'background$1: #18162e')
+      .replace(/background(-color)?:\s*#ebe9e2/gi, 'background$1: #221f3d')
+      .replace(/background(-color)?:\s*#e6f6f4/gi, 'background$1: rgba(14,143,131,0.18)')
+      .replace(/background(-color)?:\s*#fdece7/gi, 'background$1: rgba(240,118,90,0.16)')
+      .replace(/background(-color)?:\s*#eae8fb/gi, 'background$1: rgba(124,111,219,0.18)')
+      .replace(/background(-color)?:\s*rgba\(246,\s*245,\s*241,/gi, 'background$1: rgba(13,12,31,')
+      .replace(/color:\s*#100e2a/gi, 'color: #f2f0f8')
+      .replace(/color:\s*#46435f/gi, 'color: #cfccdf')
+      .replace(/color:\s*#34324a/gi, 'color: #d7d4e8')
+      .replace(/color:\s*#6b6885/gi, 'color: #b7b3cc')
+      .replace(/color:\s*#6b6b6b/gi, 'color: #b3b0c4')
+      .replace(/color:\s*#8a879c/gi, 'color: #a9a6bd')
+      .replace(/color:\s*#0e8f83/gi, 'color: #7ee0d4')
+      .replace(/rgba\(16,\s*14,\s*42,/gi, 'rgba(255,255,255,');
   }
-}
 
-// ---- tabs ----
-document.querySelectorAll(".vtab").forEach(btn => {
-  btn.addEventListener("click", () => {
-    document.querySelectorAll(".vtab").forEach(b => b.classList.remove("active"));
-    document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("show"));
-    btn.classList.add("active");
-    document.getElementById("panel-" + btn.getAttribute("data-tab")).classList.add("show");
-  });
-});
+  var SUN_ICON = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="4.2" stroke="#f2f0f8" stroke-width="1.7"/><path d="M12 3v2.2M12 18.8V21M21 12h-2.2M5.2 12H3M18.4 5.6l-1.5 1.5M7.1 16.9l-1.5 1.5M18.4 18.4l-1.5-1.5M7.1 7.1L5.6 5.6" stroke="#f2f0f8" stroke-width="1.7" stroke-linecap="round"/></svg>';
+  var MOON_ICON = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z" stroke="#100e2a" stroke-width="1.7" stroke-linejoin="round"/></svg>';
 
-// ---- count-up ----
-function countUp(el, target) {
-  target = Number(target) || 0;
-  if (target === 0) { el.textContent = "0"; return; }
-  const dur = 650, start = performance.now();
-  function step(now) {
-    const p = Math.min(1, (now - start) / dur);
-    const eased = 1 - Math.pow(1 - p, 3);
-    el.textContent = Math.round(eased * target);
-    if (p < 1) requestAnimationFrame(step);
+  function applyTheme(dark) {
+    document.querySelectorAll('[style]').forEach(function (el) {
+      if (el.dataset.origStyle === undefined) {
+        el.dataset.origStyle = el.getAttribute('style') || '';
+      }
+      el.setAttribute('style', dark ? darkenStyle(el.dataset.origStyle) : el.dataset.origStyle);
+    });
+    root.setAttribute('data-theme', dark ? 'dark' : 'light');
+    try { localStorage.setItem(STORAGE_KEY, dark ? 'dark' : 'light'); } catch (e) {}
+    document.querySelectorAll('#theme-toggle-icon').forEach(function (el) {
+      el.innerHTML = dark ? SUN_ICON : MOON_ICON;
+    });
   }
-  requestAnimationFrame(step);
-}
 
-// ---- ID card ----
-function renderIdCard(patient, userName) {
-  const initials = (userName || "").trim().split(/\s+/).slice(0, 2).map(w => w[0].toUpperCase()).join("") || "?";
-  document.getElementById("idc-avatar").textContent = initials;
-  document.getElementById("idc-name").textContent = userName || "—";
-  document.getElementById("idc-id").textContent = formatVaultId(patient && patient.curasense_id);
-  document.getElementById("idc-since").textContent = fmtMonthYear(patient && patient.created_at);
-  document.getElementById("egd-id").textContent = formatCuraId(patient && patient.curasense_id);
-}
-document.getElementById("idc-copy-btn").addEventListener("click", async () => {
-  const id = document.getElementById("idc-id").textContent;
-  try {
-    await navigator.clipboard.writeText(id);
-    toast("Vault ID copied to clipboard.", "ok");
-  } catch (e) {
-    toast("Couldn't copy — select and copy manually.", "err");
-  }
-});
-document.getElementById("egd-copy-btn").addEventListener("click", async () => {
-  const id = document.getElementById("egd-id").textContent;
-  if (!id || id === "—") return;
-  try {
-    await navigator.clipboard.writeText(id);
-    toast("CURA ID copied to clipboard.", "ok");
-  } catch (e) {
-    toast("Couldn't copy — select and copy manually.", "err");
-  }
-});
-
-// ---- stat strip ----
-function renderStats({ recordsCount, symptomCount, pendingConsent, lastAccess }) {
-  const box = document.getElementById("qc-stats");
-  box.innerHTML =
-    '<div class="stat-card"><div class="st-ic">📄</div><div class="st-num" id="st-records">0</div><div class="st-label">Records</div></div>' +
-    '<div class="stat-card good"><div class="st-ic">🩺</div><div class="st-num" id="st-symptoms">0</div><div class="st-label">Symptom checks</div></div>' +
-    '<div class="stat-card' + (pendingConsent > 0 ? ' warn' : '') + '"><div class="st-ic">🔔</div><div class="st-num" id="st-pending">0</div><div class="st-label">Pending requests</div></div>' +
-    '<div class="stat-card"><div class="st-ic">🕒</div><div class="st-num" style="font-size:14.5px;">' + esc(lastAccess) + '</div><div class="st-label">Last accessed</div></div>';
-  const badge = document.getElementById("qc-access-badge");
-  if (pendingConsent > 0) { badge.style.display = "inline-block"; badge.textContent = pendingConsent; }
-  else { badge.style.display = "none"; }
-  countUp(document.getElementById("st-records"), recordsCount);
-  countUp(document.getElementById("st-symptoms"), symptomCount);
-  countUp(document.getElementById("st-pending"), pendingConsent);
-}
-
-// ---- recent activity (merged from records / symptom checks / access log) ----
-function renderActivity(records, symptoms, logs) {
-  const items = [];
-  (records || []).slice(0, 5).forEach(r => items.push({
-    ts: r.created_at, ic: "📄",
-    html: 'Uploaded <b>' + esc(r.title || r.original_filename || "a record") + '</b>',
-  }));
-  (symptoms || []).slice(0, 5).forEach(s => items.push({
-    ts: s.ts, ic: "🩺",
-    html: 'Checked symptoms for <b>' + esc(s.condition_name || "a condition") + '</b>',
-  }));
-  (logs || []).slice(0, 5).forEach(l => items.push({
-    ts: l.created_at, ic: "🤝",
-    html: '<b>' + esc(l.provider_name || l.accessed_by || "A provider") + '</b> accessed your Vault',
-  }));
-  items.sort((a, b) => new Date(b.ts || 0) - new Date(a.ts || 0));
-  const box = document.getElementById("qc-activity");
-  if (!items.length) {
-    box.innerHTML = '<div class="empty-note">Nothing yet — upload a record or run a symptom check to get started.</div>';
-    return;
-  }
-  box.innerHTML = items.slice(0, 6).map(it => (
-    '<div class="activity-row"><div class="activity-ic">' + it.ic + '</div><div class="activity-text">' + it.html + '</div><div class="activity-time">' + timeAgo(it.ts) + '</div></div>'
-  )).join("");
-}
-
-// ---- records ----
-let lastRecords = [];
-async function loadRecords() {
-  const data = await cvGet("/records");
-  const wrap = document.getElementById("cv-records-wrap");
-  if (!data.ok) {
-    wrap.innerHTML = '<div class="empty-note">Couldn\'t load your records right now. <a href="#" data-retry="records">Try again</a></div>';
-    lastRecords = [];
-    return { count: 0, ok: false };
-  }
-  if (!data.records || !data.records.length) {
-    wrap.innerHTML = '<div class="empty-note">No records yet — upload one to get started.</div>';
-    lastRecords = [];
-    return { count: 0 };
-  }
-  lastRecords = data.records;
-  const rows = data.records.map(r => (
-    "<tr>" +
-      "<td><div class=\"rec-title\">" + esc(r.title || r.original_filename || "Untitled") + "</div><span class=\"rec-cat\">" + esc((r.category || "other").replace(/_/g, " ")) + "</span></td>" +
-      "<td>" + fmtDate(r.record_date || r.created_at) + "</td>" +
-      "<td>" + esc(r.original_filename || "—") + "</td>" +
-      "<td>" + bytesToSize(r.size_bytes) + "</td>" +
-    "</tr>"
-  )).join("");
-  wrap.innerHTML = "<table><thead><tr><th>Record</th><th>Date</th><th>File</th><th>Size</th></tr></thead><tbody>" + rows + "</tbody></table>";
-  return { count: data.records.length };
-}
-
-// drag & drop wiring
-const dz = document.getElementById("cv-dropzone");
-const dzInput = document.getElementById("cv-rec-file");
-const dzFiles = document.getElementById("cv-dz-files");
-function refreshDzLabel() {
-  const n = dzInput.files.length;
-  dzFiles.textContent = n ? (n + " file" + (n > 1 ? "s" : "") + " selected") : "";
-}
-dz.addEventListener("click", () => dzInput.click());
-dzInput.addEventListener("change", refreshDzLabel);
-["dragenter", "dragover"].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.add("drag"); }));
-["dragleave", "drop"].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.remove("drag"); }));
-dz.addEventListener("drop", e => {
-  if (e.dataTransfer.files.length) { dzInput.files = e.dataTransfer.files; refreshDzLabel(); }
-});
-
-document.getElementById("cv-upload-form").addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const btn = document.getElementById("cv-upload-btn");
-
-  if (!dzInput.files.length) { toast("Choose at least one file first.", "err"); return; }
-
-  btn.disabled = true;
-  btn.textContent = "Uploading…";
-
-  const form = new FormData();
-  for (const f of dzInput.files) form.append("files", f);
-  form.append("title", document.getElementById("cv-rec-title").value || "");
-  form.append("category", document.getElementById("cv-rec-category").value || "other");
-  form.append("notes", document.getElementById("cv-rec-notes").value || "");
-
-  try {
-    const res = await fetch(CV + "/records/upload", { method: "POST", credentials: "include", body: form });
-    const data = await res.json();
-    if (!res.ok || !data.ok) throw new Error(data.error || "Couldn't upload that.");
-    toast("Record uploaded.", "ok");
-    document.getElementById("cv-upload-form").reset();
-    dzFiles.textContent = "";
-    fireConfetti();
-    const recResult = await loadRecords();
-    renderActivity(lastRecords, lastSymptoms, lastLogs);
-    countUp(document.getElementById("st-records"), recResult.count);
-  } catch (err) {
-    toast(err.message || "Something went wrong.", "err");
-  } finally {
-    btn.disabled = false;
-    btn.textContent = "Upload";
-  }
-});
-
-// ---- vault vitals ----
-async function loadVaultVitals() {
-  const data = await cvGet("/vitals");
-  const wrap = document.getElementById("cv-vitals-wrap");
-  if (!data.ok || !data.vitals || !data.vitals.length) {
-    wrap.innerHTML = '<div class="empty-note">No vitals logged in your Vault yet.</div>';
-    return;
-  }
-  const rows = data.vitals.slice(0, 8).map(v => (
-    "<tr>" +
-      "<td>" + fmtDate(v.recorded_at) + "</td>" +
-      "<td>" + fmt(v.heart_rate) + "</td>" +
-      "<td>" + (v.systolic_bp != null && v.diastolic_bp != null ? v.systolic_bp + "/" + v.diastolic_bp : "—") + "</td>" +
-      "<td>" + fmt(v.spo2) + "</td>" +
-      "<td>" + fmt(v.temperature_c) + "</td>" +
-      "<td>" + fmt(v.weight_kg) + "</td>" +
-    "</tr>"
-  )).join("");
-  wrap.innerHTML = "<table><thead><tr><th>When</th><th>HR</th><th>BP</th><th>SpO₂</th><th>Temp</th><th>Weight</th></tr></thead><tbody>" + rows + "</tbody></table>";
-}
-
-document.getElementById("cv-vitals-form").addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const btn = document.getElementById("cv-vitals-btn");
-  btn.disabled = true;
-  btn.textContent = "Saving…";
-
-  const val = id => document.getElementById(id).value || null;
-  const payload = {
-    recorded_at: new Date().toISOString(),
-    source: "manual",
-    heart_rate: val("cv-v-hr"),
-    systolic_bp: val("cv-v-sys"),
-    diastolic_bp: val("cv-v-dia"),
-    spo2: val("cv-v-spo2"),
-    temperature_c: val("cv-v-temp"),
-    blood_glucose_mgdl: val("cv-v-glucose"),
-    weight_kg: val("cv-v-weight"),
-    respiratory_rate: val("cv-v-resp"),
-    notes: document.getElementById("cv-v-notes").value || "",
+  window.toggleTheme = function () {
+    applyTheme(root.getAttribute('data-theme') !== 'dark');
   };
 
-  try {
-    const { ok, data } = await cvPost("/vitals", payload);
-    if (!ok || !data.ok) throw new Error(data.error || "Couldn't save that reading.");
-    toast("Saved to your Vault.", "ok");
-    document.getElementById("cv-vitals-form").reset();
-    fireConfetti();
-    await loadVaultVitals();
-  } catch (err) {
-    toast(err.message || "Something went wrong.", "err");
-  } finally {
-    btn.disabled = false;
-    btn.textContent = "Save to Vault";
-  }
-});
-
-// ---- symptom-check history (pulled from Insights) ----
-let lastSymptoms = [];
-async function loadSymptomHistory() {
-  const wrap = document.getElementById("cv-symptoms-wrap");
-  try {
-    const res = await fetch(API_BASE + "/insights/dashboard?days=365", { credentials: "include" });
-    const data = await res.json();
-    const history = (data && data.diagnosis_history) || [];
-    lastSymptoms = history;
-    if (!history.length) {
-      wrap.innerHTML = '<div class="empty-note">No symptom checks yet — run one from the Symptoms tab and it\'ll show up here.</div>';
-      return { count: 0 };
-    }
-    wrap.innerHTML = '<div class="symptom-list">' + history.map(s => {
-      const pct = Math.round((Number(s.match_strength) || 0) * 100);
-      const tClass = triageClass(s.triage);
-      return '<div class="symptom-card">' +
-        '<div class="sym-top">' +
-          '<div><div class="sym-name">' + esc(s.condition_name || "Unknown") + '</div>' +
-          '<div class="sym-meta"><span>' + fmtDate(s.ts) + '</span>' + (s.confidence_band ? '<span>· ' + esc(s.confidence_band) + ' confidence</span>' : '') + '</div></div>' +
-          '<span class="pill ' + esc(tClass) + '">' + esc(s.triage || s.risk || "—") + '</span>' +
-        '</div>' +
-        (pct ? '<div class="sym-bar-wrap"><div class="sym-bar" style="width:' + pct + '%"></div></div>' : '') +
-        ((s.signals && s.signals.length) ? '<details class="sym-signals"><summary>' + s.signals.length + ' signal' + (s.signals.length > 1 ? 's' : '') + '</summary>' + s.signals.map(sig => esc(typeof sig === "string" ? sig : (sig.label || sig.name || JSON.stringify(sig)))).join(", ") + '</details>' : '') +
-      '</div>';
-    }).join("") + '</div>';
-    return { count: history.length };
-  } catch (e) {
-    wrap.innerHTML = '<div class="empty-note">Couldn\'t load your symptom history right now. <a href="#" data-retry="symptoms">Try again</a></div>';
-    return { count: 0, ok: false };
-  }
+  var saved = null;
+  try { saved = localStorage.getItem(STORAGE_KEY); } catch (e) {}
+  // Light mode is the default regardless of system preference; dark mode only
+  // activates once someone explicitly picks it via the toggle (and is then
+  // remembered for their next visit).
+  var initialDark = saved === 'dark';
+  if (initialDark) applyTheme(true);
+})();
+function toggleMobileMenu() {
+  const m = document.getElementById('mobile-menu');
+  m.style.display = (m.style.display === 'none' || !m.style.display) ? 'block' : 'none';
+}
+function closeMobileMenu() {
+  document.getElementById('mobile-menu').style.display = 'none';
 }
 
-// ---- consent requests ----
-async function loadConsentRequests() {
-  const data = await cvGet("/consent/requests");
-  const wrap = document.getElementById("cv-consent-wrap");
-  if (!data.ok) {
-    wrap.innerHTML = '<div class="empty-note">Couldn\'t load access requests right now. <a href="#" data-retry="consent">Try again</a></div>';
-    return { pending: 0, ok: false };
-  }
-  if (!data.requests || !data.requests.length) {
-    wrap.innerHTML = '<div class="empty-note">No access requests right now.</div>';
-    return { pending: 0 };
-  }
-  const pending = data.requests.filter(r => r.status === "pending");
-  const rows = data.requests.slice(0, 10).map(r => {
-    const status = r.status || "pending";
-    const cats = (r.requested_categories || []).join(", ") || "full record";
-    const actions = status === "pending"
-      ? '<div class="row-actions">' +
-          '<button class="btn-ghost go" data-decide="approved" data-id="' + esc(r.id) + '">Approve</button>' +
-          '<button class="btn-ghost danger" data-decide="denied" data-id="' + esc(r.id) + '">Deny</button>' +
-        '</div>'
-      : '<span class="pill ' + esc(status) + '">' + esc(status) + '</span>';
-    return "<tr>" +
-      "<td><div class=\"rec-title\">" + esc(r.provider_name || r.requested_by || "Provider") + "</div><div class=\"empty-note\">" + esc(cats) + "</div></td>" +
-      "<td>" + fmtDate(r.created_at) + "</td>" +
-      "<td>" + actions + "</td>" +
-    "</tr>";
-  }).join("");
-  wrap.innerHTML = "<table><thead><tr><th>Requested by</th><th>When</th><th>Decision</th></tr></thead><tbody>" + rows + "</tbody></table>";
-
-  wrap.querySelectorAll("[data-decide]").forEach(btn => {
-    btn.addEventListener("click", async () => {
-      btn.disabled = true;
-      const decision = btn.getAttribute("data-decide");
-      const { ok, data } = await cvPost("/consent/decide", {
-        request_id: btn.getAttribute("data-id"),
-        decision: decision,
+// If the visitor already has a live QueroCura session (they signed in/up
+// earlier and just clicked the logo or an internal link back to the
+// homepage), swap "Sign in / Get started" for a straight "Go to dashboard"
+// link instead of prompting them to log in again. Cookie-based sessions on
+// app.querocura.com already persist across page navigations on their own —
+// this just makes the homepage nav reflect that instead of looking signed out.
+(function () {
+  fetch('https://app.querocura.com/api/auth/me', { credentials: 'include' })
+    .then(function (r) { return r.json(); })
+    .then(function (data) {
+      if (!data || !data.logged_in) return;
+      document.querySelectorAll('#nav-signin-link, #mobile-signin-link').forEach(function (el) {
+        el.style.display = 'none';
       });
-      if (ok && data.ok) {
-        toast(decision === "approved" ? "Access approved." : "Access denied.", decision === "approved" ? "ok" : "err");
-        const consentResult = await loadConsentRequests();
-        countUp(document.getElementById("st-pending"), consentResult.pending);
-        const badge = document.getElementById("qc-access-badge");
-        if (consentResult.pending > 0) { badge.style.display = "inline-block"; badge.textContent = consentResult.pending; }
-        else { badge.style.display = "none"; }
-      } else {
-        toast((data && data.error) || "Couldn't record that decision.", "err");
-        btn.disabled = false;
+      document.querySelectorAll('#nav-cta-btn, #mobile-cta-btn').forEach(function (el) {
+        el.textContent = 'Go to dashboard';
+        el.href = 'dashboard/';
+      });
+    })
+    .catch(function () { /* not logged in / backend unreachable — leave nav as-is */ });
+})();
+
+// Route "Say hi" contact links to the Gmail app on mobile, and Gmail compose in a
+// new tab on desktop, both pre-filled with the same recipients + subject.
+function openMail(e) {
+  if (e) e.preventDefault();
+  const to = 'saumit@querocura.com,udantika@querocura.com';
+  const subject = 'Hi QueroCura';
+  const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  if (isMobile) {
+    window.location.href = 'mailto:' + to + '?subject=' + encodeURIComponent(subject);
+  } else {
+    window.open('https://mail.google.com/mail/?view=cm&fs=1&to=' + to + '&su=' + encodeURIComponent(subject), '_blank', 'noopener');
+  }
+}
+
+// About page tiles: expand/collapse on click, independent of each other.
+function toggleAboutTile(n) {
+  const tile = document.getElementById('about-tile-' + n);
+  const body = document.getElementById('about-body-' + n);
+  const chevron = document.getElementById('about-chevron-' + n);
+  const isOpen = tile.classList.contains('open');
+  if (isOpen) {
+    body.style.maxHeight = '0px';
+    tile.classList.remove('open');
+    chevron.style.transform = 'rotate(0deg)';
+  } else {
+    body.style.maxHeight = body.scrollHeight + 'px';
+    tile.classList.add('open');
+    chevron.style.transform = 'rotate(180deg)';
+  }
+}
+
+// Waitlist form: submits to a hidden iframe pointed at the Google Apps Script
+// endpoint (a plain form POST, not fetch, so no CORS issues), then shows a
+// success state optimistically since the cross-origin iframe response can't
+// be read from here.
+function handleWaitlistSubmit(e) {
+  const honeypot = document.getElementById('wl-hp').value;
+  if (honeypot) {
+    e.preventDefault();
+    return false;
+  }
+  const btn = document.getElementById('wl-submit-btn');
+  btn.disabled = true;
+  btn.textContent = 'Submitting…';
+  setTimeout(function () {
+    document.getElementById('waitlist-form').style.display = 'none';
+    document.getElementById('waitlist-success').style.display = 'block';
+  }, 900);
+}
+
+// Scroll-reveal: fade + rise each major section into place as it enters view.
+(function () {
+  var targets = document.querySelectorAll('.reveal');
+  if (!('IntersectionObserver' in window)) {
+    targets.forEach(function (el) { el.classList.add('visible'); });
+    return;
+  }
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        io.unobserve(entry.target);
       }
     });
-  });
-
-  return { pending: pending.length };
-}
-
-// ---- access log ----
-let lastLogs = [];
-async function loadAccessLogs() {
-  const data = await cvGet("/access-logs");
-  const wrap = document.getElementById("cv-logs-wrap");
-  if (!data.ok) {
-    wrap.innerHTML = '<div class="empty-note">Couldn\'t load your access log right now. <a href="#" data-retry="logs">Try again</a></div>';
-    lastLogs = [];
-    return { lastAccess: "—", ok: false };
-  }
-  if (!data.logs || !data.logs.length) {
-    wrap.innerHTML = '<div class="empty-note">No access recorded yet.</div>';
-    lastLogs = [];
-    return { lastAccess: "Never" };
-  }
-  lastLogs = data.logs;
-  const rows = data.logs.slice(0, 8).map(l => (
-    "<tr>" +
-      "<td>" + esc(l.provider_name || l.accessed_by || "Provider") + "</td>" +
-      "<td>" + esc(l.reason || l.access_type || "—") + "</td>" +
-      "<td>" + fmtDate(l.created_at) + "</td>" +
-    "</tr>"
-  )).join("");
-  wrap.innerHTML = "<table><thead><tr><th>Who</th><th>Reason</th><th>When</th></tr></thead><tbody>" + rows + "</tbody></table>";
-  return { lastAccess: fmtDate(data.logs[0].created_at) };
-}
-
-// ---- overview refresh ----
-// Promise.allSettled (not Promise.all): every one of these already
-// degrades to a safe { ok: false } / { count: 0 } shape on its own
-// (cvGet never throws, loadSymptomHistory has its own try/catch), but
-// allSettled is the belt-and-suspenders here -- if a rendering bug ever
-// makes one of them throw, the other four still finish and the page
-// still ends up with real content instead of being stuck on skeletons
-// forever with a dead Promise.all underneath it.
-async function refreshOverview() {
-  const settled = await Promise.allSettled([
-    cvGet("/status"),
-    loadRecords(),
-    loadSymptomHistory(),
-    loadConsentRequests(),
-    loadAccessLogs(),
-  ]);
-  const val = (i, fallback) => (settled[i].status === "fulfilled" ? settled[i].value : fallback);
-  const statusData = val(0, { ok: false });
-  const recResult = val(1, { count: 0 });
-  const symResult = val(2, { count: 0 });
-  const consentResult = val(3, { pending: 0 });
-  const logResult = val(4, { lastAccess: "—" });
-
-  const patient = (statusData.ok && statusData.patient) || {};
-  renderStats({
-    recordsCount: recResult.count || 0,
-    symptomCount: symResult.count || 0,
-    pendingConsent: consentResult.pending || 0,
-    lastAccess: logResult.lastAccess || "Never",
-  });
-  renderActivity(lastRecords, lastSymptoms, lastLogs);
-
-  const failures = settled.filter(s => s.status === "rejected").length +
-    [statusData, recResult, symResult, consentResult, logResult].filter(r => r.ok === false).length;
-  if (failures > 0) {
-    toast(failures === 1 ? "One part of your Vault didn't load — try refreshing." : "Some parts of your Vault didn't load — try refreshing.", "err");
-  }
-
-  return patient;
-}
-
-document.addEventListener("click", (e) => {
-  const retry = e.target.closest("[data-retry]");
-  if (!retry) return;
-  e.preventDefault();
-  const kind = retry.getAttribute("data-retry");
-  if (kind === "records") loadRecords();
-  else if (kind === "symptoms") loadSymptomHistory();
-  else if (kind === "consent") loadConsentRequests();
-  else if (kind === "logs") loadAccessLogs();
-});
-
-document.getElementById("qc-signout-btn").addEventListener("click", async () => {
-  await fetch(API_BASE + "/auth/logout", { method: "POST", credentials: "include" });
-  window.location.href = "../";
-});
-
-(async function init() {
-  const [meData, profData] = await Promise.all([
-    fetch(API_BASE + "/auth/me", { credentials: "include" }).then(r => r.json()).catch(() => ({ logged_in: false })),
-    fetch(API_BASE + "/profile", { credentials: "include" }).then(r => r.json()).catch(() => null),
-  ]);
-  if (!meData.logged_in) { window.location.href = "../login/"; return; }
-  const user = meData.user;
-  if (profData && profData.ok && profData.profile && !profData.profile.wizard_done) {
-    window.location.href = "../onboarding/";
-    return;
-  }
-  const name = user.display_name || user.username || user.email || "";
-  const initials = name ? name.trim().split(/\s+/).slice(0, 2).map(w => w[0].toUpperCase()).join("") : "?";
-  document.getElementById("qc-user-dot").textContent = initials;
-  document.getElementById("qc-user-name").textContent = name ? name.split(" ")[0] : "";
-
-  // refreshOverview() itself no longer throws (see its own comment), but
-  // this is the last line of defense: whatever happens, the ID card gets
-  // painted with at least the name/initials we already have, rather than
-  // staying on its "?" / "—" placeholders forever.
-  let patient = {};
-  try {
-    patient = await refreshOverview();
-  } catch (e) {
-    toast("Some parts of your Vault didn't load — try refreshing.", "err");
-  }
-  renderIdCard(patient, name);
-
-  try { await loadVaultVitals(); } catch (e) {
-    document.getElementById("cv-vitals-wrap").innerHTML = '<div class="empty-note">Couldn\'t load your vitals right now.</div>';
-  }
+  }, { threshold: 0.1, rootMargin: '0px 0px -60px 0px' });
+  targets.forEach(function (el) { io.observe(el); });
 })();
 </script>
+<!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "cf10cc866a9f4ffeb50a6ce35a72e773"}'></script><!-- End Cloudflare Web Analytics -->
 </body>
 </html>
