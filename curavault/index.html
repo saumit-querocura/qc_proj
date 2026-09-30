@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://app.querocura.com">
 <link rel="dns-prefetch" href="https://app.querocura.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700;800&family=Manrope:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500;1,9..144,600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700;800&family=Manrope:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500;1,9..144,600&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <script>
   (function () {
     try {
@@ -22,13 +22,20 @@
 </script>
 <style>
   * { box-sizing: border-box; }
+  :root {
+    --cv-1: #0b6f66; --cv-2: #12a37e; --cv-3: #22c55e; --cv-4: #4ade80;
+    --cv-grad: linear-gradient(135deg, var(--cv-1) 0%, var(--cv-2) 48%, var(--cv-3) 100%);
+    --cv-grad-soft: linear-gradient(120deg, rgba(18,163,126,0.10), rgba(74,222,128,0.07));
+    --cv-tint: rgba(18,163,126,0.1); --cv-tint-strong: rgba(18,163,126,0.22);
+  }
   body { margin: 0; min-height: 100vh; font-family: 'Manrope', sans-serif; background: #f6f5f1; color: #100e2a; }
   h1, h2, h3, .display { font-family: 'Space Grotesk', sans-serif; }
   a { color: #0e8f83; text-decoration: none; }
   a:hover { color: #0b6f66; }
+  ::selection { background: rgba(34,197,94,0.25); }
 
   /* ---- Top bar (ditto dashboard/vitals) ---- */
-  .topbar { display: flex; align-items: center; justify-content: space-between; gap: 18px; flex-wrap: wrap; padding: 14px clamp(16px,4vw,32px); background: rgba(246,245,241,0.88); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(16,14,42,0.08); position: sticky; top: 0; z-index: 20; }
+  .topbar { display: flex; align-items: center; justify-content: space-between; gap: 18px; flex-wrap: wrap; padding: 14px clamp(16px,4vw,32px); background: rgba(246,245,241,0.88); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(16,14,42,0.08); position: sticky; top: 0; z-index: 30; }
   .logo-wrap { display: flex; align-items: center; gap: 10px; flex: 0 0 auto; }
   .logo-wrap img { width: 34px; height: 31px; object-fit: contain; }
   .logo-text { font-size: 18px; font-weight: 700; letter-spacing: -0.02em; font-family: 'Space Grotesk', sans-serif; }
@@ -50,92 +57,157 @@
   .theme-toggle:hover { transform: translateY(-2px); }
   @media (max-width: 900px) { .tab-nav { order: 3; width: 100%; justify-content: flex-start; } }
 
-  .shell { max-width: 920px; margin: 0 auto; padding: 32px 24px 90px; }
+  .shell { max-width: 960px; margin: 0 auto; padding: 32px 24px 90px; }
 
-  .page-head { margin-bottom: 22px; }
-  .page-eyebrow { display: inline-flex; align-items: center; gap: 8px; padding: 4px 12px; border-radius: 999px; background: rgba(124,111,219,0.1); border: 1px solid rgba(124,111,219,0.22); color: #7c6fdb; font-size: 10.5px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 12px; }
-  .page-eyebrow .eb-dot { width: 6px; height: 6px; border-radius: 50%; background: #7c6fdb; animation: cvBeacon 2s ease-out infinite; }
-  @keyframes cvBeacon { 0% { box-shadow: 0 0 0 0 rgba(124,111,219,0.5); } 100% { box-shadow: 0 0 0 7px rgba(124,111,219,0); } }
+  .page-head { margin-bottom: 20px; }
+  .page-eyebrow { display: inline-flex; align-items: center; gap: 8px; padding: 4px 12px; border-radius: 999px; background: var(--cv-tint); border: 1px solid var(--cv-tint-strong); color: var(--cv-2); font-size: 10.5px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 12px; }
+  .page-eyebrow .eb-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--cv-3); animation: cvBeacon 2s ease-out infinite; }
+  @keyframes cvBeacon { 0% { box-shadow: 0 0 0 0 rgba(34,197,94,0.5); } 100% { box-shadow: 0 0 0 7px rgba(34,197,94,0); } }
   .page-title { font-family: 'Fraunces', serif; font-size: clamp(26px,4vw,34px); font-weight: 600; margin: 0 0 8px; }
-  .page-title em { font-style: italic; background: linear-gradient(95deg,#0e8f83,#7c6fdb); -webkit-background-clip: text; background-clip: text; color: transparent; }
-  .page-sub { font-size: 14.5px; color: rgba(16,14,42,0.55); margin: 0; max-width: 540px; line-height: 1.5; }
+  .page-title em { font-style: italic; background: var(--cv-grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .page-sub { font-size: 14.5px; color: rgba(16,14,42,0.55); margin: 0; max-width: 560px; line-height: 1.5; }
 
-  /* ---- Stat strip (ditto vitals snapshot-strip, but plain stat cards -- no ring gauges, this data isn't ranged numerics) ---- */
-  .stat-strip { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; margin-bottom: 24px; }
-  .stat-card { position: relative; overflow: hidden; background: #fff; border-radius: 16px; padding: 16px 16px 14px; border: 1px solid rgba(16,14,42,0.08); display: flex; flex-direction: column; gap: 6px; }
+  /* ---- internal vault tabs ---- */
+  .vault-tabs { display: flex; gap: 6px; padding: 5px; background: rgba(16,14,42,0.045); border-radius: 999px; margin: 22px 0 24px; overflow-x: auto; scrollbar-width: none; }
+  .vault-tabs::-webkit-scrollbar { display: none; }
+  .vtab { flex: 0 0 auto; display: flex; align-items: center; gap: 7px; white-space: nowrap; padding: 9px 17px; border-radius: 999px; border: none; background: none; font-family: 'Manrope', sans-serif; font-size: 13px; font-weight: 700; color: rgba(16,14,42,0.55); cursor: pointer; transition: background 0.22s cubic-bezier(.2,.8,.3,1), color 0.22s ease, box-shadow 0.22s ease; }
+  .vtab .vt-ic { font-size: 14px; }
+  .vtab .vt-badge { background: rgba(179,64,31,0.14); color: #b3401f; font-size: 10px; font-weight: 800; padding: 1px 6px; border-radius: 999px; margin-left: 2px; }
+  .vtab:hover:not(.active) { background: rgba(16,14,42,0.06); color: #100e2a; }
+  .vtab.active { background: var(--cv-grad); color: #fff; box-shadow: 0 10px 22px -10px rgba(18,163,126,0.55); }
+
+  .tab-panel { display: none; }
+  .tab-panel.show { display: block; animation: panelIn 0.32s cubic-bezier(.2,.8,.3,1); }
+  @keyframes panelIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+  /* ---- ID card ---- */
+  .idc-wrap { margin-bottom: 22px; perspective: 1200px; }
+  .idc { position: relative; overflow: hidden; border-radius: 22px; padding: 24px 26px; color: #fff; background: linear-gradient(135deg, #0a3f3a 0%, #0b6f66 32%, #12a37e 66%, #22c55e 100%); box-shadow: 0 26px 60px -24px rgba(11,111,102,0.55); transition: transform 0.3s ease, box-shadow 0.3s ease; }
+  .idc:hover { transform: translateY(-3px) rotateX(1.5deg); box-shadow: 0 34px 70px -22px rgba(11,111,102,0.6); }
+  .idc::before { content: ''; position: absolute; top: -60px; right: -60px; width: 240px; height: 240px; border-radius: 50%; background: radial-gradient(circle, rgba(255,255,255,0.16), transparent 68%); }
+  .idc::after { content: ''; position: absolute; inset: 0; background-image: radial-gradient(rgba(255,255,255,0.09) 1px, transparent 1px); background-size: 14px 14px; opacity: 0.5; mix-blend-mode: overlay; }
+  .idc-row1 { display: flex; align-items: center; justify-content: space-between; position: relative; }
+  .idc-brand { display: flex; align-items: center; gap: 8px; font-family: 'Space Grotesk', sans-serif; font-weight: 800; font-size: 13.5px; letter-spacing: 0.02em; opacity: 0.95; }
+  .idc-chip { width: 34px; height: 25px; border-radius: 6px; background: linear-gradient(135deg, rgba(255,255,255,0.85), rgba(255,255,255,0.45)); position: relative; }
+  .idc-chip::before, .idc-chip::after { content: ''; position: absolute; left: 6px; right: 6px; height: 1px; background: rgba(11,111,102,0.5); }
+  .idc-chip::before { top: 8px; } .idc-chip::after { top: 15px; }
+  .idc-mid { display: flex; align-items: center; gap: 14px; margin: 22px 0 20px; position: relative; }
+  .idc-avatar { width: 48px; height: 48px; border-radius: 14px; background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.3); display: flex; align-items: center; justify-content: center; font-family: 'Space Grotesk', sans-serif; font-weight: 800; font-size: 16px; flex: 0 0 auto; }
+  .idc-name { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 17px; margin-bottom: 2px; }
+  .idc-id-row { display: flex; align-items: center; gap: 8px; }
+  .idc-id { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; letter-spacing: 0.04em; opacity: 0.92; }
+  .idc-copy { background: rgba(255,255,255,0.16); border: 1px solid rgba(255,255,255,0.28); color: #fff; width: 22px; height: 22px; border-radius: 7px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; padding: 0; transition: background 0.18s ease, transform 0.18s ease; }
+  .idc-copy:hover { background: rgba(255,255,255,0.28); transform: translateY(-1px); }
+  .idc-bottom { display: flex; gap: 28px; position: relative; }
+  .idc-label { display: block; font-size: 9.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.07em; opacity: 0.65; margin-bottom: 3px; }
+  .idc-value { font-size: 13px; font-weight: 700; }
+  .idc-status-dot { width: 6px; height: 6px; border-radius: 50%; background: #baffd1; display: inline-block; margin-right: 5px; box-shadow: 0 0 0 3px rgba(186,255,209,0.25); }
+
+  /* ---- Stat strip ---- */
+  .stat-strip { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; margin-bottom: 22px; }
+  .stat-card { position: relative; overflow: hidden; background: #fff; border-radius: 16px; padding: 16px 16px 14px; border: 1px solid rgba(16,14,42,0.08); display: flex; flex-direction: column; gap: 6px; transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease; }
+  .stat-card:hover { transform: translateY(-3px); box-shadow: 0 16px 30px -18px rgba(16,14,42,0.22); border-color: var(--cv-tint-strong); }
   .stat-card .st-ic { font-size: 18px; }
   .stat-card .st-num { font-family: 'Fraunces', serif; font-size: 21px; font-weight: 600; line-height: 1.1; }
   .stat-card .st-label { font-size: 11px; font-weight: 700; color: rgba(16,14,42,0.5); text-transform: uppercase; letter-spacing: 0.03em; }
-  .stat-card.on .st-num { color: #0e8f83; }
-  .stat-card.off .st-num { color: rgba(16,14,42,0.35); }
   .stat-card.warn .st-num { color: #c98a10; }
+  .stat-card.good .st-num { color: var(--cv-2); }
+
+  /* ---- Recent activity ---- */
+  .activity-list { display: flex; flex-direction: column; gap: 2px; }
+  .activity-row { display: flex; align-items: center; gap: 12px; padding: 11px 4px; border-bottom: 1px solid rgba(16,14,42,0.06); }
+  .activity-row:last-child { border-bottom: none; }
+  .activity-ic { width: 34px; height: 34px; border-radius: 10px; background: var(--cv-tint); color: var(--cv-2); display: flex; align-items: center; justify-content: center; font-size: 15px; flex: 0 0 auto; }
+  .activity-text { flex: 1 1 auto; font-size: 13.5px; }
+  .activity-text b { font-weight: 700; }
+  .activity-time { font-size: 11.5px; color: rgba(16,14,42,0.45); white-space: nowrap; }
 
   .card { position: relative; overflow: hidden; background: #fff; border-radius: 20px; padding: 26px 28px; border: 1px solid rgba(16,14,42,0.08); margin-bottom: 22px; }
-  .card::before { content: ''; position: absolute; top: -44px; right: -44px; width: 150px; height: 150px; border-radius: 50%; background: radial-gradient(circle, rgba(124,111,219,0.06), transparent 70%); pointer-events: none; }
+  .card::before { content: ''; position: absolute; top: -44px; right: -44px; width: 150px; height: 150px; border-radius: 50%; background: radial-gradient(circle, rgba(34,197,94,0.07), transparent 70%); pointer-events: none; }
   .card > * { position: relative; }
   .card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 18px; flex-wrap: wrap; }
-  .card-head h2 { font-size: 18px; margin: 0 0 4px; }
-  .card-head .card-sub { font-size: 12.5px; color: rgba(16,14,42,0.5); margin: 0; max-width: 440px; line-height: 1.5; }
-
-  /* ---- switch ---- */
-  .switch { position: relative; display: inline-block; width: 44px; height: 25px; flex: 0 0 auto; }
-  .switch input { opacity: 0; width: 0; height: 0; }
-  .switch .slider { position: absolute; inset: 0; background: rgba(16,14,42,0.16); border-radius: 999px; cursor: pointer; transition: background 0.2s ease; }
-  .switch .slider::before { content: ''; position: absolute; width: 19px; height: 19px; left: 3px; top: 3px; background: #fff; border-radius: 50%; transition: transform 0.2s ease; box-shadow: 0 2px 6px rgba(16,14,42,0.25); }
-  .switch input:checked + .slider { background: #7c6fdb; }
-  .switch input:checked + .slider::before { transform: translateX(19px); }
-  .switch input:disabled + .slider { opacity: 0.5; cursor: default; }
-
-  .emerg-body { display: none; }
-  .emerg-body.show { display: block; }
-  .emerg-off-note { font-size: 13px; color: rgba(16,14,42,0.5); padding: 6px 0 2px; }
-  .qr-row { display: flex; gap: 22px; align-items: center; flex-wrap: wrap; padding-top: 8px; }
-  .qr-box { flex: 0 0 auto; width: 132px; height: 132px; padding: 10px; background: #fff; border-radius: 16px; border: 1px solid rgba(16,14,42,0.1); display: flex; align-items: center; justify-content: center; }
-  .qr-box img { width: 100%; height: 100%; }
-  .qr-meta { flex: 1 1 220px; min-width: 200px; }
-  .qr-meta .qr-token { font-family: monospace; font-size: 12px; background: rgba(16,14,42,0.05); padding: 6px 10px; border-radius: 8px; word-break: break-all; display: inline-block; margin-bottom: 10px; }
-  .qr-actions { display: flex; gap: 8px; flex-wrap: wrap; }
-  .btn-ghost { background: none; border: 1.5px solid rgba(16,14,42,0.16); color: #100e2a; font-family: 'Manrope', sans-serif; font-size: 12.5px; font-weight: 700; padding: 8px 15px; border-radius: 999px; cursor: pointer; transition: border-color 0.18s ease, background 0.18s ease; }
-  .btn-ghost:hover { background: rgba(16,14,42,0.05); }
-  .btn-ghost.danger { color: #b3401f; border-color: rgba(179,64,31,0.28); }
-  .btn-ghost.danger:hover { background: rgba(179,64,31,0.06); }
-  .btn-ghost:disabled { opacity: 0.55; cursor: default; }
+  .card-head h2 { font-size: 18px; margin: 0 0 4px; display: flex; align-items: center; gap: 8px; }
+  .card-head .card-sub { font-size: 12.5px; color: rgba(16,14,42,0.5); margin: 0; max-width: 460px; line-height: 1.5; }
 
   .field label { display: block; font-size: 12.5px; font-weight: 700; margin-bottom: 6px; color: rgba(16,14,42,0.7); }
-  input, textarea, select { width: 100%; padding: 11px 13px; border-radius: 10px; border: 1.5px solid rgba(16,14,42,0.14); font-family: 'Manrope', sans-serif; font-size: 14.5px; color: #100e2a; background: #fff; outline: none; }
-  input:focus, textarea:focus, select:focus { border-color: #7c6fdb; box-shadow: 0 0 0 3px rgba(124,111,219,0.12); }
+  input, textarea, select { width: 100%; padding: 11px 13px; border-radius: 10px; border: 1.5px solid rgba(16,14,42,0.14); font-family: 'Manrope', sans-serif; font-size: 14.5px; color: #100e2a; background: #fff; outline: none; transition: border-color 0.18s ease, box-shadow 0.18s ease; }
+  input:focus, textarea:focus, select:focus { border-color: var(--cv-3); box-shadow: 0 0 0 3px var(--cv-tint); }
   input[type="file"] { padding: 9px 10px; font-size: 13px; }
   .upload-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 14px; margin-bottom: 14px; }
   .upload-grid .notes-field, .upload-grid .file-field { grid-column: 1 / -1; }
   .vitals-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 14px; }
   .notes-field { grid-column: 1 / -1; }
 
-  .save-btn { position: relative; overflow: hidden; background: #7c6fdb; color: #fff; font-size: 15px; font-weight: 700; padding: 12px 28px; border-radius: 999px; border: none; cursor: pointer; font-family: 'Manrope', sans-serif; margin-top: 4px; transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease; }
+  /* drag & drop */
+  .dropzone { border: 1.5px dashed rgba(16,14,42,0.18); border-radius: 14px; padding: 20px; text-align: center; font-size: 13px; color: rgba(16,14,42,0.5); cursor: pointer; transition: border-color 0.18s ease, background 0.18s ease; }
+  .dropzone.drag { border-color: var(--cv-3); background: var(--cv-tint); color: var(--cv-2); }
+  .dropzone input { display: none; }
+  .dropzone .dz-files { margin-top: 6px; font-weight: 700; color: #100e2a; }
+
+  .save-btn { position: relative; overflow: hidden; background: var(--cv-grad); color: #fff; font-size: 15px; font-weight: 700; padding: 12px 28px; border-radius: 999px; border: none; cursor: pointer; font-family: 'Manrope', sans-serif; margin-top: 4px; transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease; }
   .save-btn::after { content: ''; position: absolute; top: 0; left: -60%; width: 40%; height: 100%; background: linear-gradient(115deg, transparent, rgba(255,255,255,0.35), transparent); transform: skewX(-20deg); transition: left 0.6s ease; pointer-events: none; }
   .save-btn:hover:not(:disabled)::after { left: 140%; }
-  .save-btn:hover:not(:disabled) { background: #6a5cc9; transform: translateY(-2px); box-shadow: 0 12px 24px -8px rgba(124,111,219,0.45); }
+  .save-btn:hover:not(:disabled) { filter: brightness(1.06); transform: translateY(-2px); box-shadow: 0 14px 26px -10px rgba(18,163,126,0.5); }
   .save-btn:disabled { opacity: 0.6; cursor: default; }
-  .save-msg { font-size: 13.5px; font-weight: 600; margin-top: 12px; display: none; }
-  .save-msg.ok { color: #0e8f83; display: block; }
-  .save-msg.err { color: #b3401f; display: block; }
 
-  .empty-note { font-size: 14px; color: rgba(16,14,42,0.5); }
+  .empty-note { font-size: 14px; color: rgba(16,14,42,0.5); padding: 6px 0; }
   table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
   th { text-align: left; padding: 10px 12px; color: rgba(16,14,42,0.55); font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: 0.03em; border-bottom: 1.5px solid rgba(16,14,42,0.08); }
   td { padding: 12px; border-bottom: 1px solid rgba(16,14,42,0.06); vertical-align: top; }
+  tr { transition: background 0.15s ease; }
+  tbody tr:hover { background: rgba(34,197,94,0.035); }
   tr:last-child td { border-bottom: none; }
   .rec-title { font-weight: 700; }
-  .rec-cat { display: inline-block; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; padding: 2px 8px; border-radius: 999px; background: rgba(124,111,219,0.1); color: #7c6fdb; margin-top: 3px; }
+  .rec-cat { display: inline-block; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; padding: 2px 8px; border-radius: 999px; background: var(--cv-tint); color: var(--cv-2); margin-top: 3px; }
   .pill { display: inline-block; font-size: 10.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; padding: 3px 10px; border-radius: 999px; }
   .pill.pending { background: rgba(201,138,16,0.12); color: #c98a10; }
-  .pill.approved { background: rgba(14,143,131,0.12); color: #0e8f83; }
-  .pill.denied, .pill.expired { background: rgba(179,64,31,0.1); color: #b3401f; }
+  .pill.approved { background: rgba(18,163,126,0.12); color: var(--cv-2); }
+  .pill.denied, .pill.expired, .pill.emergency, .pill.urgent { background: rgba(179,64,31,0.1); color: #b3401f; }
+  .pill.routine, .pill.calm, .pill.low { background: rgba(18,163,126,0.12); color: var(--cv-2); }
+  .pill.moderate, .pill.monitor { background: rgba(201,138,16,0.12); color: #c98a10; }
   .row-actions { display: flex; gap: 8px; flex-wrap: wrap; }
   .row-actions button { font-size: 11.5px; padding: 6px 12px; }
+  .btn-ghost { background: none; border: 1.5px solid rgba(16,14,42,0.16); color: #100e2a; font-family: 'Manrope', sans-serif; font-size: 12.5px; font-weight: 700; padding: 8px 15px; border-radius: 999px; cursor: pointer; transition: border-color 0.18s ease, background 0.18s ease; }
+  .btn-ghost:hover { background: rgba(16,14,42,0.05); }
+  .btn-ghost.go { color: var(--cv-2); border-color: var(--cv-tint-strong); }
+  .btn-ghost.go:hover { background: var(--cv-tint); }
+  .btn-ghost.danger { color: #b3401f; border-color: rgba(179,64,31,0.28); }
+  .btn-ghost.danger:hover { background: rgba(179,64,31,0.06); }
+  .btn-ghost:disabled { opacity: 0.55; cursor: default; }
+
+  /* ---- symptom-check history cards ---- */
+  .symptom-list { display: flex; flex-direction: column; gap: 10px; }
+  .symptom-card { border: 1px solid rgba(16,14,42,0.08); border-radius: 14px; padding: 14px 16px; transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease; }
+  .symptom-card:hover { transform: translateY(-2px); box-shadow: 0 14px 26px -18px rgba(16,14,42,0.22); border-color: var(--cv-tint-strong); }
+  .sym-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+  .sym-name { font-weight: 700; font-size: 14.5px; }
+  .sym-meta { display: flex; align-items: center; gap: 10px; font-size: 12px; color: rgba(16,14,42,0.5); margin-top: 4px; }
+  .sym-bar-wrap { width: 100%; height: 5px; border-radius: 999px; background: rgba(16,14,42,0.08); margin-top: 10px; overflow: hidden; }
+  .sym-bar { height: 100%; border-radius: 999px; background: var(--cv-grad); transition: width 0.6s cubic-bezier(.2,.8,.3,1); }
+  .sym-signals { margin-top: 8px; font-size: 12px; color: rgba(16,14,42,0.55); }
+  .sym-signals summary { cursor: pointer; font-weight: 700; color: var(--cv-2); list-style: none; }
+  .sym-signals summary::-webkit-details-marker { display: none; }
+  .sym-signals[open] summary { margin-bottom: 6px; }
+
+  /* ---- skeleton loaders ---- */
+  .skel { border-radius: 8px; background: linear-gradient(100deg, rgba(16,14,42,0.06) 30%, rgba(16,14,42,0.12) 50%, rgba(16,14,42,0.06) 70%); background-size: 200% 100%; animation: skelShine 1.3s ease-in-out infinite; }
+  @keyframes skelShine { to { background-position: -200% 0; } }
+  .skel-row { height: 44px; margin-bottom: 8px; }
+  .skel-line { height: 14px; width: 60%; margin-bottom: 8px; }
+
+  /* ---- toasts ---- */
+  .toast-stack { position: fixed; bottom: 22px; right: 22px; display: flex; flex-direction: column; gap: 10px; z-index: 999; }
+  .toast { display: flex; align-items: center; gap: 10px; background: #100e2a; color: #fff; padding: 12px 18px; border-radius: 12px; font-size: 13.5px; font-weight: 600; box-shadow: 0 16px 34px -12px rgba(16,14,42,0.45); animation: toastIn 0.28s cubic-bezier(.2,.8,.3,1); max-width: 340px; }
+  .toast.ok { background: linear-gradient(120deg, #0b6f66, #12a37e); }
+  .toast.err { background: #7a2c17; }
+  .toast.out { animation: toastOut 0.24s ease forwards; }
+  @keyframes toastIn { from { opacity: 0; transform: translateY(10px) scale(0.97); } to { opacity: 1; transform: none; } }
+  @keyframes toastOut { to { opacity: 0; transform: translateY(6px) scale(0.97); } }
 
   .confetti-piece { position: fixed; top: -12px; width: 8px; height: 8px; border-radius: 2px; pointer-events: none; z-index: 999; animation: confettiFall 1.4s ease-in forwards; }
   @keyframes confettiFall { to { transform: translateY(100vh) rotate(540deg); opacity: 0; } }
 
+  html[data-theme="dark"] { --cv-1: #12a37e; --cv-2: #22c55e; --cv-3: #4ade80; --cv-4: #86efac; --cv-tint: rgba(74,222,128,0.12); --cv-tint-strong: rgba(74,222,128,0.26); }
   html[data-theme="dark"] body { background: #0d0c1f; color: #f2f0f8; }
   html[data-theme="dark"] a { color: #7ee0d4; } html[data-theme="dark"] a:hover { color: #9beee0; }
   html[data-theme="dark"] .topbar { background: rgba(13,12,31,0.88); border-bottom-color: rgba(255,255,255,0.1); }
@@ -148,8 +220,10 @@
   html[data-theme="dark"] .signout-btn { background: #7ee0d4; color: #100e2a; } html[data-theme="dark"] .signout-btn:hover { background: #9beee0; }
   html[data-theme="dark"] .theme-toggle { background: #18162e; border-color: rgba(255,255,255,0.14); }
   html[data-theme="dark"] .page-sub { color: #b7b3cc; }
-  html[data-theme="dark"] .page-eyebrow { background: rgba(126,224,212,0.1); border-color: rgba(126,224,212,0.22); color: #7ee0d4; }
-  html[data-theme="dark"] .page-eyebrow .eb-dot { background: #7ee0d4; }
+  html[data-theme="dark"] .vault-tabs { background: rgba(255,255,255,0.05); }
+  html[data-theme="dark"] .vtab { color: #a9a6bd; }
+  html[data-theme="dark"] .vtab:hover:not(.active) { background: rgba(255,255,255,0.07); color: #f2f0f8; }
+  html[data-theme="dark"] .vtab.active { color: #06251d; }
   html[data-theme="dark"] .stat-card { background: #18162e; border-color: rgba(255,255,255,0.1); }
   html[data-theme="dark"] .stat-card .st-label { color: #8f8ba3; }
   html[data-theme="dark"] .card { background: #18162e; border-color: rgba(255,255,255,0.1); }
@@ -159,12 +233,17 @@
   html[data-theme="dark"] .empty-note { color: #8f8ba3; }
   html[data-theme="dark"] th { color: #a9a6bd; border-bottom-color: rgba(255,255,255,0.12); }
   html[data-theme="dark"] td { border-bottom-color: rgba(255,255,255,0.08); }
-  html[data-theme="dark"] .qr-box { background: #100e2a; border-color: rgba(255,255,255,0.12); }
-  html[data-theme="dark"] .qr-meta .qr-token { background: rgba(255,255,255,0.06); color: #cfccdf; }
+  html[data-theme="dark"] tbody tr:hover { background: rgba(74,222,128,0.05); }
   html[data-theme="dark"] .btn-ghost { border-color: rgba(255,255,255,0.18); color: #f2f0f8; }
   html[data-theme="dark"] .btn-ghost:hover { background: rgba(255,255,255,0.06); }
   html[data-theme="dark"] .btn-ghost.danger { color: #ff8f6b; border-color: rgba(255,143,107,0.3); }
-  html[data-theme="dark"] .emerg-off-note { color: #8f8ba3; }
+  html[data-theme="dark"] .dropzone { border-color: rgba(255,255,255,0.18); color: #a9a6bd; }
+  html[data-theme="dark"] .symptom-card { border-color: rgba(255,255,255,0.1); }
+  html[data-theme="dark"] .sym-meta { color: #a9a6bd; }
+  html[data-theme="dark"] .sym-bar-wrap { background: rgba(255,255,255,0.1); }
+  html[data-theme="dark"] .activity-row { border-bottom-color: rgba(255,255,255,0.07); }
+  html[data-theme="dark"] .activity-time { color: #8f8ba3; }
+  html[data-theme="dark"] .skel { background: linear-gradient(100deg, rgba(255,255,255,0.05) 30%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.05) 70%); background-size: 200% 100%; }
 </style>
 </head>
 <body>
@@ -195,154 +274,162 @@
     <div class="page-head">
       <span class="page-eyebrow"><span class="eb-dot"></span>CuraVault</span>
       <h1 class="page-title">Your health, safely <em>vaulted</em>.</h1>
-      <p class="page-sub">Records, vitals, and emergency access in one consent-first place — nothing leaves your Vault unless you say so.</p>
+      <p class="page-sub">Records, vitals, and every symptom check you've ever run — one consent-first place, nothing shared unless you say so.</p>
     </div>
 
-    <div class="stat-strip" id="qc-stats"></div>
+    <div class="vault-tabs" role="tablist">
+      <button class="vtab active" data-tab="overview" role="tab"><span class="vt-ic">🏠</span>Overview</button>
+      <button class="vtab" data-tab="records" role="tab"><span class="vt-ic">📄</span>Records</button>
+      <button class="vtab" data-tab="vitals" role="tab"><span class="vt-ic">❤️</span>Vitals</button>
+      <button class="vtab" data-tab="symptoms" role="tab"><span class="vt-ic">🩺</span>Symptom History</button>
+      <button class="vtab" data-tab="access" role="tab"><span class="vt-ic">🤝</span>Access<span class="vt-badge" id="qc-access-badge" style="display:none;">0</span></button>
+    </div>
 
-    <!-- Emergency access -->
-    <div class="card">
-      <div class="card-head">
-        <div>
-          <h2>Emergency access</h2>
-          <p class="card-sub">A scannable QR that gives a first responder your critical details in a genuine emergency — just what you choose to share, nothing more.</p>
-        </div>
-        <label class="switch">
-          <input type="checkbox" id="cv-emerg-toggle">
-          <span class="slider"></span>
-        </label>
-      </div>
-      <div class="emerg-off-note" id="cv-emerg-off-note">Turned off — enable it to generate your emergency QR code.</div>
-      <div class="emerg-body" id="cv-emerg-body">
-        <div class="qr-row">
-          <div class="qr-box" id="cv-qr-box"><span class="empty-note">…</span></div>
-          <div class="qr-meta">
-            <div class="qr-token" id="cv-emerg-token">—</div>
-            <div class="qr-actions">
-              <button class="btn-ghost" id="cv-regen-btn">Regenerate</button>
-              <button class="btn-ghost danger" id="cv-revoke-btn">Revoke</button>
+    <!-- OVERVIEW -->
+    <div class="tab-panel show" id="panel-overview">
+      <div class="idc-wrap">
+        <div class="idc">
+          <div class="idc-row1">
+            <div class="idc-brand">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="4" y="10.5" width="16" height="10" rx="2.4" fill="#fff" fill-opacity="0.92"/><path d="M7.5 10.5V7.8a4.5 4.5 0 0 1 9 0v2.7" stroke="#fff" stroke-opacity="0.92" stroke-width="1.8" fill="none"/><circle cx="12" cy="15" r="1.6" fill="#0b6f66"/></svg>
+              CuraVault ID
+            </div>
+            <div class="idc-chip"></div>
+          </div>
+          <div class="idc-mid">
+            <div class="idc-avatar" id="idc-avatar">?</div>
+            <div>
+              <div class="idc-name" id="idc-name">—</div>
+              <div class="idc-id-row">
+                <span class="idc-id" id="idc-id">—</span>
+                <button class="idc-copy" id="idc-copy-btn" title="Copy ID" aria-label="Copy ID">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><rect x="9" y="9" width="12" height="12" rx="2" stroke="#fff" stroke-width="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" stroke="#fff" stroke-width="2"/></svg>
+                </button>
+              </div>
             </div>
           </div>
+          <div class="idc-bottom">
+            <div><span class="idc-label">Member since</span><span class="idc-value" id="idc-since">—</span></div>
+            <div><span class="idc-label">Status</span><span class="idc-value"><span class="idc-status-dot"></span>Active</span></div>
+          </div>
         </div>
       </div>
-      <div class="save-msg" id="cv-emerg-msg"></div>
+
+      <div class="stat-strip" id="qc-stats">
+        <div class="stat-card"><div class="skel skel-line" style="width:30px;"></div><div class="skel skel-line" style="width:70px;height:11px;"></div></div>
+        <div class="stat-card"><div class="skel skel-line" style="width:30px;"></div><div class="skel skel-line" style="width:70px;height:11px;"></div></div>
+        <div class="stat-card"><div class="skel skel-line" style="width:30px;"></div><div class="skel skel-line" style="width:70px;height:11px;"></div></div>
+        <div class="stat-card"><div class="skel skel-line" style="width:30px;"></div><div class="skel skel-line" style="width:70px;height:11px;"></div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <div><h2>Recent activity</h2><p class="card-sub">Everything that's landed in your Vault lately.</p></div>
+        </div>
+        <div class="activity-list" id="qc-activity"><div class="skel skel-row"></div><div class="skel skel-row"></div><div class="skel skel-row"></div></div>
+      </div>
     </div>
 
-    <!-- Records -->
-    <div class="card">
-      <div class="card-head">
-        <div>
-          <h2>Records</h2>
-          <p class="card-sub">Upload a prescription, lab report, or scan — encrypted and yours alone.</p>
+    <!-- RECORDS -->
+    <div class="tab-panel" id="panel-records">
+      <div class="card">
+        <div class="card-head">
+          <div><h2>📄 Upload a record</h2><p class="card-sub">A prescription, lab report, or scan — encrypted and yours alone.</p></div>
         </div>
+        <form id="cv-upload-form">
+          <div class="upload-grid">
+            <div class="field">
+              <label for="cv-rec-title">Title</label>
+              <input type="text" id="cv-rec-title" placeholder="e.g. Blood panel — Sept 2026">
+            </div>
+            <div class="field">
+              <label for="cv-rec-category">Category</label>
+              <select id="cv-rec-category">
+                <option value="lab_report">Lab report</option>
+                <option value="prescription">Prescription</option>
+                <option value="scan">Scan / imaging</option>
+                <option value="discharge_summary">Discharge summary</option>
+                <option value="vaccination">Vaccination</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+            <div class="field file-field">
+              <label>File</label>
+              <div class="dropzone" id="cv-dropzone">
+                <input type="file" id="cv-rec-file" multiple>
+                <span id="cv-dz-label">Drag files here, or click to browse</span>
+                <div class="dz-files" id="cv-dz-files"></div>
+              </div>
+            </div>
+            <div class="field notes-field">
+              <label for="cv-rec-notes">Notes (optional)</label>
+              <textarea id="cv-rec-notes" rows="2"></textarea>
+            </div>
+          </div>
+          <button type="submit" class="save-btn" id="cv-upload-btn">Upload</button>
+        </form>
       </div>
-      <form id="cv-upload-form">
-        <div class="upload-grid">
-          <div class="field">
-            <label for="cv-rec-title">Title</label>
-            <input type="text" id="cv-rec-title" placeholder="e.g. Blood panel — Sept 2026">
-          </div>
-          <div class="field">
-            <label for="cv-rec-category">Category</label>
-            <select id="cv-rec-category">
-              <option value="lab_report">Lab report</option>
-              <option value="prescription">Prescription</option>
-              <option value="scan">Scan / imaging</option>
-              <option value="discharge_summary">Discharge summary</option>
-              <option value="vaccination">Vaccination</option>
-              <option value="other">Other</option>
-            </select>
-          </div>
-          <div class="field file-field">
-            <label for="cv-rec-file">File</label>
-            <input type="file" id="cv-rec-file" multiple>
-          </div>
-          <div class="field notes-field">
-            <label for="cv-rec-notes">Notes (optional)</label>
-            <textarea id="cv-rec-notes" rows="2"></textarea>
-          </div>
-        </div>
-        <button type="submit" class="save-btn" id="cv-upload-btn">Upload</button>
-        <div class="save-msg" id="cv-upload-msg"></div>
-      </form>
-      <div id="cv-records-wrap" style="margin-top:20px;"><div class="empty-note">Loading…</div></div>
+      <div class="card">
+        <div class="card-head"><div><h2>Your records</h2></div></div>
+        <div id="cv-records-wrap"><div class="skel skel-row"></div><div class="skel skel-row"></div></div>
+      </div>
     </div>
 
-    <!-- Vault vitals -->
-    <div class="card">
-      <div class="card-head">
-        <div>
-          <h2>Vitals in your Vault</h2>
-          <p class="card-sub">A longitudinal log kept with your records — separate from the quick daily check on the Vitals tab.</p>
+    <!-- VITALS -->
+    <div class="tab-panel" id="panel-vitals">
+      <div class="card">
+        <div class="card-head">
+          <div><h2>❤️ Vitals in your Vault</h2><p class="card-sub">A longitudinal log kept with your records — separate from the quick daily check on the Vitals tab.</p></div>
         </div>
+        <form id="cv-vitals-form">
+          <div class="vitals-grid">
+            <div class="field"><label for="cv-v-hr">Heart rate (bpm)</label><input type="number" id="cv-v-hr"></div>
+            <div class="field"><label for="cv-v-sys">Systolic BP</label><input type="number" id="cv-v-sys"></div>
+            <div class="field"><label for="cv-v-dia">Diastolic BP</label><input type="number" id="cv-v-dia"></div>
+            <div class="field"><label for="cv-v-spo2">SpO₂ (%)</label><input type="number" id="cv-v-spo2"></div>
+            <div class="field"><label for="cv-v-temp">Temperature (°C)</label><input type="number" step="0.1" id="cv-v-temp"></div>
+            <div class="field"><label for="cv-v-glucose">Glucose (mg/dL)</label><input type="number" step="0.1" id="cv-v-glucose"></div>
+            <div class="field"><label for="cv-v-weight">Weight (kg)</label><input type="number" step="0.1" id="cv-v-weight"></div>
+            <div class="field"><label for="cv-v-resp">Respiratory rate</label><input type="number" id="cv-v-resp"></div>
+            <div class="field notes-field"><label for="cv-v-notes">Notes</label><textarea id="cv-v-notes" rows="2"></textarea></div>
+          </div>
+          <button type="submit" class="save-btn" id="cv-vitals-btn">Save to Vault</button>
+        </form>
       </div>
-      <form id="cv-vitals-form">
-        <div class="vitals-grid">
-          <div class="field">
-            <label for="cv-v-hr">Heart rate (bpm)</label>
-            <input type="number" id="cv-v-hr">
-          </div>
-          <div class="field">
-            <label for="cv-v-sys">Systolic BP</label>
-            <input type="number" id="cv-v-sys">
-          </div>
-          <div class="field">
-            <label for="cv-v-dia">Diastolic BP</label>
-            <input type="number" id="cv-v-dia">
-          </div>
-          <div class="field">
-            <label for="cv-v-spo2">SpO₂ (%)</label>
-            <input type="number" id="cv-v-spo2">
-          </div>
-          <div class="field">
-            <label for="cv-v-temp">Temperature (°C)</label>
-            <input type="number" step="0.1" id="cv-v-temp">
-          </div>
-          <div class="field">
-            <label for="cv-v-glucose">Glucose (mg/dL)</label>
-            <input type="number" step="0.1" id="cv-v-glucose">
-          </div>
-          <div class="field">
-            <label for="cv-v-weight">Weight (kg)</label>
-            <input type="number" step="0.1" id="cv-v-weight">
-          </div>
-          <div class="field">
-            <label for="cv-v-resp">Respiratory rate</label>
-            <input type="number" id="cv-v-resp">
-          </div>
-          <div class="field notes-field">
-            <label for="cv-v-notes">Notes</label>
-            <textarea id="cv-v-notes" rows="2"></textarea>
-          </div>
-        </div>
-        <button type="submit" class="save-btn" id="cv-vitals-btn">Save to Vault</button>
-        <div class="save-msg" id="cv-vitals-msg"></div>
-      </form>
-      <div id="cv-vitals-wrap" style="margin-top:20px;"><div class="empty-note">Loading…</div></div>
+      <div class="card">
+        <div class="card-head"><div><h2>Recent readings</h2></div></div>
+        <div id="cv-vitals-wrap"><div class="skel skel-row"></div><div class="skel skel-row"></div></div>
+      </div>
     </div>
 
-    <!-- Consent requests -->
-    <div class="card">
-      <div class="card-head">
-        <div>
-          <h2>Access requests</h2>
-          <p class="card-sub">When a provider asks to view your Vault, it lands here — nothing is shared until you approve it.</p>
+    <!-- SYMPTOM HISTORY -->
+    <div class="tab-panel" id="panel-symptoms">
+      <div class="card">
+        <div class="card-head">
+          <div><h2>🩺 Symptom check history</h2><p class="card-sub">Every symptom check you've run, kept here so you and a doctor can see the pattern over time.</p></div>
         </div>
+        <div id="cv-symptoms-wrap"><div class="skel skel-row"></div><div class="skel skel-row"></div><div class="skel skel-row"></div></div>
       </div>
-      <div id="cv-consent-wrap"><div class="empty-note">Loading…</div></div>
     </div>
 
-    <!-- Access log -->
-    <div class="card">
-      <div class="card-head">
-        <div>
-          <h2>Access log</h2>
-          <p class="card-sub">Every time your Vault is opened by someone other than you, it's recorded here.</p>
+    <!-- ACCESS -->
+    <div class="tab-panel" id="panel-access">
+      <div class="card">
+        <div class="card-head">
+          <div><h2>Access requests</h2><p class="card-sub">When a provider asks to view your Vault, it lands here — nothing is shared until you approve it.</p></div>
         </div>
+        <div id="cv-consent-wrap"><div class="skel skel-row"></div></div>
       </div>
-      <div id="cv-logs-wrap"><div class="empty-note">Loading…</div></div>
+      <div class="card">
+        <div class="card-head">
+          <div><h2>Access log</h2><p class="card-sub">Every time your Vault is opened by someone other than you, it's recorded here.</p></div>
+        </div>
+        <div id="cv-logs-wrap"><div class="skel skel-row"></div></div>
+      </div>
     </div>
   </div>
+
+  <div class="toast-stack" id="qc-toast-stack"></div>
 
 <script>
 var STORAGE_KEY = 'qc-theme';
@@ -365,8 +452,33 @@ const CV = API_BASE + "/curavault";
 function fmt(v) { return (v === null || v === undefined || v === "") ? "—" : v; }
 function fmtDate(ts) {
   if (!ts) return "—";
-  try { return new Date(ts.replace(" ", "T") + (ts.includes("Z") ? "" : "")).toLocaleString(); }
+  try { return new Date(ts.replace(" ", "T")).toLocaleString(); }
   catch (e) { return ts; }
+}
+function fmtDateShort(ts) {
+  if (!ts) return "—";
+  try { return new Date(ts.replace(" ", "T")).toLocaleDateString(undefined, { month: "short", day: "numeric" }); }
+  catch (e) { return ts; }
+}
+function fmtMonthYear(ts) {
+  if (!ts) return "—";
+  try { return new Date(ts.replace(" ", "T")).toLocaleDateString(undefined, { month: "short", year: "numeric" }); }
+  catch (e) { return "—"; }
+}
+function timeAgo(ts) {
+  if (!ts) return "—";
+  try {
+    const then = new Date(ts.replace(" ", "T")).getTime();
+    const diff = Math.max(0, Date.now() - then);
+    const mins = Math.floor(diff / 60000);
+    if (mins < 1) return "just now";
+    if (mins < 60) return mins + "m ago";
+    const hrs = Math.floor(mins / 60);
+    if (hrs < 24) return hrs + "h ago";
+    const days = Math.floor(hrs / 24);
+    if (days < 30) return days + "d ago";
+    return fmtDateShort(ts);
+  } catch (e) { return "—"; }
 }
 function esc(s) {
   return String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -376,6 +488,31 @@ function bytesToSize(n) {
   if (n < 1024) return n + " B";
   if (n < 1024 * 1024) return (n / 1024).toFixed(1) + " KB";
   return (n / (1024 * 1024)).toFixed(1) + " MB";
+}
+function formatVaultId(raw) {
+  const s = String(raw || "").replace(/[^a-zA-Z0-9]/g, "").toUpperCase();
+  if (!s) return "—";
+  return "CV-" + (s.slice(0, 12).match(/.{1,4}/g) || []).join("-");
+}
+function triageClass(t) {
+  const s = String(t || "").toLowerCase();
+  if (s.includes("emerg")) return "emergency";
+  if (s.includes("urgent")) return "urgent";
+  if (s.includes("moderate") || s.includes("monitor")) return "monitor";
+  return "routine";
+}
+
+// ---- toasts ----
+function toast(msg, type) {
+  const stack = document.getElementById("qc-toast-stack");
+  const el = document.createElement("div");
+  el.className = "toast" + (type ? " " + type : "");
+  el.textContent = msg;
+  stack.appendChild(el);
+  setTimeout(() => {
+    el.classList.add("out");
+    setTimeout(() => el.remove(), 260);
+  }, 3200);
 }
 
 async function cvGet(path) {
@@ -393,7 +530,7 @@ async function cvPost(path, body) {
 }
 
 function fireConfetti() {
-  const colors = ["#0e8f83", "#7c6fdb", "#2f8fd1", "#e0a52c"];
+  const colors = ["#0b6f66", "#12a37e", "#22c55e", "#4ade80"];
   for (let i = 0; i < 26; i++) {
     const p = document.createElement("div");
     p.className = "confetti-piece";
@@ -406,97 +543,101 @@ function fireConfetti() {
   }
 }
 
+// ---- tabs ----
+document.querySelectorAll(".vtab").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".vtab").forEach(b => b.classList.remove("active"));
+    document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("show"));
+    btn.classList.add("active");
+    document.getElementById("panel-" + btn.getAttribute("data-tab")).classList.add("show");
+  });
+});
+
+// ---- count-up ----
+function countUp(el, target) {
+  target = Number(target) || 0;
+  if (target === 0) { el.textContent = "0"; return; }
+  const dur = 650, start = performance.now();
+  function step(now) {
+    const p = Math.min(1, (now - start) / dur);
+    const eased = 1 - Math.pow(1 - p, 3);
+    el.textContent = Math.round(eased * target);
+    if (p < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+// ---- ID card ----
+function renderIdCard(patient, userName) {
+  const initials = (userName || "").trim().split(/\s+/).slice(0, 2).map(w => w[0].toUpperCase()).join("") || "?";
+  document.getElementById("idc-avatar").textContent = initials;
+  document.getElementById("idc-name").textContent = userName || "—";
+  document.getElementById("idc-id").textContent = formatVaultId(patient && patient.curasense_id);
+  document.getElementById("idc-since").textContent = fmtMonthYear(patient && patient.created_at);
+}
+document.getElementById("idc-copy-btn").addEventListener("click", async () => {
+  const id = document.getElementById("idc-id").textContent;
+  try {
+    await navigator.clipboard.writeText(id);
+    toast("Vault ID copied to clipboard.", "ok");
+  } catch (e) {
+    toast("Couldn't copy — select and copy manually.", "err");
+  }
+});
+
 // ---- stat strip ----
-function renderStats({ recordsCount, pendingConsent, emergencyOn, lastAccess }) {
+function renderStats({ recordsCount, symptomCount, pendingConsent, lastAccess }) {
   const box = document.getElementById("qc-stats");
   box.innerHTML =
-    '<div class="stat-card"><div class="st-ic">📄</div><div class="st-num">' + recordsCount + '</div><div class="st-label">Records</div></div>' +
-    '<div class="stat-card' + (pendingConsent > 0 ? ' warn' : '') + '"><div class="st-ic">🔔</div><div class="st-num">' + pendingConsent + '</div><div class="st-label">Pending requests</div></div>' +
-    '<div class="stat-card ' + (emergencyOn ? 'on' : 'off') + '"><div class="st-ic">🆔</div><div class="st-num">' + (emergencyOn ? 'On' : 'Off') + '</div><div class="st-label">Emergency access</div></div>' +
+    '<div class="stat-card"><div class="st-ic">📄</div><div class="st-num" id="st-records">0</div><div class="st-label">Records</div></div>' +
+    '<div class="stat-card good"><div class="st-ic">🩺</div><div class="st-num" id="st-symptoms">0</div><div class="st-label">Symptom checks</div></div>' +
+    '<div class="stat-card' + (pendingConsent > 0 ? ' warn' : '') + '"><div class="st-ic">🔔</div><div class="st-num" id="st-pending">0</div><div class="st-label">Pending requests</div></div>' +
     '<div class="stat-card"><div class="st-ic">🕒</div><div class="st-num" style="font-size:14.5px;">' + esc(lastAccess) + '</div><div class="st-label">Last accessed</div></div>';
+  const badge = document.getElementById("qc-access-badge");
+  if (pendingConsent > 0) { badge.style.display = "inline-block"; badge.textContent = pendingConsent; }
+  else { badge.style.display = "none"; }
+  countUp(document.getElementById("st-records"), recordsCount);
+  countUp(document.getElementById("st-symptoms"), symptomCount);
+  countUp(document.getElementById("st-pending"), pendingConsent);
 }
 
-// ---- emergency access ----
-let emergencyEnabled = false;
-
-async function loadEmergencyState(patient) {
-  emergencyEnabled = !!(patient && patient.emergency_access_enabled);
-  document.getElementById("cv-emerg-toggle").checked = emergencyEnabled;
-  renderEmergencyBody();
-  if (emergencyEnabled) await loadEmergencyToken();
-}
-
-function renderEmergencyBody() {
-  document.getElementById("cv-emerg-off-note").style.display = emergencyEnabled ? "none" : "block";
-  document.getElementById("cv-emerg-body").classList.toggle("show", emergencyEnabled);
-}
-
-async function loadEmergencyToken() {
-  const data = await cvGet("/emergency-token");
-  if (!data.ok) {
-    document.getElementById("cv-qr-box").innerHTML = '<span class="empty-note">Unavailable</span>';
-    document.getElementById("cv-emerg-token").textContent = data.error || "—";
+// ---- recent activity (merged from records / symptom checks / access log) ----
+function renderActivity(records, symptoms, logs) {
+  const items = [];
+  (records || []).slice(0, 5).forEach(r => items.push({
+    ts: r.created_at, ic: "📄",
+    html: 'Uploaded <b>' + esc(r.title || r.original_filename || "a record") + '</b>',
+  }));
+  (symptoms || []).slice(0, 5).forEach(s => items.push({
+    ts: s.ts, ic: "🩺",
+    html: 'Checked symptoms for <b>' + esc(s.condition_name || "a condition") + '</b>',
+  }));
+  (logs || []).slice(0, 5).forEach(l => items.push({
+    ts: l.created_at, ic: "🤝",
+    html: '<b>' + esc(l.provider_name || l.accessed_by || "A provider") + '</b> accessed your Vault',
+  }));
+  items.sort((a, b) => new Date(b.ts || 0) - new Date(a.ts || 0));
+  const box = document.getElementById("qc-activity");
+  if (!items.length) {
+    box.innerHTML = '<div class="empty-note">Nothing yet — upload a record or run a symptom check to get started.</div>';
     return;
   }
-  const fullUrl = API_ROOT + data.emergency_url_path;
-  document.getElementById("cv-qr-box").innerHTML =
-    '<img src="' + CV + '/qr.svg?data=' + encodeURIComponent(fullUrl) + '" alt="Emergency QR code">';
-  document.getElementById("cv-emerg-token").textContent = data.token;
+  box.innerHTML = items.slice(0, 6).map(it => (
+    '<div class="activity-row"><div class="activity-ic">' + it.ic + '</div><div class="activity-text">' + it.html + '</div><div class="activity-time">' + timeAgo(it.ts) + '</div></div>'
+  )).join("");
 }
-
-document.getElementById("cv-emerg-toggle").addEventListener("change", async (e) => {
-  const toggle = e.target;
-  const msg = document.getElementById("cv-emerg-msg");
-  toggle.disabled = true;
-  const wantOn = toggle.checked;
-  const { ok, data } = await cvPost("/settings", { emergency_access_enabled: wantOn });
-  toggle.disabled = false;
-  if (!ok || !data.ok) {
-    toggle.checked = !wantOn;
-    msg.className = "save-msg err";
-    msg.textContent = (data && data.error) || "Couldn't update that.";
-    return;
-  }
-  msg.className = "save-msg";
-  emergencyEnabled = wantOn;
-  renderEmergencyBody();
-  if (wantOn) await loadEmergencyToken();
-  await refreshOverview();
-});
-
-document.getElementById("cv-regen-btn").addEventListener("click", async () => {
-  const btn = document.getElementById("cv-regen-btn");
-  btn.disabled = true;
-  const { ok, data } = await cvPost("/emergency-token/regenerate", {});
-  btn.disabled = false;
-  const msg = document.getElementById("cv-emerg-msg");
-  if (!ok || !data.ok) { msg.className = "save-msg err"; msg.textContent = data.error || "Couldn't regenerate."; return; }
-  msg.className = "save-msg ok"; msg.textContent = "New code generated — the old one no longer works.";
-  await loadEmergencyToken();
-});
-
-document.getElementById("cv-revoke-btn").addEventListener("click", async () => {
-  const btn = document.getElementById("cv-revoke-btn");
-  btn.disabled = true;
-  const { ok, data } = await cvPost("/emergency-token/revoke", {});
-  btn.disabled = false;
-  const msg = document.getElementById("cv-emerg-msg");
-  if (!ok || !data.ok) { msg.className = "save-msg err"; msg.textContent = data.error || "Couldn't revoke."; return; }
-  msg.className = "save-msg ok"; msg.textContent = "Revoked.";
-  document.getElementById("cv-emerg-toggle").checked = false;
-  emergencyEnabled = false;
-  renderEmergencyBody();
-  await refreshOverview();
-});
 
 // ---- records ----
+let lastRecords = [];
 async function loadRecords() {
   const data = await cvGet("/records");
   const wrap = document.getElementById("cv-records-wrap");
   if (!data.ok || !data.records || !data.records.length) {
-    wrap.innerHTML = '<div class="empty-note">No records yet — upload one above to get started.</div>';
+    wrap.innerHTML = '<div class="empty-note">No records yet — upload one to get started.</div>';
+    lastRecords = [];
     return { count: 0 };
   }
+  lastRecords = data.records;
   const rows = data.records.map(r => (
     "<tr>" +
       "<td><div class=\"rec-title\">" + esc(r.title || r.original_filename || "Untitled") + "</div><span class=\"rec-cat\">" + esc((r.category || "other").replace(/_/g, " ")) + "</span></td>" +
@@ -505,30 +646,37 @@ async function loadRecords() {
       "<td>" + bytesToSize(r.size_bytes) + "</td>" +
     "</tr>"
   )).join("");
-  wrap.innerHTML =
-    "<table><thead><tr><th>Record</th><th>Date</th><th>File</th><th>Size</th></tr></thead><tbody>" + rows + "</tbody></table>";
+  wrap.innerHTML = "<table><thead><tr><th>Record</th><th>Date</th><th>File</th><th>Size</th></tr></thead><tbody>" + rows + "</tbody></table>";
   return { count: data.records.length };
 }
+
+// drag & drop wiring
+const dz = document.getElementById("cv-dropzone");
+const dzInput = document.getElementById("cv-rec-file");
+const dzFiles = document.getElementById("cv-dz-files");
+function refreshDzLabel() {
+  const n = dzInput.files.length;
+  dzFiles.textContent = n ? (n + " file" + (n > 1 ? "s" : "") + " selected") : "";
+}
+dz.addEventListener("click", () => dzInput.click());
+dzInput.addEventListener("change", refreshDzLabel);
+["dragenter", "dragover"].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.add("drag"); }));
+["dragleave", "drop"].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.remove("drag"); }));
+dz.addEventListener("drop", e => {
+  if (e.dataTransfer.files.length) { dzInput.files = e.dataTransfer.files; refreshDzLabel(); }
+});
 
 document.getElementById("cv-upload-form").addEventListener("submit", async (e) => {
   e.preventDefault();
   const btn = document.getElementById("cv-upload-btn");
-  const msg = document.getElementById("cv-upload-msg");
-  const fileInput = document.getElementById("cv-rec-file");
 
-  if (!fileInput.files.length) {
-    msg.className = "save-msg err";
-    msg.textContent = "Choose at least one file first.";
-    return;
-  }
+  if (!dzInput.files.length) { toast("Choose at least one file first.", "err"); return; }
 
   btn.disabled = true;
   btn.textContent = "Uploading…";
-  msg.className = "save-msg";
-  msg.textContent = "";
 
   const form = new FormData();
-  for (const f of fileInput.files) form.append("files", f);
+  for (const f of dzInput.files) form.append("files", f);
   form.append("title", document.getElementById("cv-rec-title").value || "");
   form.append("category", document.getElementById("cv-rec-category").value || "other");
   form.append("notes", document.getElementById("cv-rec-notes").value || "");
@@ -537,15 +685,15 @@ document.getElementById("cv-upload-form").addEventListener("submit", async (e) =
     const res = await fetch(CV + "/records/upload", { method: "POST", credentials: "include", body: form });
     const data = await res.json();
     if (!res.ok || !data.ok) throw new Error(data.error || "Couldn't upload that.");
-    msg.classList.add("ok");
-    msg.textContent = "Uploaded.";
+    toast("Record uploaded.", "ok");
     document.getElementById("cv-upload-form").reset();
+    dzFiles.textContent = "";
     fireConfetti();
-    await loadRecords();
-    await refreshOverview();
+    const recResult = await loadRecords();
+    renderActivity(lastRecords, lastSymptoms, lastLogs);
+    countUp(document.getElementById("st-records"), recResult.count);
   } catch (err) {
-    msg.classList.add("err");
-    msg.textContent = err.message || "Something went wrong.";
+    toast(err.message || "Something went wrong.", "err");
   } finally {
     btn.disabled = false;
     btn.textContent = "Upload";
@@ -570,18 +718,14 @@ async function loadVaultVitals() {
       "<td>" + fmt(v.weight_kg) + "</td>" +
     "</tr>"
   )).join("");
-  wrap.innerHTML =
-    "<table><thead><tr><th>When</th><th>HR</th><th>BP</th><th>SpO₂</th><th>Temp</th><th>Weight</th></tr></thead><tbody>" + rows + "</tbody></table>";
+  wrap.innerHTML = "<table><thead><tr><th>When</th><th>HR</th><th>BP</th><th>SpO₂</th><th>Temp</th><th>Weight</th></tr></thead><tbody>" + rows + "</tbody></table>";
 }
 
 document.getElementById("cv-vitals-form").addEventListener("submit", async (e) => {
   e.preventDefault();
   const btn = document.getElementById("cv-vitals-btn");
-  const msg = document.getElementById("cv-vitals-msg");
   btn.disabled = true;
   btn.textContent = "Saving…";
-  msg.className = "save-msg";
-  msg.textContent = "";
 
   const val = id => document.getElementById(id).value || null;
   const payload = {
@@ -601,19 +745,50 @@ document.getElementById("cv-vitals-form").addEventListener("submit", async (e) =
   try {
     const { ok, data } = await cvPost("/vitals", payload);
     if (!ok || !data.ok) throw new Error(data.error || "Couldn't save that reading.");
-    msg.classList.add("ok");
-    msg.textContent = "Saved to your Vault.";
+    toast("Saved to your Vault.", "ok");
     document.getElementById("cv-vitals-form").reset();
     fireConfetti();
     await loadVaultVitals();
   } catch (err) {
-    msg.classList.add("err");
-    msg.textContent = err.message || "Something went wrong.";
+    toast(err.message || "Something went wrong.", "err");
   } finally {
     btn.disabled = false;
     btn.textContent = "Save to Vault";
   }
 });
+
+// ---- symptom-check history (pulled from Insights) ----
+let lastSymptoms = [];
+async function loadSymptomHistory() {
+  const wrap = document.getElementById("cv-symptoms-wrap");
+  try {
+    const res = await fetch(API_BASE + "/insights/dashboard?days=365", { credentials: "include" });
+    const data = await res.json();
+    const history = (data && data.diagnosis_history) || [];
+    lastSymptoms = history;
+    if (!history.length) {
+      wrap.innerHTML = '<div class="empty-note">No symptom checks yet — run one from the Symptoms tab and it\'ll show up here.</div>';
+      return { count: 0 };
+    }
+    wrap.innerHTML = '<div class="symptom-list">' + history.map(s => {
+      const pct = Math.round((Number(s.match_strength) || 0) * 100);
+      const tClass = triageClass(s.triage);
+      return '<div class="symptom-card">' +
+        '<div class="sym-top">' +
+          '<div><div class="sym-name">' + esc(s.condition_name || "Unknown") + '</div>' +
+          '<div class="sym-meta"><span>' + fmtDate(s.ts) + '</span>' + (s.confidence_band ? '<span>· ' + esc(s.confidence_band) + ' confidence</span>' : '') + '</div></div>' +
+          '<span class="pill ' + esc(tClass) + '">' + esc(s.triage || s.risk || "—") + '</span>' +
+        '</div>' +
+        (pct ? '<div class="sym-bar-wrap"><div class="sym-bar" style="width:' + pct + '%"></div></div>' : '') +
+        ((s.signals && s.signals.length) ? '<details class="sym-signals"><summary>' + s.signals.length + ' signal' + (s.signals.length > 1 ? 's' : '') + '</summary>' + s.signals.map(sig => esc(typeof sig === "string" ? sig : (sig.label || sig.name || JSON.stringify(sig)))).join(", ") + '</details>' : '') +
+      '</div>';
+    }).join("") + '</div>';
+    return { count: history.length };
+  } catch (e) {
+    wrap.innerHTML = '<div class="empty-note">Couldn\'t load your symptom history right now.</div>';
+    return { count: 0 };
+  }
+}
 
 // ---- consent requests ----
 async function loadConsentRequests() {
@@ -629,7 +804,7 @@ async function loadConsentRequests() {
     const cats = (r.requested_categories || []).join(", ") || "full record";
     const actions = status === "pending"
       ? '<div class="row-actions">' +
-          '<button class="btn-ghost" data-decide="approved" data-id="' + esc(r.id) + '">Approve</button>' +
+          '<button class="btn-ghost go" data-decide="approved" data-id="' + esc(r.id) + '">Approve</button>' +
           '<button class="btn-ghost danger" data-decide="denied" data-id="' + esc(r.id) + '">Deny</button>' +
         '</div>'
       : '<span class="pill ' + esc(status) + '">' + esc(status) + '</span>';
@@ -644,14 +819,20 @@ async function loadConsentRequests() {
   wrap.querySelectorAll("[data-decide]").forEach(btn => {
     btn.addEventListener("click", async () => {
       btn.disabled = true;
+      const decision = btn.getAttribute("data-decide");
       const { ok, data } = await cvPost("/consent/decide", {
         request_id: btn.getAttribute("data-id"),
-        decision: btn.getAttribute("data-decide"),
+        decision: decision,
       });
       if (ok && data.ok) {
-        await loadConsentRequests();
-        await refreshOverview();
+        toast(decision === "approved" ? "Access approved." : "Access denied.", decision === "approved" ? "ok" : "err");
+        const consentResult = await loadConsentRequests();
+        countUp(document.getElementById("st-pending"), consentResult.pending);
+        const badge = document.getElementById("qc-access-badge");
+        if (consentResult.pending > 0) { badge.style.display = "inline-block"; badge.textContent = consentResult.pending; }
+        else { badge.style.display = "none"; }
       } else {
+        toast((data && data.error) || "Couldn't record that decision.", "err");
         btn.disabled = false;
       }
     });
@@ -661,13 +842,16 @@ async function loadConsentRequests() {
 }
 
 // ---- access log ----
+let lastLogs = [];
 async function loadAccessLogs() {
   const data = await cvGet("/access-logs");
   const wrap = document.getElementById("cv-logs-wrap");
   if (!data.ok || !data.logs || !data.logs.length) {
     wrap.innerHTML = '<div class="empty-note">No access recorded yet.</div>';
+    lastLogs = [];
     return { lastAccess: "Never" };
   }
+  lastLogs = data.logs;
   const rows = data.logs.slice(0, 8).map(l => (
     "<tr>" +
       "<td>" + esc(l.provider_name || l.accessed_by || "Provider") + "</td>" +
@@ -679,22 +863,24 @@ async function loadAccessLogs() {
   return { lastAccess: fmtDate(data.logs[0].created_at) };
 }
 
-// ---- overview / stat strip refresh ----
+// ---- overview refresh ----
 async function refreshOverview() {
-  const [statusData, recResult, consentResult, logResult] = await Promise.all([
+  const [statusData, recResult, symResult, consentResult, logResult] = await Promise.all([
     cvGet("/status"),
     loadRecords(),
+    loadSymptomHistory(),
     loadConsentRequests(),
     loadAccessLogs(),
   ]);
   const patient = (statusData.ok && statusData.patient) || {};
   renderStats({
     recordsCount: recResult.count || 0,
+    symptomCount: symResult.count || 0,
     pendingConsent: consentResult.pending || 0,
-    emergencyOn: !!patient.emergency_access_enabled,
     lastAccess: logResult.lastAccess || "Never",
   });
-  await loadEmergencyState(patient);
+  renderActivity(lastRecords, lastSymptoms, lastLogs);
+  return patient;
 }
 
 document.getElementById("qc-signout-btn").addEventListener("click", async () => {
@@ -718,7 +904,8 @@ document.getElementById("qc-signout-btn").addEventListener("click", async () => 
   document.getElementById("qc-user-dot").textContent = initials;
   document.getElementById("qc-user-name").textContent = name ? name.split(" ")[0] : "";
 
-  await refreshOverview();
+  const patient = await refreshOverview();
+  renderIdCard(patient, name);
   await loadVaultVitals();
 })();
 </script>
