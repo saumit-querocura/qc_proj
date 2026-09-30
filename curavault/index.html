@@ -23,11 +23,11 @@
 <style>
   * { box-sizing: border-box; }
   body { margin: 0; min-height: 100vh; font-family: 'Manrope', sans-serif; background: #f6f5f1; color: #100e2a; }
-  h1, h2, h3 { font-family: 'Space Grotesk', sans-serif; }
+  h1, h2, h3, .display { font-family: 'Space Grotesk', sans-serif; }
   a { color: #0e8f83; text-decoration: none; }
   a:hover { color: #0b6f66; }
 
-  /* ---- Top bar (ditto dashboard/vitals/symptoms) ---- */
+  /* ---- Top bar (ditto dashboard/vitals) ---- */
   .topbar { display: flex; align-items: center; justify-content: space-between; gap: 18px; flex-wrap: wrap; padding: 14px clamp(16px,4vw,32px); background: rgba(246,245,241,0.88); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(16,14,42,0.08); position: sticky; top: 0; z-index: 20; }
   .logo-wrap { display: flex; align-items: center; gap: 10px; flex: 0 0 auto; }
   .logo-wrap img { width: 34px; height: 31px; object-fit: contain; }
@@ -50,46 +50,91 @@
   .theme-toggle:hover { transform: translateY(-2px); }
   @media (max-width: 900px) { .tab-nav { order: 3; width: 100%; justify-content: flex-start; } }
 
-  .shell { max-width: 900px; margin: 0 auto; padding: 44px 24px 90px; text-align: center; }
+  .shell { max-width: 920px; margin: 0 auto; padding: 32px 24px 90px; }
 
-  .cv-badge { display: inline-flex; align-items: center; gap: 8px; padding: 5px 14px; border-radius: 999px; background: rgba(124,111,219,0.1); border: 1px solid rgba(124,111,219,0.24); color: #7c6fdb; font-size: 10.5px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 26px; }
-  .cv-badge .cv-badge-dot { width: 6px; height: 6px; border-radius: 50%; background: #7c6fdb; animation: cvBeacon 2s ease-out infinite; }
+  .page-head { margin-bottom: 22px; }
+  .page-eyebrow { display: inline-flex; align-items: center; gap: 8px; padding: 4px 12px; border-radius: 999px; background: rgba(124,111,219,0.1); border: 1px solid rgba(124,111,219,0.22); color: #7c6fdb; font-size: 10.5px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 12px; }
+  .page-eyebrow .eb-dot { width: 6px; height: 6px; border-radius: 50%; background: #7c6fdb; animation: cvBeacon 2s ease-out infinite; }
   @keyframes cvBeacon { 0% { box-shadow: 0 0 0 0 rgba(124,111,219,0.5); } 100% { box-shadow: 0 0 0 7px rgba(124,111,219,0); } }
-
-  /* ---- Vault hero: orbiting shield centerpiece ---- */
-  .vault-hero { position: relative; width: 260px; height: 260px; margin: 0 auto 30px; }
-  .vault-glow { position: absolute; inset: -30px; border-radius: 50%; background: radial-gradient(circle, rgba(14,143,131,0.16), transparent 65%); filter: blur(6px); animation: vaultGlowPulse 3.4s ease-in-out infinite; }
-  @keyframes vaultGlowPulse { 0%,100% { opacity: 0.6; transform: scale(0.94); } 50% { opacity: 1; transform: scale(1.04); } }
-  .vault-ring { position: absolute; inset: 20px; border-radius: 50%; border: 1.5px dashed rgba(16,14,42,0.14); animation: vaultSpin 26s linear infinite; }
-  .vault-ring.r2 { inset: 4px; border-color: rgba(14,143,131,0.16); animation-duration: 18s; animation-direction: reverse; }
-  @keyframes vaultSpin { to { transform: rotate(360deg); } }
-
-  .vault-orbit { position: absolute; inset: 0; animation: vaultSpin 20s linear infinite; }
-  .vault-orbit .orbit-item { position: absolute; top: 50%; left: 50%; width: 46px; height: 46px; margin: -23px; display: flex; align-items: center; justify-content: center; border-radius: 14px; background: #fff; border: 1px solid rgba(16,14,42,0.08); box-shadow: 0 10px 22px -12px rgba(16,14,42,0.3); font-size: 19px; animation: vaultSpin 20s linear infinite reverse; }
-  .vault-orbit .oi1 { transform: rotate(0deg) translate(118px) rotate(0deg); }
-  .vault-orbit .oi2 { transform: rotate(90deg) translate(118px) rotate(-90deg); }
-  .vault-orbit .oi3 { transform: rotate(180deg) translate(118px) rotate(-180deg); }
-  .vault-orbit .oi4 { transform: rotate(270deg) translate(118px) rotate(-270deg); }
-  /* keep icons upright while the parent spins by re-applying the same rotation, reversed, on the item itself via the animation above */
-  .vault-orbit .oi1, .vault-orbit .oi2, .vault-orbit .oi3, .vault-orbit .oi4 { animation-name: vaultSpin; }
-
-  .vault-core { position: absolute; inset: 78px; border-radius: 32px; background: linear-gradient(150deg, #100e2a, #1a1740); display: flex; align-items: center; justify-content: center; box-shadow: 0 24px 50px -20px rgba(16,14,42,0.45); }
-  .vault-core svg { width: 44px; height: 44px; }
-
-  .page-title { font-family: 'Fraunces', serif; font-size: clamp(28px,5vw,42px); font-weight: 600; margin: 0 0 12px; }
+  .page-title { font-family: 'Fraunces', serif; font-size: clamp(26px,4vw,34px); font-weight: 600; margin: 0 0 8px; }
   .page-title em { font-style: italic; background: linear-gradient(95deg,#0e8f83,#7c6fdb); -webkit-background-clip: text; background-clip: text; color: transparent; }
-  .page-sub { font-size: 15px; color: rgba(16,14,42,0.55); max-width: 520px; margin: 0 auto 36px; line-height: 1.6; }
+  .page-sub { font-size: 14.5px; color: rgba(16,14,42,0.55); margin: 0; max-width: 540px; line-height: 1.5; }
 
-  .feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 16px; text-align: left; margin-bottom: 30px; }
-  .feature-card { position: relative; overflow: hidden; background: #fff; border: 1px solid rgba(16,14,42,0.08); border-radius: 18px; padding: 22px 22px 20px; transition: transform 0.2s ease, box-shadow 0.2s ease; }
-  .feature-card:hover { transform: translateY(-4px); box-shadow: 0 18px 34px -18px rgba(16,14,42,0.25); }
-  .feature-card .fc-ic { font-size: 24px; margin-bottom: 12px; }
-  .feature-card .fc-title { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 14.5px; margin-bottom: 6px; }
-  .feature-card .fc-desc { font-size: 12.5px; color: rgba(16,14,42,0.55); line-height: 1.55; }
-  .fc-tag { display: inline-block; margin-top: 10px; font-size: 9.5px; font-weight: 800; letter-spacing: 0.05em; text-transform: uppercase; padding: 3px 9px; border-radius: 999px; background: rgba(124,111,219,0.1); color: #7c6fdb; }
+  /* ---- Stat strip (ditto vitals snapshot-strip, but plain stat cards -- no ring gauges, this data isn't ranged numerics) ---- */
+  .stat-strip { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; margin-bottom: 24px; }
+  .stat-card { position: relative; overflow: hidden; background: #fff; border-radius: 16px; padding: 16px 16px 14px; border: 1px solid rgba(16,14,42,0.08); display: flex; flex-direction: column; gap: 6px; }
+  .stat-card .st-ic { font-size: 18px; }
+  .stat-card .st-num { font-family: 'Fraunces', serif; font-size: 21px; font-weight: 600; line-height: 1.1; }
+  .stat-card .st-label { font-size: 11px; font-weight: 700; color: rgba(16,14,42,0.5); text-transform: uppercase; letter-spacing: 0.03em; }
+  .stat-card.on .st-num { color: #0e8f83; }
+  .stat-card.off .st-num { color: rgba(16,14,42,0.35); }
+  .stat-card.warn .st-num { color: #c98a10; }
 
-  .cv-cta { display: inline-flex; align-items: center; gap: 8px; background: #100e2a; color: #fff; font-size: 14.5px; font-weight: 700; padding: 13px 26px; border-radius: 999px; }
-  .cv-cta:hover { color: #fff; background: #221f4d; }
+  .card { position: relative; overflow: hidden; background: #fff; border-radius: 20px; padding: 26px 28px; border: 1px solid rgba(16,14,42,0.08); margin-bottom: 22px; }
+  .card::before { content: ''; position: absolute; top: -44px; right: -44px; width: 150px; height: 150px; border-radius: 50%; background: radial-gradient(circle, rgba(124,111,219,0.06), transparent 70%); pointer-events: none; }
+  .card > * { position: relative; }
+  .card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 18px; flex-wrap: wrap; }
+  .card-head h2 { font-size: 18px; margin: 0 0 4px; }
+  .card-head .card-sub { font-size: 12.5px; color: rgba(16,14,42,0.5); margin: 0; max-width: 440px; line-height: 1.5; }
+
+  /* ---- switch ---- */
+  .switch { position: relative; display: inline-block; width: 44px; height: 25px; flex: 0 0 auto; }
+  .switch input { opacity: 0; width: 0; height: 0; }
+  .switch .slider { position: absolute; inset: 0; background: rgba(16,14,42,0.16); border-radius: 999px; cursor: pointer; transition: background 0.2s ease; }
+  .switch .slider::before { content: ''; position: absolute; width: 19px; height: 19px; left: 3px; top: 3px; background: #fff; border-radius: 50%; transition: transform 0.2s ease; box-shadow: 0 2px 6px rgba(16,14,42,0.25); }
+  .switch input:checked + .slider { background: #7c6fdb; }
+  .switch input:checked + .slider::before { transform: translateX(19px); }
+  .switch input:disabled + .slider { opacity: 0.5; cursor: default; }
+
+  .emerg-body { display: none; }
+  .emerg-body.show { display: block; }
+  .emerg-off-note { font-size: 13px; color: rgba(16,14,42,0.5); padding: 6px 0 2px; }
+  .qr-row { display: flex; gap: 22px; align-items: center; flex-wrap: wrap; padding-top: 8px; }
+  .qr-box { flex: 0 0 auto; width: 132px; height: 132px; padding: 10px; background: #fff; border-radius: 16px; border: 1px solid rgba(16,14,42,0.1); display: flex; align-items: center; justify-content: center; }
+  .qr-box img { width: 100%; height: 100%; }
+  .qr-meta { flex: 1 1 220px; min-width: 200px; }
+  .qr-meta .qr-token { font-family: monospace; font-size: 12px; background: rgba(16,14,42,0.05); padding: 6px 10px; border-radius: 8px; word-break: break-all; display: inline-block; margin-bottom: 10px; }
+  .qr-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+  .btn-ghost { background: none; border: 1.5px solid rgba(16,14,42,0.16); color: #100e2a; font-family: 'Manrope', sans-serif; font-size: 12.5px; font-weight: 700; padding: 8px 15px; border-radius: 999px; cursor: pointer; transition: border-color 0.18s ease, background 0.18s ease; }
+  .btn-ghost:hover { background: rgba(16,14,42,0.05); }
+  .btn-ghost.danger { color: #b3401f; border-color: rgba(179,64,31,0.28); }
+  .btn-ghost.danger:hover { background: rgba(179,64,31,0.06); }
+  .btn-ghost:disabled { opacity: 0.55; cursor: default; }
+
+  .field label { display: block; font-size: 12.5px; font-weight: 700; margin-bottom: 6px; color: rgba(16,14,42,0.7); }
+  input, textarea, select { width: 100%; padding: 11px 13px; border-radius: 10px; border: 1.5px solid rgba(16,14,42,0.14); font-family: 'Manrope', sans-serif; font-size: 14.5px; color: #100e2a; background: #fff; outline: none; }
+  input:focus, textarea:focus, select:focus { border-color: #7c6fdb; box-shadow: 0 0 0 3px rgba(124,111,219,0.12); }
+  input[type="file"] { padding: 9px 10px; font-size: 13px; }
+  .upload-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 14px; margin-bottom: 14px; }
+  .upload-grid .notes-field, .upload-grid .file-field { grid-column: 1 / -1; }
+  .vitals-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 14px; }
+  .notes-field { grid-column: 1 / -1; }
+
+  .save-btn { position: relative; overflow: hidden; background: #7c6fdb; color: #fff; font-size: 15px; font-weight: 700; padding: 12px 28px; border-radius: 999px; border: none; cursor: pointer; font-family: 'Manrope', sans-serif; margin-top: 4px; transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease; }
+  .save-btn::after { content: ''; position: absolute; top: 0; left: -60%; width: 40%; height: 100%; background: linear-gradient(115deg, transparent, rgba(255,255,255,0.35), transparent); transform: skewX(-20deg); transition: left 0.6s ease; pointer-events: none; }
+  .save-btn:hover:not(:disabled)::after { left: 140%; }
+  .save-btn:hover:not(:disabled) { background: #6a5cc9; transform: translateY(-2px); box-shadow: 0 12px 24px -8px rgba(124,111,219,0.45); }
+  .save-btn:disabled { opacity: 0.6; cursor: default; }
+  .save-msg { font-size: 13.5px; font-weight: 600; margin-top: 12px; display: none; }
+  .save-msg.ok { color: #0e8f83; display: block; }
+  .save-msg.err { color: #b3401f; display: block; }
+
+  .empty-note { font-size: 14px; color: rgba(16,14,42,0.5); }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  th { text-align: left; padding: 10px 12px; color: rgba(16,14,42,0.55); font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: 0.03em; border-bottom: 1.5px solid rgba(16,14,42,0.08); }
+  td { padding: 12px; border-bottom: 1px solid rgba(16,14,42,0.06); vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  .rec-title { font-weight: 700; }
+  .rec-cat { display: inline-block; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; padding: 2px 8px; border-radius: 999px; background: rgba(124,111,219,0.1); color: #7c6fdb; margin-top: 3px; }
+  .pill { display: inline-block; font-size: 10.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; padding: 3px 10px; border-radius: 999px; }
+  .pill.pending { background: rgba(201,138,16,0.12); color: #c98a10; }
+  .pill.approved { background: rgba(14,143,131,0.12); color: #0e8f83; }
+  .pill.denied, .pill.expired { background: rgba(179,64,31,0.1); color: #b3401f; }
+  .row-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+  .row-actions button { font-size: 11.5px; padding: 6px 12px; }
+
+  .confetti-piece { position: fixed; top: -12px; width: 8px; height: 8px; border-radius: 2px; pointer-events: none; z-index: 999; animation: confettiFall 1.4s ease-in forwards; }
+  @keyframes confettiFall { to { transform: translateY(100vh) rotate(540deg); opacity: 0; } }
 
   html[data-theme="dark"] body { background: #0d0c1f; color: #f2f0f8; }
   html[data-theme="dark"] a { color: #7ee0d4; } html[data-theme="dark"] a:hover { color: #9beee0; }
@@ -103,12 +148,23 @@
   html[data-theme="dark"] .signout-btn { background: #7ee0d4; color: #100e2a; } html[data-theme="dark"] .signout-btn:hover { background: #9beee0; }
   html[data-theme="dark"] .theme-toggle { background: #18162e; border-color: rgba(255,255,255,0.14); }
   html[data-theme="dark"] .page-sub { color: #b7b3cc; }
-  html[data-theme="dark"] .vault-ring { border-color: rgba(255,255,255,0.12); }
-  html[data-theme="dark"] .vault-ring.r2 { border-color: rgba(126,224,212,0.18); }
-  html[data-theme="dark"] .vault-orbit .orbit-item { background: #18162e; border-color: rgba(255,255,255,0.1); }
-  html[data-theme="dark"] .feature-card { background: #18162e; border-color: rgba(255,255,255,0.1); }
-  html[data-theme="dark"] .feature-card .fc-desc { color: #a9a6bd; }
-  html[data-theme="dark"] .cv-cta { background: #7ee0d4; color: #100e2a; } html[data-theme="dark"] .cv-cta:hover { background: #9beee0; color: #100e2a; }
+  html[data-theme="dark"] .page-eyebrow { background: rgba(126,224,212,0.1); border-color: rgba(126,224,212,0.22); color: #7ee0d4; }
+  html[data-theme="dark"] .page-eyebrow .eb-dot { background: #7ee0d4; }
+  html[data-theme="dark"] .stat-card { background: #18162e; border-color: rgba(255,255,255,0.1); }
+  html[data-theme="dark"] .stat-card .st-label { color: #8f8ba3; }
+  html[data-theme="dark"] .card { background: #18162e; border-color: rgba(255,255,255,0.1); }
+  html[data-theme="dark"] .card-head .card-sub { color: #a9a6bd; }
+  html[data-theme="dark"] .field label { color: #b7b3cc; }
+  html[data-theme="dark"] input, html[data-theme="dark"] textarea, html[data-theme="dark"] select { background: #100e2a; color: #f2f0f8; border-color: rgba(255,255,255,0.14); }
+  html[data-theme="dark"] .empty-note { color: #8f8ba3; }
+  html[data-theme="dark"] th { color: #a9a6bd; border-bottom-color: rgba(255,255,255,0.12); }
+  html[data-theme="dark"] td { border-bottom-color: rgba(255,255,255,0.08); }
+  html[data-theme="dark"] .qr-box { background: #100e2a; border-color: rgba(255,255,255,0.12); }
+  html[data-theme="dark"] .qr-meta .qr-token { background: rgba(255,255,255,0.06); color: #cfccdf; }
+  html[data-theme="dark"] .btn-ghost { border-color: rgba(255,255,255,0.18); color: #f2f0f8; }
+  html[data-theme="dark"] .btn-ghost:hover { background: rgba(255,255,255,0.06); }
+  html[data-theme="dark"] .btn-ghost.danger { color: #ff8f6b; border-color: rgba(255,143,107,0.3); }
+  html[data-theme="dark"] .emerg-off-note { color: #8f8ba3; }
 </style>
 </head>
 <body>
@@ -136,59 +192,156 @@
   </div>
 
   <div class="shell">
-    <span class="cv-badge"><span class="cv-badge-dot"></span>In development</span>
-
-    <div class="vault-hero">
-      <div class="vault-glow"></div>
-      <div class="vault-ring"></div>
-      <div class="vault-ring r2"></div>
-      <div class="vault-orbit">
-        <div class="orbit-item oi1">📄</div>
-        <div class="orbit-item oi2">💊</div>
-        <div class="orbit-item oi3">🆔</div>
-        <div class="orbit-item oi4">🏥</div>
-      </div>
-      <div class="vault-core">
-        <svg viewBox="0 0 24 24" fill="none">
-          <rect x="4" y="10.5" width="16" height="10" rx="2.4" fill="url(#vaultGrad)"/>
-          <path d="M7.5 10.5V7.8a4.5 4.5 0 0 1 9 0v2.7" stroke="url(#vaultGrad)" stroke-width="1.8" fill="none"/>
-          <circle cx="12" cy="15" r="1.6" fill="#100e2a"/>
-          <defs><linearGradient id="vaultGrad" x1="4" y1="4" x2="20" y2="21" gradientUnits="userSpaceOnUse"><stop stop-color="#7ee0d4"/><stop offset="1" stop-color="#a89bf5"/></linearGradient></defs>
-        </svg>
-      </div>
+    <div class="page-head">
+      <span class="page-eyebrow"><span class="eb-dot"></span>CuraVault</span>
+      <h1 class="page-title">Your health, safely <em>vaulted</em>.</h1>
+      <p class="page-sub">Records, vitals, and emergency access in one consent-first place — nothing leaves your Vault unless you say so.</p>
     </div>
 
-    <h1 class="page-title">Your health, safely <em>vaulted</em>.</h1>
-    <p class="page-sub">CuraVault will be your consent-first health passport — every record, prescription, and emergency detail in one place, shareable with a doctor or hospital in seconds. It's still being built, so here's what's on the way.</p>
+    <div class="stat-strip" id="qc-stats"></div>
 
-    <div class="feature-grid">
-      <div class="feature-card">
-        <div class="fc-ic">📄</div>
-        <div class="fc-title">Records vault</div>
-        <div class="fc-desc">Upload and organize prescriptions, lab reports, and scans — encrypted and yours alone.</div>
-        <span class="fc-tag">Building</span>
+    <!-- Emergency access -->
+    <div class="card">
+      <div class="card-head">
+        <div>
+          <h2>Emergency access</h2>
+          <p class="card-sub">A scannable QR that gives a first responder your critical details in a genuine emergency — just what you choose to share, nothing more.</p>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="cv-emerg-toggle">
+          <span class="slider"></span>
+        </label>
       </div>
-      <div class="feature-card">
-        <div class="fc-ic">🆔</div>
-        <div class="fc-title">Emergency access</div>
-        <div class="fc-desc">A scannable QR that gives first responders your critical details in a genuine emergency — nothing more.</div>
-        <span class="fc-tag">Building</span>
+      <div class="emerg-off-note" id="cv-emerg-off-note">Turned off — enable it to generate your emergency QR code.</div>
+      <div class="emerg-body" id="cv-emerg-body">
+        <div class="qr-row">
+          <div class="qr-box" id="cv-qr-box"><span class="empty-note">…</span></div>
+          <div class="qr-meta">
+            <div class="qr-token" id="cv-emerg-token">—</div>
+            <div class="qr-actions">
+              <button class="btn-ghost" id="cv-regen-btn">Regenerate</button>
+              <button class="btn-ghost danger" id="cv-revoke-btn">Revoke</button>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="feature-card">
-        <div class="fc-ic">💊</div>
-        <div class="fc-title">Prescription tracking</div>
-        <div class="fc-desc">Keep current medications and dosages up to date, with reminders when refills are due.</div>
-        <span class="fc-tag">Planned</span>
-      </div>
-      <div class="feature-card">
-        <div class="fc-ic">🏥</div>
-        <div class="fc-title">Hospital-ready sharing</div>
-        <div class="fc-desc">Hand a provider a consent-scoped summary of your history in one tap — no faxing, no folders.</div>
-        <span class="fc-tag">Planned</span>
-      </div>
+      <div class="save-msg" id="cv-emerg-msg"></div>
     </div>
 
-    <a class="cv-cta" href="mailto:saumit@querocura.com,udantika@querocura.com?subject=CuraVault%20early%20access">Get notified when it's ready →</a>
+    <!-- Records -->
+    <div class="card">
+      <div class="card-head">
+        <div>
+          <h2>Records</h2>
+          <p class="card-sub">Upload a prescription, lab report, or scan — encrypted and yours alone.</p>
+        </div>
+      </div>
+      <form id="cv-upload-form">
+        <div class="upload-grid">
+          <div class="field">
+            <label for="cv-rec-title">Title</label>
+            <input type="text" id="cv-rec-title" placeholder="e.g. Blood panel — Sept 2026">
+          </div>
+          <div class="field">
+            <label for="cv-rec-category">Category</label>
+            <select id="cv-rec-category">
+              <option value="lab_report">Lab report</option>
+              <option value="prescription">Prescription</option>
+              <option value="scan">Scan / imaging</option>
+              <option value="discharge_summary">Discharge summary</option>
+              <option value="vaccination">Vaccination</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div class="field file-field">
+            <label for="cv-rec-file">File</label>
+            <input type="file" id="cv-rec-file" multiple>
+          </div>
+          <div class="field notes-field">
+            <label for="cv-rec-notes">Notes (optional)</label>
+            <textarea id="cv-rec-notes" rows="2"></textarea>
+          </div>
+        </div>
+        <button type="submit" class="save-btn" id="cv-upload-btn">Upload</button>
+        <div class="save-msg" id="cv-upload-msg"></div>
+      </form>
+      <div id="cv-records-wrap" style="margin-top:20px;"><div class="empty-note">Loading…</div></div>
+    </div>
+
+    <!-- Vault vitals -->
+    <div class="card">
+      <div class="card-head">
+        <div>
+          <h2>Vitals in your Vault</h2>
+          <p class="card-sub">A longitudinal log kept with your records — separate from the quick daily check on the Vitals tab.</p>
+        </div>
+      </div>
+      <form id="cv-vitals-form">
+        <div class="vitals-grid">
+          <div class="field">
+            <label for="cv-v-hr">Heart rate (bpm)</label>
+            <input type="number" id="cv-v-hr">
+          </div>
+          <div class="field">
+            <label for="cv-v-sys">Systolic BP</label>
+            <input type="number" id="cv-v-sys">
+          </div>
+          <div class="field">
+            <label for="cv-v-dia">Diastolic BP</label>
+            <input type="number" id="cv-v-dia">
+          </div>
+          <div class="field">
+            <label for="cv-v-spo2">SpO₂ (%)</label>
+            <input type="number" id="cv-v-spo2">
+          </div>
+          <div class="field">
+            <label for="cv-v-temp">Temperature (°C)</label>
+            <input type="number" step="0.1" id="cv-v-temp">
+          </div>
+          <div class="field">
+            <label for="cv-v-glucose">Glucose (mg/dL)</label>
+            <input type="number" step="0.1" id="cv-v-glucose">
+          </div>
+          <div class="field">
+            <label for="cv-v-weight">Weight (kg)</label>
+            <input type="number" step="0.1" id="cv-v-weight">
+          </div>
+          <div class="field">
+            <label for="cv-v-resp">Respiratory rate</label>
+            <input type="number" id="cv-v-resp">
+          </div>
+          <div class="field notes-field">
+            <label for="cv-v-notes">Notes</label>
+            <textarea id="cv-v-notes" rows="2"></textarea>
+          </div>
+        </div>
+        <button type="submit" class="save-btn" id="cv-vitals-btn">Save to Vault</button>
+        <div class="save-msg" id="cv-vitals-msg"></div>
+      </form>
+      <div id="cv-vitals-wrap" style="margin-top:20px;"><div class="empty-note">Loading…</div></div>
+    </div>
+
+    <!-- Consent requests -->
+    <div class="card">
+      <div class="card-head">
+        <div>
+          <h2>Access requests</h2>
+          <p class="card-sub">When a provider asks to view your Vault, it lands here — nothing is shared until you approve it.</p>
+        </div>
+      </div>
+      <div id="cv-consent-wrap"><div class="empty-note">Loading…</div></div>
+    </div>
+
+    <!-- Access log -->
+    <div class="card">
+      <div class="card-head">
+        <div>
+          <h2>Access log</h2>
+          <p class="card-sub">Every time your Vault is opened by someone other than you, it's recorded here.</p>
+        </div>
+      </div>
+      <div id="cv-logs-wrap"><div class="empty-note">Loading…</div></div>
+    </div>
   </div>
 
 <script>
@@ -205,13 +358,343 @@ function applyTheme(dark) {
 window.toggleTheme = function () { applyTheme(root.getAttribute('data-theme') !== 'dark'); };
 if (root.getAttribute('data-theme') === 'dark') applyTheme(true);
 
-const API_BASE = "https://app.querocura.com/api";
+const API_ROOT = "https://app.querocura.com";
+const API_BASE = API_ROOT + "/api";
+const CV = API_BASE + "/curavault";
 
-async function requireSession() {
-  const res = await fetch(API_BASE + "/auth/me", { credentials: "include" });
-  const data = await res.json();
-  if (!data.logged_in) { window.location.href = "../login/"; return null; }
-  return data.user;
+function fmt(v) { return (v === null || v === undefined || v === "") ? "—" : v; }
+function fmtDate(ts) {
+  if (!ts) return "—";
+  try { return new Date(ts.replace(" ", "T") + (ts.includes("Z") ? "" : "")).toLocaleString(); }
+  catch (e) { return ts; }
+}
+function esc(s) {
+  return String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+function bytesToSize(n) {
+  n = Number(n) || 0;
+  if (n < 1024) return n + " B";
+  if (n < 1024 * 1024) return (n / 1024).toFixed(1) + " KB";
+  return (n / (1024 * 1024)).toFixed(1) + " MB";
+}
+
+async function cvGet(path) {
+  const res = await fetch(CV + path, { credentials: "include" });
+  return res.json();
+}
+async function cvPost(path, body) {
+  const res = await fetch(CV + path, {
+    method: "POST", credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body || {}),
+  });
+  const data = await res.json().catch(() => ({}));
+  return { ok: res.ok, status: res.status, data };
+}
+
+function fireConfetti() {
+  const colors = ["#0e8f83", "#7c6fdb", "#2f8fd1", "#e0a52c"];
+  for (let i = 0; i < 26; i++) {
+    const p = document.createElement("div");
+    p.className = "confetti-piece";
+    p.style.left = (45 + Math.random() * 10) + "vw";
+    p.style.background = colors[i % colors.length];
+    p.style.animationDelay = (Math.random() * 0.2) + "s";
+    p.style.animationDuration = (1.1 + Math.random() * 0.6) + "s";
+    document.body.appendChild(p);
+    setTimeout(() => p.remove(), 2000);
+  }
+}
+
+// ---- stat strip ----
+function renderStats({ recordsCount, pendingConsent, emergencyOn, lastAccess }) {
+  const box = document.getElementById("qc-stats");
+  box.innerHTML =
+    '<div class="stat-card"><div class="st-ic">📄</div><div class="st-num">' + recordsCount + '</div><div class="st-label">Records</div></div>' +
+    '<div class="stat-card' + (pendingConsent > 0 ? ' warn' : '') + '"><div class="st-ic">🔔</div><div class="st-num">' + pendingConsent + '</div><div class="st-label">Pending requests</div></div>' +
+    '<div class="stat-card ' + (emergencyOn ? 'on' : 'off') + '"><div class="st-ic">🆔</div><div class="st-num">' + (emergencyOn ? 'On' : 'Off') + '</div><div class="st-label">Emergency access</div></div>' +
+    '<div class="stat-card"><div class="st-ic">🕒</div><div class="st-num" style="font-size:14.5px;">' + esc(lastAccess) + '</div><div class="st-label">Last accessed</div></div>';
+}
+
+// ---- emergency access ----
+let emergencyEnabled = false;
+
+async function loadEmergencyState(patient) {
+  emergencyEnabled = !!(patient && patient.emergency_access_enabled);
+  document.getElementById("cv-emerg-toggle").checked = emergencyEnabled;
+  renderEmergencyBody();
+  if (emergencyEnabled) await loadEmergencyToken();
+}
+
+function renderEmergencyBody() {
+  document.getElementById("cv-emerg-off-note").style.display = emergencyEnabled ? "none" : "block";
+  document.getElementById("cv-emerg-body").classList.toggle("show", emergencyEnabled);
+}
+
+async function loadEmergencyToken() {
+  const data = await cvGet("/emergency-token");
+  if (!data.ok) {
+    document.getElementById("cv-qr-box").innerHTML = '<span class="empty-note">Unavailable</span>';
+    document.getElementById("cv-emerg-token").textContent = data.error || "—";
+    return;
+  }
+  const fullUrl = API_ROOT + data.emergency_url_path;
+  document.getElementById("cv-qr-box").innerHTML =
+    '<img src="' + CV + '/qr.svg?data=' + encodeURIComponent(fullUrl) + '" alt="Emergency QR code">';
+  document.getElementById("cv-emerg-token").textContent = data.token;
+}
+
+document.getElementById("cv-emerg-toggle").addEventListener("change", async (e) => {
+  const toggle = e.target;
+  const msg = document.getElementById("cv-emerg-msg");
+  toggle.disabled = true;
+  const wantOn = toggle.checked;
+  const { ok, data } = await cvPost("/settings", { emergency_access_enabled: wantOn });
+  toggle.disabled = false;
+  if (!ok || !data.ok) {
+    toggle.checked = !wantOn;
+    msg.className = "save-msg err";
+    msg.textContent = (data && data.error) || "Couldn't update that.";
+    return;
+  }
+  msg.className = "save-msg";
+  emergencyEnabled = wantOn;
+  renderEmergencyBody();
+  if (wantOn) await loadEmergencyToken();
+  await refreshOverview();
+});
+
+document.getElementById("cv-regen-btn").addEventListener("click", async () => {
+  const btn = document.getElementById("cv-regen-btn");
+  btn.disabled = true;
+  const { ok, data } = await cvPost("/emergency-token/regenerate", {});
+  btn.disabled = false;
+  const msg = document.getElementById("cv-emerg-msg");
+  if (!ok || !data.ok) { msg.className = "save-msg err"; msg.textContent = data.error || "Couldn't regenerate."; return; }
+  msg.className = "save-msg ok"; msg.textContent = "New code generated — the old one no longer works.";
+  await loadEmergencyToken();
+});
+
+document.getElementById("cv-revoke-btn").addEventListener("click", async () => {
+  const btn = document.getElementById("cv-revoke-btn");
+  btn.disabled = true;
+  const { ok, data } = await cvPost("/emergency-token/revoke", {});
+  btn.disabled = false;
+  const msg = document.getElementById("cv-emerg-msg");
+  if (!ok || !data.ok) { msg.className = "save-msg err"; msg.textContent = data.error || "Couldn't revoke."; return; }
+  msg.className = "save-msg ok"; msg.textContent = "Revoked.";
+  document.getElementById("cv-emerg-toggle").checked = false;
+  emergencyEnabled = false;
+  renderEmergencyBody();
+  await refreshOverview();
+});
+
+// ---- records ----
+async function loadRecords() {
+  const data = await cvGet("/records");
+  const wrap = document.getElementById("cv-records-wrap");
+  if (!data.ok || !data.records || !data.records.length) {
+    wrap.innerHTML = '<div class="empty-note">No records yet — upload one above to get started.</div>';
+    return { count: 0 };
+  }
+  const rows = data.records.map(r => (
+    "<tr>" +
+      "<td><div class=\"rec-title\">" + esc(r.title || r.original_filename || "Untitled") + "</div><span class=\"rec-cat\">" + esc((r.category || "other").replace(/_/g, " ")) + "</span></td>" +
+      "<td>" + fmtDate(r.record_date || r.created_at) + "</td>" +
+      "<td>" + esc(r.original_filename || "—") + "</td>" +
+      "<td>" + bytesToSize(r.size_bytes) + "</td>" +
+    "</tr>"
+  )).join("");
+  wrap.innerHTML =
+    "<table><thead><tr><th>Record</th><th>Date</th><th>File</th><th>Size</th></tr></thead><tbody>" + rows + "</tbody></table>";
+  return { count: data.records.length };
+}
+
+document.getElementById("cv-upload-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const btn = document.getElementById("cv-upload-btn");
+  const msg = document.getElementById("cv-upload-msg");
+  const fileInput = document.getElementById("cv-rec-file");
+
+  if (!fileInput.files.length) {
+    msg.className = "save-msg err";
+    msg.textContent = "Choose at least one file first.";
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = "Uploading…";
+  msg.className = "save-msg";
+  msg.textContent = "";
+
+  const form = new FormData();
+  for (const f of fileInput.files) form.append("files", f);
+  form.append("title", document.getElementById("cv-rec-title").value || "");
+  form.append("category", document.getElementById("cv-rec-category").value || "other");
+  form.append("notes", document.getElementById("cv-rec-notes").value || "");
+
+  try {
+    const res = await fetch(CV + "/records/upload", { method: "POST", credentials: "include", body: form });
+    const data = await res.json();
+    if (!res.ok || !data.ok) throw new Error(data.error || "Couldn't upload that.");
+    msg.classList.add("ok");
+    msg.textContent = "Uploaded.";
+    document.getElementById("cv-upload-form").reset();
+    fireConfetti();
+    await loadRecords();
+    await refreshOverview();
+  } catch (err) {
+    msg.classList.add("err");
+    msg.textContent = err.message || "Something went wrong.";
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Upload";
+  }
+});
+
+// ---- vault vitals ----
+async function loadVaultVitals() {
+  const data = await cvGet("/vitals");
+  const wrap = document.getElementById("cv-vitals-wrap");
+  if (!data.ok || !data.vitals || !data.vitals.length) {
+    wrap.innerHTML = '<div class="empty-note">No vitals logged in your Vault yet.</div>';
+    return;
+  }
+  const rows = data.vitals.slice(0, 8).map(v => (
+    "<tr>" +
+      "<td>" + fmtDate(v.recorded_at) + "</td>" +
+      "<td>" + fmt(v.heart_rate) + "</td>" +
+      "<td>" + (v.systolic_bp != null && v.diastolic_bp != null ? v.systolic_bp + "/" + v.diastolic_bp : "—") + "</td>" +
+      "<td>" + fmt(v.spo2) + "</td>" +
+      "<td>" + fmt(v.temperature_c) + "</td>" +
+      "<td>" + fmt(v.weight_kg) + "</td>" +
+    "</tr>"
+  )).join("");
+  wrap.innerHTML =
+    "<table><thead><tr><th>When</th><th>HR</th><th>BP</th><th>SpO₂</th><th>Temp</th><th>Weight</th></tr></thead><tbody>" + rows + "</tbody></table>";
+}
+
+document.getElementById("cv-vitals-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const btn = document.getElementById("cv-vitals-btn");
+  const msg = document.getElementById("cv-vitals-msg");
+  btn.disabled = true;
+  btn.textContent = "Saving…";
+  msg.className = "save-msg";
+  msg.textContent = "";
+
+  const val = id => document.getElementById(id).value || null;
+  const payload = {
+    recorded_at: new Date().toISOString(),
+    source: "manual",
+    heart_rate: val("cv-v-hr"),
+    systolic_bp: val("cv-v-sys"),
+    diastolic_bp: val("cv-v-dia"),
+    spo2: val("cv-v-spo2"),
+    temperature_c: val("cv-v-temp"),
+    blood_glucose_mgdl: val("cv-v-glucose"),
+    weight_kg: val("cv-v-weight"),
+    respiratory_rate: val("cv-v-resp"),
+    notes: document.getElementById("cv-v-notes").value || "",
+  };
+
+  try {
+    const { ok, data } = await cvPost("/vitals", payload);
+    if (!ok || !data.ok) throw new Error(data.error || "Couldn't save that reading.");
+    msg.classList.add("ok");
+    msg.textContent = "Saved to your Vault.";
+    document.getElementById("cv-vitals-form").reset();
+    fireConfetti();
+    await loadVaultVitals();
+  } catch (err) {
+    msg.classList.add("err");
+    msg.textContent = err.message || "Something went wrong.";
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Save to Vault";
+  }
+});
+
+// ---- consent requests ----
+async function loadConsentRequests() {
+  const data = await cvGet("/consent/requests");
+  const wrap = document.getElementById("cv-consent-wrap");
+  if (!data.ok || !data.requests || !data.requests.length) {
+    wrap.innerHTML = '<div class="empty-note">No access requests right now.</div>';
+    return { pending: 0 };
+  }
+  const pending = data.requests.filter(r => r.status === "pending");
+  const rows = data.requests.slice(0, 10).map(r => {
+    const status = r.status || "pending";
+    const cats = (r.requested_categories || []).join(", ") || "full record";
+    const actions = status === "pending"
+      ? '<div class="row-actions">' +
+          '<button class="btn-ghost" data-decide="approved" data-id="' + esc(r.id) + '">Approve</button>' +
+          '<button class="btn-ghost danger" data-decide="denied" data-id="' + esc(r.id) + '">Deny</button>' +
+        '</div>'
+      : '<span class="pill ' + esc(status) + '">' + esc(status) + '</span>';
+    return "<tr>" +
+      "<td><div class=\"rec-title\">" + esc(r.provider_name || r.requested_by || "Provider") + "</div><div class=\"empty-note\">" + esc(cats) + "</div></td>" +
+      "<td>" + fmtDate(r.created_at) + "</td>" +
+      "<td>" + actions + "</td>" +
+    "</tr>";
+  }).join("");
+  wrap.innerHTML = "<table><thead><tr><th>Requested by</th><th>When</th><th>Decision</th></tr></thead><tbody>" + rows + "</tbody></table>";
+
+  wrap.querySelectorAll("[data-decide]").forEach(btn => {
+    btn.addEventListener("click", async () => {
+      btn.disabled = true;
+      const { ok, data } = await cvPost("/consent/decide", {
+        request_id: btn.getAttribute("data-id"),
+        decision: btn.getAttribute("data-decide"),
+      });
+      if (ok && data.ok) {
+        await loadConsentRequests();
+        await refreshOverview();
+      } else {
+        btn.disabled = false;
+      }
+    });
+  });
+
+  return { pending: pending.length };
+}
+
+// ---- access log ----
+async function loadAccessLogs() {
+  const data = await cvGet("/access-logs");
+  const wrap = document.getElementById("cv-logs-wrap");
+  if (!data.ok || !data.logs || !data.logs.length) {
+    wrap.innerHTML = '<div class="empty-note">No access recorded yet.</div>';
+    return { lastAccess: "Never" };
+  }
+  const rows = data.logs.slice(0, 8).map(l => (
+    "<tr>" +
+      "<td>" + esc(l.provider_name || l.accessed_by || "Provider") + "</td>" +
+      "<td>" + esc(l.reason || l.access_type || "—") + "</td>" +
+      "<td>" + fmtDate(l.created_at) + "</td>" +
+    "</tr>"
+  )).join("");
+  wrap.innerHTML = "<table><thead><tr><th>Who</th><th>Reason</th><th>When</th></tr></thead><tbody>" + rows + "</tbody></table>";
+  return { lastAccess: fmtDate(data.logs[0].created_at) };
+}
+
+// ---- overview / stat strip refresh ----
+async function refreshOverview() {
+  const [statusData, recResult, consentResult, logResult] = await Promise.all([
+    cvGet("/status"),
+    loadRecords(),
+    loadConsentRequests(),
+    loadAccessLogs(),
+  ]);
+  const patient = (statusData.ok && statusData.patient) || {};
+  renderStats({
+    recordsCount: recResult.count || 0,
+    pendingConsent: consentResult.pending || 0,
+    emergencyOn: !!patient.emergency_access_enabled,
+    lastAccess: logResult.lastAccess || "Never",
+  });
+  await loadEmergencyState(patient);
 }
 
 document.getElementById("qc-signout-btn").addEventListener("click", async () => {
@@ -220,12 +703,23 @@ document.getElementById("qc-signout-btn").addEventListener("click", async () => 
 });
 
 (async function init() {
-  const user = await requireSession();
-  if (!user) return;
+  const [meData, profData] = await Promise.all([
+    fetch(API_BASE + "/auth/me", { credentials: "include" }).then(r => r.json()).catch(() => ({ logged_in: false })),
+    fetch(API_BASE + "/profile", { credentials: "include" }).then(r => r.json()).catch(() => null),
+  ]);
+  if (!meData.logged_in) { window.location.href = "../login/"; return; }
+  const user = meData.user;
+  if (profData && profData.ok && profData.profile && !profData.profile.wizard_done) {
+    window.location.href = "../onboarding/";
+    return;
+  }
   const name = user.display_name || user.username || user.email || "";
   const initials = name ? name.trim().split(/\s+/).slice(0, 2).map(w => w[0].toUpperCase()).join("") : "?";
   document.getElementById("qc-user-dot").textContent = initials;
   document.getElementById("qc-user-name").textContent = name ? name.split(" ")[0] : "";
+
+  await refreshOverview();
+  await loadVaultVitals();
 })();
 </script>
 </body>
