@@ -516,8 +516,16 @@ function toast(msg, type) {
 }
 
 async function cvGet(path) {
-  const res = await fetch(CV + path, { credentials: "include" });
-  return res.json();
+  // Never throws: a network failure or a non-JSON error page from the
+  // server degrades to { ok: false }, which every caller below already
+  // knows how to render as an empty/error state, instead of rejecting
+  // and taking down whatever Promise.all/allSettled batch it's part of.
+  try {
+    const res = await fetch(CV + path, { credentials: "include" });
+    return await res.json();
+  } catch (e) {
+    return { ok: false, error: "Couldn't reach CuraVault." };
+  }
 }
 async function cvPost(path, body) {
   const res = await fetch(CV + path, {
@@ -632,7 +640,12 @@ let lastRecords = [];
 async function loadRecords() {
   const data = await cvGet("/records");
   const wrap = document.getElementById("cv-records-wrap");
-  if (!data.ok || !data.records || !data.records.length) {
+  if (!data.ok) {
+    wrap.innerHTML = '<div class="empty-note">Couldn\'t load your records right now. <a href="#" data-retry="records">Try again</a></div>';
+    lastRecords = [];
+    return { count: 0, ok: false };
+  }
+  if (!data.records || !data.records.length) {
     wrap.innerHTML = '<div class="empty-note">No records yet — upload one to get started.</div>';
     lastRecords = [];
     return { count: 0 };
@@ -785,8 +798,8 @@ async function loadSymptomHistory() {
     }).join("") + '</div>';
     return { count: history.length };
   } catch (e) {
-    wrap.innerHTML = '<div class="empty-note">Couldn\'t load your symptom history right now.</div>';
-    return { count: 0 };
+    wrap.innerHTML = '<div class="empty-note">Couldn\'t load your symptom history right now. <a href="#" data-retry="symptoms">Try again</a></div>';
+    return { count: 0, ok: false };
   }
 }
 
@@ -794,7 +807,11 @@ async function loadSymptomHistory() {
 async function loadConsentRequests() {
   const data = await cvGet("/consent/requests");
   const wrap = document.getElementById("cv-consent-wrap");
-  if (!data.ok || !data.requests || !data.requests.length) {
+  if (!data.ok) {
+    wrap.innerHTML = '<div class="empty-note">Couldn\'t load access requests right now. <a href="#" data-retry="consent">Try again</a></div>';
+    return { pending: 0, ok: false };
+  }
+  if (!data.requests || !data.requests.length) {
     wrap.innerHTML = '<div class="empty-note">No access requests right now.</div>';
     return { pending: 0 };
   }
@@ -846,7 +863,12 @@ let lastLogs = [];
 async function loadAccessLogs() {
   const data = await cvGet("/access-logs");
   const wrap = document.getElementById("cv-logs-wrap");
-  if (!data.ok || !data.logs || !data.logs.length) {
+  if (!data.ok) {
+    wrap.innerHTML = '<div class="empty-note">Couldn\'t load your access log right now. <a href="#" data-retry="logs">Try again</a></div>';
+    lastLogs = [];
+    return { lastAccess: "—", ok: false };
+  }
+  if (!data.logs || !data.logs.length) {
     wrap.innerHTML = '<div class="empty-note">No access recorded yet.</div>';
     lastLogs = [];
     return { lastAccess: "Never" };
@@ -864,14 +886,28 @@ async function loadAccessLogs() {
 }
 
 // ---- overview refresh ----
+// Promise.allSettled (not Promise.all): every one of these already
+// degrades to a safe { ok: false } / { count: 0 } shape on its own
+// (cvGet never throws, loadSymptomHistory has its own try/catch), but
+// allSettled is the belt-and-suspenders here -- if a rendering bug ever
+// makes one of them throw, the other four still finish and the page
+// still ends up with real content instead of being stuck on skeletons
+// forever with a dead Promise.all underneath it.
 async function refreshOverview() {
-  const [statusData, recResult, symResult, consentResult, logResult] = await Promise.all([
+  const settled = await Promise.allSettled([
     cvGet("/status"),
     loadRecords(),
     loadSymptomHistory(),
     loadConsentRequests(),
     loadAccessLogs(),
   ]);
+  const val = (i, fallback) => (settled[i].status === "fulfilled" ? settled[i].value : fallback);
+  const statusData = val(0, { ok: false });
+  const recResult = val(1, { count: 0 });
+  const symResult = val(2, { count: 0 });
+  const consentResult = val(3, { pending: 0 });
+  const logResult = val(4, { lastAccess: "—" });
+
   const patient = (statusData.ok && statusData.patient) || {};
   renderStats({
     recordsCount: recResult.count || 0,
@@ -880,8 +916,26 @@ async function refreshOverview() {
     lastAccess: logResult.lastAccess || "Never",
   });
   renderActivity(lastRecords, lastSymptoms, lastLogs);
+
+  const failures = settled.filter(s => s.status === "rejected").length +
+    [statusData, recResult, symResult, consentResult, logResult].filter(r => r.ok === false).length;
+  if (failures > 0) {
+    toast(failures === 1 ? "One part of your Vault didn't load — try refreshing." : "Some parts of your Vault didn't load — try refreshing.", "err");
+  }
+
   return patient;
 }
+
+document.addEventListener("click", (e) => {
+  const retry = e.target.closest("[data-retry]");
+  if (!retry) return;
+  e.preventDefault();
+  const kind = retry.getAttribute("data-retry");
+  if (kind === "records") loadRecords();
+  else if (kind === "symptoms") loadSymptomHistory();
+  else if (kind === "consent") loadConsentRequests();
+  else if (kind === "logs") loadAccessLogs();
+});
 
 document.getElementById("qc-signout-btn").addEventListener("click", async () => {
   await fetch(API_BASE + "/auth/logout", { method: "POST", credentials: "include" });
@@ -904,9 +958,21 @@ document.getElementById("qc-signout-btn").addEventListener("click", async () => 
   document.getElementById("qc-user-dot").textContent = initials;
   document.getElementById("qc-user-name").textContent = name ? name.split(" ")[0] : "";
 
-  const patient = await refreshOverview();
+  // refreshOverview() itself no longer throws (see its own comment), but
+  // this is the last line of defense: whatever happens, the ID card gets
+  // painted with at least the name/initials we already have, rather than
+  // staying on its "?" / "—" placeholders forever.
+  let patient = {};
+  try {
+    patient = await refreshOverview();
+  } catch (e) {
+    toast("Some parts of your Vault didn't load — try refreshing.", "err");
+  }
   renderIdCard(patient, name);
-  await loadVaultVitals();
+
+  try { await loadVaultVitals(); } catch (e) {
+    document.getElementById("cv-vitals-wrap").innerHTML = '<div class="empty-note">Couldn\'t load your vitals right now.</div>';
+  }
 })();
 </script>
 </body>
