@@ -37,7 +37,7 @@
         const style = element("style"); style.id = "cv-document-review-style";
         style.textContent = `
           .cv-review-dialog{width:min(850px,94vw);max-height:90vh;box-sizing:border-box;border:1px solid #d5dfda;border-radius:18px;padding:24px;color:#18352a;background:#fff}
-          .cv-review-dialog::backdrop{background:#10251acc}.cv-review-dialog h2{margin:0 0 12px}.cv-review-dialog h3{margin:22px 0 12px}
+          .cv-review-dialog form>.cv-review-field,.cv-review-wide>.cv-review-field{margin-bottom:12px}.cv-review-dialog [hidden]{display:none!important}.cv-review-dialog fieldset{display:flex;flex-wrap:wrap;gap:10px;padding:12px;border:1px solid #b9ccc0;border-radius:8px}.cv-review-dialog fieldset label{display:flex;align-items:center;gap:5px}.cv-review-dialog input[type=checkbox]{width:auto;margin-right:6px}.cv-review-dialog::backdrop{background:#10251acc}.cv-review-dialog h2{margin:0 0 12px}.cv-review-dialog h3{margin:22px 0 12px}
           .cv-review-card{border:1px solid #d8e2dc;border-radius:12px;padding:16px;margin:12px 0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
           .cv-review-field{display:flex;flex-direction:column;gap:6px;font-size:14px}.cv-review-field input,.cv-review-field select{padding:10px;border:1px solid #b9ccc0;border-radius:7px;width:100%;box-sizing:border-box;background:white;color:#18352a;font:inherit}
           .cv-review-dialog details,.cv-review-wide{grid-column:1/-1}.cv-review-dialog pre{white-space:pre-wrap;overflow-wrap:anywhere;font-size:13px;max-height:200px;overflow:auto}
@@ -76,12 +76,14 @@
       return this.render(review);
     }
     render(review) {
+      if (['queued', 'processing'].includes(review.status)) return this.processing(review);
       return new Promise(resolve => {
         const previousFocus = document.activeElement;
         const dialog = element("dialog", undefined, "cv-review-dialog");
         this.dialog = dialog; dialog.setAttribute("aria-labelledby", "cv-review-title");
         const title = element("h2", review.status === "confirmed" ? "Confirmed record" : "Review your medical record");
         title.id = "cv-review-title"; dialog.append(title);
+        const original = element('a', 'View original record'); original.href = this.api + '/records/' + encodeURIComponent(review.record_id) + '/original'; original.target = '_blank'; original.rel = 'noopener'; dialog.append(original);
         dialog.append(element("p", "Check extracted values and medicines against the original record. Handwriting and unclear photographs may need correction."));
         const form = element("form"); dialog.append(form);
         const errorBox = element("p", "", "cv-review-error"); errorBox.setAttribute("role", "alert"); form.append(errorBox);
@@ -128,16 +130,16 @@
           const meal = field(card, "Food instructions (if prescribed)", medicine.meal_relation); meal.maxLength = 80;
           const decision = choice(card, "How is this medicine taken?", [["", "Choose…"], ["scheduled", "At specified times"], ["as_needed", "As needed (no fixed reminders)"], ["not_to_be_taken", "medicine not to be taken"]]);
           decision.required = true;
-          const times = field(card, "When are you supposed to take it? (24-hour times)", (medicine.times || []).join(", "));
+          const times = field(card, "When are you supposed to take it? (24-hour times)", (medicine.times?.length ? medicine.times : medicine.reported_times || []).join(", "));
           times.placeholder = "e.g. 08:00, 20:00";
-          const start = field(card, "Start date (optional)", medicine.start_date, "date");
-          const end = field(card, "End date (optional)", medicine.end_date, "date");
+          const schedule = root.CuraVaultScheduleFields(card, medicine);
           const zone = field(card, "Timezone", medicine.timezone_name || Intl.DateTimeFormat().resolvedOptions().timeZone || "Asia/Kolkata");
+          schedule.bindInputs({name,times,zone},this.api);
           evidence(card, medicine.source || { text: medicine.instructions });
           decision.value = medicine.decision || "";
-          const toggle = () => { times.disabled = decision.value !== "scheduled"; times.required = decision.value === "scheduled"; if (decision.value !== "scheduled") times.value = ""; };
+          const toggle = () => { times.disabled = decision.value !== "scheduled"; times.required = decision.value === "scheduled"; schedule.setDecision(decision.value); if (['as_needed','not_to_be_taken'].includes(decision.value)) times.value = ""; };
           decision.addEventListener("change", toggle); toggle();
-          medicineRows.push({ medicine, card, name, strength, instructions, meal, decision, times, start, end, zone }); medicinesBox.append(card);
+          medicineRows.push({ medicine, card, name, strength, instructions, meal, decision, times, schedule, zone }); medicinesBox.append(card);
         };
         for (const medicine of displayMedicines || []) addMedicine(medicine);
         const add = element("button", "Add a missed medicine"); add.type = "button";
@@ -145,7 +147,7 @@
         const allText = element("details"); allText.append(element("summary", "All extracted text"));
         allText.append(element("pre", review.extraction?.text || "No readable text.")); form.append(allText);
         let acknowledge;
-        if (review.status === "failed") {
+        if (review.status === "failed" || review.warnings?.some(warning => warning.includes('unreadable_text'))) {
           const label = element("label", "I understand this record could not be read and will review the original.");
           acknowledge = element("input"); acknowledge.type = "checkbox"; label.prepend(acknowledge); form.append(label);
         }
@@ -173,20 +175,46 @@
           errorBox.textContent = "";
           const observations = rows.map(row => ({ candidate_id: row.observation.candidate_id, decision: row.decision.value,
             value: row.value.value === "" ? null : Number(row.value.value), unit: row.unit.value.trim(), comparator: row.comparator.value, reported_date: row.reportedDate.value }));
-          const medicines = medicineRows.map(row => ({ ...row.medicine, name: row.name.value.trim(), strength: row.strength.value.trim(),
+          let medicines;
+          try { medicines = medicineRows.map(row => ({ ...row.medicine, name: row.name.value.trim(), strength: row.strength.value.trim(),
             instructions: row.instructions.value.trim(), meal_relation: row.meal.value.trim(), decision: row.decision.value,
             times: row.decision.value === "scheduled" ? row.times.value.split(",").map(x => x.trim()).filter(Boolean) : [],
-            start_date: row.start.value, end_date: row.end.value, timezone_name: row.zone.value.trim() }));
+            ...row.schedule.value(), timezone_name: row.zone.value.trim() })); }
+          catch (error) { errorBox.textContent = error.message; return; }
           const payload = { revision: review.revision, idempotency_key: attempt.key, observations, medicines, acknowledge_unreadable: !!acknowledge?.checked };
           submit.disabled = retry.disabled = true; submit.textContent = "Saving review…";
           try {
             await this.request("/records/" + encodeURIComponent(review.record_id) + "/review/confirm", payload);
             this.pending.delete(review.record_id); this.notify("Reviewed values and medicine decisions saved.", "ok"); dialog.close();
+            document.dispatchEvent(new CustomEvent('cv-medications-changed'));
           } catch (error) { errorBox.textContent = error.message; }
           finally { submit.disabled = retry.disabled = false; submit.textContent = "Confirm reviewed values and medicines"; }
         });
         dialog.addEventListener("close", () => { dialog.remove(); this.dialog = null; previousFocus?.focus(); if (!replacing) resolve(); }, { once: true });
         document.body.append(dialog); dialog.showModal(); later.focus();
+      });
+    }
+    processing(review) {
+      return new Promise(resolve => {
+        const dialog = element('dialog', undefined, 'cv-review-dialog'); this.dialog = dialog;
+        dialog.append(element('h2', 'Reading your medical record'));
+        const status = element('p', 'Your encrypted original is saved. Recognition is running on our server.'); status.setAttribute('aria-live', 'polite'); dialog.append(status);
+        const later = element('button', 'Review later'); later.type = 'button'; later.onclick = () => dialog.close(); dialog.append(later);
+        const check = element('button', 'Check status'); check.type = 'button'; dialog.append(check);
+        let closed = false, replacing = false, timer;
+        dialog.addEventListener('close', () => { closed = true; clearTimeout(timer); dialog.remove(); this.dialog = null; if (!replacing) resolve(); }, { once: true });
+        const poll = async (attempt = 0) => {
+          if (closed) return; check.disabled = true;
+          try {
+            const updated = await this.request('/records/' + encodeURIComponent(review.record_id) + '/review');
+            if (closed) return;
+            if (!['queued', 'processing'].includes(updated.status)) { replacing = true; dialog.close(); await this.render(updated); resolve(); return; }
+            status.textContent = updated.status === 'queued' ? 'Waiting to process this record. You can review it later.' : 'Reading the record and matching values and medicines…';
+            if (attempt < 30) timer = setTimeout(() => poll(attempt + 1), Math.min(4000, 1000 + attempt * 250));
+            else { status.textContent = 'Processing is taking longer. Your original is saved; check again or review later.'; check.disabled = false; }
+          } catch (error) { status.textContent = error.message; check.disabled = false; }
+        };
+        check.onclick = () => poll(); document.body.append(dialog); dialog.showModal(); later.focus(); poll();
       });
     }
   }
