@@ -213,6 +213,51 @@
     .hero-score { align-self: center; }
     .freq-row .fq-name { width: 96px; }
   }
+
+  /* ---- Ongoing conditions, alerts, action plan, doctor questions ---- */
+  .cond-list { display: flex; flex-direction: column; gap: 10px; }
+  .cond-row { display: flex; align-items: flex-start; gap: 12px; padding: 14px 16px; border-radius: 14px; background: #fbfaf6; border: 1px solid rgba(16,14,42,0.08); }
+  .cond-ic { width: 38px; height: 38px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex: 0 0 auto; background: rgba(14,143,131,0.1); }
+  .cond-main { flex: 1; min-width: 0; }
+  .cond-name { font-weight: 800; font-size: 14.5px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .cond-note { font-size: 12.5px; color: rgba(16,14,42,0.6); line-height: 1.5; margin-top: 3px; }
+  .cond-meta { font-size: 11.5px; color: rgba(16,14,42,0.45); margin-top: 4px; font-weight: 600; }
+  .badge { font-size: 10px; font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase; padding: 3px 9px; border-radius: 999px; }
+  .badge.profile { background: rgba(124,111,219,0.14); color: #5b4fc0; }
+  .badge.symptom_check { background: rgba(47,143,209,0.14); color: #1e6aa3; }
+  .badge.both { background: rgba(14,143,131,0.14); color: #0b6f66; }
+  .badge.recurring { background: rgba(201,138,16,0.16); color: #8a5f0a; }
+  .badge.urgent { background: rgba(210,79,40,0.14); color: #b3401f; }
+  .past-line { margin-top: 14px; font-size: 13px; color: rgba(16,14,42,0.6); line-height: 1.6; }
+  .past-line b { color: #100e2a; }
+  .conf-chip { display: inline-block; margin-top: 8px; font-size: 11px; font-weight: 800; padding: 4px 11px; border-radius: 999px; background: rgba(16,14,42,0.06); color: rgba(16,14,42,0.6); }
+  .alert-row { display: flex; gap: 12px; align-items: flex-start; padding: 12px 14px; border-radius: 14px; margin-bottom: 10px; background: color-mix(in srgb, var(--ac) 9%, transparent); border-left: 4px solid var(--ac); }
+  .alert-row:last-child { margin-bottom: 0; }
+  .alert-title { font-weight: 800; font-size: 13.5px; color: var(--ac); }
+  .alert-msg { font-size: 13px; line-height: 1.5; color: rgba(16,14,42,0.72); margin-top: 2px; }
+  .alert-cta { display: inline-block; margin-top: 6px; font-size: 12px; font-weight: 800; color: var(--ac); }
+  .plan-row { display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid rgba(16,14,42,0.07); align-items: flex-start; }
+  .plan-row:last-child { border-bottom: none; padding-bottom: 0; }
+  .prio { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; padding: 3px 9px; border-radius: 999px; flex: 0 0 auto; margin-top: 2px; }
+  .prio.high { background: rgba(210,79,40,0.14); color: #b3401f; } .prio.medium { background: rgba(201,138,16,0.16); color: #8a5f0a; } .prio.low { background: rgba(14,143,131,0.12); color: #0b6f66; }
+  .plan-title { font-weight: 700; font-size: 14px; } .plan-detail { font-size: 12.5px; color: rgba(16,14,42,0.6); line-height: 1.5; margin-top: 2px; }
+  .q-list { margin: 0; padding-left: 20px; font-size: 14px; line-height: 1.7; } .q-list li { margin-bottom: 6px; }
+  .btn-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+  .btn-soft { background: transparent; border: 1.5px solid rgba(16,14,42,0.16); color: #100e2a; font-family: 'Manrope', sans-serif; font-size: 13px; font-weight: 700; padding: 9px 18px; border-radius: 999px; cursor: pointer; text-decoration: none; display: inline-block; transition: transform 0.18s, background 0.18s; }
+  .btn-soft:hover { background: rgba(16,14,42,0.05); transform: translateY(-2px); color: #100e2a; }
+  .gap-row { display: flex; align-items: center; gap: 12px; padding: 11px 0; border-bottom: 1px solid rgba(16,14,42,0.07); }
+  .gap-row:last-child { border-bottom: none; padding-bottom: 0; }
+  .gap-main { flex: 1; min-width: 0; } .gap-title { font-weight: 700; font-size: 13.5px; } .gap-detail { font-size: 12.5px; color: rgba(16,14,42,0.55); }
+  .pulse-chip { display: inline-flex; align-items: center; gap: 7px; padding: 6px 13px; border-radius: 999px; font-size: 12.5px; font-weight: 800; }
+  html[data-theme="dark"] .cond-row { background: #100e2a; border-color: rgba(255,255,255,0.1); }
+  html[data-theme="dark"] .cond-note, html[data-theme="dark"] .past-line, html[data-theme="dark"] .alert-msg, html[data-theme="dark"] .plan-detail, html[data-theme="dark"] .gap-detail { color: #b7b3cc; }
+  html[data-theme="dark"] .cond-meta { color: #8f8ba3; } html[data-theme="dark"] .past-line b { color: #f2f0f8; }
+  html[data-theme="dark"] .badge.profile { color: #c1b8ff; } html[data-theme="dark"] .badge.symptom_check { color: #8cc7f0; } html[data-theme="dark"] .badge.both { color: #7ee0d4; }
+  html[data-theme="dark"] .badge.recurring { color: #f0c060; } html[data-theme="dark"] .badge.urgent { color: #f0a488; }
+  html[data-theme="dark"] .prio.high { color: #f0a488; } html[data-theme="dark"] .prio.medium { color: #f0c060; } html[data-theme="dark"] .prio.low { color: #7ee0d4; }
+  html[data-theme="dark"] .conf-chip { background: rgba(255,255,255,0.08); color: #b7b3cc; }
+  html[data-theme="dark"] .btn-soft { color: #f2f0f8; border-color: rgba(255,255,255,0.2); } html[data-theme="dark"] .btn-soft:hover { background: rgba(255,255,255,0.07); color: #f2f0f8; }
+  html[data-theme="dark"] .plan-row, html[data-theme="dark"] .gap-row { border-bottom-color: rgba(255,255,255,0.09); }
 </style>
 </head>
 <body>
@@ -224,8 +269,9 @@
 
     <nav class="tab-nav">
       <a class="tab-link" href="../symptoms/"><span class="tl-ic">🔍</span>Symptoms</a>
-      <a class="tab-link soon" href="#" onclick="return false;"><span class="tl-ic">💬</span>Dr. Cura<span class="soon-tag">Soon</span></a>
+      <a class="tab-link soon" href="#" onclick="return false;" title="Chat with Cura — coming soon"><span class="tl-ic">💬</span>Cura Chat<span class="soon-tag">Soon</span></a>
       <a class="tab-link" href="../vitals/"><span class="tl-ic">❤️</span>Vitals</a>
+      <a class="tab-link" href="../calendar/"><span class="tl-ic">📅</span>Calendar</a>
       <a class="tab-link" href="../curavault/"><span class="tl-ic">🔒</span>CuraVault</a>
       <a class="tab-link" href="../dashboard/"><span class="tl-ic">🏠</span>Dashboard</a>
       <a class="tab-link active" href="#"><span class="tl-ic">✨</span>Insights</a>
@@ -269,6 +315,7 @@
             </div>
           </div>
           <span class="hero-score-status" id="hero-score-status"></span>
+          <span class="conf-chip" id="hero-score-conf" style="display:none;"></span>
         </div>
       </div>
     </div>
@@ -277,6 +324,18 @@
       <button class="day-btn" data-days="7">7d</button>
       <button class="day-btn active" data-days="30">30d</button>
       <button class="day-btn" data-days="90">90d</button>
+    </div>
+
+    <div class="card" id="qc-alerts-card" style="display:none;">
+      <h2>🔔 Needs your attention</h2>
+      <p class="card-sub">Flagged from your vitals, symptom checks and follow-ups.</p>
+      <div id="qc-alerts-wrap"></div>
+    </div>
+
+    <div class="card">
+      <h2>🩺 Ongoing conditions</h2>
+      <p class="card-sub">Everything counted as "ongoing" in your health score — from your profile and from recent symptom checks.</p>
+      <div id="qc-ongoing-wrap"><div class="empty-note">Loading…</div></div>
     </div>
 
     <div class="card">
@@ -295,6 +354,24 @@
       <h2>🩺 Most frequent symptom checks</h2>
       <p class="card-sub">What's come up most often in your symptom checks during this window.</p>
       <div id="qc-freq-wrap"><div class="empty-note">Loading…</div></div>
+    </div>
+
+    <div class="card" id="qc-plan-card" style="display:none;">
+      <h2>✅ Your action plan</h2>
+      <p class="card-sub">Next steps, in order of priority — suggestions, not a treatment plan.</p>
+      <div id="qc-plan-wrap"></div>
+    </div>
+
+    <div class="card" id="qc-q-card" style="display:none;">
+      <h2>🗣️ Questions for your next doctor visit</h2>
+      <p class="card-sub">Built from your own data, so you don't forget what to ask.</p>
+      <div id="qc-q-wrap"></div>
+    </div>
+
+    <div class="card" id="qc-gaps-card" style="display:none;">
+      <h2>🧩 Sharpen your picture</h2>
+      <p class="card-sub">A few things that would make these insights more accurate.</p>
+      <div id="qc-gaps-wrap"></div>
     </div>
   </div>
 
@@ -407,30 +484,111 @@ function renderCharts(vitalsDashboard) {
 }
 
 function renderRisk(risk) {
-  const C = 2 * Math.PI * 56;
-  const score = (risk && typeof risk.score === "number") ? risk.score : 0;
-  const color = (risk && risk.color) || "#0e8f83";
+  const v = QC.scoreView(risk);
   const fg = document.getElementById("hero-score-fg");
-  fg.style.strokeDasharray = C;
-  fg.style.strokeDashoffset = C - (score / 100) * C;
-  fg.setAttribute("stroke", color);
-  document.getElementById("hero-score-num").textContent = (risk && risk.has_data) ? score : "—";
+  fg.style.strokeDasharray = v.C;
+  fg.style.strokeDashoffset = v.offset;
+  fg.setAttribute("stroke", v.color);
+  document.getElementById("hero-score-num").textContent = v.num;
   const statusEl = document.getElementById("hero-score-status");
-  statusEl.textContent = (risk && risk.has_data) ? (risk.band || "") : "Not enough data yet";
-  statusEl.style.color = color;
+  statusEl.textContent = v.band;
+  statusEl.style.color = v.color;
+  const conf = document.getElementById("hero-score-conf");
+  conf.style.display = v.has ? "" : "none";
+  conf.textContent = v.confidence + (risk && risk.window_days ? " · last " + risk.window_days + " days" : "");
 
   const list = document.getElementById("qc-factor-list");
-  const factors = (risk && risk.factors) || [];
+  const factors = (risk && risk.has_data && risk.factors) || [];
   if (!factors.length) {
-    list.innerHTML = '';
+    list.innerHTML = risk && risk.has_data ? '<div class="factor-row"><span class="fr-label">Nothing is pulling your score down right now 🎉</span></div>' : '<div class="factor-row"><span class="fr-label">' + QC.esc(v.note) + '</span></div>';
     return;
   }
   list.innerHTML = factors.map(f => (
     '<div class="factor-row">' +
-      '<span class="fr-label">' + f.label + '</span>' +
+      '<span class="fr-label">' + QC.esc(f.label) + '</span>' +
       '<span class="fr-impact" style="color:' + (f.impact < 0 ? '#d24f28' : '#0e8f83') + '">' + (f.impact > 0 ? '+' : '') + f.impact + '</span>' +
     '</div>'
   )).join("");
+}
+
+const SEV_COLORS = { emergency: "#b3182a", urgent: "#d24f28", caution: "#c98a10", watch: "#2f8fd1", info: "#6b6885" };
+function renderAlerts(alerts) {
+  const card = document.getElementById("qc-alerts-card"), box = document.getElementById("qc-alerts-wrap");
+  if (!alerts || !alerts.length) { card.style.display = "none"; return; }
+  card.style.display = "";
+  box.innerHTML = alerts.map(a =>
+    '<div class="alert-row" style="--ac:' + (SEV_COLORS[a.severity] || "#6b6885") + '"><div>' +
+      '<div class="alert-title">' + QC.esc(a.title) + '</div>' +
+      (a.message ? '<div class="alert-msg">' + QC.esc(a.message) + '</div>' : '') +
+      (a.href ? '<a class="alert-cta" href="' + QC.esc(a.href) + '">' + QC.esc(a.cta || "Open") + ' →</a>' : '') +
+    '</div></div>'
+  ).join("");
+}
+
+const SOURCE_TEXT = { profile: "From your profile", symptom_check: "From a symptom check", both: "Profile + symptom check" };
+function renderOngoing(og) {
+  const wrap = document.getElementById("qc-ongoing-wrap");
+  const items = (og && og.items) || [];
+  const past = (og && og.past) || [];
+  if (!items.length && !past.length) {
+    wrap.innerHTML = '<div class="empty-state"><img src="../assets/6abe27005847b6683a14deef5164e1c7.png" alt="">' +
+      '<div class="es-title">No ongoing conditions</div>' +
+      '<div class="es-sub">Nothing on your profile, and no recent symptom check has suggested one. If something applies to you, add it to your profile.</div>' +
+      '<button type="button" class="es-cta" onclick="window.location.href=\'../profile/\';">Update profile</button></div>';
+    return;
+  }
+  let html = '';
+  if (items.length) {
+    html += '<div class="cond-list">' + items.map(i => {
+      const icon = i.source === "symptom_check" ? "🔍" : "🩺";
+      const flagBadge = i.urgent ? '<span class="badge urgent">Urgent</span>' : i.status === "recurring" ? '<span class="badge recurring">Recurring</span>' : '';
+      const meta = [];
+      if (i.count) meta.push(i.count + "× in symptom checks");
+      if (i.last_seen) meta.push("last " + fmtDate(i.last_seen));
+      return '<div class="cond-row"><div class="cond-ic">' + icon + '</div><div class="cond-main">' +
+        '<div class="cond-name">' + QC.esc(i.name) + '<span class="badge ' + i.source + '">' + (SOURCE_TEXT[i.source] || "") + '</span>' + flagBadge + '</div>' +
+        '<div class="cond-note">' + QC.esc(i.note || "") + '</div>' +
+        (meta.length ? '<div class="cond-meta">' + meta.join(" · ") + '</div>' : '') +
+      '</div></div>';
+    }).join("") + '</div>';
+    html += '<div class="btn-row"><a class="btn-soft" href="../profile/">Edit conditions in profile</a><a class="btn-soft" href="../symptoms/">Run a symptom check</a></div>';
+  } else {
+    html += '<div class="empty-note">No ongoing conditions right now.</div>';
+  }
+  if (past.length) {
+    html += '<div class="past-line"><b>Past conditions &amp; surgeries:</b> ' + past.map(QC.esc).join(" · ") + ' <span style="opacity:.7">(resolved — they only nudge your score slightly)</span></div>';
+  }
+  wrap.innerHTML = html;
+}
+
+function renderPlan(plan) {
+  const card = document.getElementById("qc-plan-card"), box = document.getElementById("qc-plan-wrap");
+  if (!plan || !plan.length) { card.style.display = "none"; return; }
+  card.style.display = "";
+  box.innerHTML = plan.map(a =>
+    '<div class="plan-row"><span class="prio ' + QC.esc(a.priority) + '">' + QC.esc(a.priority) + '</span><div><div class="plan-title">' + QC.esc(a.title) + '</div><div class="plan-detail">' + QC.esc(a.detail || "") + '</div></div></div>'
+  ).join("");
+}
+
+function renderQuestions(qs) {
+  const card = document.getElementById("qc-q-card"), box = document.getElementById("qc-q-wrap");
+  if (!qs || !qs.length) { card.style.display = "none"; return; }
+  card.style.display = "";
+  box.innerHTML = '<ol class="q-list">' + qs.map(q => '<li>' + QC.esc(q) + '</li>').join("") + '</ol>' +
+    '<div class="btn-row"><button type="button" class="btn-soft" id="q-copy">📋 Copy questions</button><a class="btn-soft" href="../calendar/?new=1&type=doctor">📅 Schedule the visit</a></div>';
+  document.getElementById("q-copy").addEventListener("click", () => {
+    QC.copy(qs.map((q, i) => (i + 1) + ". " + q).join("\n")).then(() => QC.toast("Questions copied — paste them into your notes.", "ok"), () => QC.toast("Couldn't copy.", "err"));
+  });
+}
+
+function renderGaps(gaps) {
+  const card = document.getElementById("qc-gaps-card"), box = document.getElementById("qc-gaps-wrap");
+  if (!gaps || !gaps.length) { card.style.display = "none"; return; }
+  card.style.display = "";
+  box.innerHTML = gaps.map(g =>
+    '<div class="gap-row"><span style="font-size:20px">' + (g.icon || "💡") + '</span><div class="gap-main"><div class="gap-title">' + QC.esc(g.title) + '</div><div class="gap-detail">' + QC.esc(g.detail || "") + '</div></div>' +
+    '<a class="btn-soft" href="' + QC.esc(g.href || "#") + '">' + QC.esc(g.cta || "Open") + '</a></div>'
+  ).join("");
 }
 
 function renderCorrelations(correlations) {
@@ -471,18 +629,26 @@ function renderFrequency(freq) {
 let qcDays = 30;
 async function loadInsights(days) {
   qcDays = days || qcDays;
-  ["qc-chart-wrap", "qc-insight-wrap", "qc-freq-wrap"].forEach(id => {
+  ["qc-chart-wrap", "qc-insight-wrap", "qc-freq-wrap", "qc-ongoing-wrap"].forEach(id => {
     document.getElementById(id).innerHTML = '<div class="empty-note">Loading…</div>';
   });
   try {
-    const res = await fetch(API_BASE + "/insights/dashboard?days=" + qcDays, { credentials: "include" });
-    const data = await res.json();
-    renderRisk(data.risk);
+    // The score ALWAYS comes from the same 30-day view the Dashboard uses,
+    // so the two pages can never disagree whatever range is selected here.
+    const [data, scoreData] = await Promise.all([QC.insights(qcDays), QC.insights(30)]);
+    if (!data || data.ok === false) throw new Error("load failed");
+    const base = scoreData && scoreData.ok ? scoreData : data;
+    renderRisk(base.risk);
+    renderAlerts(base.alerts);
+    renderOngoing(base.ongoing_conditions);
     renderCharts(data.vitals);
     renderCorrelations(data.correlations);
     renderFrequency(data.condition_frequency);
+    renderPlan(data.action_plan);
+    renderQuestions(data.doctor_questions);
+    renderGaps(data.missing_data);
   } catch (e) {
-    ["qc-chart-wrap", "qc-insight-wrap", "qc-freq-wrap"].forEach(id => {
+    ["qc-chart-wrap", "qc-insight-wrap", "qc-freq-wrap", "qc-ongoing-wrap"].forEach(id => {
       document.getElementById(id).innerHTML = '<div class="empty-note">Couldn\'t load this right now — try refreshing.</div>';
     });
   }
@@ -530,5 +696,6 @@ document.getElementById("qc-signout-btn").addEventListener("click", async () => 
   loadInsights(qcDays);
 })();
 </script>
+<script src="../assets/qc-app.js"></script>
 </body>
 </html>

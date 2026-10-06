@@ -365,6 +365,51 @@
   html[data-theme="dark"] .checkin-opt-btn:hover:not(:disabled) { background: #7ee0d4; color: #100e2a; }
   html[data-theme="dark"] .checkin-dismiss { color: #8f8ba3; }
   html[data-theme="dark"] .checkin-dismiss:hover { color: #cfccdf; }
+
+  /* ---- Empty vitals tiles (no reading logged yet) ---- */
+  a.snap-card { color: inherit; text-decoration: none; }
+  .snap-card.empty { background: transparent; border-style: dashed; border-color: rgba(16,14,42,0.16); }
+  .snap-card.empty:hover { border-color: #0e8f83; background: rgba(14,143,131,0.04); }
+  .snap-card.empty .snap-ring-num { color: rgba(16,14,42,0.28); }
+  .snap-card.empty .sc-label { color: rgba(16,14,42,0.6); }
+  .sc-add { font-size: 10.5px; font-weight: 800; color: #0e8f83; letter-spacing: 0.01em; }
+  .hero-score-conf { font-size: 10.5px; font-weight: 700; color: rgba(16,14,42,0.45); margin-top: 1px; }
+  .hero-score-note { max-width: 150px; text-align: center; font-size: 10.5px; line-height: 1.35; color: rgba(16,14,42,0.5); }
+
+  /* ---- Attention / upcoming / score-why cards ---- */
+  .attn-item { display: flex; gap: 12px; align-items: flex-start; padding: 12px 14px; border-radius: 14px; margin-bottom: 10px; background: color-mix(in srgb, var(--ac) 9%, transparent); border-left: 4px solid var(--ac); }
+  .attn-item:last-child { margin-bottom: 0; }
+  .attn-title { font-weight: 800; font-size: 13.5px; color: var(--ac); }
+  .attn-msg { font-size: 13px; line-height: 1.5; color: rgba(16,14,42,0.72); margin-top: 2px; }
+  .attn-cta { display: inline-block; margin-top: 6px; font-size: 12px; font-weight: 800; color: var(--ac); }
+  .card-head-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+  .card-head-row h2 { margin: 0; }
+  .link-btn { font-size: 12.5px; font-weight: 800; color: #0e8f83; background: none; border: none; cursor: pointer; font-family: 'Manrope', sans-serif; padding: 0; }
+  .up-row { display: flex; align-items: center; gap: 14px; padding: 12px 0; border-bottom: 1px solid rgba(16,14,42,0.07); color: inherit; text-decoration: none; }
+  .up-row:last-child { border-bottom: none; padding-bottom: 0; }
+  .up-ic { width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex: 0 0 auto; background: color-mix(in srgb, var(--ac) 14%, transparent); }
+  .up-main { flex: 1; min-width: 0; }
+  .up-title { font-weight: 700; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .up-when { font-size: 12.5px; color: rgba(16,14,42,0.55); margin-top: 1px; }
+  .up-chip { font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 999px; background: color-mix(in srgb, var(--ac) 14%, transparent); color: var(--ac); white-space: nowrap; }
+  .why-row { display: flex; justify-content: space-between; gap: 14px; padding: 9px 0; border-bottom: 1px solid rgba(16,14,42,0.06); font-size: 13.5px; }
+  .why-row:last-child { border-bottom: none; }
+  .why-impact { font-weight: 800; flex: 0 0 auto; }
+  .why-foot { margin-top: 12px; font-size: 12px; color: rgba(16,14,42,0.5); line-height: 1.5; }
+  html[data-theme="dark"] .snap-card.empty { border-color: rgba(255,255,255,0.18); }
+  html[data-theme="dark"] .snap-card.empty:hover { border-color: #7ee0d4; background: rgba(126,224,212,0.05); }
+  html[data-theme="dark"] .snap-card.empty .snap-ring-num { color: rgba(242,240,248,0.3); }
+  html[data-theme="dark"] .snap-card.empty .sc-label { color: #a9a6bd; }
+  html[data-theme="dark"] .sc-add, html[data-theme="dark"] .link-btn { color: #7ee0d4; }
+  html[data-theme="dark"] .hero-score-conf, html[data-theme="dark"] .hero-score-note { color: #8f8ba3; }
+  html[data-theme="dark"] .attn-msg { color: #cfccdf; }
+  html[data-theme="dark"] .up-when, html[data-theme="dark"] .why-foot { color: #8f8ba3; }
+  html[data-theme="dark"] .up-row, html[data-theme="dark"] .why-row { border-bottom-color: rgba(255,255,255,0.09); }
+  /* keep the section tab pill inside the viewport on small phones */
+  .section-tabs { max-width: 100%; overflow-x: auto; scrollbar-width: none; }
+  .section-tabs::-webkit-scrollbar { display: none; }
+  .section-tab { white-space: nowrap; flex: 0 0 auto; }
+  @media (max-width: 480px) { .section-tab { padding: 9px 13px; font-size: 13px; } .hero { padding: 24px 20px; } }
 </style>
 </head>
 <body>
@@ -376,8 +421,9 @@
 
     <nav class="tab-nav">
       <a class="tab-link" href="../symptoms/"><span class="tl-ic">🔍</span>Symptoms</a>
-      <a class="tab-link soon" href="#" onclick="return false;"><span class="tl-ic">💬</span>Dr. Cura<span class="soon-tag">Soon</span></a>
+      <a class="tab-link soon" href="#" onclick="return false;" title="Chat with Cura — coming soon"><span class="tl-ic">💬</span>Cura Chat<span class="soon-tag">Soon</span></a>
       <a class="tab-link" href="../vitals/"><span class="tl-ic">❤️</span>Vitals</a>
+      <a class="tab-link" href="../calendar/"><span class="tl-ic">📅</span>Calendar</a>
       <a class="tab-link" href="../curavault/"><span class="tl-ic">🔒</span>CuraVault</a>
       <a class="tab-link active" href="#"><span class="tl-ic">🏠</span>Dashboard</a>
       <a class="tab-link" href="../insights/"><span class="tl-ic">✨</span>Insights</a>
@@ -420,6 +466,8 @@
             </div>
           </div>
           <span class="hero-score-status" id="hero-score-status"></span>
+          <span class="hero-score-conf" id="hero-score-conf"></span>
+          <span class="hero-score-note" id="hero-score-note"></span>
           <svg class="hero-buddy" id="qc-buddy" viewBox="0 0 100 100" fill="none">
             <path d="M50 14C33 14 20 26 20 42c0 20 20 32 30 42 10-10 30-22 30-42 0-16-13-28-30-28Z" fill="url(#buddyGrad)" opacity="0.92"/>
             <defs>
@@ -475,10 +523,25 @@
         <button class="edit-profile-btn" onclick="window.location.href='../profile/'">Edit profile</button>
       </div>
 
+      <div class="card" id="qc-attention-card" style="display:none;">
+        <h2>Needs your attention</h2>
+        <div id="qc-attention"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-head-row"><h2>Coming up</h2><a class="link-btn" href="../calendar/">Open calendar →</a></div>
+        <div id="qc-upcoming"><div class="empty-note">Loading…</div></div>
+      </div>
+
       <div class="card">
         <h2>Flags &amp; notes</h2>
         <div id="qc-latest-summary" class="summary-line">Loading…</div>
         <div id="qc-flags"></div>
+      </div>
+
+      <div class="card" id="qc-why-card" style="display:none;">
+        <div class="card-head-row"><h2>What's behind your score</h2><a class="link-btn" href="../insights/">See full insights →</a></div>
+        <div id="qc-why"></div>
       </div>
 
       <div class="card cta-vitals-card">
@@ -504,7 +567,7 @@
 
     <div class="section-panel" data-panel="analysis">
       <div class="card">
-        <h2>Dr. Cura's read</h2>
+        <h2>Cura's read</h2>
         <div id="qc-analysis-wrap"><div class="empty-note">Loading…</div></div>
       </div>
     </div>
@@ -571,7 +634,7 @@ function renderFlags(flags) {
   const box = document.getElementById("qc-flags");
   box.innerHTML = "";
   if (!flags || !flags.length) {
-    box.innerHTML = '<div class="empty-note">No flags right now — everything on your last reading looked within range.</div>';
+    box.innerHTML = '<div class="empty-note">No flags right now — your latest readings look within range.</div>';
     return;
   }
   flags.forEach(f => {
@@ -592,58 +655,47 @@ const RING_RANGES = {
 };
 
 const SNAPSHOT_METRICS = [
-  { key: "spo2",    icon: "🫁", label: "SpO₂",    unit: "%",   keywords: ["oxygen", "spo"] },
-  { key: "pulse",   icon: "💓", label: "Pulse",   unit: "bpm", keywords: ["pulse"] },
-  { key: "temp",    icon: "🌡️", label: "Temp",    unit: "°C",  keywords: ["temperature"] },
-  { key: "bp",      icon: "❤️", label: "BP",      unit: "mmHg",keywords: ["blood pressure", "bp"] },
-  { key: "glucose", icon: "🩸", label: "Glucose", unit: "mmol",keywords: ["glucose", "sugar"] },
+  { key: "spo2",    icon: "🫁", label: "SpO₂",    unit: "%",     keywords: ["oxygen", "spo"] },
+  { key: "pulse",   icon: "💓", label: "Pulse",   unit: "bpm",   keywords: ["pulse"] },
+  { key: "temp",    icon: "🌡️", label: "Temp",    unit: "°C",    keywords: ["temperature", "fever"] },
+  { key: "bp",      icon: "❤️", label: "BP",      unit: "mmHg",  keywords: ["blood pressure", "bp"] },
+  { key: "glucose", icon: "🩸", label: "Glucose", unit: "mg/dL", keywords: ["glucose", "sugar"] },
+  { key: "weight",  icon: "⚖️", label: "Weight",  unit: "kg",    keywords: ["weight"] },
 ];
 
 function flagSeverityFor(keywords, flags) {
   if (!flags || !flags.length) return "";
+  let worst = "";
   for (const f of flags) {
     const msg = (f.message || "").toLowerCase();
-    if (keywords.some(k => msg.includes(k))) return f.level || "";
+    if (keywords.some(k => msg.includes(k))) {
+      if (f.level === "CRITICAL") return "CRITICAL";
+      worst = f.level || worst;
+    }
   }
-  return "";
+  return worst;
 }
 
 function severityColor(sev) {
   return sev === "CRITICAL" ? "#d24f28" : sev === "CAUTION" ? "#c98a10" : "#0e8f83";
 }
-function severityWord(sev) {
+function severityWord(m, sev) {
+  if (m.key === "weight") return sev === "CRITICAL" ? "Sharp change" : sev === "CAUTION" ? "Changing" : "Steady";
   return sev === "CRITICAL" ? "Needs attention" : sev === "CAUTION" ? "Elevated" : "Normal";
 }
 
-function computeWellness(flags) {
-  let score = 100;
-  (flags || []).forEach(f => { score -= f.level === "CRITICAL" ? 30 : f.level === "CAUTION" ? 14 : 0; });
-  score = Math.max(15, Math.min(100, score));
-  const label = score >= 85 ? "Great" : score >= 65 ? "Good" : score >= 40 ? "Fair" : "Needs care";
-  const color = score >= 85 ? "#0e8f83" : score >= 65 ? "#0e8f83" : score >= 40 ? "#c98a10" : "#d24f28";
-  return { score, label, color };
-}
-
-function updateHeroScore(flags) {
-  const w = computeWellness(flags);
-  const R = 56, C = 2 * Math.PI * R;
-  const fg = document.getElementById("hero-score-fg");
-  fg.style.strokeDasharray = C;
-  fg.style.strokeDashoffset = C - (w.score / 100) * C;
-  fg.setAttribute("stroke", w.color);
-  document.getElementById("hero-score-num").textContent = w.score;
-  const statusEl = document.getElementById("hero-score-status");
-  statusEl.textContent = w.label;
-  statusEl.style.color = w.color;
-}
-
-function updateBuddy(flags) {
-  const worst = (flags || []).reduce((acc, f) => (f.level === "CRITICAL" ? "CRITICAL" : (f.level === "CAUTION" && acc !== "CRITICAL") ? "CAUTION" : acc), "");
-  const mouth = document.getElementById("qc-buddy-mouth");
-  if (!mouth) return;
-  if (worst === "CRITICAL") mouth.setAttribute("d", "M40 58q10 -8 20 0");
-  else if (worst === "CAUTION") mouth.setAttribute("d", "M40 55h20");
-  else mouth.setAttribute("d", "M40 54q10 8 20 0");
+/* A tile is only ever "Normal" when a real reading backs it up. */
+function emptyCardHtml(m) {
+  const R = 30, C = 2 * Math.PI * R;
+  return '<a class="snap-card empty" href="../vitals/" aria-label="Add a ' + m.label + ' reading">' +
+    '<div class="snap-ring-wrap">' +
+      '<svg width="74" height="74" viewBox="0 0 74 74"><circle class="snap-ring-bg" cx="37" cy="37" r="' + R + '" stroke-dasharray="4 6"/></svg>' +
+      '<div class="snap-ring-inner"><span class="snap-ring-num">' + m.icon + '</span></div>' +
+    '</div>' +
+    '<div class="sc-label">' + m.label + '</div>' +
+    '<div class="sc-status" style="color:rgba(16,14,42,0.5)">No reading yet</div>' +
+    '<span class="sc-add">+ Add</span>' +
+  '</a>';
 }
 
 function ringCardHtml(m, value, unit, sev) {
@@ -651,8 +703,6 @@ function ringCardHtml(m, value, unit, sev) {
   let pct;
   if (m.key === "bp") {
     pct = sev === "CRITICAL" ? 0.92 : sev === "CAUTION" ? 0.66 : 0.5;
-  } else if (value === "—" || value === null || value === undefined) {
-    pct = 0;
   } else {
     const range = RING_RANGES[m.key];
     pct = range ? clamp01((parseFloat(value) - range[0]) / (range[1] - range[0])) : 0.5;
@@ -672,24 +722,137 @@ function ringCardHtml(m, value, unit, sev) {
       '</div>' +
     '</div>' +
     '<div class="sc-label">' + m.label + '</div>' +
-    '<div class="sc-status" style="color:' + color + '"><span class="sc-status-dot" style="background:' + color + '"></span>' + severityWord(sev) + '</div>' +
+    '<div class="sc-status" style="color:' + color + '"><span class="sc-status-dot" style="background:' + color + '"></span>' + severityWord(m, sev) + '</div>' +
   '</div>';
 }
 
-function renderSnapshot(latest, flags) {
+function hasReading(latest, m) {
+  if (!latest) return false;
+  if (m.key === "bp") return latest.sys_bp != null && latest.dia_bp != null;
+  const v = latest[m.key];
+  return v !== undefined && v !== null && v !== "";
+}
+
+
+/* A tile shows the most recent reading of THAT metric, even if the newest saved
+   row only had other values. Older values are labelled by age and never get a
+   "Normal" badge, because the live flags only cover the newest row. */
+function agoText(ts) {
+  const d = new Date(String(ts || "").replace(" ", "T"));
+  if (isNaN(d.getTime())) return "earlier";
+  const days = Math.floor((Date.now() - d.getTime()) / 86400000);
+  if (days <= 0) return "today";
+  if (days === 1) return "yesterday";
+  if (days < 30) return days + "d ago";
+  return Math.floor(days / 30) + "mo ago";
+}
+function carriedFromHistory(history, m) {
+  for (const row of (history || [])) if (hasReading(row, m)) return row;
+  return null;
+}
+function carriedCardHtml(m, value, unit, ts) {
+  const R = 30, C = 2 * Math.PI * R, range = RING_RANGES[m.key];
+  const pct = m.key === "bp" ? 0.5 : Math.max(0.12, range ? clamp01((parseFloat(value) - range[0]) / (range[1] - range[0])) : 0.5);
+  const grey = "rgba(16,14,42,0.35)";
+  return '<div class="snap-card" title="Last logged ' + agoText(ts) + '">' +
+    '<div class="snap-ring-wrap"><svg width="74" height="74" viewBox="0 0 74 74"><circle class="snap-ring-bg" cx="37" cy="37" r="' + R + '"/>' +
+    '<circle class="snap-ring-fg" cx="37" cy="37" r="' + R + '" stroke="' + grey + '" stroke-dasharray="' + C + '" stroke-dashoffset="' + (C - pct * C) + '"/></svg>' +
+    '<div class="snap-ring-inner"><span class="snap-ring-num">' + value + '</span>' + (unit ? '<span class="snap-ring-unit">' + unit + '</span>' : '') + '</div></div>' +
+    '<div class="sc-label">' + m.label + '</div>' +
+    '<div class="sc-status" style="color:rgba(16,14,42,0.5)">Last logged ' + agoText(ts) + '</div></div>';
+}
+
+function renderSnapshot(latest, flags, history) {
   const box = document.getElementById("qc-snapshot");
   latest = latest || {};
-  const hasBp = latest.sys_bp != null && latest.dia_bp != null;
   box.innerHTML = SNAPSHOT_METRICS.map(m => {
-    let value = "—", unit = m.unit;
-    if (m.key === "bp") { value = hasBp ? (latest.sys_bp + "/" + latest.dia_bp) : "—"; unit = hasBp ? unit : ""; }
-    else if (latest[m.key] !== undefined && latest[m.key] !== null && latest[m.key] !== "") { value = latest[m.key]; }
-    else { unit = ""; }
-    const sev = flagSeverityFor(m.keywords, flags);
-    return ringCardHtml(m, value, unit, sev);
+    if (!hasReading(latest, m)) {
+      const old = carriedFromHistory(history, m);
+      if (!old) return emptyCardHtml(m);
+      return carriedCardHtml(m, m.key === "bp" ? (old.sys_bp + "/" + old.dia_bp) : old[m.key], m.unit, old.ts);
+    }
+    const value = m.key === "bp" ? (latest.sys_bp + "/" + latest.dia_bp) : latest[m.key];
+    return ringCardHtml(m, value, m.unit, flagSeverityFor(m.keywords, flags));
   }).join("");
-  updateHeroScore(flags);
-  updateBuddy(flags);
+}
+
+/* ---- Health score: ONE number, from the same source Insights uses ---- */
+function updateHeroScore(risk) {
+  const v = QC.scoreView(risk);
+  const fg = document.getElementById("hero-score-fg");
+  fg.style.strokeDasharray = v.C;
+  fg.style.strokeDashoffset = v.offset;
+  fg.setAttribute("stroke", v.color);
+  document.getElementById("hero-score-num").textContent = v.num;
+  const statusEl = document.getElementById("hero-score-status");
+  statusEl.textContent = v.band;
+  statusEl.style.color = v.color;
+  document.getElementById("hero-score-conf").textContent = v.confidence;
+  document.getElementById("hero-score-note").textContent = v.note;
+  updateBuddy(risk && risk.has_data ? risk.score : null);
+}
+
+function updateBuddy(score) {
+  const mouth = document.getElementById("qc-buddy-mouth");
+  if (!mouth) return;
+  if (score !== null && score < 50) mouth.setAttribute("d", "M40 58q10 -8 20 0");
+  else if (score !== null && score < 70) mouth.setAttribute("d", "M40 55h20");
+  else mouth.setAttribute("d", "M40 54q10 8 20 0");
+}
+
+function renderWhy(risk) {
+  const card = document.getElementById("qc-why-card"), box = document.getElementById("qc-why");
+  if (!risk || !risk.has_data) { card.style.display = "none"; return; }
+  card.style.display = "";
+  const rows = (risk.factors || []).map(f =>
+    '<div class="why-row"><span>' + QC.esc(f.label) + '</span><span class="why-impact" style="color:' + (f.impact < 0 ? '#d24f28' : '#0e8f83') + '">' + (f.impact > 0 ? '+' : '') + f.impact + '</span></div>'
+  ).join("");
+  box.innerHTML = (rows || '<div class="empty-note">Nothing is pulling your score down right now.</div>') +
+    '<div class="why-foot">Based on your last ' + (risk.window_days || 30) + ' days. A wellness estimate, not a diagnosis — it starts at 100 and moves with your vitals, symptom checks, conditions and lifestyle.</div>';
+}
+
+async function loadScore() {
+  const data = await QC.insights(30);
+  const risk = data && data.ok ? data.risk : null;
+  updateHeroScore(risk);
+  renderWhy(risk);
+}
+
+const SEV_COLORS = { emergency: "#b3182a", urgent: "#d24f28", caution: "#c98a10", watch: "#2f8fd1", reminder: "#0e8f83", info: "#6b6885" };
+function renderAttention(items) {
+  const card = document.getElementById("qc-attention-card"), box = document.getElementById("qc-attention");
+  const list = (items || []).filter(a => a.kind !== "calendar").slice(0, 4);
+  if (!list.length) { card.style.display = "none"; return; }
+  card.style.display = "";
+  box.innerHTML = list.map(a =>
+    '<div class="attn-item" style="--ac:' + (SEV_COLORS[a.severity] || "#6b6885") + '"><div>' +
+      '<div class="attn-title">' + QC.esc(a.title) + '</div>' +
+      (a.message ? '<div class="attn-msg">' + QC.esc(a.message) + '</div>' : '') +
+      (a.href ? '<a class="attn-cta" href="' + QC.esc(a.href) + '">' + QC.esc(a.cta || "Open") + ' →</a>' : '') +
+    '</div></div>'
+  ).join("");
+}
+
+async function loadUpcoming() {
+  const box = document.getElementById("qc-upcoming");
+  try {
+    const list = (await QC.cal.upcoming(45)).slice(0, 4);
+    if (!list.length) {
+      box.innerHTML = '<div class="empty-state"><img src="../assets/6abe27005847b6683a14deef5164e1c7.png" alt=""><div class="es-title">Nothing scheduled</div><div class="es-sub">Add doctor visits, tests or procedures and we\'ll remind you before each one.</div><button type="button" class="es-cta" onclick="window.location.href=\'../calendar/?new=1\';">Add appointment</button></div>';
+      return;
+    }
+    box.innerHTML = list.map(u => {
+      const t = QC.cal.types[u.ev.type] || QC.cal.types.other;
+      const days = Math.ceil((u.when - Date.now()) / 86400000);
+      const chip = days <= 0 ? "Today" : days === 1 ? "Tomorrow" : "in " + days + " days";
+      return '<a class="up-row" href="../calendar/" style="--ac:' + t.color + '">' +
+        '<span class="up-ic">' + t.icon + '</span>' +
+        '<div class="up-main"><div class="up-title">' + QC.esc(u.ev.title) + '</div><div class="up-when">' + QC.esc(QC.cal.humanWhen(u.when)) + (u.ev.location ? ' · ' + QC.esc(u.ev.location) : '') + '</div></div>' +
+        '<span class="up-chip">' + chip + '</span></a>';
+    }).join("");
+  } catch (e) {
+    box.innerHTML = '<div class="empty-note">Couldn\'t load your calendar right now.</div>';
+  }
 }
 
 function renderProfileCard(profile, user) {
@@ -780,7 +943,7 @@ function renderAnalysis(data) {
       '</div>';
     }).join("");
   } else {
-    html += '<div class="empty-note" style="margin-top:10px;">No alerts from Dr. Cura right now — keep logging to help it learn your baseline.</div>';
+    html += '<div class="empty-note" style="margin-top:10px;">No alerts from Cura right now — keep logging to help it learn your baseline.</div>';
   }
   wrap.innerHTML = html;
 }
@@ -865,11 +1028,26 @@ function initSectionTabs() {
 }
 
 async function loadLatest() {
-  const res = await fetch(API_BASE + "/vitals/latest", { credentials: "include" });
+  const [res, hres] = await Promise.all([
+    fetch(API_BASE + "/vitals/latest", { credentials: "include" }),
+    fetch(API_BASE + "/vitals/history?limit=40", { credentials: "include" }).then(r => r.json()).catch(() => ({ history: [] })),
+  ]);
   const data = await res.json();
-  document.getElementById("qc-latest-summary").textContent = data.summary || "No vitals recorded.";
-  renderFlags(data.flags);
-  renderSnapshot(data.latest, data.flags);
+  const recent = (hres && hres.history) || [];
+  const any = data.latest && SNAPSHOT_METRICS.some(m => hasReading(data.latest, m));
+  const summary = document.getElementById("qc-latest-summary");
+  if (!any) {
+    summary.textContent = "No vitals logged yet.";
+    document.getElementById("qc-flags").innerHTML =
+      '<div class="empty-state"><img src="../assets/6abe27005847b6683a14deef5164e1c7.png" alt="">' +
+      '<div class="es-title">Nothing to flag yet</div>' +
+      '<div class="es-sub">Once you log a reading, QueroCura checks it and any changes over time — like a sudden drop in weight.</div>' +
+      '<button type="button" class="es-cta" onclick="window.location.href=\'../vitals/\';">Log your first reading</button></div>';
+  } else {
+    summary.textContent = data.summary || "";
+    renderFlags(data.flags);
+  }
+  renderSnapshot(data.latest, data.flags, recent);
 }
 
 async function loadHistory() {
@@ -1023,8 +1201,10 @@ document.getElementById("qc-checkin-dismiss").addEventListener("click", () => {
   initDaySelect();
   startTipRotator();
   // These four don't depend on each other — load them together.
-  await Promise.all([loadLatest(), loadHistory(), loadInsights(14), loadCheckin()]);
+  await Promise.all([loadLatest(), loadHistory(), loadInsights(14), loadCheckin(), loadScore(), loadUpcoming()]);
+  QC.refreshAlerts({ toast: true }).then(renderAttention);
 })();
 </script>
+<script src="../assets/qc-app.js"></script>
 </body>
 </html>

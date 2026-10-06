@@ -1,0 +1,926 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Calendar — QueroCura</title>
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/x-icon" href="../icons/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://app.querocura.com">
+<link rel="dns-prefetch" href="https://app.querocura.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700;800&family=Manrope:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500;1,9..144,600&display=swap" rel="stylesheet">
+<script>
+  (function () {
+    try {
+      if (localStorage.getItem('qc-theme') === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      }
+    } catch (e) {}
+  })();
+</script>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh;
+    font-family: 'Manrope', sans-serif; background: #f6f5f1; color: #100e2a;
+  }
+  h1, h2, h3, .display { font-family: 'Space Grotesk', sans-serif; }
+  a { color: #0e8f83; text-decoration: none; }
+  a:hover { color: #0b6f66; }
+
+  /* ---- Top bar (ditto dashboard) ---- */
+  .topbar {
+    display: flex; align-items: center; justify-content: space-between; gap: 18px; flex-wrap: wrap;
+    padding: 14px clamp(16px,4vw,32px); background: rgba(246,245,241,0.88); backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(16,14,42,0.08); position: sticky; top: 0; z-index: 20;
+  }
+  .logo-wrap { display: flex; align-items: center; gap: 10px; flex: 0 0 auto; }
+  .logo-wrap img { width: 34px; height: 31px; object-fit: contain; }
+  .logo-text { font-size: 18px; font-weight: 700; letter-spacing: -0.02em; font-family: 'Space Grotesk', sans-serif; }
+  .logo-text .ink { color: #100e2a; }
+  .logo-text .teal { color: #0e8f83; }
+  .user-pill { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px 5px 6px; border-radius: 999px; background: rgba(16,14,42,0.05); font-size: 12.5px; font-weight: 700; color: rgba(16,14,42,0.75); margin-left: 4px; }
+  .user-pill .up-dot { width: 20px; height: 20px; border-radius: 50%; background: linear-gradient(135deg,#0e8f83,#2f8fd1); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 10px; }
+
+  .tab-nav { display: flex; align-items: center; gap: 4px; flex: 1 1 auto; justify-content: center; overflow-x: auto; scrollbar-width: none; }
+  .tab-nav::-webkit-scrollbar { display: none; }
+  .tab-link {
+    display: flex; align-items: center; gap: 7px; white-space: nowrap; padding: 9px 15px; border-radius: 999px;
+    font-size: 13.5px; font-weight: 700; color: rgba(16,14,42,0.55); transition: background 0.18s ease, color 0.18s ease;
+  }
+  .tab-link .tl-ic { font-size: 14px; }
+  .tab-link:hover:not(.active):not(.soon) { background: rgba(16,14,42,0.05); color: #100e2a; }
+  .tab-link.active { background: #100e2a; color: #fff; }
+  .tab-link.soon { opacity: 0.45; cursor: default; }
+  .tab-link.soon .soon-tag { font-size: 8.5px; font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase; background: rgba(16,14,42,0.1); padding: 1px 6px; border-radius: 999px; margin-left: 2px; }
+
+  .topbar-right { display: flex; align-items: center; gap: 10px; flex: 0 0 auto; }
+  .signout-btn {
+    background: #100e2a; border: none; color: #fff;
+    font-family: 'Manrope', sans-serif; font-size: 13px; font-weight: 700;
+    padding: 9px 18px; border-radius: 999px; cursor: pointer; transition: transform 0.18s ease, background 0.18s ease;
+  }
+  .signout-btn:hover { background: #221f4d; transform: translateY(-2px); }
+  .theme-toggle {
+    display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px;
+    border-radius: 10px; border: 1.5px solid rgba(16,14,42,0.14); background: #fff; cursor: pointer;
+    padding: 0; transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease; flex: 0 0 auto;
+  }
+  .theme-toggle:hover { transform: translateY(-2px); }
+
+  .shell { max-width: 900px; margin: 0 auto; padding: 32px 24px 80px; }
+
+  .page-head { margin-bottom: 22px; }
+  .page-eyebrow { display: inline-flex; align-items: center; gap: 8px; padding: 4px 12px; border-radius: 999px; background: rgba(14,143,131,0.08); border: 1px solid rgba(14,143,131,0.18); color: #0e8f83; font-size: 10.5px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 12px; }
+  .page-title { font-family: 'Fraunces', serif; font-size: clamp(26px,4vw,34px); font-weight: 600; margin: 0 0 8px; }
+  .page-sub { font-size: 14.5px; color: rgba(16,14,42,0.55); margin: 0; max-width: 480px; line-height: 1.5; }
+
+  /* ---- Snapshot ring row (ditto dashboard) ---- */
+  .snapshot-strip { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; margin-bottom: 24px; }
+  .snap-card {
+    position: relative; overflow: hidden; background: #fff; border-radius: 16px; padding: 16px 14px 14px;
+    border: 1px solid rgba(16,14,42,0.08); display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px;
+  }
+  .snap-ring-wrap { position: relative; width: 62px; height: 62px; }
+  .snap-ring-wrap svg { transform: rotate(-90deg); }
+  .snap-ring-bg { fill: none; stroke: rgba(16,14,42,0.08); stroke-width: 5; }
+  .snap-ring-fg { fill: none; stroke-width: 5; stroke-linecap: round; }
+  .snap-ring-inner { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .snap-ring-num { font-family: 'Fraunces', serif; font-size: 14.5px; font-weight: 600; line-height: 1.05; }
+  .snap-ring-unit { font-size: 8.5px; color: rgba(16,14,42,0.4); font-weight: 700; }
+  .snap-card .sc-label { font-size: 11.5px; font-weight: 700; font-family: 'Space Grotesk', sans-serif; }
+
+  .card {
+    position: relative; overflow: hidden;
+    background: #fff; border-radius: 20px; padding: 26px 28px;
+    border: 1px solid rgba(16,14,42,0.08); margin-bottom: 22px;
+  }
+  .card::before { content: ''; position: absolute; top: -44px; right: -44px; width: 150px; height: 150px; border-radius: 50%; background: radial-gradient(circle, rgba(14,143,131,0.06), transparent 70%); pointer-events: none; }
+  .card h2 { font-size: 18px; margin: 0 0 18px; position: relative; }
+  .card > * { position: relative; }
+
+  .vitals-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 14px; }
+  .field label { display: block; font-size: 12.5px; font-weight: 700; margin-bottom: 6px; color: rgba(16,14,42,0.7); }
+  input, textarea {
+    width: 100%; padding: 11px 13px; border-radius: 10px;
+    border: 1.5px solid rgba(16,14,42,0.14); font-family: 'Manrope', sans-serif;
+    font-size: 14.5px; color: #100e2a; background: #fff; outline: none;
+  }
+  input:focus, textarea:focus { border-color: #0e8f83; box-shadow: 0 0 0 3px rgba(14,143,131,0.12); }
+  .notes-field { grid-column: 1 / -1; }
+  .save-btn {
+    position: relative; overflow: hidden;
+    background: #0e8f83; color: #fff; font-size: 15px; font-weight: 700;
+    padding: 12px 28px; border-radius: 999px; border: none; cursor: pointer;
+    font-family: 'Manrope', sans-serif; margin-top: 18px;
+    transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+  }
+  .save-btn::after {
+    content: ''; position: absolute; top: 0; left: -60%; width: 40%; height: 100%;
+    background: linear-gradient(115deg, transparent, rgba(255,255,255,0.35), transparent);
+    transform: skewX(-20deg); transition: left 0.6s ease; pointer-events: none;
+  }
+  .save-btn:hover:not(:disabled)::after { left: 140%; }
+  .save-btn:hover:not(:disabled) { background: #0b6f66; transform: translateY(-2px); box-shadow: 0 12px 24px -8px rgba(14,143,131,0.45); }
+  .save-btn:disabled { opacity: 0.6; cursor: default; }
+  .save-msg { font-size: 13.5px; font-weight: 600; margin-top: 12px; display: none; }
+  .save-msg.ok { color: #0e8f83; display: block; }
+  .save-msg.err { color: #b3401f; display: block; }
+
+  .empty-note { font-size: 14px; color: rgba(16,14,42,0.5); }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  th { text-align: left; padding: 10px 12px; color: rgba(16,14,42,0.55); font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: 0.03em; border-bottom: 1.5px solid rgba(16,14,42,0.08); }
+  td { padding: 12px; border-bottom: 1px solid rgba(16,14,42,0.06); }
+  tr:last-child td { border-bottom: none; }
+  .view-all-row { display: flex; justify-content: flex-end; margin-top: 10px; }
+  .view-all-row a { font-size: 13px; font-weight: 700; }
+
+  .tip-card {
+    display: flex; align-items: center; gap: 12px; padding: 16px 18px; border-radius: 16px;
+    background: linear-gradient(120deg, rgba(14,143,131,0.08), rgba(124,111,219,0.06));
+    border: 1px solid rgba(14,143,131,0.16); margin-bottom: 22px;
+  }
+  .tip-card img { width: 34px; height: 34px; object-fit: contain; flex: 0 0 auto; }
+  .tip-card .tip-text { font-size: 13px; color: rgba(16,14,42,0.68); line-height: 1.5; }
+  .tip-card .tip-label { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: #0e8f83; margin-bottom: 2px; }
+
+  .confetti-piece { position: fixed; top: -12px; width: 8px; height: 8px; border-radius: 2px; pointer-events: none; z-index: 999; animation: confettiFall 1.4s ease-in forwards; }
+  @keyframes confettiFall { to { transform: translateY(100vh) rotate(540deg); opacity: 0; } }
+
+  @media (max-width: 900px) {
+    .tab-nav { order: 3; width: 100%; justify-content: flex-start; }
+  }
+
+  html[data-theme="dark"] body { background: #0d0c1f; color: #f2f0f8; }
+  html[data-theme="dark"] a { color: #7ee0d4; }
+  html[data-theme="dark"] a:hover { color: #9beee0; }
+  html[data-theme="dark"] .topbar { background: rgba(13,12,31,0.88); border-bottom-color: rgba(255,255,255,0.1); }
+  html[data-theme="dark"] .logo-text .ink { color: #f2f0f8; }
+  html[data-theme="dark"] .user-pill { background: rgba(255,255,255,0.06); color: #cfccdf; }
+  html[data-theme="dark"] .tab-link { color: #a9a6bd; }
+  html[data-theme="dark"] .tab-link:hover:not(.active):not(.soon) { background: rgba(255,255,255,0.06); color: #f2f0f8; }
+  html[data-theme="dark"] .tab-link.active { background: #7ee0d4; color: #100e2a; }
+  html[data-theme="dark"] .tab-link.soon .soon-tag { background: rgba(255,255,255,0.1); }
+  html[data-theme="dark"] .signout-btn { background: #7ee0d4; color: #100e2a; }
+  html[data-theme="dark"] .signout-btn:hover { background: #9beee0; }
+  html[data-theme="dark"] .theme-toggle { background: #18162e; border-color: rgba(255,255,255,0.14); }
+  html[data-theme="dark"] .card { background: #18162e; border-color: rgba(255,255,255,0.1); }
+  html[data-theme="dark"] .page-sub { color: #b7b3cc; }
+  html[data-theme="dark"] .page-eyebrow { background: rgba(126,224,212,0.1); border-color: rgba(126,224,212,0.22); color: #7ee0d4; }
+  html[data-theme="dark"] .snap-card { background: #18162e; border-color: rgba(255,255,255,0.1); }
+  html[data-theme="dark"] .snap-ring-bg { stroke: rgba(255,255,255,0.1); }
+  html[data-theme="dark"] .snap-ring-unit { color: #8f8ba3; }
+  html[data-theme="dark"] .field label { color: #b7b3cc; }
+  html[data-theme="dark"] input, html[data-theme="dark"] textarea { background: #100e2a; color: #f2f0f8; border-color: rgba(255,255,255,0.14); }
+  html[data-theme="dark"] .empty-note { color: #8f8ba3; }
+  html[data-theme="dark"] th { color: #a9a6bd; border-bottom-color: rgba(255,255,255,0.12); }
+  html[data-theme="dark"] td { border-bottom-color: rgba(255,255,255,0.08); }
+  html[data-theme="dark"] .tip-card { background: linear-gradient(120deg, rgba(126,224,212,0.08), rgba(124,111,219,0.1)); border-color: rgba(126,224,212,0.18); }
+  html[data-theme="dark"] .tip-card .tip-text { color: #cfccdf; }
+
+  /* ---- Empty tiles, validation, live hints, result alerts ---- */
+  a.snap-card { color: inherit; text-decoration: none; }
+  .snap-card.empty { background: transparent; border-style: dashed; border-color: rgba(16,14,42,0.16); }
+  .snap-card.empty:hover { border-color: #0e8f83; }
+  .snap-card.empty .snap-ring-num { color: rgba(16,14,42,0.3); font-size: 18px; }
+  .snap-card .sc-status { display: inline-flex; align-items: center; gap: 5px; font-size: 10.5px; font-weight: 700; }
+  .snap-card .sc-status .sc-dot { width: 6px; height: 6px; border-radius: 50%; }
+  .field input.bad { border-color: #d24f28; box-shadow: 0 0 0 3px rgba(210,79,40,0.12); }
+  .field .hint { font-size: 11.5px; margin-top: 5px; min-height: 15px; line-height: 1.35; color: rgba(16,14,42,0.5); font-weight: 600; }
+  .field .hint.warn { color: #b3401f; } .field .hint.info { color: #1e5f8a; }
+  .result-alerts { margin-top: 16px; display: flex; flex-direction: column; gap: 8px; }
+  .result-alert { display: flex; gap: 10px; padding: 12px 14px; border-radius: 12px; font-size: 13.5px; line-height: 1.5; font-weight: 600; border-left: 4px solid var(--ac); background: color-mix(in srgb, var(--ac) 10%, transparent); color: var(--ac); animation: raIn 0.35s ease both; }
+  .result-alert b { display: block; font-weight: 800; }
+  .result-alert span { color: rgba(16,14,42,0.75); font-weight: 500; }
+  .result-ok { padding: 12px 14px; border-radius: 12px; background: rgba(14,143,131,0.1); color: #0b6f66; font-size: 13.5px; font-weight: 700; }
+  @keyframes raIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  html[data-theme="dark"] .snap-card.empty { border-color: rgba(255,255,255,0.18); }
+  html[data-theme="dark"] .snap-card.empty .snap-ring-num { color: rgba(242,240,248,0.3); }
+  html[data-theme="dark"] .field .hint { color: #8f8ba3; } html[data-theme="dark"] .field .hint.warn { color: #f0a488; } html[data-theme="dark"] .field .hint.info { color: #a9d4f0; }
+  html[data-theme="dark"] .result-alert span { color: #cfccdf; }
+  html[data-theme="dark"] .result-ok { background: rgba(126,224,212,0.12); color: #7ee0d4; }
+
+  /* ================= Calendar ================= */
+  .shell { max-width: 1180px; }
+  .cal-banner { display: none; margin-bottom: 16px; padding: 11px 16px; border-radius: 12px; background: rgba(201,138,16,0.1); border: 1px solid rgba(201,138,16,0.25); color: #8a5f0a; font-size: 13px; font-weight: 600; line-height: 1.5; }
+  .cal-banner.show { display: block; }
+
+  /* next-up hero */
+  .nextup { position: relative; overflow: hidden; border-radius: 24px; padding: 26px 30px; margin-bottom: 22px; color: #fff; background: linear-gradient(125deg, #0b6f66 0%, #0e8f83 45%, #2f8fd1 100%); box-shadow: 0 26px 50px -28px rgba(11,111,102,0.7); }
+  .nextup::after { content: ''; position: absolute; right: -70px; top: -70px; width: 260px; height: 260px; border-radius: 50%; background: radial-gradient(circle, rgba(255,255,255,0.22), transparent 68%); pointer-events: none; }
+  .nextup.empty { background: transparent; color: inherit; box-shadow: none; border: 1.5px dashed rgba(16,14,42,0.18); }
+  .nextup.empty::after { display: none; }
+  .nu-eyebrow { font-size: 11px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.8; margin-bottom: 8px; }
+  .nu-row { display: flex; gap: 22px; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; position: relative; z-index: 1; }
+  .nu-title { font-family: 'Fraunces', serif; font-size: clamp(22px, 3.2vw, 30px); font-weight: 600; line-height: 1.15; margin: 0 0 8px; }
+  .nu-meta { font-size: 14px; opacity: 0.92; line-height: 1.6; }
+  .nu-count { text-align: center; flex: 0 0 auto; background: rgba(255,255,255,0.16); backdrop-filter: blur(6px); border: 1px solid rgba(255,255,255,0.28); border-radius: 18px; padding: 14px 22px; min-width: 120px; }
+  .nu-count b { display: block; font-family: 'Fraunces', serif; font-size: 34px; font-weight: 600; line-height: 1; }
+  .nu-count span { font-size: 11px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; opacity: 0.85; }
+  .nu-prep { margin-top: 16px; position: relative; z-index: 1; }
+  .nu-prep-bar { height: 6px; border-radius: 6px; background: rgba(255,255,255,0.25); overflow: hidden; max-width: 320px; }
+  .nu-prep-bar i { display: block; height: 100%; background: #fff; border-radius: 6px; transition: width 0.4s; }
+  .nu-prep small { display: block; margin-top: 6px; font-size: 12px; opacity: 0.85; font-weight: 600; }
+  .nu-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; position: relative; z-index: 1; }
+  .nu-btn { background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.4); color: #fff; border-radius: 999px; padding: 9px 18px; font: 700 13px 'Manrope', sans-serif; cursor: pointer; transition: background 0.18s, transform 0.18s; }
+  .nu-btn:hover { background: rgba(255,255,255,0.3); transform: translateY(-2px); }
+  .nextup.empty .nu-btn { background: #0e8f83; border-color: #0e8f83; }
+  .nextup.empty .nu-btn:hover { background: #0b6f66; }
+
+  /* toolbar */
+  .cal-toolbar { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+  .cal-title { font-family: 'Fraunces', serif; font-size: 24px; font-weight: 600; margin: 0 8px 0 0; min-width: 190px; }
+  .icon-btn { width: 38px; height: 38px; border-radius: 12px; border: 1.5px solid rgba(16,14,42,0.14); background: #fff; cursor: pointer; font-size: 17px; font-weight: 700; color: inherit; display: inline-flex; align-items: center; justify-content: center; transition: transform 0.18s, background 0.18s; }
+  .icon-btn:hover { transform: translateY(-2px); background: rgba(14,143,131,0.06); }
+  .seg { display: inline-flex; gap: 3px; padding: 4px; border-radius: 999px; background: #fff; border: 1px solid rgba(16,14,42,0.08); }
+  .seg button { border: none; background: transparent; padding: 7px 16px; border-radius: 999px; font: 700 13px 'Manrope', sans-serif; color: rgba(16,14,42,0.55); cursor: pointer; }
+  .seg button.on { background: #100e2a; color: #fff; }
+  .spacer { flex: 1; }
+  .btn-primary { background: #0e8f83; color: #fff; border: none; border-radius: 999px; padding: 11px 22px; font: 800 14px 'Manrope', sans-serif; cursor: pointer; transition: transform 0.18s, box-shadow 0.18s, background 0.18s; }
+  .btn-primary:hover { background: #0b6f66; transform: translateY(-2px); box-shadow: 0 12px 24px -10px rgba(14,143,131,0.55); }
+  .btn-ghost { background: transparent; color: inherit; border: 1.5px solid rgba(16,14,42,0.16); border-radius: 999px; padding: 9px 16px; font: 700 13px 'Manrope', sans-serif; cursor: pointer; transition: background 0.18s, transform 0.18s; }
+  .btn-ghost:hover { background: rgba(16,14,42,0.05); transform: translateY(-2px); }
+  .btn-danger { background: transparent; color: #b3401f; border: 1.5px solid rgba(210,79,40,0.35); border-radius: 999px; padding: 10px 18px; font: 700 13px 'Manrope', sans-serif; cursor: pointer; }
+  .btn-danger:hover { background: rgba(210,79,40,0.08); }
+
+  .filters { display: flex; gap: 7px; flex-wrap: wrap; margin-bottom: 16px; }
+  .f-chip { display: inline-flex; align-items: center; gap: 6px; padding: 6px 13px; border-radius: 999px; border: 1.5px solid rgba(16,14,42,0.12); background: #fff; font: 700 12px 'Manrope', sans-serif; cursor: pointer; color: rgba(16,14,42,0.7); transition: all 0.15s; }
+  .f-chip i { width: 8px; height: 8px; border-radius: 50%; background: var(--c); display: inline-block; }
+  .f-chip.off { opacity: 0.4; }
+
+  /* month grid */
+  .grid-card { padding: 14px; }
+  .dow { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-bottom: 6px; }
+  .dow div { text-align: center; font-size: 11px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; color: rgba(16,14,42,0.4); padding: 6px 0; }
+  .days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+  .day { position: relative; min-height: 104px; padding: 8px 8px 6px; border-radius: 14px; border: 1px solid rgba(16,14,42,0.07); background: #fbfaf6; cursor: pointer; display: flex; flex-direction: column; gap: 3px; text-align: left; font-family: inherit; color: inherit; transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s; overflow: hidden; }
+  .day:hover { transform: translateY(-2px); box-shadow: 0 12px 22px -16px rgba(16,14,42,0.35); border-color: rgba(14,143,131,0.4); }
+  .day.other { opacity: 0.42; }
+  .day.today .dnum { background: #0e8f83; color: #fff; }
+  .day.sel { border-color: #0e8f83; box-shadow: 0 0 0 2px rgba(14,143,131,0.25); background: #fff; }
+  .dnum { width: 24px; height: 24px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 12.5px; font-weight: 800; }
+  .pill-ev { display: flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 700; padding: 2px 6px; border-radius: 6px; background: color-mix(in srgb, var(--c) 16%, transparent); color: color-mix(in srgb, var(--c) 78%, #100e2a); border-left: 3px solid var(--c); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .pill-ev.done { opacity: 0.5; text-decoration: line-through; }
+  .pill-ev.cancelled { opacity: 0.4; text-decoration: line-through; }
+  .more { font-size: 10.5px; font-weight: 800; color: rgba(16,14,42,0.5); padding-left: 4px; }
+  .dots { display: none; gap: 3px; flex-wrap: wrap; }
+  .dots i { width: 7px; height: 7px; border-radius: 50%; background: var(--c); }
+
+  /* day panel + agenda */
+  .day-panel-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
+  .day-panel-head h2 { margin: 0; font-size: 18px; }
+  .ev-row { display: flex; align-items: center; gap: 14px; padding: 13px 14px; border-radius: 14px; background: #fbfaf6; border: 1px solid rgba(16,14,42,0.07); margin-bottom: 10px; cursor: pointer; transition: transform 0.15s, border-color 0.15s; }
+  .ev-row:hover { transform: translateX(3px); border-color: color-mix(in srgb, var(--c) 50%, transparent); }
+  .ev-row:last-child { margin-bottom: 0; }
+  .ev-ic { width: 42px; height: 42px; border-radius: 13px; display: flex; align-items: center; justify-content: center; font-size: 19px; flex: 0 0 auto; background: color-mix(in srgb, var(--c) 15%, transparent); }
+  .ev-main { flex: 1; min-width: 0; }
+  .ev-title { font-weight: 800; font-size: 14.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ev-sub { font-size: 12.5px; color: rgba(16,14,42,0.55); margin-top: 2px; line-height: 1.45; }
+  .ev-right { display: flex; flex-direction: column; align-items: flex-end; gap: 5px; flex: 0 0 auto; }
+  .tag-chip { font-size: 10.5px; font-weight: 800; letter-spacing: 0.03em; padding: 3px 9px; border-radius: 999px; background: color-mix(in srgb, var(--c) 14%, transparent); color: color-mix(in srgb, var(--c) 80%, #100e2a); white-space: nowrap; }
+  .tag-chip.due { background: rgba(210,79,40,0.14); color: #b3401f; }
+  .tag-chip.ok { background: rgba(14,143,131,0.14); color: #0b6f66; }
+  .ev-row.done .ev-title { text-decoration: line-through; opacity: 0.6; }
+  .ev-row.cancelled { opacity: 0.55; }
+  .agenda-day { font-size: 12px; font-weight: 800; letter-spacing: 0.05em; text-transform: uppercase; color: rgba(16,14,42,0.45); margin: 18px 0 8px; display: flex; align-items: center; gap: 10px; }
+  .agenda-day:first-child { margin-top: 0; }
+  .agenda-day::after { content: ''; flex: 1; height: 1px; background: rgba(16,14,42,0.08); }
+  .cal-empty { text-align: center; padding: 30px 14px; color: rgba(16,14,42,0.5); font-size: 14px; }
+  .cal-empty .ce-ic { font-size: 30px; margin-bottom: 8px; }
+
+  /* modal */
+  dialog.ev-dialog { border: none; border-radius: 24px; padding: 0; width: min(640px, 94vw); max-height: 92vh; box-shadow: 0 40px 90px -30px rgba(16,14,42,0.55); color: #100e2a; background: #fff; }
+  dialog.ev-dialog::backdrop { background: rgba(16,14,42,0.5); backdrop-filter: blur(3px); }
+  .dlg-head { display: flex; align-items: center; justify-content: space-between; padding: 22px 26px 8px; }
+  .dlg-head h2 { margin: 0; font-size: 20px; }
+  .dlg-x { background: none; border: none; font-size: 20px; cursor: pointer; color: rgba(16,14,42,0.5); padding: 4px 8px; border-radius: 8px; }
+  .dlg-x:hover { background: rgba(16,14,42,0.06); }
+  .dlg-body { padding: 8px 26px 6px; overflow: auto; max-height: calc(92vh - 170px); }
+  .dlg-foot { display: flex; gap: 10px; align-items: center; padding: 16px 26px 22px; border-top: 1px solid rgba(16,14,42,0.07); flex-wrap: wrap; }
+  .fld { margin-bottom: 16px; }
+  .fld > label, .lbl { display: block; font-size: 12px; font-weight: 800; letter-spacing: 0.03em; text-transform: uppercase; color: rgba(16,14,42,0.55); margin-bottom: 7px; }
+  .fld input[type=text], .fld input[type=date], .fld input[type=time], .fld select, .fld textarea { width: 100%; padding: 11px 13px; border-radius: 11px; border: 1.5px solid rgba(16,14,42,0.14); font: 500 14.5px 'Manrope', sans-serif; background: #fff; color: #100e2a; outline: none; }
+  .fld input:focus, .fld select:focus, .fld textarea:focus { border-color: #0e8f83; box-shadow: 0 0 0 3px rgba(14,143,131,0.14); }
+  .fld .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .fld .row3 { display: grid; grid-template-columns: 1.3fr 1fr 1fr; gap: 12px; }
+  .type-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 8px; }
+  .type-opt { display: flex; align-items: center; gap: 8px; padding: 9px 11px; border-radius: 12px; border: 1.5px solid rgba(16,14,42,0.12); background: #fff; font: 700 12.5px 'Manrope', sans-serif; cursor: pointer; text-align: left; color: inherit; transition: all 0.15s; }
+  .type-opt:hover { border-color: var(--c); }
+  .type-opt.on { border-color: var(--c); background: color-mix(in srgb, var(--c) 12%, transparent); box-shadow: 0 0 0 2px color-mix(in srgb, var(--c) 25%, transparent); }
+  .chips { display: flex; flex-wrap: wrap; gap: 7px; }
+  .chip-opt { padding: 7px 13px; border-radius: 999px; border: 1.5px solid rgba(16,14,42,0.14); font: 700 12.5px 'Manrope', sans-serif; cursor: pointer; background: #fff; color: inherit; transition: all 0.15s; }
+  .chip-opt.on { background: #0e8f83; border-color: #0e8f83; color: #fff; }
+  .prep-item { display: flex; align-items: center; gap: 9px; padding: 7px 0; font-size: 14px; }
+  .prep-item input[type=checkbox] { width: 18px; height: 18px; accent-color: #0e8f83; flex: 0 0 auto; }
+  .prep-item span { flex: 1; } .prep-item span.done { text-decoration: line-through; opacity: 0.55; }
+  .prep-item button { background: none; border: none; color: rgba(16,14,42,0.4); cursor: pointer; font-size: 14px; }
+  .prep-add { display: flex; gap: 8px; margin-top: 6px; }
+  .prep-add input { flex: 1; }
+  .warn-box { padding: 11px 14px; border-radius: 12px; background: rgba(201,138,16,0.12); border: 1px solid rgba(201,138,16,0.3); color: #8a5f0a; font-size: 13px; font-weight: 600; line-height: 1.5; margin-bottom: 12px; }
+  .err-box { padding: 11px 14px; border-radius: 12px; background: rgba(210,79,40,0.1); color: #b3401f; font-size: 13px; font-weight: 700; margin-bottom: 12px; }
+  .sugg { font-size: 12.5px; font-weight: 700; color: #0e8f83; background: none; border: none; cursor: pointer; padding: 4px 0; font-family: inherit; }
+
+  @media (max-width: 720px) {
+    .day { min-height: 58px; padding: 5px; }
+    .day .pill-ev, .day .more { display: none; }
+    .day .dots { display: flex; }
+    .cal-title { font-size: 20px; min-width: 0; flex: 1; }
+    .nu-count { width: 100%; display: flex; align-items: baseline; justify-content: center; gap: 10px; padding: 10px; }
+    .nu-count b { font-size: 26px; }
+    .fld .row3 { grid-template-columns: 1fr 1fr; } .fld .row3 > :first-child { grid-column: 1 / -1; }
+    .ev-right { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) { .day, .ev-row { transition: none; } }
+
+  html[data-theme="dark"] .cal-banner { background: rgba(240,180,60,0.12); color: #f0c060; border-color: rgba(240,180,60,0.3); }
+  html[data-theme="dark"] .nextup.empty { border-color: rgba(255,255,255,0.2); }
+  html[data-theme="dark"] .icon-btn, html[data-theme="dark"] .seg, html[data-theme="dark"] .f-chip, html[data-theme="dark"] .chip-opt, html[data-theme="dark"] .type-opt { background: #18162e; border-color: rgba(255,255,255,0.14); color: #f2f0f8; }
+  html[data-theme="dark"] .seg button { color: #a9a6bd; } html[data-theme="dark"] .seg button.on { background: #7ee0d4; color: #100e2a; }
+  html[data-theme="dark"] .btn-ghost { border-color: rgba(255,255,255,0.2); } html[data-theme="dark"] .btn-ghost:hover { background: rgba(255,255,255,0.07); }
+  html[data-theme="dark"] .btn-primary { background: #7ee0d4; color: #100e2a; } html[data-theme="dark"] .btn-primary:hover { background: #61c9bd; }
+  html[data-theme="dark"] .btn-danger { color: #f0a488; border-color: rgba(240,130,100,0.4); }
+  html[data-theme="dark"] .dow div, html[data-theme="dark"] .agenda-day, html[data-theme="dark"] .more { color: #8f8ba3; }
+  html[data-theme="dark"] .day { background: #100e2a; border-color: rgba(255,255,255,0.08); } html[data-theme="dark"] .day.sel { background: #1a1740; border-color: #7ee0d4; box-shadow: 0 0 0 2px rgba(126,224,212,0.25); }
+  html[data-theme="dark"] .day.today .dnum { background: #7ee0d4; color: #100e2a; }
+  html[data-theme="dark"] .pill-ev { color: color-mix(in srgb, var(--c) 55%, #fff); }
+  html[data-theme="dark"] .ev-row { background: #100e2a; border-color: rgba(255,255,255,0.09); } html[data-theme="dark"] .ev-sub, html[data-theme="dark"] .cal-empty { color: #a9a6bd; }
+  html[data-theme="dark"] .tag-chip { color: color-mix(in srgb, var(--c) 50%, #fff); } html[data-theme="dark"] .tag-chip.due { color: #f0a488; } html[data-theme="dark"] .tag-chip.ok { color: #7ee0d4; }
+  html[data-theme="dark"] .agenda-day::after { background: rgba(255,255,255,0.1); }
+  html[data-theme="dark"] dialog.ev-dialog { background: #18162e; color: #f2f0f8; } html[data-theme="dark"] .dlg-foot { border-top-color: rgba(255,255,255,0.1); }
+  html[data-theme="dark"] .dlg-x { color: #a9a6bd; } html[data-theme="dark"] .dlg-x:hover { background: rgba(255,255,255,0.08); }
+  html[data-theme="dark"] .fld > label, html[data-theme="dark"] .lbl { color: #a9a6bd; }
+  html[data-theme="dark"] .fld input[type=text], html[data-theme="dark"] .fld input[type=date], html[data-theme="dark"] .fld input[type=time], html[data-theme="dark"] .fld select, html[data-theme="dark"] .fld textarea { background: #100e2a; color: #f2f0f8; border-color: rgba(255,255,255,0.16); color-scheme: dark; }
+  html[data-theme="dark"] .chip-opt.on { background: #7ee0d4; border-color: #7ee0d4; color: #100e2a; }
+  html[data-theme="dark"] .prep-item button { color: #a9a6bd; } html[data-theme="dark"] .sugg { color: #7ee0d4; }
+  html[data-theme="dark"] .warn-box { background: rgba(240,180,60,0.12); color: #f0c060; border-color: rgba(240,180,60,0.3); } html[data-theme="dark"] .err-box { background: rgba(210,79,40,0.16); color: #f0a488; }
+</style>
+</head>
+<body>
+  <div class="topbar">
+    <a class="logo-wrap" href="../">
+      <img src="../assets/d4f7acc01b9438e998c9e7b9676584b0.png" alt="QueroCura">
+      <span class="logo-text"><span class="ink">Quero</span><span class="teal">Cura</span></span>
+    </a>
+
+    <nav class="tab-nav">
+      <a class="tab-link" href="../symptoms/"><span class="tl-ic">🔍</span>Symptoms</a>
+      <a class="tab-link soon" href="#" onclick="return false;" title="Chat with Cura — coming soon"><span class="tl-ic">💬</span>Cura Chat<span class="soon-tag">Soon</span></a>
+      <a class="tab-link" href="../vitals/"><span class="tl-ic">❤️</span>Vitals</a>
+      <a class="tab-link active" href="#"><span class="tl-ic">📅</span>Calendar</a>
+      <a class="tab-link" href="../curavault/"><span class="tl-ic">🔒</span>CuraVault</a>
+      <a class="tab-link" href="../dashboard/"><span class="tl-ic">🏠</span>Dashboard</a>
+      <a class="tab-link" href="../insights/"><span class="tl-ic">✨</span>Insights</a>
+      <a class="tab-link" href="../profile/"><span class="tl-ic">👤</span>Profile</a>
+    </nav>
+
+    <div class="topbar-right">
+      <span class="user-pill" id="qc-user-chip"><span class="up-dot" id="qc-user-dot">?</span><span id="qc-user-name"></span></span>
+      <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode" id="theme-toggle-btn">
+        <span id="theme-toggle-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z" stroke="#100e2a" stroke-width="1.7" stroke-linejoin="round"/></svg></span>
+      </button>
+      <button class="signout-btn" id="qc-signout-btn">Sign out</button>
+    </div>
+  </div>
+
+  <div class="shell">
+    <div class="page-head">
+      <span class="page-eyebrow">Calendar</span>
+      <h1 class="page-title">Never miss a visit</h1>
+      <p class="page-sub">Doctor visits, tests, surgeries and follow-ups in one place — with reminders, a prep checklist for each, and your records a tap away.</p>
+    </div>
+
+    <div class="cal-banner" id="cal-banner"></div>
+
+    <div class="nextup empty" id="nextup"></div>
+
+    <div class="cal-toolbar">
+      <h2 class="cal-title" id="cal-title">—</h2>
+      <button class="icon-btn" id="prev" aria-label="Previous month">‹</button>
+      <button class="icon-btn" id="next" aria-label="Next month">›</button>
+      <button class="btn-ghost" id="today">Today</button>
+      <span class="spacer"></span>
+      <div class="seg" role="tablist" aria-label="View">
+        <button id="v-month" class="on" role="tab">Month</button>
+        <button id="v-agenda" role="tab">Agenda</button>
+      </div>
+      <button class="btn-primary" id="new-ev">+ New event</button>
+    </div>
+
+    <div class="filters" id="filters"></div>
+
+    <div id="month-view">
+      <div class="card grid-card">
+        <div class="dow" id="dow"></div>
+        <div class="days" id="days"></div>
+      </div>
+      <div class="card" id="day-panel"></div>
+    </div>
+
+    <div id="agenda-view" style="display:none;">
+      <div class="card">
+        <div class="day-panel-head"><h2>Coming up · next 90 days</h2></div>
+        <div id="agenda"></div>
+      </div>
+      <div class="card" id="past-card" style="display:none;">
+        <div class="day-panel-head"><h2>Recently completed</h2></div>
+        <div id="past"></div>
+      </div>
+    </div>
+
+    <div class="card" style="display:flex; gap:12px; flex-wrap:wrap; align-items:center; justify-content:space-between;">
+      <div>
+        <h2 style="margin:0 0 4px;">Take it with you</h2>
+        <div class="empty-note" style="margin:0;">Export to Google / Apple / Outlook calendar (with reminders), or turn on desktop alerts.</div>
+      </div>
+      <div style="display:flex; gap:10px; flex-wrap:wrap;">
+        <button class="btn-ghost" id="export-ics">⬇ Export .ics</button>
+        <button class="btn-ghost" id="notify-btn">🔔 Desktop alerts</button>
+      </div>
+    </div>
+  </div>
+
+  <dialog class="ev-dialog" id="ev-dialog" aria-labelledby="dlg-title">
+    <form method="dialog" id="ev-form" novalidate>
+      <div class="dlg-head"><h2 id="dlg-title">New event</h2><button type="button" class="dlg-x" id="dlg-close" aria-label="Close">✕</button></div>
+      <div class="dlg-body">
+        <div id="dlg-msg"></div>
+        <div class="fld"><label for="f-title">What is it?</label><input type="text" id="f-title" maxlength="120" placeholder="e.g. Dr. Rao — knee follow-up" autocomplete="off"></div>
+        <div class="fld"><span class="lbl">Type</span><div class="type-grid" id="f-types"></div></div>
+        <div class="fld"><div class="row3">
+          <div><label for="f-date">Date</label><input type="date" id="f-date"></div>
+          <div><label for="f-time">Starts</label><input type="time" id="f-time" value="10:00"></div>
+          <div><label for="f-end">Ends <span style="text-transform:none;opacity:.6">(optional)</span></label><input type="time" id="f-end"></div>
+        </div>
+        <label style="display:flex; gap:8px; align-items:center; margin-top:10px; text-transform:none; letter-spacing:0; font-weight:600; font-size:13px; cursor:pointer;"><input type="checkbox" id="f-allday" style="width:auto;"> All-day</label></div>
+        <div class="fld"><div class="row2">
+          <div><label for="f-provider">Doctor / provider</label><input type="text" id="f-provider" maxlength="120" placeholder="Name or clinic"></div>
+          <div><label for="f-location">Location</label><input type="text" id="f-location" maxlength="160" placeholder="Hospital, room, address"></div>
+        </div></div>
+        <div class="fld"><span class="lbl">Remind me</span><div class="chips" id="f-reminders"></div></div>
+        <div class="fld"><div class="row2">
+          <div><label for="f-repeat">Repeats</label><select id="f-repeat"><option value="none">Doesn't repeat</option><option value="daily">Daily</option><option value="weekly">Weekly</option><option value="monthly">Monthly</option><option value="yearly">Yearly</option></select></div>
+          <div id="f-until-wrap" style="display:none;"><label for="f-until">Until <span style="text-transform:none;opacity:.6">(optional)</span></label><input type="date" id="f-until"></div>
+        </div></div>
+        <div class="fld"><span class="lbl">Prepare / bring</span><div id="f-prep"></div>
+          <div class="prep-add"><input type="text" id="f-prep-new" maxlength="160" placeholder="Add an item, e.g. Bring old X-rays"><button type="button" class="btn-ghost" id="f-prep-add">Add</button></div>
+          <button type="button" class="sugg" id="f-prep-sugg">✨ Add suggested checklist for this type</button>
+        </div>
+        <div class="fld"><label for="f-notes">Notes</label><textarea id="f-notes" rows="3" maxlength="2000" placeholder="Questions to ask, referral details, anything you don't want to forget"></textarea></div>
+        <div class="fld" id="f-status-wrap" style="display:none;"><label for="f-status">Status</label><select id="f-status"><option value="scheduled">Scheduled</option><option value="done">Done</option><option value="cancelled">Cancelled</option></select></div>
+      </div>
+      <div class="dlg-foot">
+        <button type="button" class="btn-primary" id="dlg-save">Save event</button>
+        <button type="button" class="btn-ghost" id="dlg-cancel">Cancel</button>
+        <span class="spacer"></span>
+        <button type="button" class="btn-danger" id="dlg-delete" style="display:none;">Delete</button>
+      </div>
+    </form>
+  </dialog>
+
+<script src="../assets/qc-app.js"></script>
+<script>
+/* ---- Theme toggle ---- */
+var STORAGE_KEY = 'qc-theme';
+var root = document.documentElement;
+var SUN_ICON = '<svg width="17" height="17" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="4.2" stroke="#f2f0f8" stroke-width="1.7"/><path d="M12 3v2.2M12 18.8V21M21 12h-2.2M5.2 12H3M18.4 5.6l-1.5 1.5M7.1 16.9l-1.5 1.5M18.4 18.4l-1.5-1.5M7.1 7.1L5.6 5.6" stroke="#f2f0f8" stroke-width="1.7" stroke-linecap="round"/></svg>';
+var MOON_ICON = '<svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z" stroke="#100e2a" stroke-width="1.7" stroke-linejoin="round"/></svg>';
+function applyTheme(dark) {
+  root.setAttribute('data-theme', dark ? 'dark' : 'light');
+  try { localStorage.setItem(STORAGE_KEY, dark ? 'dark' : 'light'); } catch (e) {}
+  var icon = document.getElementById('theme-toggle-icon');
+  if (icon) icon.innerHTML = dark ? SUN_ICON : MOON_ICON;
+}
+window.toggleTheme = function () { applyTheme(root.getAttribute('data-theme') !== 'dark'); };
+if (root.getAttribute('data-theme') === 'dark') applyTheme(true);
+
+const API_BASE = QC.API_BASE;
+const $ = id => document.getElementById(id);
+const esc = QC.esc;
+const TYPES = QC.cal.types;
+const pad = QC.cal.pad;
+
+/* ---------- state ---------- */
+const today0 = new Date();
+let view = { y: today0.getFullYear(), m: today0.getMonth() };
+let selected = dkey(today0);
+let events = [];
+let hidden = new Set();       // hidden types
+let mode = "month";
+let editing = null;           // event being edited (or null for new)
+let pendingConflictOk = false;
+
+function dkey(d) { return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()); }
+function fromKey(k) { const [y, m, d] = k.split("-").map(Number); return new Date(y, m - 1, d); }
+function fmtTime(d) { return d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }); }
+function fmtDay(d, long) { return d.toLocaleDateString([], long ? { weekday: "long", day: "numeric", month: "long" } : { weekday: "short", day: "numeric", month: "short" }); }
+function typeOf(ev) { return TYPES[ev.type] || TYPES.other; }
+
+/* ---------- occurrence index for the visible range ---------- */
+function occurrencesBetween(lo, hi) {
+  const out = [];
+  events.forEach(ev => {
+    if (hidden.has(ev.type)) return;
+    QC.cal.occurrences(ev, lo, hi).forEach(d => out.push({ ev, when: d }));
+  });
+  out.sort((a, b) => a.when - b.when);
+  return out;
+}
+function gridRange() {
+  const first = new Date(view.y, view.m, 1);
+  const offset = (first.getDay() + 6) % 7; // Monday-first
+  const start = new Date(view.y, view.m, 1 - offset);
+  const end = new Date(start); end.setDate(start.getDate() + 41); end.setHours(23, 59, 59);
+  return { start, end };
+}
+
+/* ---------- render: month ---------- */
+function renderMonth() {
+  $("cal-title").textContent = new Date(view.y, view.m, 1).toLocaleDateString([], { month: "long", year: "numeric" });
+  $("dow").innerHTML = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map(d => "<div>" + d + "</div>").join("");
+  const { start, end } = gridRange();
+  const occ = occurrencesBetween(start, end);
+  const byDay = {};
+  occ.forEach(o => { (byDay[dkey(o.when)] = byDay[dkey(o.when)] || []).push(o); });
+  let html = "";
+  const todayK = dkey(new Date());
+  for (let i = 0; i < 42; i++) {
+    const d = new Date(start); d.setDate(start.getDate() + i);
+    const k = dkey(d), list = byDay[k] || [];
+    const cls = "day" + (d.getMonth() !== view.m ? " other" : "") + (k === todayK ? " today" : "") + (k === selected ? " sel" : "");
+    const pills = list.slice(0, 3).map(o => {
+      const t = typeOf(o.ev);
+      return '<div class="pill-ev ' + (o.ev.status || "") + '" style="--c:' + t.color + '" title="' + esc(o.ev.title) + '">' + t.icon + ' ' + (o.ev.all_day ? "" : fmtTime(o.when).replace(" ", "") + " ") + esc(o.ev.title) + '</div>';
+    }).join("");
+    const dots = list.slice(0, 6).map(o => '<i style="--c:' + typeOf(o.ev).color + '"></i>').join("");
+    html += '<button type="button" class="' + cls + '" data-k="' + k + '" aria-label="' + fmtDay(d, true) + (list.length ? ", " + list.length + " event" + (list.length > 1 ? "s" : "") : "") + '">' +
+      '<span class="dnum">' + d.getDate() + '</span>' + pills +
+      (list.length > 3 ? '<span class="more">+' + (list.length - 3) + ' more</span>' : '') +
+      '<span class="dots">' + dots + '</span></button>';
+  }
+  $("days").innerHTML = html;
+  $("days").querySelectorAll(".day").forEach(el => el.addEventListener("click", () => { selected = el.getAttribute("data-k"); renderMonth(); renderDayPanel(); }));
+}
+
+function evRowHtml(o, showDate) {
+  const t = typeOf(o.ev), now = Date.now();
+  const past = !o.ev.recurrence || o.ev.recurrence === "none" ? o.when.getTime() < now - 3600000 : false;
+  let chip = '';
+  if (o.ev.status === "done") chip = '<span class="tag-chip ok">✓ Done</span>';
+  else if (o.ev.status === "cancelled") chip = '<span class="tag-chip">Cancelled</span>';
+  else if (past) chip = '<span class="tag-chip due">Past due</span>';
+  else {
+    const days = Math.ceil((o.when - now) / 86400000);
+    chip = '<span class="tag-chip" style="--c:' + t.color + '">' + (days <= 0 ? "Today" : days === 1 ? "Tomorrow" : "in " + days + " days") + '</span>';
+  }
+  const prep = (o.ev.prep || []);
+  const prepDone = prep.filter(p => p.done).length;
+  const sub = [
+    o.ev.all_day ? "All day" : fmtTime(o.when) + (o.ev.end ? " – " + fmtTime(QC.cal.parse(o.ev.end)) : ""),
+    o.ev.provider, o.ev.location,
+    o.ev.recurrence && o.ev.recurrence !== "none" ? "↻ " + o.ev.recurrence : "",
+    prep.length ? "☑ " + prepDone + "/" + prep.length + " ready" : "",
+  ].filter(Boolean).map(esc).join(" · ");
+  return '<div class="ev-row ' + (o.ev.status || "") + '" style="--c:' + t.color + '" data-id="' + esc(o.ev.id) + '" tabindex="0" role="button">' +
+    '<div class="ev-ic">' + t.icon + '</div><div class="ev-main"><div class="ev-title">' + esc(o.ev.title) + '</div><div class="ev-sub">' + (showDate ? esc(fmtDay(o.when)) + " · " : "") + sub + '</div></div>' +
+    '<div class="ev-right">' + chip + '<span class="tag-chip" style="--c:' + t.color + '">' + esc(t.label) + '</span></div></div>';
+}
+function wireRows(scope) {
+  scope.querySelectorAll(".ev-row").forEach(el => {
+    const open = () => openEditor(events.find(e => e.id === el.getAttribute("data-id")));
+    el.addEventListener("click", open);
+    el.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); open(); } });
+  });
+}
+
+function renderDayPanel() {
+  const d = fromKey(selected), lo = new Date(d), hi = new Date(d); hi.setHours(23, 59, 59);
+  const list = occurrencesBetween(lo, hi);
+  let html = '<div class="day-panel-head"><h2>' + esc(fmtDay(d, true)) + '</h2><button class="btn-ghost" id="add-here">+ Add on this day</button></div>';
+  html += list.length ? list.map(o => evRowHtml(o, false)).join("") :
+    '<div class="cal-empty"><div class="ce-ic">🗓️</div>Nothing planned. Enjoy the free day — or add a visit or test.</div>';
+  $("day-panel").innerHTML = html;
+  wireRows($("day-panel"));
+  $("add-here").addEventListener("click", () => openEditor(null, { date: selected }));
+}
+
+/* ---------- render: agenda ---------- */
+function renderAgenda() {
+  const now = new Date(), hi = new Date(now.getTime() + 90 * 86400000);
+  const lo = new Date(now); lo.setHours(0, 0, 0, 0);
+  const list = occurrencesBetween(lo, hi).filter(o => o.ev.status !== "done");
+  if (!list.length) {
+    $("agenda").innerHTML = '<div class="cal-empty"><div class="ce-ic">📭</div>Nothing scheduled in the next 90 days.<br><button class="btn-primary" style="margin-top:14px;" id="agenda-add">+ Add your first event</button></div>';
+    $("agenda-add").addEventListener("click", () => openEditor(null));
+  } else {
+    let lastK = "", html = "";
+    list.forEach(o => {
+      const k = dkey(o.when);
+      if (k !== lastK) { lastK = k; const diff = Math.round((fromKey(k) - fromKey(dkey(now))) / 86400000); html += '<div class="agenda-day">' + (diff === 0 ? "Today" : diff === 1 ? "Tomorrow" : esc(fmtDay(o.when))) + '</div>'; }
+      html += evRowHtml(o, false);
+    });
+    $("agenda").innerHTML = html;
+    wireRows($("agenda"));
+  }
+  const past = events.filter(e => e.status === "done").map(e => ({ ev: e, when: QC.cal.parse(e.start) })).sort((a, b) => b.when - a.when).slice(0, 6);
+  $("past-card").style.display = past.length ? "" : "none";
+  $("past").innerHTML = past.map(o => evRowHtml(o, true)).join("");
+  wireRows($("past"));
+}
+
+/* ---------- next-up hero ---------- */
+function renderNextUp() {
+  const box = $("nextup");
+  const now = new Date(), hi = new Date(now.getTime() + 365 * 86400000);
+  const next = occurrencesBetween(new Date(now.getTime() - 3600000 * 0), hi).filter(o => o.ev.status === "scheduled")[0];
+  const overdue = events.filter(e => e.status === "scheduled" && (!e.recurrence || e.recurrence === "none") && QC.cal.parse(e.start) < new Date(Date.now() - 3600000));
+  if (!next) {
+    box.className = "nextup empty";
+    box.innerHTML = '<div class="nu-row"><div><div class="nu-eyebrow" style="color:#0e8f83">Next up</div><h2 class="nu-title">Nothing scheduled yet</h2><div class="nu-meta">Add a doctor visit, test or procedure — we\'ll remind you at the right time and keep a prep checklist.</div>' +
+      (overdue.length ? '<div class="nu-meta" style="margin-top:8px;color:#b3401f;font-weight:700;">⚠ ' + overdue.length + ' past event' + (overdue.length > 1 ? "s" : "") + ' still marked as scheduled — mark done or reschedule.</div>' : '') +
+      '</div></div><div class="nu-actions"><button class="nu-btn" id="nu-add">+ Add an event</button></div>';
+    $("nu-add").addEventListener("click", () => openEditor(null));
+    return;
+  }
+  const t = typeOf(next.ev);
+  const ms = next.when - now, days = Math.floor(ms / 86400000), hrs = Math.floor((ms % 86400000) / 3600000), mins = Math.floor((ms % 3600000) / 60000);
+  const count = ms < 0 ? ["now", ""] : days >= 1 ? [days, days === 1 ? "day to go" : "days to go"] : hrs >= 1 ? [hrs + "h " + mins + "m", "to go"] : [mins + "m", "to go"];
+  const prep = next.ev.prep || [], done = prep.filter(p => p.done).length;
+  box.className = "nextup";
+  box.style.background = "linear-gradient(125deg, color-mix(in srgb," + t.color + " 70%, #0b3b37) 0%, " + t.color + " 55%, color-mix(in srgb," + t.color + " 60%, #2f8fd1) 100%)";
+  box.innerHTML = '<div class="nu-row"><div><div class="nu-eyebrow">Next up · ' + esc(t.label) + '</div>' +
+    '<h2 class="nu-title">' + t.icon + ' ' + esc(next.ev.title) + '</h2>' +
+    '<div class="nu-meta">' + esc(QC.cal.humanWhen(next.when)) + (next.ev.provider ? '<br>With ' + esc(next.ev.provider) : '') + (next.ev.location ? '<br>📍 ' + esc(next.ev.location) : '') + '</div></div>' +
+    '<div class="nu-count"><b>' + count[0] + '</b><span>' + count[1] + '</span></div></div>' +
+    (prep.length ? '<div class="nu-prep"><div class="nu-prep-bar"><i style="width:' + Math.round(done / prep.length * 100) + '%"></i></div><small>' + done + ' of ' + prep.length + ' prep items ready</small></div>' : '') +
+    '<div class="nu-actions"><button class="nu-btn" id="nu-open">Details &amp; checklist</button>' +
+    ((!next.ev.recurrence || next.ev.recurrence === "none") ? '<button class="nu-btn" id="nu-done">✓ Mark done</button>' : '') +
+    '<a class="nu-btn" style="text-decoration:none;color:#fff;" href="../insights/">🗣️ Questions to ask</a></div>';
+  $("nu-open").addEventListener("click", () => openEditor(next.ev));
+  const dn = $("nu-done"); if (dn) dn.addEventListener("click", () => saveEvent(Object.assign({}, next.ev, { status: "done" }), "Marked done — nice."));
+}
+
+/* ---------- filters ---------- */
+function renderFilters() {
+  const used = new Set(events.map(e => e.type));
+  const keys = Object.keys(TYPES).filter(k => used.has(k));
+  $("filters").style.display = keys.length > 1 ? "" : "none";
+  $("filters").innerHTML = keys.map(k => '<button type="button" class="f-chip' + (hidden.has(k) ? " off" : "") + '" data-t="' + k + '" style="--c:' + TYPES[k].color + '"><i></i>' + TYPES[k].icon + " " + esc(TYPES[k].label) + '</button>').join("");
+  $("filters").querySelectorAll(".f-chip").forEach(b => b.addEventListener("click", () => { const k = b.getAttribute("data-t"); hidden.has(k) ? hidden.delete(k) : hidden.add(k); renderAll(); }));
+}
+
+function renderAll() {
+  renderNextUp(); renderFilters();
+  if (mode === "month") { renderMonth(); renderDayPanel(); } else renderAgenda();
+  QC.refreshAlerts({ toast: false });
+}
+
+/* ---------- editor ---------- */
+const REMINDER_OPTS = [[0, "At time"], [30, "30 min"], [60, "1 hour"], [120, "2 hours"], [1440, "1 day"], [4320, "3 days"], [10080, "1 week"]];
+const PREP_SUGGEST = {
+  doctor: ["Write down symptoms and questions", "Bring your medicine list", "Bring recent reports", "Log vitals the day before"],
+  specialist: ["Bring referral letter", "Bring previous scans and reports", "Write down symptom timeline", "Bring your medicine list"],
+  surgery: ["Ask about fasting instructions", "Arrange a ride home", "Pack ID and insurance papers", "List current medicines and allergies", "Plan time off work", "Confirm pre-op tests are done"],
+  test: ["Check if fasting is needed", "Bring the doctor's request", "Bring previous reports", "Wear comfortable clothing"],
+  followup: ["Note what has changed since last time", "Log vitals this week", "Bring your medicine list"],
+  vaccine: ["Bring vaccination card", "Note any allergies or recent illness"],
+  dental: ["Bring X-rays if you have them", "Brush before you go"],
+  therapy: ["Wear comfortable clothes", "Note pain levels this week"],
+  medication: ["Check how many days are left", "Bring the old strip or prescription"],
+  other: []
+};
+let form = { type: "doctor", reminders: [1440, 60], prep: [] };
+
+function setReminders(arr) { form.reminders = arr.slice(); renderReminderChips(); }
+function renderTypeGrid() {
+  $("f-types").innerHTML = Object.keys(TYPES).map(k => '<button type="button" class="type-opt' + (form.type === k ? " on" : "") + '" data-t="' + k + '" style="--c:' + TYPES[k].color + '">' + TYPES[k].icon + " " + esc(TYPES[k].label) + '</button>').join("");
+  $("f-types").querySelectorAll(".type-opt").forEach(b => b.addEventListener("click", () => {
+    const wasDefault = JSON.stringify(form.reminders) === JSON.stringify(QC.cal.defaultReminders[form.type] || [1440, 60]);
+    form.type = b.getAttribute("data-t");
+    if (wasDefault && !editing) setReminders(QC.cal.defaultReminders[form.type] || [1440, 60]);
+    renderTypeGrid();
+  }));
+}
+function renderReminderChips() {
+  $("f-reminders").innerHTML = REMINDER_OPTS.map(([m, l]) => '<button type="button" class="chip-opt' + (form.reminders.indexOf(m) >= 0 ? " on" : "") + '" data-m="' + m + '">' + (m === 0 ? l : l + " before") + '</button>').join("");
+  $("f-reminders").querySelectorAll(".chip-opt").forEach(b => b.addEventListener("click", () => {
+    const m = parseInt(b.getAttribute("data-m"), 10), i = form.reminders.indexOf(m);
+    i >= 0 ? form.reminders.splice(i, 1) : form.reminders.push(m);
+    renderReminderChips();
+  }));
+}
+function renderPrep() {
+  $("f-prep").innerHTML = form.prep.map((p, i) => '<div class="prep-item"><input type="checkbox" data-i="' + i + '"' + (p.done ? " checked" : "") + '><span class="' + (p.done ? "done" : "") + '">' + esc(p.text) + '</span><button type="button" data-rm="' + i + '" aria-label="Remove">✕</button></div>').join("");
+  $("f-prep").querySelectorAll("input[type=checkbox]").forEach(c => c.addEventListener("change", () => { form.prep[+c.getAttribute("data-i")].done = c.checked; renderPrep(); }));
+  $("f-prep").querySelectorAll("[data-rm]").forEach(b => b.addEventListener("click", () => { form.prep.splice(+b.getAttribute("data-rm"), 1); renderPrep(); }));
+}
+function addPrepFromInput() {
+  const v = $("f-prep-new").value.trim(); if (!v) return;
+  form.prep.push({ text: v, done: false }); $("f-prep-new").value = ""; renderPrep();
+}
+
+function openEditor(ev, preset) {
+  editing = ev || null; pendingConflictOk = false;
+  $("dlg-msg").innerHTML = "";
+  $("dlg-title").textContent = ev ? "Edit event" : "New event";
+  $("dlg-delete").style.display = ev ? "" : "none";
+  $("f-status-wrap").style.display = ev ? "" : "none";
+  $("dlg-save").textContent = "Save event";
+  preset = preset || {};
+  const start = ev ? QC.cal.parse(ev.start) : null;
+  const defType = (ev && ev.type) || preset.type || "doctor";
+  form = {
+    type: TYPES[defType] ? defType : "doctor",
+    reminders: ev ? (ev.reminders || []).slice() : (QC.cal.defaultReminders[defType] || [1440, 60]).slice(),
+    prep: ev ? (ev.prep || []).map(p => ({ text: p.text, done: !!p.done })) : [],
+  };
+  $("f-title").value = ev ? ev.title : (preset.title || "");
+  $("f-date").value = ev ? dkey(start) : (preset.date || selected || dkey(new Date()));
+  $("f-allday").checked = !!(ev && ev.all_day);
+  $("f-time").value = ev && !ev.all_day ? pad(start.getHours()) + ":" + pad(start.getMinutes()) : "10:00";
+  const end = ev && ev.end ? QC.cal.parse(ev.end) : null;
+  $("f-end").value = end ? pad(end.getHours()) + ":" + pad(end.getMinutes()) : "";
+  $("f-provider").value = ev ? ev.provider || "" : "";
+  $("f-location").value = ev ? ev.location || "" : "";
+  $("f-notes").value = ev ? ev.notes || "" : "";
+  $("f-repeat").value = ev ? ev.recurrence || "none" : "none";
+  $("f-until").value = ev && ev.recurrence_until ? ev.recurrence_until : "";
+  $("f-status").value = ev ? ev.status || "scheduled" : "scheduled";
+  syncAllDay(); syncRepeat();
+  renderTypeGrid(); renderReminderChips(); renderPrep();
+  if (!$("ev-dialog").open) $("ev-dialog").showModal();
+  setTimeout(() => $("f-title").focus(), 30);
+}
+function closeEditor() { if ($("ev-dialog").open) $("ev-dialog").close(); }
+function syncAllDay() { const a = $("f-allday").checked; $("f-time").disabled = a; $("f-end").disabled = a; }
+function syncRepeat() { $("f-until-wrap").style.display = $("f-repeat").value === "none" ? "none" : ""; }
+
+function collect() {
+  const title = $("f-title").value.trim(), date = $("f-date").value, allDay = $("f-allday").checked;
+  const time = allDay ? "00:00" : ($("f-time").value || "09:00"), endT = $("f-end").value;
+  const errors = [];
+  if (!title) errors.push("Give the event a title.");
+  if (!date) errors.push("Pick a date.");
+  if (!allDay && endT && endT <= time) errors.push("The end time must be after the start time.");
+  const ev = Object.assign({}, editing || {}, {
+    title, type: form.type, start: date + "T" + time, end: (!allDay && endT) ? date + "T" + endT : null, all_day: allDay,
+    provider: $("f-provider").value.trim(), location: $("f-location").value.trim(), notes: $("f-notes").value.trim(),
+    recurrence: $("f-repeat").value, recurrence_until: $("f-until").value || null,
+    reminders: form.reminders.slice().sort((a, b) => b - a), prep: form.prep, status: editing ? $("f-status").value : "scheduled",
+  });
+  return { ev, errors };
+}
+function findConflicts(ev) {
+  if (ev.all_day || ev.status !== "scheduled") return [];
+  const s = QC.cal.parse(ev.start), e = ev.end ? QC.cal.parse(ev.end) : new Date(s.getTime() + 3600000);
+  const lo = new Date(s); lo.setHours(0, 0, 0, 0); const hi = new Date(s); hi.setHours(23, 59, 59);
+  return occurrencesBetween(lo, hi).filter(o => o.ev.id !== ev.id && o.ev.status === "scheduled" && !o.ev.all_day && o.when < e && new Date(o.when.getTime() + 3600000) > s);
+}
+
+async function saveEvent(ev, okMsg) {
+  const body = Object.assign({}, ev);
+  try {
+    const saved = await QC.cal.save(body);
+    const i = events.findIndex(x => x.id === saved.id);
+    if (i >= 0) events[i] = saved; else events.push(saved);
+    closeEditor(); renderAll();
+    QC.toast(okMsg || "Saved ✓", "ok");
+    // jump the calendar to the saved date so it's visible
+    const d = QC.cal.parse(saved.start); if (d && mode === "month") { view = { y: d.getFullYear(), m: d.getMonth() }; selected = dkey(d); renderAll(); }
+    return true;
+  } catch (e) {
+    $("dlg-msg").innerHTML = '<div class="err-box">' + esc(e.message || "Couldn't save that. Please try again.") + '</div>';
+    return false;
+  }
+}
+
+$("dlg-save").addEventListener("click", async () => {
+  const { ev, errors } = collect();
+  if (errors.length) { $("dlg-msg").innerHTML = '<div class="err-box">' + esc(errors[0]) + '</div>'; return; }
+  const conflicts = findConflicts(ev);
+  if (conflicts.length && !pendingConflictOk) {
+    pendingConflictOk = true;
+    $("dlg-msg").innerHTML = '<div class="warn-box">⚠ Overlaps with <b>' + esc(conflicts[0].ev.title) + '</b> at ' + esc(fmtTime(conflicts[0].when)) + '. Save anyway?</div>';
+    $("dlg-save").textContent = "Save anyway";
+    return;
+  }
+  $("dlg-save").disabled = true;
+  await saveEvent(ev, editing ? "Event updated ✓" : "Event added — we'll remind you ⏰");
+  $("dlg-save").disabled = false;
+});
+$("dlg-delete").addEventListener("click", async () => {
+  if (!editing) return;
+  if (!confirm("Delete \"" + editing.title + "\"? This can't be undone.")) return;
+  try { await QC.cal.remove(editing.id); events = events.filter(e => e.id !== editing.id); closeEditor(); renderAll(); QC.toast("Event deleted", "ok"); }
+  catch (e) { $("dlg-msg").innerHTML = '<div class="err-box">Couldn\'t delete that. Please try again.</div>'; }
+});
+["dlg-close", "dlg-cancel"].forEach(id => $(id).addEventListener("click", closeEditor));
+$("ev-dialog").addEventListener("click", e => { if (e.target === $("ev-dialog")) closeEditor(); });
+$("ev-form").addEventListener("submit", e => e.preventDefault());
+$("f-allday").addEventListener("change", syncAllDay);
+$("f-repeat").addEventListener("change", syncRepeat);
+["f-date", "f-time", "f-end"].forEach(id => $(id).addEventListener("change", () => { pendingConflictOk = false; $("dlg-save").textContent = "Save event"; }));
+$("f-prep-add").addEventListener("click", addPrepFromInput);
+$("f-prep-new").addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); addPrepFromInput(); } });
+$("f-prep-sugg").addEventListener("click", () => {
+  const have = new Set(form.prep.map(p => p.text.toLowerCase()));
+  (PREP_SUGGEST[form.type] || []).forEach(t => { if (!have.has(t.toLowerCase())) form.prep.push({ text: t, done: false }); });
+  renderPrep();
+});
+
+/* ---------- toolbar ---------- */
+$("prev").addEventListener("click", () => { view.m--; if (view.m < 0) { view.m = 11; view.y--; } renderMonth(); });
+$("next").addEventListener("click", () => { view.m++; if (view.m > 11) { view.m = 0; view.y++; } renderMonth(); });
+$("today").addEventListener("click", () => { const n = new Date(); view = { y: n.getFullYear(), m: n.getMonth() }; selected = dkey(n); renderAll(); });
+$("new-ev").addEventListener("click", () => openEditor(null));
+function setMode(m) {
+  mode = m;
+  $("v-month").classList.toggle("on", m === "month"); $("v-agenda").classList.toggle("on", m === "agenda");
+  $("month-view").style.display = m === "month" ? "" : "none"; $("agenda-view").style.display = m === "agenda" ? "" : "none";
+  document.querySelector(".cal-toolbar #prev").style.visibility = document.querySelector(".cal-toolbar #next").style.visibility = m === "month" ? "" : "hidden";
+  renderAll();
+}
+$("v-month").addEventListener("click", () => setMode("month"));
+$("v-agenda").addEventListener("click", () => setMode("agenda"));
+document.addEventListener("keydown", e => {
+  if (e.target.closest("input, textarea, select") || $("ev-dialog").open) return;
+  if (e.key === "n" || e.key === "N") { e.preventDefault(); openEditor(null); }
+  if (e.key === "ArrowLeft") $("prev").click(); if (e.key === "ArrowRight") $("next").click();
+});
+
+/* ---------- export + notifications ---------- */
+function icsEscape(t) { return String(t || "").replace(/\\/g, "\\\\").replace(/;/g, "\\;").replace(/,/g, "\\,").replace(/\r?\n/g, "\\n"); }
+function icsDate(d) { return d.getFullYear() + pad(d.getMonth() + 1) + pad(d.getDate()) + "T" + pad(d.getHours()) + pad(d.getMinutes()) + "00"; }
+function buildIcs() {
+  const L = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//QueroCura//Health Calendar//EN", "CALSCALE:GREGORIAN", "X-WR-CALNAME:QueroCura health calendar"];
+  const stamp = new Date().toISOString().replace(/[-:]/g, "").replace(/\.\d+/, "");
+  events.filter(e => e.status !== "cancelled").forEach(ev => {
+    const s = QC.cal.parse(ev.start); if (!s) return;
+    L.push("BEGIN:VEVENT", "UID:" + String(ev.id).replace(/[^\w-]/g, "") + "@querocura.com", "DTSTAMP:" + stamp);
+    if (ev.all_day) { const n = new Date(s); n.setDate(n.getDate() + 1); L.push("DTSTART;VALUE=DATE:" + icsDate(s).slice(0, 8), "DTEND;VALUE=DATE:" + icsDate(n).slice(0, 8)); }
+    else { const e = ev.end ? QC.cal.parse(ev.end) : new Date(s.getTime() + 3600000); L.push("DTSTART:" + icsDate(s), "DTEND:" + icsDate(e)); }
+    if (ev.recurrence && ev.recurrence !== "none") L.push("RRULE:FREQ=" + ev.recurrence.toUpperCase() + (ev.recurrence_until ? ";UNTIL=" + ev.recurrence_until.replace(/-/g, "") : ""));
+    L.push("SUMMARY:" + icsEscape(typeOf(ev).label + ": " + ev.title));
+    if (ev.location) L.push("LOCATION:" + icsEscape(ev.location));
+    const desc = [ev.provider ? "With " + ev.provider : "", ev.notes || "", (ev.prep && ev.prep.length) ? "Bring / prepare:\n" + ev.prep.map(p => "- " + p.text).join("\n") : ""].filter(Boolean).join("\n");
+    if (desc) L.push("DESCRIPTION:" + icsEscape(desc));
+    L.push("CLASS:PRIVATE");
+    (ev.reminders || []).forEach(m => L.push("BEGIN:VALARM", "ACTION:DISPLAY", "DESCRIPTION:" + icsEscape(ev.title), "TRIGGER:-PT" + parseInt(m, 10) + "M", "END:VALARM"));
+    L.push("END:VEVENT");
+  });
+  L.push("END:VCALENDAR");
+  return L.join("\r\n") + "\r\n";
+}
+$("export-ics").addEventListener("click", () => {
+  if (!events.length) { QC.toast("Add an event first — nothing to export yet.", "err"); return; }
+  const blob = new Blob([buildIcs()], { type: "text/calendar;charset=utf-8" });
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "querocura-calendar.ics";
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+  QC.toast("Calendar exported — open it in Google, Apple or Outlook calendar.", "ok");
+});
+function syncNotifyBtn() {
+  const b = $("notify-btn");
+  if (!("Notification" in window)) { b.style.display = "none"; return; }
+  b.textContent = Notification.permission === "granted" ? "🔔 Desktop alerts on ✓" : Notification.permission === "denied" ? "🔕 Alerts blocked in browser" : "🔔 Turn on desktop alerts";
+  b.disabled = Notification.permission === "denied";
+}
+$("notify-btn").addEventListener("click", () => { if (Notification.permission === "granted") { QC.toast("Desktop alerts are on. Keep this tab or the site open to receive them.", "ok"); return; } Notification.requestPermission().then(() => { syncNotifyBtn(); QC.refreshAlerts({ toast: false }); }); });
+
+$("qc-signout-btn").addEventListener("click", async () => {
+  await fetch(API_BASE + "/auth/logout", { method: "POST", credentials: "include" });
+  window.location.href = "../";
+});
+
+/* ---------- init ---------- */
+(async function init() {
+  const [meData, profData] = await Promise.all([
+    fetch(API_BASE + "/auth/me", { credentials: "include" }).then(r => r.json()).catch(() => ({ logged_in: false })),
+    fetch(API_BASE + "/profile", { credentials: "include" }).then(r => r.json()).catch(() => null),
+  ]);
+  if (!meData.logged_in) { window.location.href = "../login/"; return; }
+  if (profData && profData.ok && profData.profile && !profData.profile.wizard_done) { window.location.href = "../onboarding/"; return; }
+  const user = meData.user, name = user.display_name || user.username || user.email || "";
+  const initials = name ? name.trim().split(/\s+/).slice(0, 2).map(w => w[0].toUpperCase()).join("") : "?";
+  $("qc-user-dot").textContent = initials; $("qc-user-name").textContent = name ? name.split(" ")[0] : "";
+
+  events = await QC.cal.list();
+  const banner = $("cal-banner");
+  if (QC.cal.mode === "local") {
+    banner.textContent = "📱 Calendar sync isn't available right now, so events are saved on this device only. They'll move to your account automatically as soon as it is.";
+    banner.classList.add("show");
+  } else {
+    const moved = await QC.cal.syncLocal();
+    if (moved) { events = await QC.cal.list(); QC.toast(moved + " event" + (moved > 1 ? "s" : "") + " synced to your account ✓", "ok"); }
+  }
+  syncNotifyBtn();
+  renderAll();
+
+  // deep links, e.g. from Insights / symptom results: ?new=1&type=doctor&title=...
+  const q = new URLSearchParams(location.search);
+  if (q.get("new")) openEditor(null, { type: q.get("type") || undefined, title: q.get("title") || "" });
+  setInterval(() => renderNextUp(), 60000);
+})();
+</script>
+</body>
+</html>

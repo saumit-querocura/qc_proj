@@ -195,6 +195,40 @@
   html[data-theme="dark"] .other-cond-urgency { background: rgba(255,255,255,0.08); color: #cfccdf; }
   html[data-theme="dark"] .disclaimer-note { color: #8f8ba3; border-top-color: rgba(255,255,255,0.1); }
   html[data-theme="dark"] .empty-state p { color: #b7b3cc; }
+
+  /* ---- Severity bar must stay visible in dark mode (the generic dark .sev-seg rule used to win) ---- */
+  html[data-theme="dark"] .sev-seg { background: rgba(255,255,255,0.16); box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08); }
+  html[data-theme="dark"] .sev-seg.active-low { background: #4ade80; box-shadow: 0 0 10px rgba(74,222,128,0.45); }
+  html[data-theme="dark"] .sev-seg.active-medium { background: #fbbf24; box-shadow: 0 0 10px rgba(251,191,36,0.45); }
+  html[data-theme="dark"] .sev-seg.active-high { background: #ff7a59; box-shadow: 0 0 10px rgba(255,122,89,0.5); }
+  .sev-seg { transition: background 0.3s ease; }
+
+  /* ---- Home triage (replaces medication guidance) ---- */
+  .triage-card { border-left: 5px solid var(--tc, #0e8f83); }
+  .triage-head { display: flex; gap: 14px; align-items: flex-start; margin-bottom: 14px; }
+  .triage-ic { width: 44px; height: 44px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 22px; background: color-mix(in srgb, var(--tc) 14%, transparent); flex: 0 0 auto; }
+  .triage-headline { font-family: 'Fraunces', serif; font-size: 21px; font-weight: 600; color: var(--tc); line-height: 1.2; }
+  .triage-sum { font-size: 13.5px; color: rgba(16,14,42,0.65); line-height: 1.55; margin-top: 4px; }
+  .triage-meter { display: flex; gap: 4px; margin: 4px 0 18px; }
+  .tm-seg { flex: 1; text-align: center; }
+  .tm-bar { height: 7px; border-radius: 999px; background: rgba(16,14,42,0.1); margin-bottom: 5px; transition: background 0.3s; }
+  .tm-seg.on .tm-bar { background: var(--tc); }
+  .tm-seg.now .tm-bar { box-shadow: 0 0 0 3px color-mix(in srgb, var(--tc) 25%, transparent); }
+  .tm-label { font-size: 9.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.03em; color: rgba(16,14,42,0.4); }
+  .tm-seg.now .tm-label { color: var(--tc); }
+  .triage-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+  .tri-btn { background: var(--tc); color: #fff; border: none; border-radius: 999px; padding: 10px 18px; font: 800 13px 'Manrope', sans-serif; cursor: pointer; text-decoration: none; display: inline-block; transition: transform 0.18s, box-shadow 0.18s; }
+  .tri-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 22px -10px var(--tc); color: #fff; }
+  .tri-btn.ghost { background: transparent; color: inherit; border: 1.5px solid rgba(16,14,42,0.18); }
+  .tri-btn.ghost:hover { box-shadow: none; background: rgba(16,14,42,0.05); color: inherit; }
+  .tri-btn:disabled { opacity: 0.6; cursor: default; transform: none; }
+  .triage-foot { font-size: 11.5px; color: rgba(16,14,42,0.5); line-height: 1.55; margin-top: 14px; }
+  .ongoing-note { display: flex; gap: 10px; align-items: flex-start; font-size: 13px; line-height: 1.55; color: #1e5f8a; background: rgba(47,143,209,0.08); border: 1px solid rgba(47,143,209,0.2); border-radius: 12px; padding: 12px 14px; margin-top: 16px; }
+  html[data-theme="dark"] .triage-sum, html[data-theme="dark"] .triage-foot { color: #b7b3cc; }
+  html[data-theme="dark"] .tm-bar { background: rgba(255,255,255,0.14); }
+  html[data-theme="dark"] .tm-label { color: #8f8ba3; }
+  html[data-theme="dark"] .tri-btn.ghost { border-color: rgba(255,255,255,0.22); } html[data-theme="dark"] .tri-btn.ghost:hover { background: rgba(255,255,255,0.07); }
+  html[data-theme="dark"] .ongoing-note { background: rgba(47,143,209,0.14); border-color: rgba(47,143,209,0.3); color: #a9d4f0; }
 </style>
 </head>
 <body>
@@ -205,8 +239,9 @@
     </a>
     <nav class="tab-nav">
       <a class="tab-link active" href="../"><span class="tl-ic">🔍</span>Symptoms</a>
-      <a class="tab-link soon" href="#" onclick="return false;"><span class="tl-ic">💬</span>Dr. Cura<span class="soon-tag">Soon</span></a>
+      <a class="tab-link soon" href="#" onclick="return false;" title="Chat with Cura — coming soon"><span class="tl-ic">💬</span>Cura Chat<span class="soon-tag">Soon</span></a>
       <a class="tab-link" href="../../vitals/"><span class="tl-ic">❤️</span>Vitals</a>
+      <a class="tab-link" href="../../calendar/"><span class="tl-ic">📅</span>Calendar</a>
       <a class="tab-link" href="../../curavault/"><span class="tl-ic">🔒</span>CuraVault</a>
       <a class="tab-link" href="../../dashboard/"><span class="tl-ic">🏠</span>Dashboard</a>
       <a class="tab-link" href="../../insights/"><span class="tl-ic">✨</span>Insights</a>
@@ -290,6 +325,133 @@ const CONFIDENCE_BAND_TEXT = {
   moderate: "Moderate confidence match",
   broad: "Broader, less certain match",
 };
+
+/* ---------- No medicine advice: client-side safety net ----------
+   The server already strips drug names and builds `home_triage`. This is a second
+   line of defence, so even an older server response can't show a drug name. */
+const DRUG_NAME_RE = /(?<![\w-])(?:paracetamol|acetaminophen|tylenol|panadol|calpol|crocin|dolo|ibuprofen|brufen|advil|nurofen|aspirin|disprin|naproxen|diclofenac|voltaren|ketorolac|tramadol|codeine|combiflam|omeprazole|pantoprazole|esomeprazole|ranitidine|famotidine|gaviscon|loperamide|imodium|domperidone|ondansetron|simethicone|cetirizine|loratadine|fexofenadine|chlorpheniramine|chlorphenamine|diphenhydramine|benadryl|pseudoephedrine|phenylephrine|xylometazoline|oxymetazoline|dextromethorphan|guaifenesin|amoxicillin|azithromycin|ciprofloxacin|doxycycline|metronidazole|prednisolone|metformin|salbutamol|ventolin|hydrocortisone|clotrimazole|calamine|ORS|oral rehydration (?:salts?|solutions?)|\d+(?:\.\d+)? ?(?:mg|mcg|ml))(?![\w-])/i;
+const DRUG_CLASS_RE = /(?<![\w-])(?:nsaids?|painkillers?|pain ?relievers?|analgesics?|antipyretics?|antacids?|laxatives?|antihistamines?|decongestants?|cough (?:syrups?|suppressants?|medicines?)|lozenges?|throat sprays?|nasal sprays?|antibiotics?|steroids?|inhalers?|ointments?|(?:eye|ear|nose) drops|over[- ]the[- ]counter|OTC|tablets?|capsules?|pills?)(?![\w-])/i;
+const CAUTION_RE = /\b(?:avoid|do not|don't|never|not|without|unless|before|stop|no need|only if|check with|ask)\b/i;
+function hasMedicine(sentence) { return DRUG_NAME_RE.test(sentence) || (DRUG_CLASS_RE.test(sentence) && !CAUTION_RE.test(sentence)); }
+function scrubText(t) {
+  if (typeof t !== "string" || !t) return t;
+  t = t.replace(/\b(?:ORS|oral rehydration (?:salts?|solutions?))\b/gi, "plenty of fluids, in small frequent sips");
+  const parts = t.split(/(?<=[.!?])\s+|\n+/).filter(Boolean);
+  const kept = parts.filter(x => !hasMedicine(x));
+  return kept.length === parts.length ? t : kept.join(" ").trim();
+}
+function scrubList(a) { return (a || []).map(scrubText).filter(Boolean); }
+
+const TRIAGE_LEVELS = [
+  { key: "self_care",  label: "Self-care",   color: "#2f8f5e", headline: "Self-care at home", summary: "This looks manageable at home. Rest, fluids and watching for change are usually enough.", icon: "🏡" },
+  { key: "monitor",    label: "Monitor",     color: "#0e8f83", headline: "Monitor at home", summary: "Home care is reasonable. Keep an eye on it and re-check if anything changes.", icon: "👀" },
+  { key: "see_doctor", label: "Doctor soon", color: "#c98a10", headline: "Book a doctor visit soon", summary: "Home care is fine meanwhile, but arrange a visit within the next few days — sooner if it worsens.", icon: "🩺" },
+  { key: "urgent",     label: "Today",       color: "#d24f28", headline: "See a doctor today", summary: "This should be looked at today. Contact a doctor, urgent-care clinic or hospital now.", icon: "⚠️" },
+  { key: "emergency",  label: "Emergency",   color: "#b3182a", headline: "Get emergency help now", summary: "Call your local emergency number or go to the nearest emergency department. Don't wait it out at home.", icon: "🚨" },
+];
+const SAFE_STEPS = ["Rest and avoid pushing through it", "Drink water or clear fluids regularly", "Note when it started and what makes it better or worse", "Log your vitals so QueroCura can track the trend"];
+
+function triageLevelFor(data) {
+  const hay = [data.urgency, data.triage, data.overall_urgency].join(" ").toLowerCase();
+  if (/emergency|999|112/.test(hay)) return "emergency";
+  if (/urgent|high|same[- ]day/.test(hay)) return "urgent";
+  if (/soon|medium|moderate|see a doctor/.test(hay)) return "see_doctor";
+  if (/monitor|watch/.test(hay)) return "monitor";
+  const r = String(data.risk || "").toLowerCase();
+  return r === "high" ? "urgent" : r === "medium" ? "see_doctor" : r === "low" ? "self_care" : "monitor";
+}
+
+function buildTriage(data) {
+  const server = data.home_triage;
+  const key = (server && server.level) || triageLevelFor(data);
+  const meta = TRIAGE_LEVELS.find(l => l.key === key) || TRIAGE_LEVELS[1];
+  const steps = scrubList((server && server.do) || data.home_care_now || data.care);
+  return {
+    meta: meta, idx: TRIAGE_LEVELS.indexOf(meta),
+    headline: (server && server.headline) || meta.headline,
+    summary: (server && server.summary) || meta.summary,
+    steps: steps.length ? steps : SAFE_STEPS,
+    avoid: scrubList((server && server.avoid) || data.avoid),
+    watch: scrubList((server && server.watch_for) || data.red_flags),
+    escalate: scrubText((server && server.escalate_if) || data.when_doctor || ""),
+    specialist: (server && server.specialist) || data.specialist || "",
+    recheck: server && typeof server.recheck_hours === "number" ? server.recheck_hours : ({ self_care: 48, monitor: 24, see_doctor: 24, urgent: 0, emergency: 0 })[key],
+    note: (server && server.pharmacist_note) || "QueroCura doesn't suggest medicines. If you want something for relief, ask a pharmacist or doctor — they can check it against your allergies, other medicines and health conditions.",
+  };
+}
+
+function triageHtml(data) {
+  const t = buildTriage(data), c = t.meta.color;
+  const meter = TRIAGE_LEVELS.map((l, i) =>
+    '<div class="tm-seg' + (i <= t.idx ? ' on' : '') + (i === t.idx ? ' now' : '') + '"><div class="tm-bar"></div><div class="tm-label">' + l.label + '</div></div>').join("");
+  let html = '<div class="card reveal triage-card" style="--tc:' + c + '">' +
+    '<div class="triage-head"><div class="triage-ic">' + t.meta.icon + '</div><div>' +
+      '<div class="section-label" style="margin:0 0 2px;">Home triage</div>' +
+      '<div class="triage-headline">' + escapeHtml(t.headline) + '</div>' +
+      '<div class="triage-sum">' + escapeHtml(t.summary) + '</div></div></div>' +
+    '<div class="triage-meter" aria-label="Triage level: ' + escapeHtml(t.meta.label) + '">' + meter + '</div>' +
+    '<div class="care-cols"><div><div class="section-label" style="margin-top:0;">Safe to do now</div>' + listHtml("care-list do", t.steps) + '</div>' +
+    '<div>' + (t.avoid.length ? '<div class="section-label" style="margin-top:0;">Best avoided</div>' + listHtml("care-list avoid", t.avoid) : '') + '</div></div>';
+  // red flags already have their own card at the top of the page
+  if (t.escalate) html += '<div class="when-doctor-callout" style="margin-top:14px;"><span>🩺</span><span><strong>See a doctor if:</strong> ' + mdBold(t.escalate) + (t.specialist ? ' <span style="opacity:.75;">(' + escapeHtml(t.specialist) + ')</span>' : '') + '</span></div>';
+  html += '<div class="triage-actions">';
+  if (t.recheck > 0) html += '<button type="button" class="tri-btn" id="tri-remind" data-hours="' + t.recheck + '">⏰ Remind me to re-check in ' + (t.recheck >= 24 ? (t.recheck / 24) + ' day' + (t.recheck >= 48 ? 's' : '') : t.recheck + 'h') + '</button>';
+  if (t.idx >= 2) html += '<a class="tri-btn' + (t.recheck > 0 ? ' ghost' : '') + '" href="../../calendar/?new=1&type=doctor&title=' + encodeURIComponent('Doctor visit — ' + (data.name || 'symptoms')) + '">📅 Book a doctor visit</a>';
+  html += '<a class="tri-btn ghost" href="../../vitals/">❤️ Log vitals</a></div>';
+  html += '<div class="triage-foot">' + escapeHtml(t.note) + '</div></div>';
+  return html;
+}
+
+function wireTriageActions(data) {
+  const btn = document.getElementById("tri-remind");
+  if (!btn) return;
+  btn.addEventListener("click", async () => {
+    btn.disabled = true;
+    try {
+      await QC.cal.list(); // decides server vs local storage
+      const hrs = parseInt(btn.getAttribute("data-hours"), 10) || 24;
+      const when = new Date(Date.now() + hrs * 3600000);
+      await QC.cal.save({
+        title: "Re-check: " + (data.name || "your symptoms"), type: "followup",
+        start: QC.cal.fmt(when), status: "scheduled", reminders: [0],
+        notes: "How are you feeling compared with your symptom check? Log vitals and re-run the symptom checker if anything changed.",
+        prep: [{ text: "Log vitals", done: false }, { text: "Re-run the symptom check if you feel worse", done: false }],
+      });
+      btn.textContent = "✓ Reminder added to your calendar";
+      QC.toast("Reminder set — we'll nudge you to re-check.", "ok");
+      QC.refreshAlerts({ force: true, toast: false });
+    } catch (e) {
+      btn.disabled = false;
+      QC.toast("Couldn't add the reminder. Try from the Calendar page.", "err");
+    }
+  });
+}
+
+/* "Ongoing" note: makes it explicit where this result shows up in Insights */
+function ongoingNoteHtml(data) {
+  if (!data.name) return "";
+  return '<div class="ongoing-note"><span>🔎</span><span>This check is saved to <a href="../../insights/">Insights → Ongoing conditions</a>, so you can always see what\'s been flagged. It\'s a possibility, not a diagnosis. Already living with <b>' + escapeHtml(data.name) + '</b>? <a href="#" id="add-to-profile">Add it to my profile</a>.</span></div>';
+}
+function wireOngoing(data) {
+  const a = document.getElementById("add-to-profile");
+  if (!a) return;
+  a.addEventListener("click", async (e) => {
+    e.preventDefault();
+    try {
+      const cur = await fetch(API_BASE + "/profile", { credentials: "include" }).then(r => r.json());
+      const prof = (cur && cur.profile) || {};
+      const list = (prof.conditions || []).slice();
+      if (list.some(x => x.toLowerCase() === data.name.toLowerCase())) { QC.toast("Already on your profile.", "ok"); return; }
+      list.push(data.name);
+      const res = await fetch(API_BASE + "/profile", { method: "POST", credentials: "include", headers: { "Content-Type": "application/json" }, body: JSON.stringify(Object.assign({}, prof, { conditions: list, wizard_done: true })) });
+      const out = await res.json();
+      if (!out.ok) throw new Error(out.message);
+      a.outerHTML = "<b>✓ Added to your profile</b>";
+      QC.toast(data.name + " added to your ongoing conditions.", "ok");
+    } catch (err) { QC.toast("Couldn't update your profile.", "err"); }
+  });
+}
+
 const RISK_LEVEL_TEXT = { Low: "Low severity", Medium: "Moderate severity", High: "High severity" };
 
 function matchVisualsHtml(data) {
@@ -345,7 +507,6 @@ function normalizeResponse(data) {
     home_care_ongoing: top.home_care_ongoing,
     avoid: top.avoid,
     when_doctor: top.when_doctor,
-    otc: top.otc,
     specialist: top.specialist,
     urgency: data.overall_urgency,
     patient_answer: reasoning.patient_answer,
@@ -391,11 +552,11 @@ function renderResult(rawData) {
   }
 
   if (data.when_doctor) {
-    html += '<div class="card reveal" ' + step() + '><div class="when-doctor-callout"><span>🩺</span><span><strong>See a doctor:</strong> ' + mdBold(data.when_doctor) + (data.specialist ? ' <span style="opacity:0.75;">(' + escapeHtml(data.specialist) + ')</span>' : '') + '</span></div></div>';
+    html += '<div class="card reveal" ' + step() + '><div class="when-doctor-callout"><span>🩺</span><span><strong>See a doctor:</strong> ' + mdBold(scrubText(data.when_doctor)) + (data.specialist ? ' <span style="opacity:0.75;">(' + escapeHtml(data.specialist) + ')</span>' : '') + '</span></div></div>';
   }
 
   if (data.patient_answer || data.summary) {
-    html += '<div class="card reveal" ' + step() + '><div class="patient-answer">' + mdBold(data.patient_answer || data.summary).replace(/\n\n/g, "<br><br>") + '</div></div>';
+    html += '<div class="card reveal" ' + step() + '><div class="patient-answer">' + mdBold(scrubText(data.patient_answer || data.summary)).replace(/\n\n/g, "<br><br>") + '</div></div>';
   }
 
   if (data.name) {
@@ -405,43 +566,20 @@ function renderResult(rawData) {
         '<div><div class="condition-name">' + escapeHtml(data.name) + '</div>' +
         '<div class="condition-meta">' + (data.confidence ? data.confidence + "% match" : "") + '</div></div>' +
       '</div>' +
-      (data.description ? '<div class="condition-desc">' + escapeHtml(data.description) + '</div>' : '') +
+      (data.description ? '<div class="condition-desc">' + escapeHtml(scrubText(data.description)) + '</div>' : '') +
       matchVisualsHtml(data);
 
-    const careNow = data.home_care_now || data.care || [];
-    if ((careNow && careNow.length) || (data.avoid && data.avoid.length)) {
-      html += '<div class="section-label">What you can do</div><div class="care-cols">' +
-        '<div>' + listHtml("care-list do", careNow) + '</div>' +
-        '<div>' + listHtml("care-list avoid", data.avoid) + '</div>' +
-      '</div>';
+    if (data.home_care_ongoing && scrubList(data.home_care_ongoing).length) {
+      html += '<div class="section-label">Ongoing care</div>' + listHtml("care-list do", scrubList(data.home_care_ongoing));
     }
-    if (data.home_care_ongoing && data.home_care_ongoing.length) {
-      html += '<div class="section-label">Ongoing care</div>' + listHtml("care-list do", data.home_care_ongoing);
-    }
+    html += ongoingNoteHtml(data);
     html += '</div>';
   }
 
-  if (data.otc && data.otc.length) {
-    const medHtml = data.otc.map(function (o) {
-      const flagged = !!(o.allergy_conflict || o.condition_conflict);
-      let row = '<div class="med-item' + (flagged ? " warn" : "") + '">' +
-        '<div class="med-name">' + escapeHtml(o.name || "") + '</div>';
-      if (o.when) row += '<div class="med-when">' + escapeHtml(o.when) + '</div>';
-      if (o.avoid_if) {
-        row += '<div class="med-avoid' + (flagged ? " warn" : "") + '"><span class="tag">' + (flagged ? "⚠" : "Avoid if:") + '</span><span>' + escapeHtml(o.avoid_if) + '</span></div>';
-      }
-      row += '</div>';
-      return row;
-    }).join("");
-    html += '<div class="card reveal" ' + step() + '>' +
-      '<div class="section-label" style="margin-top:0;">💊 Medication guidance</div>' +
-      '<div class="med-list">' + medHtml + '</div>' +
-      '<div class="med-disclaimer">This is general guidance, not a prescription — check with a pharmacist or doctor before starting any new medicine, especially if you\'re pregnant, on other medication, or have an existing health condition.</div>' +
-    '</div>';
-  }
+  html += triageHtml(data);
 
   if (data.reasoning_explanation) {
-    html += '<div class="card reveal" ' + step() + '><div class="reasoning-callout"><span>🧠</span><span>' + escapeHtml(data.reasoning_explanation) + '</span></div></div>';
+    html += '<div class="card reveal" ' + step() + '><div class="reasoning-callout"><span>🧠</span><span>' + escapeHtml(scrubText(data.reasoning_explanation)) + '</span></div></div>';
   }
 
   if (board && ((board.reasoning_trace && board.reasoning_trace.length) || (board.must_not_miss && board.must_not_miss.length))) {
@@ -474,19 +612,21 @@ function renderResult(rawData) {
   if ((data.why_it_fits && data.why_it_fits.length) || (data.monitoring_advice && data.monitoring_advice.length)) {
     html += '<div class="card reveal" ' + step() + '>';
     if (data.why_it_fits && data.why_it_fits.length) {
-      html += '<div class="section-label" style="margin-top:0;">Why this fits</div>' + listHtml("followup-list", data.why_it_fits);
+      html += '<div class="section-label" style="margin-top:0;">Why this fits</div>' + listHtml("followup-list", scrubList(data.why_it_fits));
     }
     if (data.monitoring_advice && data.monitoring_advice.length) {
-      html += '<div class="section-label">Keep an eye on</div>' + listHtml("monitor-list", data.monitoring_advice);
+      html += '<div class="section-label">Keep an eye on</div>' + listHtml("monitor-list", scrubList(data.monitoring_advice));
     }
     html += '</div>';
   }
 
   if (data.doctor_summary) {
-    html += '<div class="card reveal" ' + step() + '><div class="doctor-callout"><span>🩺</span><span><strong>For your doctor:</strong> ' + mdBold(data.doctor_summary) + '</span></div></div>';
+    html += '<div class="card reveal" ' + step() + '><div class="doctor-callout"><span>🩺</span><span><strong>For your doctor:</strong> ' + mdBold(scrubText(data.doctor_summary)) + '</span></div></div>';
   }
 
   wrap.innerHTML = html;
+  wireTriageActions(data);
+  wireOngoing(data);
   document.getElementById("bottom-actions").style.display = "flex";
 }
 
@@ -525,5 +665,6 @@ document.getElementById("qc-signout-btn").addEventListener("click", async () => 
   renderResult(stored.data);
 })();
 </script>
+<script src="../../assets/qc-app.js"></script>
 </body>
 </html>
