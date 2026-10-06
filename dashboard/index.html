@@ -381,6 +381,20 @@
   .hero-score-note { max-width: 150px; text-align: center; font-size: 10.5px; line-height: 1.35; color: rgba(16,14,42,0.5); }
 
   /* ---- Attention / upcoming / score-why cards ---- */
+  /* today's focus */
+  .focus-card { margin: 0 0 18px; padding: 18px 20px; border-radius: 22px; background: linear-gradient(135deg, rgba(14,143,131,0.12), rgba(47,143,209,0.1)); border: 1px solid rgba(14,143,131,0.22); }
+  .focus-head { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin-bottom: 6px; }
+  .focus-head b { font-size: 15px; font-weight: 800; } .focus-head span { font-size: 12px; opacity: .6; }
+  .focus-row { display: flex; align-items: center; gap: 12px; padding: 11px 0; border-top: 1px dashed rgba(16,14,42,0.13); text-decoration: none; color: inherit; transition: transform .15s; }
+  .focus-row:first-of-type { border-top: 0; } .focus-row:hover { transform: translateX(3px); }
+  .focus-ic { width: 38px; height: 38px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 18px; background: rgba(255,255,255,0.7); flex: 0 0 auto; }
+  .focus-main { flex: 1; min-width: 0; } .focus-title { font-weight: 800; font-size: 14px; line-height: 1.35; } .focus-detail { font-size: 12.5px; opacity: .65; line-height: 1.4; margin-top: 2px; }
+  .focus-cta { font-size: 12.5px; font-weight: 800; color: #0e8f83; white-space: nowrap; }
+  .focus-row.urgent .focus-title { color: #b3401f; } .focus-row.urgent .focus-ic { background: rgba(210,79,40,0.14); }
+  .focus-done { font-size: 13.5px; font-weight: 700; padding: 6px 0 2px; }
+  html[data-theme="dark"] .focus-card { background: linear-gradient(135deg, rgba(14,143,131,0.2), rgba(47,143,209,0.14)); border-color: rgba(126,224,212,0.28); }
+  html[data-theme="dark"] .focus-ic { background: rgba(255,255,255,0.1); } html[data-theme="dark"] .focus-row { border-color: rgba(255,255,255,0.14); }
+  html[data-theme="dark"] .focus-cta { color: #7ee0d4; } html[data-theme="dark"] .focus-row.urgent .focus-title { color: #ff9b7d; }
   .attn-item { display: flex; gap: 12px; align-items: flex-start; padding: 12px 14px; border-radius: 14px; margin-bottom: 10px; background: color-mix(in srgb, var(--ac) 9%, transparent); border-left: 4px solid var(--ac); }
   .attn-item:last-child { margin-bottom: 0; }
   .attn-title { font-weight: 800; font-size: 13.5px; color: var(--ac); }
@@ -499,6 +513,8 @@
       <button type="button" class="checkin-dismiss" id="qc-checkin-dismiss" aria-label="Not now">✕</button>
     </div>
 
+    <section class="focus-card" id="qc-focus" aria-label="Today's focus" hidden></section>
+
     <div class="snapshot-strip" id="qc-snapshot"></div>
 
     <div class="tip-card">
@@ -587,6 +603,7 @@
   </div>
 
 <script src="../assets/qc-app.js"></script>
+<script src="../assets/qc-push.js"></script>
 <script>
 var STORAGE_KEY = 'qc-theme';
 var root = document.documentElement;
@@ -824,7 +841,33 @@ async function loadScore(force) {
   const risk = data && data.ok ? data.risk : (stale && stale.risk) || null;
   updateHeroScore(risk);
   renderWhy(risk);
-  if (data && data.ok) renderConditionCheckin(data.ongoing_conditions);
+  if (data && data.ok) { renderConditionCheckin(data.ongoing_conditions); renderFocus(data.focus); }
+  else if (stale && stale.ok !== false) renderFocus(stale.focus);
+}
+
+/* Today's focus: the few most useful things to do now, ranked across vitals, symptom check-ins, records and the
+   calendar. Today's appointments come first; the rest is computed on the server. */
+async function renderFocus(serverItems) {
+  const box = document.getElementById("qc-focus");
+  let items = (serverItems || []).slice();
+  try {
+    const up = await QC.cal.upcoming(2);
+    const soon = up.filter(u => u.when - Date.now() < 30 * 3600000 && u.when - Date.now() > -3600000).slice(0, 2).map(u => {
+      const t = QC.cal.types[u.ev.type] || QC.cal.types.other;
+      return { id: "cal-" + u.ev.id, icon: t.icon, tone: "plan", title: u.ev.title, detail: QC.cal.humanWhen(u.when) + (u.ev.location ? " · " + u.ev.location : ""), cta: "Open", href: "../calendar/" };
+    });
+    items = soon.concat(items);
+  } catch (e) {}
+  items = items.slice(0, 4);
+  if (!items.length) {
+    box.hidden = false;
+    box.innerHTML = "<div class=\"focus-head\"><b>🎯 Today&rsquo;s focus</b></div><div class=\"focus-done\">✨ You&rsquo;re all caught up. Nothing needs your attention today.</div>";
+    return;
+  }
+  box.hidden = false;
+  box.innerHTML = '<div class="focus-head"><b>🎯 Today&rsquo;s focus</b><span>What matters most right now</span></div>' +
+    items.map(i => '<a class="focus-row ' + QC.esc(i.tone || "") + '" href="' + QC.esc(i.href || "#") + '"><span class="focus-ic">' + QC.esc(i.icon || "💡") + '</span><span class="focus-main"><span class="focus-title">' + QC.esc(i.title) + '</span>' +
+      (i.detail ? '<span class="focus-detail" style="display:block">' + QC.esc(i.detail) + '</span>' : '') + '</span><span class="focus-cta">' + QC.esc(i.cta || "Open") + ' →</span></a>').join("");
 }
 
 /* "Are you feeling better?" for conditions a symptom check suggested. Shares the check-in banner;
@@ -1252,6 +1295,7 @@ document.getElementById("qc-checkin-dismiss").addEventListener("click", () => {
   // These four don't depend on each other — load them together.
   await Promise.all([loadLatest(), loadHistory(), loadInsights(14), loadCheckin(), scoreLoad, loadUpcoming()]);
   QC.refreshAlerts({ toast: true }).then(renderAttention);
+  setTimeout(() => { if (window.QCPush) QCPush.maybePrompt(); }, 5000);
 })();
 </script>
 </body>

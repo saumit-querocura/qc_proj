@@ -58,6 +58,38 @@
   /* ---- Hero identity card ---- */
   .id-hero { position: relative; overflow: hidden; border-radius: 26px; margin-bottom: 22px; background: radial-gradient(circle at 12% 15%, rgba(14,143,131,0.08), transparent 55%), radial-gradient(circle at 92% 10%, rgba(124,111,219,0.09), transparent 50%), #fbfaf6; border: 1px solid rgba(16,14,42,0.07); padding: 30px 32px; display: flex; align-items: center; gap: 22px; flex-wrap: wrap; }
   .id-avatar { width: 76px; height: 76px; border-radius: 50%; flex: 0 0 auto; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #0e8f83, #2f8fd1); color: #fff; font-family: 'Fraunces', serif; font-weight: 600; font-size: 28px; box-shadow: 0 12px 26px -10px rgba(14,143,131,0.5); }
+  .id-hero { display: block; padding: 28px 30px 22px; }
+  .id-top { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
+  .id-avatar-wrap { position: relative; flex: 0 0 auto; width: 112px; height: 112px; display: flex; align-items: center; justify-content: center; }
+  .id-ring { position: absolute; inset: 0; border-radius: 50%; background: conic-gradient(#0e8f83 calc(var(--p, 0) * 1%), rgba(16,14,42,0.1) 0); -webkit-mask: radial-gradient(circle, transparent 52px, #000 53px); mask: radial-gradient(circle, transparent 52px, #000 53px); transition: background .6s ease; }
+  .id-avatar { width: 98px; height: 98px; font-size: 36px; cursor: pointer; position: relative; }
+  .id-avatar:hover { filter: brightness(1.06); }
+  .id-avatar:focus-visible { outline: 3px solid #0e8f83; outline-offset: 3px; }
+  .id-photo-actions { margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap; }
+  .id-pill { border: 1.5px solid rgba(16,14,42,0.16); background: #fff; color: #100e2a; border-radius: 999px; padding: 7px 14px; font: 700 12.5px 'Manrope', sans-serif; cursor: pointer; transition: border-color .15s, color .15s, transform .15s; }
+  .id-pill:hover { border-color: #0e8f83; color: #0e8f83; transform: translateY(-1px); }
+  .id-complete { flex: 0 0 230px; margin-left: auto; padding: 14px 16px; border-radius: 18px; background: rgba(255,255,255,0.7); border: 1px solid rgba(16,14,42,0.08); }
+  .ic-head { display: flex; justify-content: space-between; align-items: baseline; font-size: 12px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; color: rgba(16,14,42,0.55); }
+  .ic-head b { font-size: 20px; letter-spacing: 0; color: #0e8f83; font-family: 'Fraunces', serif; }
+  .ic-bar { height: 7px; border-radius: 999px; background: rgba(16,14,42,0.09); overflow: hidden; margin: 8px 0; } .ic-bar i { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #0e8f83, #2f8fd1); transition: width .6s ease; }
+  .ic-next { font-size: 12.5px; line-height: 1.45; font-weight: 600; color: rgba(16,14,42,0.7); } .ic-next a { color: #0e8f83; font-weight: 800; cursor: pointer; }
+  .id-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 10px; margin-top: 20px; }
+  .id-tile { padding: 12px 14px; border-radius: 16px; background: rgba(255,255,255,0.65); border: 1px solid rgba(16,14,42,0.07); }
+  .id-tile small { display: block; font-size: 10.5px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: rgba(16,14,42,0.45); margin-bottom: 3px; }
+  .id-tile b { font-size: 17px; font-weight: 800; } .id-tile.warn b { color: #b3401f; }
+  html[data-theme="dark"] .id-ring { background: conic-gradient(#7ee0d4 calc(var(--p, 0) * 1%), rgba(255,255,255,0.14) 0); }
+  html[data-theme="dark"] .id-pill { background: #1e1c38; border-color: rgba(255,255,255,0.2); color: #f2f0f8; }
+  html[data-theme="dark"] .id-complete, html[data-theme="dark"] .id-tile { background: rgba(255,255,255,0.07); border-color: rgba(255,255,255,0.12); }
+  html[data-theme="dark"] .ic-next { color: rgba(242,240,248,0.75); } html[data-theme="dark"] .ic-head b, html[data-theme="dark"] .ic-next a { color: #7ee0d4; } html[data-theme="dark"] .id-tile small { color: rgba(242,240,248,0.5); }
+  html[data-theme="dark"] .ic-bar { background: rgba(255,255,255,0.14); } html[data-theme="dark"] .id-tile.warn b { color: #ff9b7d; }
+  @media (max-width: 640px) { .id-top { justify-content: center; text-align: center; } .id-main { min-width: 100%; } .id-photo-actions, .id-chips { justify-content: center; } .id-complete { flex: 1 1 100%; margin-left: 0; } .id-hero { padding: 24px 18px 18px; } }
+  .id-avatar-wrap .id-cam { right: 4px; bottom: 4px; }
+  .id-avatar { background-size: cover; background-position: center; transition: box-shadow .2s; }
+  .id-avatar.has-photo { box-shadow: 0 0 0 3px #fff, 0 0 0 5px rgba(14,143,131,.5); }
+  .id-cam { position: absolute; right: -4px; bottom: -4px; width: 32px; height: 32px; border-radius: 50%; border: 2px solid #fff; background: #100e2a; color: #fff; font-size: 14px; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; transition: transform .15s; }
+  .id-cam:hover { transform: scale(1.1); }
+  html[data-theme="dark"] .id-cam { border-color: #18162e; background: #0e8f83; }
+  html[data-theme="dark"] .id-avatar.has-photo { box-shadow: 0 0 0 3px #18162e, 0 0 0 5px rgba(126,224,212,.6); }
   .id-main { flex: 1; min-width: 200px; }
   .id-name { font-family: 'Fraunces', serif; font-size: 26px; font-weight: 600; margin-bottom: 4px; }
   .id-meta { font-size: 13.5px; color: rgba(16,14,42,0.55); }
@@ -196,13 +228,24 @@
     <p class="page-sub">This is what shapes every analysis — allergies, conditions (ongoing and past), and lifestyle. Tap "Edit" on any section to update it.</p>
 
     <div class="id-hero" id="qc-id-hero">
-      <div class="id-avatar" id="qc-id-avatar">?</div>
-      <div class="id-main">
-        <div class="id-name" id="qc-id-name">—</div>
-        <div class="id-meta" id="qc-id-meta">Loading your profile…</div>
-        <div class="id-chips" id="qc-id-chips"></div>
+      <div class="id-top">
+        <div class="id-avatar-wrap">
+          <div class="id-ring" id="qc-ring" aria-hidden="true"></div>
+          <div class="id-avatar" id="qc-id-avatar" role="button" tabindex="0" aria-label="Change profile photo">?</div>
+          <button type="button" class="id-cam" id="qc-photo-btn" aria-label="Change profile photo" title="Change profile photo">📷</button>
+        </div>
+        <div class="id-main">
+          <div class="id-name" id="qc-id-name">—</div>
+          <div class="id-meta" id="qc-id-meta">Loading your profile…</div>
+          <div class="id-photo-actions"><button type="button" class="id-pill" id="qc-photo-link">📷 Add photo</button></div>
+          <div class="id-chips" id="qc-id-chips"></div>
+        </div>
+        <div class="id-complete" id="qc-complete"></div>
       </div>
+      <div class="id-tiles" id="qc-tiles"></div>
     </div>
+
+    <div id="qc-notify-card"></div>
 
     <div id="qc-sections">
       <div class="sec-card"><div class="skeleton-line" style="width:40%"></div><div class="skeleton-line"></div><div class="skeleton-line" style="width:70%"></div></div>
@@ -486,6 +529,39 @@ function updateIdHero() {
   if (state.pregnant && QCProfile.pregnancyApplicable(state)) chips.push('<span class="id-chip info">Pregnant</span>');
   if (state.blood_type && state.blood_type !== "unknown") chips.push('<span class="id-chip' + (/Bombay|Rh-null|Rare/.test(state.blood_type) ? ' warn' : '') + '">🩸 ' + esc(state.blood_type) + '</span>');
   chipsBox.innerHTML = chips.length ? chips.join("") : '<span class="id-chip">No allergies or conditions on file</span>';
+  renderHeroExtras(allergies);
+}
+
+/* Completeness ring, "next step" card, quick-fact tiles and the photo button label. */
+function hasPhoto() { return !!(window.QC && QC.avatar && QC.avatar.cached()); }
+function renderHeroExtras(allergies) {
+  const real = list => (list || []).filter(x => x && String(x).toLowerCase() !== "none");
+  const answered = list => (list || []).length > 0;       // "None" counts as an answer
+  const checks = [
+    { ok: !!(state.display_name && state.display_name.trim()), tip: "Add your name" },
+    { ok: !!state.age, tip: "Add your age" },
+    { ok: state.sex && state.sex !== "unknown", tip: "Set your biological sex" },
+    { ok: state.blood_type && state.blood_type !== "unknown", tip: "Add your blood group (it matters in emergencies)" },
+    { ok: answered(state.med_allergies) || answered(state.food_allergies) || answered(state.env_allergies), tip: "Tell me about any allergies (or choose None)" },
+    { ok: answered(state.conditions), tip: "Add your ongoing conditions (or choose None)" },
+    { ok: ["smoking", "alcohol", "exercise"].every(k => state[k] && state[k] !== "unknown"), tip: "Fill in your lifestyle (smoking, alcohol, exercise)" },
+    { ok: hasPhoto(), tip: "Add a profile photo", photo: true },
+  ];
+  const done = checks.filter(c => c.ok).length, pct = Math.round(done / checks.length * 100), next = checks.find(c => !c.ok);
+  document.getElementById("qc-ring").style.setProperty("--p", pct);
+  document.getElementById("qc-complete").innerHTML = '<div class="ic-head">Profile strength<b>' + pct + '%</b></div><div class="ic-bar"><i style="width:' + pct + '%"></i></div>' +
+    '<div class="ic-next">' + (next ? 'Next: <a id="qc-next-link">' + esc(next.tip) + '</a>' : '🎉 Your profile is complete. Every analysis is now fully personalised.') + '</div>';
+  const nl = document.getElementById("qc-next-link");
+  if (nl) nl.addEventListener("click", () => { if (next.photo) QCAvatar.open({ onChange: updateIdHero }); else document.getElementById("qc-sections").scrollIntoView({ behavior: "smooth", block: "start" }); });
+  document.getElementById("qc-photo-link").textContent = hasPhoto() ? "📷 Change photo" : "📷 Add photo";
+
+  const al = real(allergies), cond = real(state.conditions);
+  const tiles = [
+    ["Age", state.age ? state.age : "—"], ["Sex", state.sex && state.sex !== "unknown" ? sexLabel(state.sex) : "—"],
+    ["Blood group", state.blood_type && state.blood_type !== "unknown" ? state.blood_type : "—"],
+    ["Allergies", al.length ? al.length : "None"], ["Conditions", cond.length ? cond.length : "None"],
+  ];
+  document.getElementById("qc-tiles").innerHTML = tiles.map(t => '<div class="id-tile' + (t[0] === "Allergies" && al.length ? " warn" : "") + '"><small>' + t[0] + '</small><b>' + esc(String(t[1])) + '</b></div>').join("");
 }
 
 document.getElementById("qc-signout-btn").addEventListener("click", async () => {
@@ -519,5 +595,17 @@ document.getElementById("qc-signout-btn").addEventListener("click", async () => 
 })();
 </script>
 <script src="../assets/qc-app.js"></script>
+<script src="../assets/qc-avatar.js"></script>
+<script src="../assets/qc-push.js"></script>
+<script>
+const openPhoto = () => QCAvatar.open({ onChange: () => updateIdHero() });
+document.getElementById("qc-photo-btn").addEventListener("click", openPhoto);
+document.getElementById("qc-photo-link").addEventListener("click", openPhoto);
+document.getElementById("qc-id-avatar").addEventListener("click", openPhoto);
+document.getElementById("qc-id-avatar").addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openPhoto(); } });
+// the photo is fetched in the background after load: refresh the hero once it arrives
+setTimeout(() => { if (typeof updateIdHero === "function") updateIdHero(); }, 900);
+QCPush.mountCard(document.getElementById("qc-notify-card"));
+</script>
 </body>
 </html>

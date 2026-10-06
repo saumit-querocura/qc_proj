@@ -66,8 +66,9 @@
   function swrGet(k) { try { var v = JSON.parse(sessionStorage.getItem(SWR + k)); if (v && Date.now() - v.t < SWR_MAX_AGE) return v.d; } catch (e) {} return null; }
   function swrSet(k, d) { try { sessionStorage.setItem(SWR + k, JSON.stringify({ t: Date.now(), d: d })); } catch (e) {} }
   QC.stale = swrGet;
-  QC.clearCache = function () {
+  QC.clearCache = function (clearAvatar) {      // pass true on sign-out to forget the profile photo as well
     try { Object.keys(sessionStorage).forEach(function (k) { if (k.indexOf(SWR) === 0) sessionStorage.removeItem(k); }); } catch (e) {}
+    try { if (clearAvatar) localStorage.removeItem("qc-avatar"); } catch (e) {}
     insightCache = {}; recCache = null; window.__qcPre = window.__qcPreRec = null;
   };
 
@@ -100,10 +101,44 @@
     recCache = { t: Date.now(), p: p };
     return p;
   };
+  /* ---------- profile photo ----------
+   * The photo is kept on this device as a small data URL (≈20 KB) keyed by its server version, so every page
+   * paints it instantly, with one tiny check per session to see whether it changed. Targets: the top-bar
+   * pill dot, the profile hero, and anything marked [data-qc-avatar]. */
+  var AV_KEY = "qc-avatar";
+  function avTargets() { return Array.prototype.slice.call(document.querySelectorAll("#qc-user-dot, #qc-id-avatar, #qc-profile-avatar, [data-qc-avatar]")); }
+  function avPaint(url) {
+    avTargets().forEach(function (el) {
+      if (url) { el.style.backgroundImage = "url(" + url + ")"; el.style.backgroundSize = "cover"; el.style.backgroundPosition = "center"; el.style.color = "transparent"; el.classList.add("has-photo"); }
+      else { el.style.backgroundImage = ""; el.style.backgroundSize = ""; el.style.color = ""; el.classList.remove("has-photo"); }
+    });
+  }
+  QC.avatar = {
+    paint: avPaint,
+    cached: function () { return lsGet(AV_KEY, null); },
+    /** Store a new photo (data URL + version) after an upload, or null after a removal. */
+    set: function (url, v) { if (url) lsSet(AV_KEY, { v: v, url: url }); else { try { localStorage.removeItem(AV_KEY); } catch (e) {} } try { sessionStorage.removeItem(SWR + "avatar-meta"); } catch (e) {} avPaint(url || null); },
+    sync: function () {
+      var c = lsGet(AV_KEY, null);
+      if (c && c.url) avPaint(c.url);
+      var meta = swrGet("avatar-meta");
+      var p = meta ? Promise.resolve(meta) : getJSON("/profile/photo/meta").then(function (m) { if (m && m.ok) swrSet("avatar-meta", m); return m; });
+      return p.then(function (m) {
+        if (!m || !m.ok) return;
+        if (!m.has_photo) { if (c) QC.avatar.set(null); return; }
+        if (c && c.v === m.v) return;
+        return fetch(API_BASE + "/profile/photo", { credentials: "include" }).then(function (r) { return r.ok ? r.blob() : null; }).then(function (blob) {
+          if (!blob) return;
+          return new Promise(function (res) { var fr = new FileReader(); fr.onload = function () { res(fr.result); }; fr.onerror = function () { res(null); }; fr.readAsDataURL(blob); });
+        }).then(function (url) { if (url) QC.avatar.set(url, m.v); });
+      }).catch(function () {});
+    }
+  };
+
   // Drop cached health data whenever someone signs out, on any page.
   document.addEventListener("click", function (e) {
     var t = e.target && e.target.closest && e.target.closest("#qc-signout-btn, [data-qc-signout]");
-    if (t) QC.clearCache();
+    if (t) QC.clearCache(true);
   }, true);
 
   /* One definition of "what the score means", shared by Dashboard + Insights. */
@@ -447,6 +482,22 @@
   /* ---------- boot ---------- */
   QC.boot = function () {
     buildBell();
+    QC.avatar.sync();
+    // Warm the next page on hover/touch so navigation feels instant.
+    try {
+      var warmed = {};
+      var warm = function (e) {
+        var a = e.target && e.target.closest && e.target.closest("a.tab-link[href]");
+        if (!a || warmed[a.href] || a.classList.contains("active") || a.origin !== location.origin) return;
+        warmed[a.href] = 1;
+        var l = document.createElement("link"); l.rel = "prefetch"; l.href = a.href; document.head.appendChild(l);
+        var u = a.getAttribute("href") || "";
+        if (/insights/.test(u) || /dashboard/.test(u)) QC.insights(30);          // the slow one: start it before the click lands
+        if (/insights/.test(u) || /calendar/.test(u)) QC.records();
+      };
+      document.addEventListener("mouseover", warm, { passive: true });
+      document.addEventListener("touchstart", warm, { passive: true });
+    } catch (e) {}
     // On narrow screens the tab row scrolls sideways: bring the current page's tab into view.
     try {
       var nav = $(".tab-nav"), cur = nav && $(".tab-link.active", nav);

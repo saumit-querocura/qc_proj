@@ -494,6 +494,7 @@
   </dialog>
 
 <script src="../assets/qc-app.js"></script>
+<script src="../assets/qc-push.js"></script>
 <script>
 /* ---- Theme toggle ---- */
 var STORAGE_KEY = 'qc-theme';
@@ -960,6 +961,8 @@ $("qc-signout-btn").addEventListener("click", async () => {
     if (moved) { events = await QC.cal.list(); QC.toast(moved + " event" + (moved > 1 ? "s" : "") + " synced to your account ✓", "ok"); }
   }
   syncNotifyBtn();
+  // once there is something to be reminded about, offer reminders on this device
+  if (events.length && window.QCPush) setTimeout(() => QCPush.maybePrompt(), 3500);
   const staleRec = QC.stale("records"); if (staleRec) setSuggestions(staleRec);
   QC.records().then(r => { if (r && r.ok !== false) setSuggestions(r); });
   renderAll();
