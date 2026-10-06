@@ -18,6 +18,7 @@
     '.qca-sheet h3{margin:0 0 4px;font:700 18px "Space Grotesk","Manrope",sans-serif}.qca-sub{font-size:13px;opacity:.65;line-height:1.5;margin:0 0 14px}' +
     '.qca-stage{position:relative;width:' + STAGE + 'px;max-width:100%;aspect-ratio:1;margin:0 auto 12px;border-radius:50%;overflow:hidden;background:#eef3f2;touch-action:none;cursor:grab;box-shadow:inset 0 0 0 1px rgba(16,14,42,.1)}' +
     '.qca-sheet [hidden]{display:none!important}' +
+    '.qca-stage video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scaleX(-1);background:#000}' +
     '.qca-stage.drag{cursor:grabbing}.qca-stage canvas{display:block;width:100%;height:100%}' +
     '.qca-empty{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;font-size:13px;font-weight:600;opacity:.6;text-align:center;padding:20px;pointer-events:none}.qca-empty span{font-size:42px}' +
     '.qca-zoom{display:flex;align-items:center;gap:10px;margin:0 6px 14px;font-size:16px}.qca-zoom input{flex:1;accent-color:#0e8f83}' +
@@ -51,9 +52,10 @@
     back.className = "qca-back";
     back.innerHTML = '<div class="qca-sheet" role="dialog" aria-modal="true" aria-labelledby="qca-h"><h3 id="qca-h">Profile photo</h3>' +
       '<p class="qca-sub">Choose a clear photo of your face. Drag to move it and use the slider to zoom.</p>' +
-      '<div class="qca-stage" id="qca-stage"><canvas width="' + STAGE + '" height="' + STAGE + '"></canvas><div class="qca-empty" id="qca-empty"><span>📷</span>Choose or take a photo</div></div>' +
+      '<div class="qca-stage" id="qca-stage"><canvas width="' + STAGE + '" height="' + STAGE + '"></canvas><video id="qca-video" playsinline muted autoplay hidden></video><div class="qca-empty" id="qca-empty"><span>📷</span>Choose or take a photo</div></div>' +
       '<div class="qca-zoom" id="qca-zoomrow" hidden><span aria-hidden="true">🔍</span><input type="range" id="qca-zoom" min="100" max="400" value="100" aria-label="Zoom"></div>' +
-      '<div class="qca-row"><button type="button" class="qca-btn" id="qca-choose">Choose photo</button><button type="button" class="qca-btn" id="qca-camera">Take photo</button><button type="button" class="qca-btn danger" id="qca-remove" hidden>Remove</button></div>' +
+      '<div class="qca-row" id="qca-camrow" hidden><button type="button" class="qca-btn primary" id="qca-snap">📸 Capture</button><button type="button" class="qca-btn" id="qca-camoff">Back</button></div>' +
+      '<div class="qca-row" id="qca-mainrow"><button type="button" class="qca-btn" id="qca-choose">Choose photo</button><button type="button" class="qca-btn" id="qca-camera">Take photo</button><button type="button" class="qca-btn danger" id="qca-remove" hidden>Remove</button></div>' +
       '<div class="qca-foot"><button type="button" class="qca-btn" id="qca-cancel">Cancel</button><button type="button" class="qca-btn primary" id="qca-save" disabled>Save photo</button></div>' +
       '<p class="qca-priv">Only you see this photo. It is stored securely in your account and never shared.</p>' +
       '<input type="file" id="qca-file" accept="image/jpeg,image/png,image/webp,image/heic,image/*" hidden><input type="file" id="qca-cam" accept="image/*" capture="user" hidden></div>';
@@ -87,7 +89,38 @@
       loadBitmap(file).then(setBitmap, function () { toast("That file doesn't look like a photo we can open. Try a JPEG or PNG.", "err"); });
     }
     $("qca-choose").addEventListener("click", function () { $("qca-file").click(); });
-    $("qca-camera").addEventListener("click", function () { $("qca-cam").click(); });
+    var video = $("qca-video"), stream = null;
+    function stopCam() {
+      if (stream) { stream.getTracks().forEach(function (t) { t.stop(); }); stream = null; }
+      video.srcObject = null; video.hidden = true; $("qca-camrow").hidden = true; $("qca-mainrow").hidden = false;
+      $("qca-empty").hidden = !!bmp; $("qca-zoomrow").hidden = !bmp; save.disabled = !bmp;
+    }
+    // "Take photo" opens a live camera preview right here. Only if the browser has no camera API (or no camera)
+    // do we fall back to the device's own capture picker.
+    $("qca-camera").addEventListener("click", function () {
+      if (!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)) { $("qca-cam").click(); return; }
+      navigator.mediaDevices.getUserMedia({ video: { facingMode: "user", width: { ideal: 1280 }, height: { ideal: 1280 } }, audio: false }).then(function (s) {
+        stream = s; video.srcObject = s; video.hidden = false;
+        var p = video.play(); if (p && p.catch) p.catch(function () {});
+        $("qca-empty").hidden = true; $("qca-zoomrow").hidden = true; save.disabled = true;
+        $("qca-mainrow").hidden = true; $("qca-camrow").hidden = false; $("qca-snap").focus();
+      }).catch(function (err) {
+        var n = err && err.name;
+        if (n === "NotAllowedError" || n === "SecurityError") toast("Camera access is blocked. Allow it in your browser's site settings, or choose a photo instead.", "err");
+        else if (n === "NotFoundError" || n === "OverconstrainedError") { toast("No camera found. Choose a photo instead.", "err"); }
+        else toast("Couldn't start the camera. Choose a photo instead.", "err");
+      });
+    });
+    $("qca-camoff").addEventListener("click", stopCam);
+    $("qca-snap").addEventListener("click", function () {
+      var w = video.videoWidth, h = video.videoHeight;
+      if (!w || !h) { toast("The camera isn't ready yet. Give it a second.", "err"); return; }
+      var side = Math.min(w, h), snap = document.createElement("canvas"); snap.width = snap.height = Math.min(side, 1024);
+      var c = snap.getContext("2d");
+      c.translate(snap.width, 0); c.scale(-1, 1);                              // mirrored, exactly as shown in the preview
+      c.drawImage(video, (w - side) / 2, (h - side) / 2, side, side, 0, 0, snap.width, snap.height);
+      stopCam(); setBitmap(snap);
+    });
     $("qca-file").addEventListener("change", function (e) { pick(e.target.files[0]); });
     $("qca-cam").addEventListener("change", function (e) { pick(e.target.files[0]); });
 
@@ -106,7 +139,7 @@
     stage.addEventListener("pointerup", endDrag); stage.addEventListener("pointercancel", endDrag);
     stage.addEventListener("wheel", function (e) { if (!bmp) return; e.preventDefault(); zoom.value = Math.min(400, Math.max(100, +zoom.value - e.deltaY / 4)); zoom.dispatchEvent(new Event("input")); }, { passive: false });
 
-    function close() { document.removeEventListener("keydown", onKey); back.remove(); if (prevFocus && prevFocus.focus) try { prevFocus.focus(); } catch (e) {} }
+    function close() { stopCam(); document.removeEventListener("keydown", onKey); back.remove(); if (prevFocus && prevFocus.focus) try { prevFocus.focus(); } catch (e) {} }
     function onKey(e) {
       if (e.key === "Escape") close();
       else if (e.key === "Tab") {                                              // keep keyboard focus inside the sheet
