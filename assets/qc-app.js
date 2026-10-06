@@ -258,9 +258,23 @@
     right.insertBefore(wrap, right.firstChild);
 
     var bell = $("#qc-bell"), panel = $("#qc-panel");
-    function open(v) { panel.hidden = !v; bell.setAttribute("aria-expanded", v ? "true" : "false"); }
+    // Mount on <body>: the sticky top bar has backdrop-filter, which would otherwise
+    // become the containing block for a position:fixed panel.
+    document.body.appendChild(panel);
+    // Place the panel under the bell, clamped inside the viewport (the bell can sit
+    // on a wrapped row at the far left, so anchoring to its right edge pushed it off-screen).
+    function place() {
+      var r = bell.getBoundingClientRect(), w = Math.min(380, window.innerWidth - 24);
+      var left = Math.max(12, Math.min(r.left, window.innerWidth - w - 12));
+      panel.style.left = left + "px";
+      panel.style.top = Math.min(r.bottom + 10, window.innerHeight - 160) + "px";
+      panel.style.maxHeight = Math.max(200, window.innerHeight - r.bottom - 30) + "px";
+    }
+    function open(v) { if (v) place(); panel.hidden = !v; bell.setAttribute("aria-expanded", v ? "true" : "false"); }
+    window.addEventListener("resize", function () { if (!panel.hidden) place(); });
+    window.addEventListener("scroll", function () { if (!panel.hidden) place(); }, { passive: true });
     bell.addEventListener("click", function (e) { e.stopPropagation(); open(panel.hidden); });
-    document.addEventListener("click", function (e) { if (!panel.hidden && !wrap.contains(e.target)) open(false); });
+    document.addEventListener("click", function (e) { if (!panel.hidden && !wrap.contains(e.target) && !panel.contains(e.target)) open(false); });
     document.addEventListener("keydown", function (e) { if (e.key === "Escape") open(false); });
     panel.addEventListener("click", function (e) {
       var x = e.target.closest("[data-dismiss]");
@@ -343,7 +357,7 @@
     '.qc-bell.is-urgent{border-color:#d24f28;color:#d24f28;animation:qcRing 2.4s ease-in-out infinite}' +
     '@keyframes qcRing{0%,86%,100%{transform:rotate(0)}89%{transform:rotate(14deg)}92%{transform:rotate(-12deg)}95%{transform:rotate(8deg)}98%{transform:rotate(-4deg)}}' +
     '.qc-bell-badge{position:absolute;top:-6px;right:-6px;min-width:17px;height:17px;padding:0 4px;border-radius:999px;background:#d24f28;color:#fff;font:800 10px/17px "Manrope",sans-serif;text-align:center;box-shadow:0 0 0 2px #f6f5f1}' +
-    '.qc-panel{position:absolute;right:0;top:calc(100% + 10px);width:min(380px,92vw);max-height:min(70vh,520px);display:flex;flex-direction:column;background:#fff;border:1px solid rgba(16,14,42,.1);border-radius:18px;box-shadow:0 28px 60px -20px rgba(16,14,42,.35);z-index:60;overflow:hidden;animation:qcPop .18s ease}' +
+    '.qc-panel{position:fixed;left:12px;top:64px;width:min(380px,calc(100vw - 24px));max-height:min(70vh,520px);display:flex;flex-direction:column;background:#fff;border:1px solid rgba(16,14,42,.1);border-radius:18px;box-shadow:0 28px 60px -20px rgba(16,14,42,.35);z-index:60;overflow:hidden;animation:qcPop .18s ease}' +
     '.qc-panel[hidden]{display:none}' +
     '@keyframes qcPop{from{opacity:0;transform:translateY(-6px) scale(.98)}to{opacity:1;transform:none}}' +
     '.qc-panel-head{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid rgba(16,14,42,.07);font:700 14px "Space Grotesk",sans-serif}' +
@@ -372,8 +386,7 @@
     'html[data-theme="dark"] .qc-alert-title{color:#f2f0f8}html[data-theme="dark"] .qc-alert-x{color:#a9a6bd}' +
     'html[data-theme="dark"] .qc-panel-foot a{color:#7ee0d4}html[data-theme="dark"] .qc-panel-foot button{border-color:rgba(255,255,255,.2)}' +
     'html[data-theme="dark"] .qc-toast{background:#f2f0f8;color:#100e2a}' +
-    '@media (max-width:640px){.qc-panel{position:fixed;left:4vw;right:4vw;top:64px;width:auto}}' +
-    '@media (prefers-reduced-motion:reduce){.qc-bell.is-urgent{animation:none}.qc-panel{animation:none}}';
+        '@media (prefers-reduced-motion:reduce){.qc-bell.is-urgent{animation:none}.qc-panel{animation:none}}';
   var st = document.createElement("style"); st.id = "qc-app-css"; st.textContent = css; document.head.appendChild(st);
 
   /* ---------- boot ---------- */

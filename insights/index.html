@@ -258,6 +258,77 @@
   html[data-theme="dark"] .conf-chip { background: rgba(255,255,255,0.08); color: #b7b3cc; }
   html[data-theme="dark"] .btn-soft { color: #f2f0f8; border-color: rgba(255,255,255,0.2); } html[data-theme="dark"] .btn-soft:hover { background: rgba(255,255,255,0.07); color: #f2f0f8; }
   html[data-theme="dark"] .plan-row, html[data-theme="dark"] .gap-row { border-bottom-color: rgba(255,255,255,0.09); }
+
+  /* ================= CuraVault records intelligence ================= */
+  .rec-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin: 4px 0 18px; padding: 4px; background: rgba(16,14,42,0.04); border-radius: 999px; width: fit-content; max-width: 100%; }
+  .rec-tab { border: none; background: transparent; padding: 9px 16px; border-radius: 999px; font: 700 13.5px 'Manrope', sans-serif; color: rgba(16,14,42,0.6); cursor: pointer; display: inline-flex; gap: 7px; align-items: center; }
+  .rec-tab.on { background: #100e2a; color: #fff; }
+  .rec-tab .cnt { font-size: 11px; font-weight: 800; padding: 1px 7px; border-radius: 999px; background: rgba(16,14,42,0.09); }
+  .rec-tab.on .cnt { background: rgba(255,255,255,0.22); }
+  .rec-banner { display: flex; gap: 12px; align-items: center; justify-content: space-between; flex-wrap: wrap; padding: 12px 16px; border-radius: 14px; margin-bottom: 14px; background: rgba(201,138,16,0.11); border: 1px solid rgba(201,138,16,0.28); font-size: 13.5px; font-weight: 600; color: #8a5f0a; }
+  .rec-banner a { font-weight: 800; color: inherit; text-decoration: underline; }
+  .next-steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px; margin-bottom: 18px; }
+  .ns { display: flex; gap: 11px; padding: 13px 14px; border-radius: 14px; background: #fbfaf6; border: 1px solid rgba(16,14,42,0.08); align-items: flex-start; }
+  .ns.high { border-color: rgba(210,79,40,0.35); background: rgba(210,79,40,0.05); }
+  .ns .ns-ic { font-size: 20px; } .ns b { display: block; font-size: 13.5px; } .ns span { font-size: 12.5px; color: rgba(16,14,42,0.6); line-height: 1.45; display: block; margin: 2px 0 6px; }
+  .ns a { font-size: 12px; font-weight: 800; }
+  .sum-strip { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 16px; }
+  .sum-chip { font-size: 12px; font-weight: 800; padding: 5px 12px; border-radius: 999px; background: color-mix(in srgb, var(--c) 14%, transparent); color: var(--c); }
+  .sum-note { font-size: 13px; color: rgba(16,14,42,0.62); font-weight: 600; margin-right: 6px; }
+  .toggle-row { display: inline-flex; gap: 6px; align-items: center; font-size: 12.5px; font-weight: 700; color: rgba(16,14,42,0.6); margin-left: auto; cursor: pointer; }
+  .pat { border-radius: 16px; padding: 16px 18px; margin-bottom: 12px; border: 1px solid color-mix(in srgb, var(--c) 35%, transparent); background: color-mix(in srgb, var(--c) 7%, transparent); }
+  .pat h3 { margin: 0 0 4px; font-size: 15px; color: var(--c); font-family: 'Space Grotesk', sans-serif; }
+  .pat p { margin: 0 0 10px; font-size: 13.5px; line-height: 1.55; color: rgba(16,14,42,0.75); }
+  .ev-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+  .ev-chip { font-size: 11.5px; font-weight: 700; padding: 3px 10px; border-radius: 999px; background: #fff; border: 1px solid color-mix(in srgb, var(--c) 40%, transparent); color: rgba(16,14,42,0.8); }
+  .pat details summary { cursor: pointer; font-size: 12.5px; font-weight: 800; color: var(--c); } .pat ul { margin: 8px 0 0; padding-left: 18px; font-size: 13px; line-height: 1.6; color: rgba(16,14,42,0.72); }
+  .derived { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 10px; margin: 14px 0 18px; }
+  .dv { padding: 12px 14px; border-radius: 14px; background: #fbfaf6; border: 1px solid rgba(16,14,42,0.08); }
+  .dv small { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; color: rgba(16,14,42,0.5); }
+  .dv b { display: block; font: 600 22px 'Fraunces', serif; margin: 2px 0; } .dv span { font-size: 12px; color: rgba(16,14,42,0.6); line-height: 1.45; display: block; }
+  .panel-h { display: flex; align-items: center; gap: 10px; font: 700 14px 'Space Grotesk', sans-serif; margin: 20px 0 8px; }
+  .panel-h .flag { font-size: 11px; font-weight: 800; padding: 2px 9px; border-radius: 999px; background: rgba(210,79,40,0.12); color: #b3401f; }
+  .lab-row { display: grid; grid-template-columns: minmax(150px, 1.2fr) minmax(170px, 1.4fr) 110px minmax(120px, 1fr); gap: 14px; align-items: center; padding: 13px 14px; border-radius: 14px; border: 1px solid rgba(16,14,42,0.07); background: #fbfaf6; margin-bottom: 8px; cursor: pointer; transition: border-color .15s, transform .15s; }
+  .lab-row:hover { border-color: rgba(14,143,131,0.45); transform: translateX(2px); }
+  .lab-row.open { border-bottom-left-radius: 0; border-bottom-right-radius: 0; margin-bottom: 0; }
+  .lab-name { font-weight: 800; font-size: 14px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .lab-val { margin-top: 3px; font-size: 13px; color: rgba(16,14,42,0.55); } .lab-val b { font: 600 20px 'Fraunces', serif; color: #100e2a; margin-right: 3px; } .lab-date { margin-left: 8px; font-size: 11.5px; }
+  .st { font-size: 10.5px; font-weight: 800; letter-spacing: .03em; padding: 3px 9px; border-radius: 999px; text-transform: uppercase; background: color-mix(in srgb, var(--c) 15%, transparent); color: var(--c); }
+  .rbar { position: relative; height: 10px; border-radius: 999px; background: linear-gradient(90deg, #f3c9bd 0 13%, #fbe6b8 13% 27%, #bfe5df 27% 73%, #fbe6b8 73% 87%, #f3c9bd 87% 100%); }
+  .rbar i { position: absolute; top: 50%; width: 16px; height: 16px; margin: -8px 0 0 -8px; border-radius: 50%; background: var(--c); border: 3px solid #fff; box-shadow: 0 2px 6px rgba(16,14,42,0.35); }
+  .rlabel { font-size: 11.5px; color: rgba(16,14,42,0.5); margin-top: 6px; }
+  .lab-trend { font-size: 12px; font-weight: 700; line-height: 1.4; color: rgba(16,14,42,0.62); }
+  .lab-trend.improving { color: #0e8f83; } .lab-trend.worsening { color: #d24f28; }
+  .lab-detail { padding: 16px 18px 18px; border: 1px solid rgba(16,14,42,0.07); border-top: none; border-radius: 0 0 14px 14px; background: #fff; margin-bottom: 8px; }
+  .lab-detail p { margin: 0 0 12px; font-size: 13.5px; line-height: 1.6; color: rgba(16,14,42,0.72); }
+  .hist { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; } .hist span { font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 8px; background: rgba(16,14,42,0.05); }
+  .img-card { border: 1px solid rgba(16,14,42,0.08); border-radius: 18px; padding: 18px 20px; margin-bottom: 14px; background: #fbfaf6; }
+  .img-head { display: flex; gap: 14px; align-items: flex-start; margin-bottom: 10px; }
+  .img-ic { width: 46px; height: 46px; border-radius: 14px; background: rgba(124,111,219,0.14); display: flex; align-items: center; justify-content: center; font-size: 22px; flex: 0 0 auto; }
+  .img-title { font-weight: 800; font-size: 15px; } .img-meta { font-size: 12.5px; color: rgba(16,14,42,0.55); margin-top: 2px; }
+  .img-sum { font-size: 14px; line-height: 1.6; margin: 0 0 12px; }
+  .find { display: flex; gap: 10px; align-items: flex-start; padding: 10px 0; border-top: 1px solid rgba(16,14,42,0.07); }
+  .find b { font-size: 13.5px; } .find span.ex { display: block; font-size: 12.5px; color: rgba(16,14,42,0.6); line-height: 1.5; margin-top: 2px; }
+  .fu { display: flex; gap: 12px; align-items: center; justify-content: space-between; flex-wrap: wrap; padding: 11px 14px; border-radius: 12px; background: rgba(47,143,209,0.09); border: 1px solid rgba(47,143,209,0.22); margin-top: 10px; font-size: 13px; }
+  .fu.overdue { background: rgba(210,79,40,0.09); border-color: rgba(210,79,40,0.3); }
+  .limit { font-size: 11.5px; color: rgba(16,14,42,0.5); line-height: 1.55; margin-top: 12px; }
+  .med-row { display: flex; gap: 14px; align-items: center; padding: 12px 14px; border-radius: 14px; border: 1px solid rgba(16,14,42,0.07); background: #fbfaf6; margin-bottom: 8px; }
+  .med-row .mi { width: 38px; height: 38px; border-radius: 12px; background: rgba(224,165,44,0.16); display: flex; align-items: center; justify-content: center; }
+  .med-row small { display: block; font-size: 12px; color: rgba(16,14,42,0.55); }
+  .doc-row { display: grid; grid-template-columns: 1fr auto; gap: 8px 14px; padding: 12px 14px; border: 1px solid rgba(16,14,42,0.07); border-radius: 14px; background: #fbfaf6; margin-bottom: 8px; align-items: center; }
+  .doc-row small { font-size: 12px; color: rgba(16,14,42,0.55); } .doc-tags { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+  .conf-bar { height: 5px; width: 80px; border-radius: 4px; background: rgba(16,14,42,0.1); overflow: hidden; display: inline-block; vertical-align: middle; margin-left: 6px; } .conf-bar i { display: block; height: 100%; background: var(--c); }
+  .cat-bars { display: flex; flex-direction: column; gap: 8px; margin-bottom: 18px; } .cat-bar { display: flex; align-items: center; gap: 10px; font-size: 12.5px; font-weight: 700; } .cat-bar i { height: 10px; border-radius: 6px; background: linear-gradient(90deg, #0e8f83, #7c6fdb); display: block; } .cat-bar span:first-child { width: 120px; text-transform: capitalize; }
+  @media (max-width: 760px) { .lab-row { grid-template-columns: 1fr 1fr; } .lab-spark { display: none; } .lab-viz { grid-column: 1 / -1; order: 3; } .toggle-row { margin-left: 0; } }
+  html[data-theme="dark"] .rec-tabs { background: rgba(255,255,255,0.06); } html[data-theme="dark"] .rec-tab { color: #a9a6bd; } html[data-theme="dark"] .rec-tab.on { background: #7ee0d4; color: #100e2a; } html[data-theme="dark"] .rec-tab .cnt { background: rgba(255,255,255,0.12); }
+  html[data-theme="dark"] .rec-banner { background: rgba(240,180,60,0.12); color: #f0c060; border-color: rgba(240,180,60,0.3); }
+  html[data-theme="dark"] .ns, html[data-theme="dark"] .dv, html[data-theme="dark"] .lab-row, html[data-theme="dark"] .img-card, html[data-theme="dark"] .med-row, html[data-theme="dark"] .doc-row { background: #100e2a; border-color: rgba(255,255,255,0.1); }
+  html[data-theme="dark"] .lab-detail { background: #18162e; border-color: rgba(255,255,255,0.1); }
+  html[data-theme="dark"] .ns span, html[data-theme="dark"] .dv span, html[data-theme="dark"] .sum-note, html[data-theme="dark"] .pat p, html[data-theme="dark"] .pat ul, html[data-theme="dark"] .lab-detail p, html[data-theme="dark"] .find span.ex, html[data-theme="dark"] .img-meta, html[data-theme="dark"] .limit, html[data-theme="dark"] .rlabel, html[data-theme="dark"] .lab-val, html[data-theme="dark"] .lab-trend, html[data-theme="dark"] .doc-row small, html[data-theme="dark"] .med-row small, html[data-theme="dark"] .toggle-row { color: #b7b3cc; }
+  html[data-theme="dark"] .lab-val b { color: #f2f0f8; } html[data-theme="dark"] .ev-chip { background: #100e2a; color: #e8e6f2; } html[data-theme="dark"] .hist span { background: rgba(255,255,255,0.08); }
+  html[data-theme="dark"] .rbar { background: linear-gradient(90deg, #5a2f27 0 13%, #5c4a21 13% 27%, #1d5b55 27% 73%, #5c4a21 73% 87%, #5a2f27 87% 100%); } html[data-theme="dark"] .rbar i { border-color: #18162e; }
+  html[data-theme="dark"] .fu { background: rgba(47,143,209,0.14); border-color: rgba(47,143,209,0.35); } html[data-theme="dark"] .fu.overdue { background: rgba(210,79,40,0.16); border-color: rgba(240,130,100,0.4); }
+  html[data-theme="dark"] .panel-h .flag { color: #f0a488; } html[data-theme="dark"] .conf-bar, html[data-theme="dark"] .img-ic { background: rgba(255,255,255,0.1); }
 </style>
 </head>
 <body>
@@ -337,6 +408,12 @@
       <p class="card-sub">Everything counted as "ongoing" in your health score — from your profile and from recent symptom checks.</p>
       <div id="qc-ongoing-wrap"><div class="empty-note">Loading…</div></div>
     </div>
+
+    <section class="card" id="records">
+      <h2>📁 From your CuraVault records</h2>
+      <p class="card-sub" id="rec-sub">Lab reports, prescriptions and scans — read, checked against reference ranges and visualised. Numbers only come from values you've confirmed.</p>
+      <div id="rec-body"><div class="empty-note">Loading…</div></div>
+    </section>
 
     <div class="card">
       <h2>📈 Vitals trends</h2>
@@ -665,6 +742,195 @@ function initDaySelect() {
   });
 }
 
+/* ================= CuraVault records intelligence ================= */
+let qcRecords = null, recTab = "labs", recFlagged = false;
+const ST_COLOR = { normal: "#0e8f83", borderline: "#c98a10", abnormal: "#d24f28", critical: "#b3182a" };
+const CAT_COLOR = { urgent: "#b3182a", attention: "#d24f28", incidental: "#2f8fd1", normal: "#0e8f83", minor: "#2f8fd1", unclear: "#6b6885" };
+const SEV_COLOR = { urgent: "#b3182a", attention: "#d24f28", watch: "#c98a10", info: "#2f8fd1" };
+const MOD_ICON = { "MRI": "🧲", "CT": "🩻", "PET-CT": "☢️", "X-ray": "🦴", "Ultrasound": "🔊", "Mammography": "🎗️", "DEXA": "🦴", "Echocardiogram": "🫀" };
+const OVERALL_WORD = { normal: "Normal", minor: "Minor findings", attention: "Review with doctor", urgent: "Needs prompt review", unclear: "Unclear" };
+
+function statusWord(m) {
+  if (m.status === "normal") return "Normal";
+  const d = m.direction === "low" ? "low" : "high";
+  return (m.status === "borderline" ? "Borderline " : m.status === "critical" ? "Critical " : "") + d;
+}
+function shortDate(d) { return d ? new Date(d + "T00:00:00").toLocaleDateString(undefined, { day: "numeric", month: "short", year: "2-digit" }) : ""; }
+function esc(s) { return QC.esc(s); }
+
+function spark(values, color) {
+  const sp = sparklinePath(values, 100, 34, 4);
+  if (!sp) return values.length ? '<svg viewBox="0 0 100 34" width="100" height="34"><circle cx="50" cy="17" r="4" fill="' + color + '"/></svg>' : "";
+  const last = sp.pts[sp.pts.length - 1];
+  return '<svg viewBox="0 0 100 34" width="100" height="34"><path d="' + sp.d + '" fill="none" stroke="' + color + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="' + last[0].toFixed(1) + '" cy="' + last[1].toFixed(1) + '" r="3" fill="' + color + '"/></svg>';
+}
+
+function bigChart(m) {
+  const pts = m.history.filter(h => h.value != null);
+  const W = 560, H = 170, L = 44, R = 38, T = 16, B = 30;
+  const lo = m.range.lo, hi = m.range.hi;
+  const vals = pts.map(p => p.value).concat([lo, hi].filter(v => v != null));
+  let min = Math.min.apply(null, vals), max = Math.max.apply(null, vals);
+  const pad = (max - min || 1) * 0.18; min -= pad; max += pad;
+  const y = v => T + (1 - (v - min) / (max - min)) * (H - T - B);
+  const x = i => pts.length === 1 ? (L + (W - L - R) / 2) : L + i * ((W - L - R) / (pts.length - 1));
+  let svg = '<svg viewBox="0 0 ' + W + ' ' + H + '" style="width:100%;max-width:640px;height:auto;display:block" role="img" aria-label="' + esc(m.name) + ' over time">';
+  if (lo != null || hi != null) {
+    const top = hi != null ? y(hi) : T, bot = lo != null ? y(lo) : H - B;
+    svg += '<rect x="' + L + '" y="' + top.toFixed(1) + '" width="' + (W - L - R) + '" height="' + Math.max(2, bot - top).toFixed(1) + '" fill="#0e8f83" opacity="0.13" rx="4"/>';
+    if (hi != null) svg += '<line x1="' + L + '" x2="' + (W - R) + '" y1="' + y(hi).toFixed(1) + '" y2="' + y(hi).toFixed(1) + '" stroke="#0e8f83" stroke-dasharray="4 4" opacity="0.6"/><text x="' + (L - 6) + '" y="' + (y(hi) + 4).toFixed(1) + '" text-anchor="end" font-size="10" fill="currentColor" opacity="0.6">' + hi + '</text>';
+    if (lo != null) svg += '<line x1="' + L + '" x2="' + (W - R) + '" y1="' + y(lo).toFixed(1) + '" y2="' + y(lo).toFixed(1) + '" stroke="#0e8f83" stroke-dasharray="4 4" opacity="0.6"/><text x="' + (L - 6) + '" y="' + (y(lo) + 4).toFixed(1) + '" text-anchor="end" font-size="10" fill="currentColor" opacity="0.6">' + lo + '</text>';
+  }
+  if (pts.length > 1) svg += '<polyline fill="none" stroke="' + (ST_COLOR[m.status] || "#0e8f83") + '" stroke-width="2.4" stroke-linejoin="round" points="' + pts.map((p, i) => x(i).toFixed(1) + "," + y(p.value).toFixed(1)).join(" ") + '"/>';
+  pts.forEach((p, i) => {
+    const inR = (lo == null || p.value >= lo) && (hi == null || p.value <= hi);
+    svg += '<circle cx="' + x(i).toFixed(1) + '" cy="' + y(p.value).toFixed(1) + '" r="5" fill="' + (inR ? "#0e8f83" : "#d24f28") + '" stroke="#fff" stroke-width="2"/>' +
+      '<text x="' + x(i).toFixed(1) + '" y="' + (y(p.value) - 11).toFixed(1) + '" text-anchor="middle" font-size="11" font-weight="700" fill="currentColor">' + p.value + '</text>' +
+      '<text x="' + x(i).toFixed(1) + '" y="' + (H - 8) + '" text-anchor="middle" font-size="10" fill="currentColor" opacity="0.55">' + esc(shortDate(p.date)) + '</text>';
+  });
+  return svg + '</svg>';
+}
+
+function labRowHtml(m) {
+  const c = ST_COLOR[m.status] || ST_COLOR.normal;
+  const vals = m.history.map(h => h.value);
+  const trendCls = m.trend.direction === "improving" ? "improving" : m.trend.direction === "worsening" ? "worsening" : "";
+  const arrow = m.trend.direction === "improving" ? "↘ " : m.trend.direction === "worsening" ? "↗ " : m.trend.direction === "new" ? "" : "→ ";
+  return '<div class="lab-row" data-lab="' + esc(m.id) + '" tabindex="0" role="button" aria-expanded="false" style="--c:' + c + '">' +
+    '<div><div class="lab-name">' + esc(m.name) + ' <span class="st" style="--c:' + c + '">' + statusWord(m) + '</span></div>' +
+      '<div class="lab-val"><b>' + esc(m.latest.value) + '</b>' + esc(m.unit) + '<span class="lab-date">' + esc(shortDate(m.latest.date)) + '</span></div></div>' +
+    '<div class="lab-viz"><div class="rbar"><i style="left:' + (m.position * 100).toFixed(1) + '%"></i></div><div class="rlabel">' + (m.range.label ? "Normal: " + esc(m.range.label) + (m.range.source === "report" ? " · from your lab report" : "") : "") + '</div></div>' +
+    '<div class="lab-spark">' + spark(vals, c) + '</div>' +
+    '<div class="lab-trend ' + trendCls + '">' + arrow + esc(String(m.trend.label).replace(/\d{4}-\d{2}-\d{2}/g, d => shortDate(d))) + '</div></div>' +
+    '<div class="lab-detail" id="labd-' + esc(m.id) + '" hidden><p>' + esc(m.explanation) + '</p>' + bigChart(m) +
+      '<div class="hist">' + m.history.map(h => '<span>' + esc(shortDate(h.date) || "undated") + ': ' + esc(h.value) + ' ' + esc(m.unit) + '</span>').join("") + '</div></div>';
+}
+
+function renderLabs(L) {
+  if (!L || !L.has_data) {
+    return '<div class="empty-state"><img src="../assets/6abe27005847b6683a14deef5164e1c7.png" alt=""><div class="es-title">No confirmed lab results yet</div><div class="es-sub">Upload a blood report to CuraVault, check the values QueroCura read, and confirm them — then they appear here with ranges, trends and patterns.</div><button type="button" class="es-cta" onclick="window.location.href=\'../curavault/\';">Open CuraVault</button></div>';
+  }
+  const S = L.summary;
+  let html = '<div class="sum-strip"><span class="sum-note">' + esc(S.headline) + '</span>' +
+    ['critical', 'abnormal', 'borderline', 'normal'].filter(k => S[k]).map(k => '<span class="sum-chip" style="--c:' + ST_COLOR[k] + '">' + S[k] + ' ' + k + '</span>').join("") +
+    '<label class="toggle-row"><input type="checkbox" id="rec-flagged"' + (recFlagged ? " checked" : "") + '> Only show what needs attention</label></div>';
+  (L.patterns || []).forEach(p => {
+    const c = SEV_COLOR[p.severity] || "#6b6885";
+    html += '<div class="pat" style="--c:' + c + '"><h3>' + esc(p.title) + '</h3><p>' + esc(p.summary) + '</p>' +
+      '<div class="ev-chips">' + (p.evidence || []).map(e => '<span class="ev-chip" style="--c:' + (ST_COLOR[e.status] || "#0e8f83") + '">' + esc(e.name) + ' ' + esc(e.value) + ' ' + esc(e.unit) + '</span>').join("") + '</div>' +
+      ((p.next_steps || []).length ? '<details><summary>What could help</summary><ul>' + p.next_steps.map(t => '<li>' + esc(t) + '</li>').join("") + '</ul></details>' : '') + '</div>';
+  });
+  if ((L.derived || []).length) {
+    html += '<div class="derived">' + L.derived.map(d => '<div class="dv"><small>' + esc(d.label) + '</small><b>' + esc(d.value) + ' <span style="display:inline;font:600 12px Manrope;opacity:.6">' + esc(d.unit) + '</span></b><span>' + esc(d.note) + '</span></div>').join("") + '</div>';
+  }
+  (L.panels || []).forEach(p => {
+    const items = recFlagged ? p.markers.filter(m => m.status !== "normal") : p.markers;
+    if (!items.length) return;
+    html += '<div class="panel-h">' + esc(p.title) + (p.flagged ? '<span class="flag">' + p.flagged + ' to review</span>' : '') + '</div>' + items.map(labRowHtml).join("");
+  });
+  html += '<div class="limit">Reference ranges are standard adult ranges (or the range printed on your own report where available). Normal ranges vary between labs — your doctor interprets results in context. This is not a diagnosis.</div>';
+  return html;
+}
+
+function followUpHtml(r) {
+  return (r.follow_up_due || []).concat((r.follow_up || []).filter(f => !(r.follow_up_due || []).some(d => d.text === f.text))).slice(0, 3).map(f => {
+    const kind = { repeat_imaging: "Repeat imaging", further_imaging: "Further imaging", biopsy_or_tissue: "Further tests", specialist: "Specialist review", clinical_correlation: "Clinical correlation", review: "Review" }[f.kind] || "Follow-up";
+    const due = f.due_date ? (f.overdue ? '<b style="color:#d24f28">Was due ' + esc(shortDate(f.due_date)) + '</b>' : 'Due by <b>' + esc(shortDate(f.due_date)) + '</b>') : "";
+    const link = f.suggest_date ? '<a class="es-cta" style="text-decoration:none;display:inline-block" href="../calendar/?new=1&type=followup&date=' + esc(f.suggest_date) + '&title=' + encodeURIComponent(kind + ": " + r.title) + '">📅 Add to calendar</a>' : '';
+    return '<div class="fu' + (f.overdue ? " overdue" : "") + '"><span><b>' + kind + '</b> — ' + esc(f.text) + ' ' + due + '</span>' + link + '</div>';
+  }).join("");
+}
+
+function renderImaging(I) {
+  if (!I || !I.reports.length) {
+    return '<div class="empty-state"><img src="../assets/6abe27005847b6683a14deef5164e1c7.png" alt=""><div class="es-title">No imaging reports yet</div><div class="es-sub">Upload an MRI, CT, X-ray or ultrasound <b>report</b> to CuraVault under “Scan / imaging”. QueroCura reads the written report and explains it in plain language.</div><button type="button" class="es-cta" onclick="window.location.href=\'../curavault/\';">Open CuraVault</button></div>';
+  }
+  const sm = I.summary;
+  let html = '<div class="sum-strip"><span class="sum-note">' + sm.total + ' report' + (sm.total === 1 ? "" : "s") + '</span>' +
+    (sm.attention ? '<span class="sum-chip" style="--c:#d24f28">' + sm.attention + ' with findings to review</span>' : '') + (sm.normal ? '<span class="sum-chip" style="--c:#0e8f83">' + sm.normal + ' normal</span>' : '') +
+    (sm.followups_due ? '<span class="sum-chip" style="--c:#2f8fd1">' + sm.followups_due + ' follow-up due</span>' : '') + '</div>';
+  I.reports.forEach(r => {
+    const c = CAT_COLOR[r.overall] || "#6b6885";
+    html += '<div class="img-card"><div class="img-head"><div class="img-ic">' + (MOD_ICON[r.modality] || "🩻") + '</div><div style="flex:1;min-width:0"><div class="img-title">' + esc(r.title) + '</div>' +
+      '<div class="img-meta">' + esc((r.modality || "Imaging") + (r.regions.length ? " · " + r.regions.slice(0, 2).join(", ") : "") + (r.study_date ? " · " + shortDate(r.study_date) : "")) + '</div></div>' +
+      '<span class="st" style="--c:' + c + '">' + (OVERALL_WORD[r.overall] || r.overall) + '</span></div>' +
+      '<p class="img-sum">' + esc(r.summary) + '</p>' +
+      (r.impression_text ? '<p class="img-sum" style="font-size:13px;opacity:.8"><b>Radiologist\'s impression:</b> ' + esc(r.impression_text.slice(0, 380)) + '</p>' : '') +
+      r.key_findings.map(f => {
+        const fc = CAT_COLOR[f.category] || "#6b6885";
+        const bits = [f.uncertain ? "possible" : "", f.side || "", f.level || "", (f.measurements[0] && f.measurements[0].text) || ""].filter(Boolean);
+        return '<div class="find"><span class="st" style="--c:' + fc + '">' + (f.category === "incidental" ? "minor" : f.category) + '</span><div><b>' + esc(f.label) + (bits.length ? ' <span style="font-weight:600;opacity:.6">· ' + esc(bits.join(" · ")) + '</span>' : '') + '</b><span class="ex">' + esc(f.explanation) + '</span></div></div>';
+      }).join("") + followUpHtml(r) +
+      '<div class="limit">' + (r.reading && r.reading.kind ? ({ handwriting: "✍ Read from handwriting", scanned: "📷 Read from a scan/photo", digital_pdf: "📄 Read from a digital PDF", text: "📄 Read from text" })[r.reading.kind] + (r.reading.confidence != null ? " · reading confidence " + Math.round(r.reading.confidence * 100) + "%" : "") + " · " : "") + (r.reviewed ? "reviewed" : "auto-read, please verify against the original") + ' · <a href="../curavault/">Open in CuraVault</a></div></div>';
+  });
+  html += '<div class="limit">' + esc(I.note || "") + ' Only your doctor can interpret findings in the context of your symptoms and history.</div>';
+  return html;
+}
+
+function renderMeds(M) {
+  let html = "";
+  (M.safety || []).forEach(sf => {
+    const c = SEV_COLOR[sf.severity] || "#c98a10";
+    html += '<div class="pat" style="--c:' + c + '"><h3>' + (sf.severity === "urgent" ? "⚠️ " : "") + esc(sf.title) + '</h3><p>' + esc(sf.message) + '</p></div>';
+  });
+  if (!(M.active || []).length) {
+    return html + '<div class="empty-state"><img src="../assets/6abe27005847b6683a14deef5164e1c7.png" alt=""><div class="es-title">No active medicines on file</div><div class="es-sub">Upload a prescription (typed or handwritten) to CuraVault, confirm what was read, and your medicine list and reminders appear here.</div><button type="button" class="es-cta" onclick="window.location.href=\'../curavault/\';">Open CuraVault</button></div>';
+  }
+  html += (M.active || []).map(m => '<div class="med-row"><div class="mi">💊</div><div style="flex:1;min-width:0"><b>' + esc(m.name) + '</b>' + (m.dose ? ' <span style="opacity:.6">· ' + esc(m.dose) + '</span>' : '') + '<small>' + esc(m.schedule || "") + '</small></div></div>').join("");
+  html += '<div class="limit">These come from prescriptions you confirmed in CuraVault. QueroCura never recommends or changes medicines — it only checks your list against your recorded allergies and for duplicates. Always follow your prescriber\'s and pharmacist\'s advice.</div>';
+  return html;
+}
+
+function renderDocs(D, coverage) {
+  let html = "";
+  if (!D.total) return '<div class="empty-state"><img src="../assets/6abe27005847b6683a14deef5164e1c7.png" alt=""><div class="es-title">Your vault is empty</div><div class="es-sub">Add reports, prescriptions and scans to CuraVault and QueroCura will read them for you.</div><button type="button" class="es-cta" onclick="window.location.href=\'../curavault/\';">Open CuraVault</button></div>';
+  const max = Math.max.apply(null, Object.values(D.by_category));
+  html += '<div class="cat-bars">' + Object.keys(D.by_category).map(k => '<div class="cat-bar"><span>' + esc(k.replace(/_/g, " ")) + '</span><i style="width:' + Math.max(8, D.by_category[k] / max * 220) + 'px"></i><span style="width:auto;text-transform:none">' + D.by_category[k] + '</span></div>').join("") + '</div>';
+  const STATE = { confirmed: ["Confirmed", "#0e8f83"], needs_review: ["Needs your review", "#c98a10"], read: ["Read by QueroCura", "#2f8fd1"], reading: ["Reading…", "#2f8fd1"], failed: ["Couldn't read", "#d24f28"], not_read: ["Not read yet", "#6b6885"] };
+  const KIND = { handwriting: "✍ Handwriting", scanned: "📷 Scan/photo", digital_pdf: "📄 Digital PDF", text: "📄 Text" };
+  html += D.items.map(i => {
+    const st = STATE[i.state] || STATE.not_read;
+    const conf = i.reading.confidence;
+    return '<div class="doc-row"><div><b>' + esc(i.title) + '</b><br><small>' + esc((i.category || "").replace(/_/g, " ")) + (i.date ? " · " + esc(shortDate(i.date)) : "") +
+      (i.found.markers ? " · " + i.found.markers + " markers found" : "") + (i.found.medicines ? " · " + i.found.medicines + " medicines found" : "") + (i.unreadable ? " · text hard to read" : "") + '</small></div>' +
+      '<div class="doc-tags"><span class="st" style="--c:' + st[1] + '">' + st[0] + '</span>' +
+      (i.reading.kind ? '<span class="st" style="--c:#6b6885">' + KIND[i.reading.kind] + (conf != null ? '<span class="conf-bar" style="--c:' + (conf < 0.75 ? "#c98a10" : "#0e8f83") + '"><i style="width:' + Math.round(conf * 100) + '%"></i></span>' : "") + '</span>' : '') +
+      (i.state === "needs_review" ? '<a class="es-cta" style="text-decoration:none" href="../curavault/">Review</a>' : '') + '</div></div>';
+  }).join("");
+  return html;
+}
+
+function renderRecords() {
+  const box = document.getElementById("rec-body");
+  const R = qcRecords;
+  if (!R || R.ok === false) { box.innerHTML = '<div class="empty-note">Couldn\'t load your CuraVault insights right now.</div>'; return; }
+  document.getElementById("rec-sub").textContent = R.headline || "Lab reports, prescriptions and scans — read, checked against reference ranges and visualised.";
+  let html = "";
+  const pend = (R.labs && R.labs.pending_review) || 0;
+  if (pend) html += '<div class="rec-banner"><span>📝 <b>' + pend + ' value' + (pend === 1 ? "" : "s") + '</b> QueroCura read from your documents ' + (pend === 1 ? "is" : "are") + ' waiting for your review. Only confirmed values are used here.</span><a href="../curavault/">Review now →</a></div>';
+  const steps = (R.coverage || []).slice(0, 3);
+  if (steps.length) html += '<div class="next-steps">' + steps.map(g => '<div class="ns ' + (g.priority === "high" ? "high" : "") + '"><span class="ns-ic">' + (g.icon || "💡") + '</span><div><b>' + esc(g.title) + '</b><span>' + esc(g.detail) + '</span><a href="' + esc(g.href) + '">' + esc(g.cta) + ' →</a></div></div>').join("") + '</div>';
+  const tabs = [["labs", "🧪 Labs", R.labs.summary.total], ["imaging", "🩻 Imaging", R.imaging.summary.total], ["meds", "💊 Medicines", R.medicines.active.length], ["docs", "📄 Documents", R.documents.total]];
+  html += '<div class="rec-tabs" role="tablist">' + tabs.map(t => '<button type="button" class="rec-tab' + (recTab === t[0] ? " on" : "") + '" role="tab" data-t="' + t[0] + '">' + t[1] + ' <span class="cnt">' + t[2] + '</span></button>').join("") + '</div>';
+  html += recTab === "labs" ? renderLabs(R.labs) : recTab === "imaging" ? renderImaging(R.imaging) : recTab === "meds" ? renderMeds(R.medicines) : renderDocs(R.documents, R.coverage);
+  box.innerHTML = html;
+  box.querySelectorAll(".rec-tab").forEach(b => b.addEventListener("click", () => { recTab = b.getAttribute("data-t"); renderRecords(); }));
+  const flag = document.getElementById("rec-flagged"); if (flag) flag.addEventListener("change", () => { recFlagged = flag.checked; renderRecords(); });
+  box.querySelectorAll(".lab-row").forEach(row => {
+    const toggle = () => { const d = document.getElementById("labd-" + row.getAttribute("data-lab")); const open = d.hidden; d.hidden = !open; row.classList.toggle("open", open); row.setAttribute("aria-expanded", open); };
+    row.addEventListener("click", toggle);
+    row.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggle(); } });
+  });
+}
+
+async function loadRecords() {
+  try {
+    const res = await fetch(API_BASE + "/insights/records", { credentials: "include" });
+    qcRecords = res.ok ? await res.json() : null;
+  } catch (e) { qcRecords = null; }
+  renderRecords();
+}
+
 function setTodayChrome() {
   document.getElementById("qc-today").textContent = new Date().toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short", year: "numeric" });
 }
@@ -694,6 +960,7 @@ document.getElementById("qc-signout-btn").addEventListener("click", async () => 
   setTodayChrome();
   initDaySelect();
   loadInsights(qcDays);
+  loadRecords();
 })();
 </script>
 <script src="../assets/qc-app.js"></script>

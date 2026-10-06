@@ -590,10 +590,28 @@ function showQuestionPhase(questions, baseText) {
 // sessionStorage and navigating there (see the success branch of
 // runAnalysis() below).
 
+// The structured interview answers for this check, carried through to the results page.
+let qcInterview = null;
+
 async function runAnalysis(text, busyBtn, round) {
   const errEl = document.getElementById("sym-err");
   errEl.textContent = "";
   if (busyBtn) busyBtn.disabled = true;
+
+  // First pass only: ask the specific, personalised interview questions (onset,
+  // character, severity, red flags, exposures ...) before analysing. If the
+  // interview isn't available (older backend / offline) this quietly returns null.
+  if (!round && window.QCInterview) {
+    let iv = null;
+    try { iv = await QCInterview.run({ text, apiBase: API_BASE }); } catch (e) { iv = null; }
+    if (iv && iv.cancelled) {
+      if (busyBtn) busyBtn.disabled = false;
+      updatePickerBtn();
+      return;
+    }
+    qcInterview = iv && iv.summary ? iv : null;
+    if (qcInterview) text = qcInterview.text;
+  }
   startScan(round);
 
   try {
@@ -630,7 +648,7 @@ async function runAnalysis(text, busyBtn, round) {
       // tool here. The results page redirects back here if it ever finds
       // this empty (e.g. a stale bookmark or the back button).
       try {
-        sessionStorage.setItem("qc-symptom-result", JSON.stringify({ data, baseText: text, round: round || 0, ts: Date.now() }));
+        sessionStorage.setItem("qc-symptom-result", JSON.stringify({ data, baseText: text, round: round || 0, ts: Date.now(), interview: qcInterview ? { summary: qcInterview.summary, emergency: qcInterview.emergency, red_flags: qcInterview.red_flags, helpline: qcInterview.helpline } : null }));
       } catch (e) {}
       window.location.href = "results/";
       return;
@@ -914,6 +932,7 @@ document.getElementById("qc-checkin-dismiss").addEventListener("click", () => {
   loadCheckin();
 })();
 </script>
+<script src="../assets/qc-interview.js"></script>
 <script src="../assets/qc-app.js"></script>
 </body>
 </html>
