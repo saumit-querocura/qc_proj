@@ -175,6 +175,15 @@
   .dropzone { border: 1.5px dashed rgba(255,255,255,0.22); border-radius: 14px; padding: 20px; text-align: center; font-size: 13px; color: var(--ink-soft); cursor: pointer; transition: border-color 0.18s ease, background 0.18s ease; }
   .dropzone.drag { border-color: var(--cv-4); background: var(--cv-tint); color: var(--cv-4); }
   .dropzone input { display: none; }
+  .intake { margin-top: 10px; display: flex; flex-direction: column; gap: 8px; }
+  .intake:empty { display: none; }
+  .in-file { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 12px; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.14); font-size: 12.5px; }
+  .in-file .ic { font-size: 20px; flex: 0 0 auto; } .in-file .nm { flex: 1; min-width: 0; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .in-file .nm small { display: block; font-weight: 600; opacity: .65; white-space: normal; }
+  .in-file.warn { border-color: rgba(233,185,79,0.6); background: rgba(233,185,79,0.12); }
+  .in-warn { font-size: 12px; line-height: 1.5; color: #f1d391; font-weight: 600; margin-top: 2px; }
+  .in-detect { font-size: 12.5px; opacity: .85; } .in-tips { font-size: 12px; opacity: .7; line-height: 1.55; }
+  .in-chip { display: inline-block; padding: 3px 9px; border-radius: 999px; background: rgba(255,255,255,0.14); font-weight: 800; font-size: 11px; }
   .dropzone .dz-files { margin-top: 6px; font-weight: 700; color: var(--ink); }
 
   .save-btn { position: relative; overflow: hidden; background: var(--cv-grad); color: #06251d; font-size: 15px; font-weight: 700; padding: 12px 28px; border-radius: 999px; border: none; cursor: pointer; font-family: 'Manrope', sans-serif; margin-top: 4px; transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease; }
@@ -377,6 +386,7 @@
                 <span id="cv-dz-label">Drag files here, or click to browse</span>
                 <div class="dz-files" id="cv-dz-files"></div>
               </div>
+              <div class="intake" id="cv-intake" aria-live="polite"></div>
               <button type="button" id="cv-camera-button" class="save-btn">Take a photo of a record</button>
               <input type="file" id="cv-camera-file" accept="image/*" capture="environment" hidden>
               <p class="card-sub">PDF or photo · up to 15 MiB per file, 12 PDF pages. Review extracted results before saving medicine schedules.</p>
@@ -1022,6 +1032,88 @@ const dzFiles = document.getElementById("cv-dz-files");
 function refreshDzLabel() {
   const n = dzInput.files.length;
   dzFiles.textContent = n ? (n + " file" + (n > 1 ? "s" : "") + " selected") : "";
+  smartIntake();
+}
+
+/* ---- Smart intake: before anything is uploaded, work out what each file probably is, fill in the
+   category/title (never overwriting what the person typed), and warn about photos that will read
+   badly (blurry, dark, washed out, tiny) while a retake is still one tap away. ---- */
+const INTAKE_RULES = [
+  [/\bmri\b|magnetic|\bmr /i, "scan", "MRI scan report"], [/\bct\b|cect|hrct|tomograph|\bcta\b/i, "scan", "CT scan report"],
+  [/x[ _-]?ray|radiograph|\bcxr\b/i, "scan", "X-ray report"], [/usg|ultraso|sonograph|doppler|echo|mammo|dexa|\bpet\b|ecg|ekg/i, "scan", "scan / imaging report"],
+  [/\brx\b|prescri|presc\b|medicine|medication/i, "prescription", "prescription"], [/discharge/i, "discharge_summary", "discharge summary"],
+  [/vaccin|immuni[sz]/i, "vaccination", "vaccination record"],
+  [/cbc|blood|lipid|thyroid|hba1c|\blft\b|\bkft\b|urine|pathol|diagnostic|lab|haemo|hemo|sugar|glucose|report/i, "lab_report", "lab report"],
+];
+const CAT_LABEL = { lab_report: "Lab report", prescription: "Prescription", scan: "Scan / imaging", discharge_summary: "Discharge summary", vaccination: "Vaccination", other: "Other" };
+const CAT_ICON = { lab_report: "🧪", prescription: "💊", scan: "🩻", discharge_summary: "🏥", vaccination: "💉", other: "📄" };
+let userSetCategory = false, userSetTitle = false;
+document.getElementById("cv-rec-category").addEventListener("change", () => { userSetCategory = true; });
+document.getElementById("cv-rec-title").addEventListener("input", () => { userSetTitle = true; });
+
+function guessFile(f) {
+  const base = f.name.replace(/\.[^.]+$/, "").replace(/[_\-.]+/g, " ").replace(/\s+/g, " ").trim();   // "MRI_lumbar-spine" -> "MRI lumbar spine" (underscores defeat \b)
+  let hit = INTAKE_RULES.find(r => r[0].test(base));
+  const generic = /^(img|dsc|image|scan|photo|screenshot|whatsapp|pxl|doc|document|download|file|\d)/i.test(base);
+  const pretty = base.replace(/\b\w/g, c => c.toUpperCase());
+  const cat = hit ? hit[1] : "";
+  return { cat, kind: hit ? hit[2] : "", title: generic || pretty.length < 3 ? "" : pretty.slice(0, 70) };
+}
+
+function imageQuality(file) {
+  return new Promise(resolve => {
+    if (!/^image\//.test(file.type)) return resolve(null);
+    const url = URL.createObjectURL(file), img = new Image();
+    img.onload = () => {
+      try {
+        const scale = Math.min(1, 640 / Math.max(img.naturalWidth, img.naturalHeight));
+        const w = Math.max(8, Math.round(img.naturalWidth * scale)), h = Math.max(8, Math.round(img.naturalHeight * scale));
+        const c = document.createElement("canvas"); c.width = w; c.height = h;
+        const ctx = c.getContext("2d", { willReadFrequently: true }); ctx.drawImage(img, 0, 0, w, h);
+        const px = ctx.getImageData(0, 0, w, h).data, g = new Float32Array(w * h);
+        let sum = 0;
+        for (let i = 0, j = 0; i < px.length; i += 4, j++) { g[j] = 0.299 * px[i] + 0.587 * px[i + 1] + 0.114 * px[i + 2]; sum += g[j]; }
+        // variance of the Laplacian: low = few sharp edges = blurry
+        let m = 0, s2 = 0, n = 0;
+        for (let y = 1; y < h - 1; y++) for (let x = 1; x < w - 1; x++) {
+          const k = y * w + x, l = 4 * g[k] - g[k - 1] - g[k + 1] - g[k - w] - g[k + w];
+          n++; const d = l - m; m += d / n; s2 += d * (l - m);
+        }
+        resolve({ w: img.naturalWidth, h: img.naturalHeight, bright: sum / (w * h), sharp: n > 1 ? s2 / (n - 1) : 0 });
+      } catch (e) { resolve(null); } finally { URL.revokeObjectURL(url); }
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); resolve(null); };
+    img.src = url;
+  });
+}
+
+let intakeSeq = 0;
+async function smartIntake() {
+  const box = document.getElementById("cv-intake"), files = Array.from(dzInput.files), seq = ++intakeSeq;
+  if (!files.length) { box.innerHTML = ""; return; }
+  const guesses = files.map(guessFile), first = guesses.find(g => g.cat);
+  if (first && !userSetCategory) document.getElementById("cv-rec-category").value = first.cat;
+  if (!userSetTitle && files.length === 1 && guesses[0].title) document.getElementById("cv-rec-title").value = guesses[0].title;
+  const qualities = await Promise.all(files.map(imageQuality));
+  if (seq !== intakeSeq) return;
+  const cat = document.getElementById("cv-rec-category").value;
+  let html = first ? '<div class="in-detect">Looks like <span class="in-chip">' + CAT_ICON[first.cat] + " " + QC.esc(first.kind) + '</span>. I picked “' + QC.esc(CAT_LABEL[first.cat]) + '” for you; change it if that\'s wrong.</div>' : '';
+  html += files.map((f, i) => {
+    const q = qualities[i], warns = [];
+    if (q) {
+      if (q.sharp < 40) warns.push("looks blurry: hold the phone steady and tap to focus before shooting");
+      if (q.bright < 70) warns.push("is quite dark: use daylight or turn on a light, avoid shadows");
+      else if (q.bright > 225) warns.push("looks washed out: avoid glare from the flash or window");
+      if (Math.min(q.w, q.h) < 900) warns.push("is low resolution: move closer so the page fills the frame");
+    }
+    const kb = f.size > 1048576 ? (f.size / 1048576).toFixed(1) + " MB" : Math.max(1, Math.round(f.size / 1024)) + " KB";
+    return '<div class="in-file' + (warns.length ? " warn" : "") + '"><span class="ic">' + (CAT_ICON[guesses[i].cat || cat] || "📄") + '</span><div class="nm">' + QC.esc(f.name) +
+      '<small>' + kb + (q ? " · " + q.w + "×" + q.h : "") + '</small>' + (warns.length ? '<div class="in-warn">⚠ This photo ' + warns.map(QC.esc).join("; and ") + '. A clearer picture reads far more accurately.</div>' : '') + '</div></div>';
+  }).join("");
+  if (qualities.some(Boolean) || cat === "prescription") {
+    html += '<div class="in-tips">📸 For handwriting and scans: lay the page flat, keep the whole page in the frame, and shoot straight-on in daylight. After upload you\'ll check what was read before anything is saved.</div>';
+  }
+  box.innerHTML = html;
 }
 dz.addEventListener("click", () => dzInput.click());
 dzInput.addEventListener("change", refreshDzLabel);
@@ -1061,6 +1153,9 @@ document.getElementById("cv-upload-form").addEventListener("submit", async (e) =
     toast(data.errors?.length ? "Some files were saved; other files failed. " + data.errors.map(x => x.error).join(" ") : "Records stored. Review extracted values and medicines next.", data.errors?.length ? "err" : "ok");
     document.getElementById("cv-upload-form").reset();
     dzFiles.textContent = "";
+    userSetCategory = userSetTitle = false;
+    document.getElementById("cv-intake").innerHTML = "";
+    QC.clearCache();                                       // new records change Insights, so drop the cached copy
     fireConfetti();
     const recResult = await loadRecords();
     renderActivity(lastRecords, lastSymptoms, lastLogs);

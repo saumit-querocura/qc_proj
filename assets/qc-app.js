@@ -59,17 +59,52 @@
   };
 
   /* ---------- insights (single source of the score) ---------- */
-  var insightCache = {};
+  /* Stale-while-revalidate: the last good answer is kept for this browser tab (sessionStorage, never
+   * shared across tabs/devices, wiped on sign-out) so a page can paint instantly and then quietly
+   * refresh. Pages call QC.stale(key) for the instant paint and QC.insights()/QC.records() for fresh. */
+  var SWR = "qc-swr:", SWR_MAX_AGE = 10 * 60 * 1000;
+  function swrGet(k) { try { var v = JSON.parse(sessionStorage.getItem(SWR + k)); if (v && Date.now() - v.t < SWR_MAX_AGE) return v.d; } catch (e) {} return null; }
+  function swrSet(k, d) { try { sessionStorage.setItem(SWR + k, JSON.stringify({ t: Date.now(), d: d })); } catch (e) {} }
+  QC.stale = swrGet;
+  QC.clearCache = function () {
+    try { Object.keys(sessionStorage).forEach(function (k) { if (k.indexOf(SWR) === 0) sessionStorage.removeItem(k); }); } catch (e) {}
+    insightCache = {}; recCache = null; window.__qcPre = window.__qcPreRec = null;
+  };
+
+  function getJSON(path) {
+    return fetch(API_BASE + path, { credentials: "include" }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; });
+  }
+  var insightCache = {}, recCache = null;
   QC.insights = function (days, force) {
     days = days || 30;
     var hit = insightCache[days];
     if (!force && hit && Date.now() - hit.t < 20000) return hit.p;
-    var p = fetch(API_BASE + "/insights/dashboard?days=" + days, { credentials: "include" })
-      .then(function (r) { return r.json(); })
-      .catch(function () { return null; });
+    // A page may have started this request before this script loaded (window.__qcPre) — use it once.
+    var pre = null;
+    if (!force && days === 30 && window.__qcPre) { pre = window.__qcPre; window.__qcPre = null; }
+    var p = (pre || getJSON("/insights/dashboard?days=" + days)).then(function (d) {
+      if (d && d.ok !== false) swrSet("insights-" + days, d);
+      return d;
+    }, function () { return null; });
     insightCache[days] = { t: Date.now(), p: p };
     return p;
   };
+  QC.records = function (force) {
+    if (!force && recCache && Date.now() - recCache.t < 20000) return recCache.p;
+    var pre = null;
+    if (!force && window.__qcPreRec) { pre = window.__qcPreRec; window.__qcPreRec = null; }
+    var p = (pre || getJSON("/insights/records")).then(function (d) {
+      if (d && d.ok !== false) swrSet("records", d);
+      return d;
+    }, function () { return null; });
+    recCache = { t: Date.now(), p: p };
+    return p;
+  };
+  // Drop cached health data whenever someone signs out, on any page.
+  document.addEventListener("click", function (e) {
+    var t = e.target && e.target.closest && e.target.closest("#qc-signout-btn, [data-qc-signout]");
+    if (t) QC.clearCache();
+  }, true);
 
   /* One definition of "what the score means", shared by Dashboard + Insights. */
   QC.scoreView = function (risk) {
@@ -386,12 +421,37 @@
     'html[data-theme="dark"] .qc-alert-title{color:#f2f0f8}html[data-theme="dark"] .qc-alert-x{color:#a9a6bd}' +
     'html[data-theme="dark"] .qc-panel-foot a{color:#7ee0d4}html[data-theme="dark"] .qc-panel-foot button{border-color:rgba(255,255,255,.2)}' +
     'html[data-theme="dark"] .qc-toast{background:#f2f0f8;color:#100e2a}' +
-        '@media (prefers-reduced-motion:reduce){.qc-bell.is-urgent{animation:none}.qc-panel{animation:none}}';
+    /* top bar: one tidy row on desktop (it used to wrap and strand the bell under the logo), compact tabs as space shrinks */
+    '@media (min-width:901px){.topbar{flex-wrap:nowrap!important}.tab-nav{flex:1 1 0!important;min-width:0;justify-content:safe center!important}.topbar-right{flex:0 0 auto}}' +
+    '@media (min-width:901px) and (max-width:1500px){.tab-link{padding:9px 11px!important;font-size:13px!important;gap:5px!important}}' +
+    '@media (min-width:901px) and (max-width:1340px){.tab-link .tl-ic{display:none}.tab-link{padding:9px 10px!important}}' +
+    '@media (min-width:901px) and (max-width:1120px){.user-pill{display:none!important}}' +
+    '@media (max-width:900px){.tab-nav{-webkit-mask-image:linear-gradient(90deg,#000 88%,transparent);mask-image:linear-gradient(90deg,#000 88%,transparent);scroll-behavior:smooth}}' +
+    '.qc-skel{display:block;border-radius:12px;background:linear-gradient(90deg,rgba(16,14,42,.06) 25%,rgba(16,14,42,.13) 37%,rgba(16,14,42,.06) 63%);background-size:400% 100%;animation:qcSkel 1.4s ease infinite}' +
+    '@keyframes qcSkel{0%{background-position:100% 50%}100%{background-position:0 50%}}' +
+    '.qc-skel-stack{display:flex;flex-direction:column;gap:10px;padding:4px 0}' +
+    'html[data-theme="dark"] .qc-skel{background:linear-gradient(90deg,rgba(255,255,255,.06) 25%,rgba(255,255,255,.13) 37%,rgba(255,255,255,.06) 63%);background-size:400% 100%}' +
+    '.qc-fresh{display:inline-flex;align-items:center;gap:6px;font:700 11px "Manrope",sans-serif;color:rgba(16,14,42,.5)}' +
+    '.qc-fresh i{width:7px;height:7px;border-radius:50%;background:#c98a10;animation:qcPulse 1s ease infinite}.qc-fresh.done i{background:#0e8f83;animation:none}' +
+    '@keyframes qcPulse{50%{opacity:.35}}' +
+    'html[data-theme="dark"] .qc-fresh{color:#a9a6bd}' +
+    '@media (prefers-reduced-motion:reduce){.qc-bell.is-urgent{animation:none}.qc-panel{animation:none}.qc-skel,.qc-fresh i{animation:none}}';
+  /* A placeholder shaped like the content that is about to appear (feels faster than "Loading…"). */
+  QC.skeleton = function (rows, height) {
+    var out = '<div class="qc-skel-stack" aria-busy="true" aria-label="Loading">';
+    for (var i = 0; i < (rows || 3); i++) out += '<span class="qc-skel" style="height:' + (height || 44) + 'px;width:' + (i === 0 ? "100%" : (92 - i * 9) + "%") + '"></span>';
+    return out + '</div>';
+  };
   var st = document.createElement("style"); st.id = "qc-app-css"; st.textContent = css; document.head.appendChild(st);
 
   /* ---------- boot ---------- */
   QC.boot = function () {
     buildBell();
+    // On narrow screens the tab row scrolls sideways: bring the current page's tab into view.
+    try {
+      var nav = $(".tab-nav"), cur = nav && $(".tab-link.active", nav);
+      if (nav && cur && nav.scrollWidth > nav.clientWidth) nav.scrollLeft = Math.max(0, cur.offsetLeft - (nav.clientWidth - cur.offsetWidth) / 2);
+    } catch (e) {}
     QC.refreshAlerts({});
     setInterval(function () { QC.refreshAlerts({ toast: false }); }, 5 * 60 * 1000);
     document.addEventListener("visibilitychange", function () { if (!document.hidden) QC.refreshAlerts({ toast: false }); });

@@ -10,6 +10,10 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://app.querocura.com">
 <link rel="dns-prefetch" href="https://app.querocura.com">
+<script>
+/* Begin the slow score request immediately; qc-app.js hands the in-flight request to the page (QC.insights). */
+(function(){var A=(window.QC_API_BASE||"https://app.querocura.com/api");window.__qcPre=fetch(A+"/insights/dashboard?days=30",{credentials:"include"}).then(function(r){return r.ok?r.json():null}).catch(function(){return null});})();
+</script>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700;800&family=Manrope:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500;1,9..144,600&display=swap" rel="stylesheet">
 <script>
   (function () {
@@ -582,6 +586,7 @@
     </div>
   </div>
 
+<script src="../assets/qc-app.js"></script>
 <script>
 var STORAGE_KEY = 'qc-theme';
 var root = document.documentElement;
@@ -811,11 +816,51 @@ function renderWhy(risk) {
     '<div class="why-foot">Based on your last ' + (risk.window_days || 30) + ' days. A wellness estimate, not a diagnosis — it starts at 100 and moves with your vitals, symptom checks, conditions and lifestyle.</div>';
 }
 
-async function loadScore() {
-  const data = await QC.insights(30);
-  const risk = data && data.ok ? data.risk : null;
+async function loadScore(force) {
+  // Last known score appears at once (this tab only), then the fresh one replaces it.
+  const stale = QC.stale("insights-30");
+  if (stale && stale.ok !== false && !force) { updateHeroScore(stale.risk); renderWhy(stale.risk); }
+  const data = await QC.insights(30, force);
+  const risk = data && data.ok ? data.risk : (stale && stale.risk) || null;
   updateHeroScore(risk);
   renderWhy(risk);
+  if (data && data.ok) renderConditionCheckin(data.ongoing_conditions);
+}
+
+/* "Are you feeling better?" for conditions a symptom check suggested. Shares the check-in banner;
+   a better answer removes it from Ongoing (and the score) for good until a newer check flags it again. */
+function renderConditionCheckin(og) {
+  const banner = document.getElementById("qc-checkin");
+  if (!banner || banner.style.display === "flex") return;
+  const item = ((og && og.items) || []).find(i => i.source === "symptom_check" && i.checkin_due);
+  if (!item) return;
+  const qEl = document.getElementById("qc-checkin-question"), optsEl = document.getElementById("qc-checkin-options");
+  qEl.textContent = "Are you feeling better? You checked “" + item.name + "” " + (item.days_open >= 1 ? item.days_open + " day" + (item.days_open === 1 ? "" : "s") + " ago." : "recently.");
+  optsEl.innerHTML = "";
+  [["better", "😊 Better / gone"], ["same", "😐 About the same"], ["worse", "😟 Worse"]].forEach(([ans, label]) => {
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "checkin-opt-btn"; b.textContent = label;
+    b.addEventListener("click", async () => {
+      optsEl.querySelectorAll("button").forEach(x => { x.disabled = true; });
+      try {
+        const res = await fetch(API_BASE + "/insights/ongoing/checkin", { method: "POST", credentials: "include", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: item.name, answer: ans }) });
+        const out = await res.json();
+        if (!out.ok) throw new Error(out.err);
+        qEl.textContent = ans === "better" ? "Wonderful, glad you're feeling better! 🎉 I've taken it off your ongoing list." :
+          ans === "same" ? "Thanks. I'll ask again in a couple of days." : "Sorry to hear that. A fresh symptom check can look at what's changed. If you have trouble breathing, chest pain, confusion or heavy bleeding, please get care today.";
+        optsEl.innerHTML = ans === "worse" ? '<a class="checkin-opt-btn" style="text-decoration:none" href="../symptoms/">Check my symptoms again</a>' : "";
+        QC.clearCache();
+        loadScore(true);
+        if (QC.refreshAlerts) QC.refreshAlerts({ force: true, toast: false });
+        if (ans !== "worse") setTimeout(() => { banner.style.display = "none"; }, 3200);
+      } catch (e) {
+        optsEl.querySelectorAll("button").forEach(x => { x.disabled = false; });
+        QC.toast("Couldn't save that. Please try again.", "err");
+      }
+    });
+    optsEl.appendChild(b);
+  });
+  banner.style.display = "flex";
 }
 
 const SEV_COLORS = { emergency: "#b3182a", urgent: "#d24f28", caution: "#c98a10", watch: "#2f8fd1", reminder: "#0e8f83", info: "#6b6885" };
@@ -1118,6 +1163,7 @@ async function loadCheckin() {
     const res = await fetch(API_BASE + "/smart-followups/due", { credentials: "include" });
     const data = await res.json();
     if (!data.ok || !data.items || !data.items.length) return;
+    if (document.getElementById("qc-checkin").style.display === "flex") return;   // a condition check-in is already showing
     renderCheckin(data.items[0]);
     markCheckinShown();
   } catch (e) {}
@@ -1174,6 +1220,9 @@ document.getElementById("qc-checkin-dismiss").addEventListener("click", () => {
 });
 
 (async function init() {
+  // The score doesn't need to wait for sign-in/profile checks: start it now (a signed-out visitor
+  // simply gets nothing back and is redirected below).
+  const scoreLoad = loadScore();
   // Auth check and profile check both just need the session cookie — fire
   // them together instead of waiting on one before starting the other.
   const [meData, profResult] = await Promise.all([
@@ -1201,10 +1250,9 @@ document.getElementById("qc-checkin-dismiss").addEventListener("click", () => {
   initDaySelect();
   startTipRotator();
   // These four don't depend on each other — load them together.
-  await Promise.all([loadLatest(), loadHistory(), loadInsights(14), loadCheckin(), loadScore(), loadUpcoming()]);
+  await Promise.all([loadLatest(), loadHistory(), loadInsights(14), loadCheckin(), scoreLoad, loadUpcoming()]);
   QC.refreshAlerts({ toast: true }).then(renderAttention);
 })();
 </script>
-<script src="../assets/qc-app.js"></script>
 </body>
 </html>

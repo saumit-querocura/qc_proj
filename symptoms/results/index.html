@@ -434,7 +434,7 @@ function wireTriageActions(data) {
 /* "Ongoing" note: makes it explicit where this result shows up in Insights */
 function ongoingNoteHtml(data) {
   if (!data.name) return "";
-  return '<div class="ongoing-note"><span>🔎</span><span>This check is saved to <a href="../../insights/">Insights → Ongoing conditions</a>, so you can always see what\'s been flagged. It\'s a possibility, not a diagnosis. Already living with <b>' + escapeHtml(data.name) + '</b>? <a href="#" id="add-to-profile">Add it to my profile</a>.</span></div>';
+  return '<div class="ongoing-note"><span>🔎</span><span>This check is saved to <a href="../../insights/">Insights → Ongoing conditions</a>, so you can always see what\'s been flagged. In a day or two I\'ll ask how you\'re feeling, and once you say you\'re better it comes off your ongoing list. It\'s a possibility, not a diagnosis. Already living with <b>' + escapeHtml(data.name) + '</b>? <a href="#" id="add-to-profile">Add it to my profile</a>.</span></div>';
 }
 function wireOngoing(data) {
   const a = document.getElementById("add-to-profile");

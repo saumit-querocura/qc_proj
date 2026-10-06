@@ -10,6 +10,12 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://app.querocura.com">
 <link rel="dns-prefetch" href="https://app.querocura.com">
+<script>
+/* Start the slow requests the instant the page begins loading, before any other script is parsed;
+   qc-app.js hands these in-flight requests to the page (QC.insights / QC.records). */
+(function(){var A=(window.QC_API_BASE||"https://app.querocura.com/api");function g(p){return fetch(A+p,{credentials:"include"}).then(function(r){return r.ok?r.json():null}).catch(function(){return null})}
+window.__qcPre=g("/insights/dashboard?days=30");window.__qcPreRec=g("/insights/records");})();
+</script>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700;800&family=Manrope:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500;1,9..144,600&display=swap" rel="stylesheet">
 <script>
   (function () {
@@ -214,6 +220,23 @@
     .freq-row .fq-name { width: 96px; }
   }
 
+  /* ---- "Are you feeling better?" check-in ---- */
+  .ci-box { margin-top: 10px; padding: 11px 13px; border-radius: 12px; background: rgba(201,138,16,0.1); border: 1px solid rgba(201,138,16,0.3); font-size: 13px; line-height: 1.5; }
+  .ci-box b { font-weight: 800; }
+  .ci-btns { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 9px; }
+  .ci-btn { border: 1.5px solid rgba(16,14,42,0.16); background: #fff; border-radius: 999px; padding: 8px 14px; font: 700 12.5px "Manrope", sans-serif; cursor: pointer; color: inherit; transition: transform .15s, border-color .15s, color .15s, background .15s; }
+  .ci-btn:hover { transform: translateY(-1px); }
+  .ci-btn.good:hover { border-color: #0e8f83; color: #0e8f83; background: rgba(14,143,131,0.08); }
+  .ci-btn.bad:hover { border-color: #d24f28; color: #d24f28; background: rgba(210,79,40,0.08); }
+  .ci-btn[disabled] { opacity: .5; cursor: progress; transform: none; }
+  .ci-link { background: none; border: none; color: #0e8f83; font: 700 12px "Manrope", sans-serif; cursor: pointer; padding: 0; margin-top: 7px; text-decoration: underline; text-underline-offset: 2px; }
+  .ci-done { display: flex; align-items: center; gap: 8px; margin-top: 10px; font-size: 12.5px; font-weight: 700; color: #0b6f66; }
+  .ci-cleared { margin-top: 12px; padding: 10px 14px; border-radius: 12px; background: rgba(14,143,131,0.09); font-size: 12.5px; line-height: 1.5; color: #0b6f66; font-weight: 600; }
+  html[data-theme="dark"] .ci-box { background: rgba(201,138,16,0.14); border-color: rgba(201,138,16,0.35); }
+  html[data-theme="dark"] .ci-btn { background: #1e1c38; border-color: rgba(255,255,255,0.18); }
+  html[data-theme="dark"] .ci-link, html[data-theme="dark"] .ci-done, html[data-theme="dark"] .ci-cleared { color: #7ee0d4; }
+  html[data-theme="dark"] .ci-cleared { background: rgba(14,143,131,0.16); }
+
   /* ---- Ongoing conditions, alerts, action plan, doctor questions ---- */
   .cond-list { display: flex; flex-direction: column; gap: 10px; }
   .cond-row { display: flex; align-items: flex-start; gap: 12px; padding: 14px 16px; border-radius: 14px; background: #fbfaf6; border: 1px solid rgba(16,14,42,0.08); }
@@ -309,6 +332,20 @@
   .img-sum { font-size: 14px; line-height: 1.6; margin: 0 0 12px; }
   .find { display: flex; gap: 10px; align-items: flex-start; padding: 10px 0; border-top: 1px solid rgba(16,14,42,0.07); }
   .find b { font-size: 13.5px; } .find span.ex { display: block; font-size: 12.5px; color: rgba(16,14,42,0.6); line-height: 1.5; margin-top: 2px; }
+  .chg { margin: 12px 0 4px; padding: 11px 14px; border-radius: 12px; background: rgba(124,111,219,0.09); border: 1px solid rgba(124,111,219,0.25); font-size: 13px; line-height: 1.5; display: flex; flex-direction: column; gap: 4px; }
+  .chg small { font-size: 11.5px; opacity: .6; }
+  .chg-chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0; }
+  .chg-chip { font-size: 11.5px; font-weight: 800; padding: 4px 10px; border-radius: 999px; color: var(--c); background: color-mix(in srgb, var(--c) 12%, transparent); }
+  .doc-extra { grid-column: 1 / -1; }
+  .rx-card { border-radius: 12px; border: 1px dashed rgba(16,14,42,0.16); padding: 10px 12px; font-size: 12.5px; display: flex; flex-direction: column; gap: 6px; }
+  .rx-head { font-weight: 800; font-size: 13px; }
+  .rx-line { display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: baseline; padding: 6px 0; border-top: 1px solid rgba(16,14,42,0.06); }
+  .rx-line span { opacity: .7; } .rx-line em { flex-basis: 100%; font-style: normal; font-weight: 700; color: #a06d08; font-size: 12px; }
+  .rx-line.check b::after { content: " ⚠"; }
+  .rx-fu { font-weight: 700; } .rx-card small { opacity: .55; font-size: 11.5px; }
+  .tip-box { padding: 10px 12px; border-radius: 12px; background: rgba(201,138,16,0.1); border: 1px solid rgba(201,138,16,0.28); font-size: 12.5px; line-height: 1.5; }
+  html[data-theme="dark"] .rx-card { border-color: rgba(255,255,255,0.2); } html[data-theme="dark"] .rx-line { border-color: rgba(255,255,255,0.08); } html[data-theme="dark"] .rx-line em { color: #e9b94f; }
+  html[data-theme="dark"] .chg { background: rgba(124,111,219,0.16); border-color: rgba(124,111,219,0.4); }
   .fu { display: flex; gap: 12px; align-items: center; justify-content: space-between; flex-wrap: wrap; padding: 11px 14px; border-radius: 12px; background: rgba(47,143,209,0.09); border: 1px solid rgba(47,143,209,0.22); margin-top: 10px; font-size: 13px; }
   .fu.overdue { background: rgba(210,79,40,0.09); border-color: rgba(210,79,40,0.3); }
   .limit { font-size: 11.5px; color: rgba(16,14,42,0.5); line-height: 1.55; margin-top: 12px; }
@@ -395,6 +432,7 @@
       <button class="day-btn" data-days="7">7d</button>
       <button class="day-btn active" data-days="30">30d</button>
       <button class="day-btn" data-days="90">90d</button>
+      <span class="qc-fresh" id="qc-fresh" hidden></span>
     </div>
 
     <div class="card" id="qc-alerts-card" style="display:none;">
@@ -452,6 +490,7 @@
     </div>
   </div>
 
+<script src="../assets/qc-app.js"></script>
 <script>
 const API_BASE = "https://app.querocura.com/api";
 const STORAGE_KEY = 'qc-theme';
@@ -603,11 +642,56 @@ function renderAlerts(alerts) {
 }
 
 const SOURCE_TEXT = { profile: "From your profile", symptom_check: "From a symptom check", both: "Profile + symptom check" };
+
+/* "Are you feeling better?" — only for conditions a symptom check suggested (profile conditions are
+   yours to edit in your profile). Better = leaves Ongoing and the score; Same = ask again in 2 days;
+   Worse = nudges a fresh symptom check. */
+function checkinHtml(i) {
+  if (i.source !== "symptom_check") return "";
+  const n = QC.esc(i.name);
+  const btn = (ans, label, cls) => '<button type="button" class="ci-btn ' + cls + '" data-ci-name="' + n + '" data-ci-ans="' + ans + '">' + label + '</button>';
+  if (i.last_checkin === "worse") {
+    return '<div class="ci-box"><b>You said this got worse.</b> A fresh symptom check will look at what has changed. If you have any red-flag signs (trouble breathing, chest pain, confusion, heavy bleeding), please get care today.' +
+      '<div class="ci-btns"><a class="ci-btn bad" style="text-decoration:none" href="../symptoms/">Check my symptoms again</a>' + btn("better", "Actually, it's better", "good") + '</div></div>';
+  }
+  if (i.checkin_due) {
+    return '<div class="ci-box"><b>How is this now?</b> You checked this ' + (i.days_open >= 1 ? i.days_open + " day" + (i.days_open === 1 ? "" : "s") + " ago" : "a little while ago") + '. Are you feeling better?' +
+      '<div class="ci-btns">' + btn("better", "😊 Yes, it's gone / better", "good") + btn("same", "😐 About the same", "") + btn("worse", "😟 Worse", "bad") + '</div></div>';
+  }
+  return '<button type="button" class="ci-link" data-ci-name="' + n + '" data-ci-ans="better">Feeling better? Mark as resolved</button>';
+}
+
+async function sendCheckin(name, answer, btnEl) {
+  const row = btnEl.closest(".cond-main");
+  row.querySelectorAll("button").forEach(b => { b.disabled = true; });
+  try {
+    const res = await fetch(API_BASE + "/insights/ongoing/checkin", { method: "POST", credentials: "include", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name, answer }) });
+    const out = await res.json();
+    if (!out.ok) throw new Error(out.err || "failed");
+    if (answer === "worse") QC.toast("Thanks for telling me. Please re-check your symptoms.", "err");
+    else if (answer === "same") QC.toast("Noted. I'll ask again in a couple of days. 👍", "ok");
+    else {
+      QC.toast("Glad you're feeling better! 🎉 Removed from your ongoing conditions.", "ok");
+    }
+    // everything that depends on this (score, alerts, bell) must reflect the answer
+    QC.clearCache();
+    await loadInsights(qcDays, true);
+    if (QC.refreshAlerts) QC.refreshAlerts({ force: true, toast: false });
+  } catch (e) {
+    row.querySelectorAll("button").forEach(b => { b.disabled = false; });
+    QC.toast("Couldn't save that. Please try again.", "err");
+  }
+}
+document.addEventListener("click", e => {
+  const b = e.target.closest && e.target.closest("[data-ci-ans]");
+  if (b) sendCheckin(b.getAttribute("data-ci-name"), b.getAttribute("data-ci-ans"), b);
+});
+
 function renderOngoing(og) {
   const wrap = document.getElementById("qc-ongoing-wrap");
   const items = (og && og.items) || [];
   const past = (og && og.past) || [];
-  if (!items.length && !past.length) {
+  if (!items.length && !past.length && !((og && og.resolved) || []).length) {
     wrap.innerHTML = '<div class="empty-state"><img src="../assets/6abe27005847b6683a14deef5164e1c7.png" alt="">' +
       '<div class="es-title">No ongoing conditions</div>' +
       '<div class="es-sub">Nothing on your profile, and no recent symptom check has suggested one. If something applies to you, add it to your profile.</div>' +
@@ -626,11 +710,17 @@ function renderOngoing(og) {
         '<div class="cond-name">' + QC.esc(i.name) + '<span class="badge ' + i.source + '">' + (SOURCE_TEXT[i.source] || "") + '</span>' + flagBadge + '</div>' +
         '<div class="cond-note">' + QC.esc(i.note || "") + '</div>' +
         (meta.length ? '<div class="cond-meta">' + meta.join(" · ") + '</div>' : '') +
+        checkinHtml(i) +
       '</div></div>';
     }).join("") + '</div>';
     html += '<div class="btn-row"><a class="btn-soft" href="../profile/">Edit conditions in profile</a><a class="btn-soft" href="../symptoms/">Run a symptom check</a></div>';
   } else {
     html += '<div class="empty-note">No ongoing conditions right now.</div>';
+  }
+  const cleared = (og && og.resolved) || [];
+  if (cleared.length) {
+    html += '<div class="ci-cleared">✅ Marked as better: ' + cleared.map(c => QC.esc(c.name)).join(", ") +
+      '. ' + (cleared.length === 1 ? "It no longer counts" : "They no longer count") + ' toward your health score. If it comes back, run a new symptom check.</div>';
   }
   if (past.length) {
     html += '<div class="past-line"><b>Past conditions &amp; surgeries:</b> ' + past.map(QC.esc).join(" · ") + ' <span style="opacity:.7">(resolved — they only nudge your score slightly)</span></div>';
@@ -704,29 +794,50 @@ function renderFrequency(freq) {
 }
 
 let qcDays = 30;
-async function loadInsights(days) {
+const INSIGHT_BOXES = ["qc-chart-wrap", "qc-insight-wrap", "qc-freq-wrap", "qc-ongoing-wrap"];
+function paintInsights(data, scoreData) {
+  // The score ALWAYS comes from the same 30-day view the Dashboard uses,
+  // so the two pages can never disagree whatever range is selected here.
+  const base = scoreData && scoreData.ok ? scoreData : data;
+  const each = fn => { try { fn(); } catch (e) { /* one broken card must not blank the page */ } };
+  each(() => renderRisk(base.risk));
+  each(() => renderAlerts(base.alerts));
+  each(() => renderOngoing(base.ongoing_conditions));
+  each(() => renderCharts(data.vitals));
+  each(() => renderCorrelations(data.correlations));
+  each(() => renderFrequency(data.condition_frequency));
+  each(() => renderPlan(data.action_plan));
+  each(() => renderQuestions(data.doctor_questions));
+  each(() => renderGaps(data.missing_data));
+}
+function setFresh(state) {
+  const el = document.getElementById("qc-fresh");
+  if (!el) return;
+  el.className = "qc-fresh" + (state === "done" ? " done" : "");
+  el.innerHTML = state === "done" ? '<i></i>Up to date' : '<i></i>Refreshing…';
+  el.hidden = false;
+  if (state === "done") setTimeout(() => { el.hidden = true; }, 2500);
+}
+
+let insightsSeq = 0;
+async function loadInsights(days, force) {
   qcDays = days || qcDays;
-  ["qc-chart-wrap", "qc-insight-wrap", "qc-freq-wrap", "qc-ongoing-wrap"].forEach(id => {
-    document.getElementById(id).innerHTML = '<div class="empty-note">Loading…</div>';
-  });
+  const seq = ++insightsSeq;                  // ignore an answer that a newer day-range click has overtaken
+  // Paint the last known answer instantly (this tab only), then refresh quietly.
+  const staleD = QC.stale("insights-" + qcDays), staleS = QC.stale("insights-30");
+  const hadStale = !!(staleD && staleS && staleD.ok !== false);
+  if (hadStale) { paintInsights(staleD, staleS); setFresh("busy"); }
+  else INSIGHT_BOXES.forEach(id => { document.getElementById(id).innerHTML = QC.skeleton(3, 46); });
   try {
-    // The score ALWAYS comes from the same 30-day view the Dashboard uses,
-    // so the two pages can never disagree whatever range is selected here.
-    const [data, scoreData] = await Promise.all([QC.insights(qcDays), QC.insights(30)]);
+    const [data, scoreData] = await Promise.all([QC.insights(qcDays, force), QC.insights(30, force)]);
+    if (seq !== insightsSeq) return;
     if (!data || data.ok === false) throw new Error("load failed");
-    const base = scoreData && scoreData.ok ? scoreData : data;
-    renderRisk(base.risk);
-    renderAlerts(base.alerts);
-    renderOngoing(base.ongoing_conditions);
-    renderCharts(data.vitals);
-    renderCorrelations(data.correlations);
-    renderFrequency(data.condition_frequency);
-    renderPlan(data.action_plan);
-    renderQuestions(data.doctor_questions);
-    renderGaps(data.missing_data);
+    paintInsights(data, scoreData);
+    setFresh("done");
   } catch (e) {
-    ["qc-chart-wrap", "qc-insight-wrap", "qc-freq-wrap", "qc-ongoing-wrap"].forEach(id => {
-      document.getElementById(id).innerHTML = '<div class="empty-note">Couldn\'t load this right now — try refreshing.</div>';
+    if (seq !== insightsSeq || hadStale) { setFresh("done"); return; }
+    INSIGHT_BOXES.forEach(id => {
+      document.getElementById(id).innerHTML = '<div class="empty-note">Couldn\'t load this right now. <button type="button" class="btn-soft" onclick="loadInsights(qcDays, true)">Try again</button></div>';
     });
   }
 }
@@ -841,6 +952,31 @@ function followUpHtml(r) {
   }).join("");
 }
 
+const LV_COLOR = { normal: "#0e8f83", info: "#2f8fd1", attention: "#d24f28", urgent: "#b3182a" };
+
+function changeHtml(ch) {
+  if (!ch) return "";
+  const sizes = (ch.sizes || []).map(s => '<span class="chg-chip" style="--c:' + (s.direction === "larger" ? "#d24f28" : "#0e8f83") + '">' + esc(s.label) + ': ' + s.from_mm + ' → ' + s.to_mm + ' mm (' + (s.percent > 0 ? "+" : "") + s.percent + '%)</span>').join("");
+  const chips = (ch.new || []).map(l => '<span class="chg-chip" style="--c:#d24f28">new: ' + esc(l) + '</span>').join("") +
+    (ch.no_longer_mentioned || []).map(l => '<span class="chg-chip" style="--c:#0e8f83">no longer mentioned: ' + esc(l) + '</span>').join("");
+  return '<div class="chg"><b>↔ Compared with ' + esc(shortDate(ch.since)) + '</b><span>' + esc(ch.headline || "") + '</span>' +
+    ((sizes || chips) ? '<div class="chg-chips">' + sizes + chips + '</div>' : '') + '<small>' + esc(ch.note) + '</small></div>';
+}
+
+function rxHtml(rx) {
+  if (!rx) return "";
+  const head = [rx.prescriber ? "Dr. " + esc(rx.prescriber) : "", rx.date ? esc(rx.date) : "", rx.reason ? "for " + esc(rx.reason) : ""].filter(Boolean).join(" · ");
+  const rows = (rx.medicines || []).map(m => {
+    const bits = [m.strength, m.how_often, m.meal, m.duration_days ? m.duration_days + " day" + (m.duration_days === 1 ? "" : "s") : ""].filter(Boolean).map(esc).join(" · ");
+    return '<div class="rx-line' + (m.check ? " check" : "") + '"><b>' + esc(m.name || "(unclear)") + '</b><span>' + (bits || "details not clear") + '</span>' +
+      (m.check ? '<em>' + (m.missing && m.missing.length ? "couldn't read: " + esc(m.missing.join(", ")) : "low reading confidence") + ' — check against the original</em>' : '') + '</div>';
+  }).join("");
+  if (!head && !rows) return "";
+  return '<div class="rx-card">' + (head ? '<div class="rx-head">' + head + '</div>' : '') + rows +
+    (rx.follow_up ? '<div class="rx-fu">📅 ' + esc(rx.follow_up) + '</div>' : '') +
+    '<small>' + (rx.confirmed ? "Confirmed by you in CuraVault." : "As read by QueroCura — confirm in CuraVault before it's used for reminders.") + '</small></div>';
+}
+
 function renderImaging(I) {
   if (!I || !I.reports.length) {
     return '<div class="empty-state"><img src="../assets/6abe27005847b6683a14deef5164e1c7.png" alt=""><div class="es-title">No imaging reports yet</div><div class="es-sub">Upload an MRI, CT, X-ray or ultrasound <b>report</b> to CuraVault under “Scan / imaging”. QueroCura reads the written report and explains it in plain language.</div><button type="button" class="es-cta" onclick="window.location.href=\'../curavault/\';">Open CuraVault</button></div>';
@@ -856,6 +992,8 @@ function renderImaging(I) {
       '<span class="st" style="--c:' + c + '">' + (OVERALL_WORD[r.overall] || r.overall) + '</span></div>' +
       '<p class="img-sum">' + esc(r.summary) + '</p>' +
       (r.impression_text ? '<p class="img-sum" style="font-size:13px;opacity:.8"><b>Radiologist\'s impression:</b> ' + esc(r.impression_text.slice(0, 380)) + '</p>' : '') +
+      changeHtml(r.change) +
+      (r.scores || []).map(s => '<div class="find"><span class="st" style="--c:' + (LV_COLOR[s.level] || "#6b6885") + '">' + esc(s.system) + '</span><div><b>' + esc(s.label) + '</b><span class="ex">' + esc(s.meaning) + '</span></div></div>').join("") +
       r.key_findings.map(f => {
         const fc = CAT_COLOR[f.category] || "#6b6885";
         const bits = [f.uncertain ? "possible" : "", f.side || "", f.level || "", (f.measurements[0] && f.measurements[0].text) || ""].filter(Boolean);
@@ -895,7 +1033,9 @@ function renderDocs(D, coverage) {
       (i.found.markers ? " · " + i.found.markers + " markers found" : "") + (i.found.medicines ? " · " + i.found.medicines + " medicines found" : "") + (i.unreadable ? " · text hard to read" : "") + '</small></div>' +
       '<div class="doc-tags"><span class="st" style="--c:' + st[1] + '">' + st[0] + '</span>' +
       (i.reading.kind ? '<span class="st" style="--c:#6b6885">' + KIND[i.reading.kind] + (conf != null ? '<span class="conf-bar" style="--c:' + (conf < 0.75 ? "#c98a10" : "#0e8f83") + '"><i style="width:' + Math.round(conf * 100) + '%"></i></span>' : "") + '</span>' : '') +
-      (i.state === "needs_review" ? '<a class="es-cta" style="text-decoration:none" href="../curavault/">Review</a>' : '') + '</div></div>';
+      (i.state === "needs_review" ? '<a class="es-cta" style="text-decoration:none" href="../curavault/">Review</a>' : '') + '</div>' +
+      (i.prescription ? '<div class="doc-extra">' + rxHtml(i.prescription) + '</div>' : '') +
+      (i.tip ? '<div class="doc-extra"><div class="tip-box">📸 ' + esc(i.tip) + '</div></div>' : '') + '</div>';
   }).join("");
   return html;
 }
@@ -923,12 +1063,14 @@ function renderRecords() {
   });
 }
 
-async function loadRecords() {
-  try {
-    const res = await fetch(API_BASE + "/insights/records", { credentials: "include" });
-    qcRecords = res.ok ? await res.json() : null;
-  } catch (e) { qcRecords = null; }
-  renderRecords();
+async function loadRecords(force) {
+  const stale = QC.stale("records");
+  const box = document.getElementById("rec-body");
+  if (stale && stale.ok !== false) { qcRecords = stale; renderRecords(); }
+  else box.innerHTML = QC.skeleton(3, 52);
+  const fresh = await QC.records(force);
+  if (fresh && fresh.ok !== false) { qcRecords = fresh; renderRecords(); }
+  else if (!stale) { qcRecords = null; renderRecords(); }
 }
 
 function setTodayChrome() {
@@ -941,6 +1083,12 @@ document.getElementById("qc-signout-btn").addEventListener("click", async () => 
 });
 
 (async function init() {
+  // Start loading the page's data immediately; the sign-in check below runs alongside it
+  // (an expired session gets a 401 and the redirect below fires), so nothing waits in line.
+  setTodayChrome();
+  initDaySelect();
+  loadInsights(qcDays);
+  loadRecords();
   const [meData, profResult] = await Promise.all([
     fetch(API_BASE + "/auth/me", { credentials: "include" }).then(r => r.json()).catch(() => ({ logged_in: false })),
     fetch(API_BASE + "/profile", { credentials: "include" }).then(r => r.json()).catch(() => null),
@@ -956,13 +1104,7 @@ document.getElementById("qc-signout-btn").addEventListener("click", async () => 
   const initials = name ? name.trim().split(/\s+/).slice(0, 2).map(w => w[0].toUpperCase()).join("") : "?";
   document.getElementById("qc-user-dot").textContent = initials;
   document.getElementById("qc-user-name").textContent = name ? name.split(" ")[0] : "";
-
-  setTodayChrome();
-  initDaySelect();
-  loadInsights(qcDays);
-  loadRecords();
 })();
 </script>
-<script src="../assets/qc-app.js"></script>
 </body>
 </html>
