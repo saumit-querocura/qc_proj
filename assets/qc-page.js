@@ -11,6 +11,7 @@
     var i = document.getElementById("theme-toggle-icon"); if (i) i.innerHTML = dark ? SUN : MOON;
   }
   window.toggleTheme = function () { applyTheme(root.getAttribute("data-theme") !== "dark"); };
+  document.addEventListener("click", function (e) { if (e.target.closest && e.target.closest("[data-theme-toggle]")) window.toggleTheme(); });
   try { if (localStorage.getItem("qc-theme") === "dark") root.setAttribute("data-theme", "dark"); } catch (e) {}
 
   function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
@@ -74,6 +75,7 @@
       var dot = document.getElementById("qc-user-dot"), nm = document.getElementById("qc-user-name");
       if (dot) dot.textContent = name ? name.trim().split(/\s+/).slice(0, 2).map(function (w) { return w[0].toUpperCase(); }).join("") : "?";
       if (nm) nm.textContent = name ? name.split(" ")[0] : "";
+      if (window.QCVerifyBanner) window.QCVerifyBanner(me);
       return me;
     });
     return ready;

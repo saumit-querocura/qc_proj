@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://app.querocura.com; connect-src 'self' https://app.querocura.com; object-src 'none'; base-uri 'self'; form-action 'self' https://app.querocura.com">
+<title>Care teams — QueroCura</title>
+<meta name="robots" content="noindex">
+<meta name="referrer" content="no-referrer">
+<link rel="icon" type="image/x-icon" href="../icons/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://app.querocura.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700;800&family=Manrope:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500;1,9..144,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/qc-base.css">
+<style>
+  .shell { max-width: 880px; }
+  .scopes { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 8px; margin: 10px 0 12px; }
+  .scope { display: flex; gap: 10px; align-items: flex-start; border: 1.5px solid var(--line); border-radius: 14px; padding: 10px 12px; cursor: pointer; font-size: 13.5px; font-weight: 700; }
+  .scope input { margin-top: 3px; accent-color: #0e8f83; } .scope.on { border-color: #0e8f83; background: rgba(14,143,131,.08); }
+  .scope.off { opacity: .5; cursor: default; }
+  .req { border: 1.5px solid rgba(14,143,131,.35); background: linear-gradient(135deg, rgba(14,143,131,.07), rgba(124,111,219,.07)); border-radius: 20px; padding: 18px; margin-bottom: 14px; }
+  .req h3 { margin: 0 0 2px; font-size: 17px; } .req .why { font-size: 14px; margin: 6px 0 4px; font-weight: 600; }
+  .org-ok { color: var(--good); font-size: 12px; font-weight: 800; } .org-no { color: var(--warn); font-size: 12px; font-weight: 800; }
+  .conn { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding: 13px 0; border-bottom: 1px dashed var(--line); font-size: 13.5px; }
+  .conn:last-child { border-bottom: none; } .conn .grow { flex: 1 1 240px; } .conn small { display: block; color: var(--muted); font-weight: 600; margin-top: 3px; }
+  .state { padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; }
+  .state.active { background: rgba(47,143,94,.15); color: #2f8f5e; } .state.expired, .state.revoked { background: rgba(127,127,160,.18); color: var(--muted); }
+  .state.emergency { background: rgba(210,79,40,.15); color: var(--danger); }
+  .code { font: 800 34px 'Space Grotesk', sans-serif; letter-spacing: .18em; text-align: center; padding: 16px; border-radius: 16px; background: rgba(14,143,131,.1); margin: 8px 0 8px; }
+  .tog { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; }
+  .rec { padding: 12px 0; border-bottom: 1px dashed var(--line); font-size: 13.5px; } .rec:last-child { border-bottom: none; } .rec pre { white-space: pre-wrap; font: 600 13.5px 'Manrope', sans-serif; margin: 6px 0 0; }
+  .act { display: flex; gap: 10px; font-size: 13px; padding: 7px 0; border-bottom: 1px dashed var(--line); } .act time { color: var(--muted); font-weight: 600; min-width: 128px; }
+  .act.emg { color: var(--danger); font-weight: 700; }
+  .empty { color: var(--muted); font-size: 13.5px; padding: 6px 0; }
+  .sw { position: relative; width: 50px; height: 28px; flex: 0 0 auto; } .sw input { opacity: 0; width: 100%; height: 100%; position: absolute; inset: 0; margin: 0; cursor: pointer; z-index: 2; }
+  .sw i { position: absolute; inset: 0; border-radius: 99px; background: rgba(127,127,160,.35); transition: background .2s; } .sw i::after { content: ""; position: absolute; top: 3px; left: 3px; width: 22px; height: 22px; border-radius: 50%; background: #fff; transition: transform .2s; }
+  .sw input:checked + i { background: #0e8f83; } .sw input:checked + i::after { transform: translateX(22px); }
+</style>
+<script src="../assets/qc-csp.js"></script>
+</head>
+<body>
+  <div class="topbar">
+    <a class="logo-wrap" href="../">
+      <img src="../assets/d4f7acc01b9438e998c9e7b9676584b0.png" alt="QueroCura">
+      <span class="logo-text"><span class="ink">Quero</span><span class="teal">Cura</span></span>
+    </a>
+    <nav class="tab-nav">
+      <a class="tab-link" href="../symptoms/"><span class="tl-ic">🔍</span>Symptoms</a>
+      <a class="tab-link" href="../vitals/"><span class="tl-ic">❤️</span>Vitals</a>
+      <a class="tab-link" href="../calendar/"><span class="tl-ic">📅</span>Calendar</a>
+      <a class="tab-link" href="../curavault/"><span class="tl-ic">🔒</span>CuraVault</a>
+      <a class="tab-link" href="../dashboard/"><span class="tl-ic">🏠</span>Dashboard</a>
+      <a class="tab-link" href="../insights/"><span class="tl-ic">✨</span>Insights</a>
+      <a class="tab-link" href="../profile/"><span class="tl-ic">👤</span>Profile</a>
+    </nav>
+    <div class="topbar-right">
+      <span class="user-pill" id="qc-user-chip"><span class="up-dot" id="qc-user-dot">?</span><span id="qc-user-name"></span></span>
+      <button class="theme-toggle" data-theme-toggle aria-label="Toggle dark mode"><span id="theme-toggle-icon"></span></button>
+      <button class="signout-btn" id="qc-signout-btn">Sign out</button>
+    </div>
+  </div>
+
+  <div class="shell">
+    <span class="page-eyebrow">Care teams</span>
+    <h1 class="page-title">Your hospitals &amp; clinics, on your terms</h1>
+    <p class="page-sub">A hospital can only see your QueroCura data if you say yes. You choose what they see and for how long, and you can switch it off in one tap. Everything they do is listed below.</p>
+
+    <div id="waiting"></div>
+
+    <div class="card" id="connected-card">
+      <h2>Connected care teams</h2>
+      <p class="sub">Who can see your information right now, and what happened before.</p>
+      <div id="connected"><div class="empty">Loading...</div></div>
+    </div>
+
+    <div class="card">
+      <h2>At the front desk? Share a one-time code</h2>
+      <p class="sub">Pick what to share, make a code, and read it out or show it to the hospital staff. It works once and stops working after an hour.</p>
+      <div class="grid2">
+        <div class="field"><label for="code-profile">Whose information</label><select class="input" id="code-profile"></select></div>
+        <div class="field"><label for="code-days">Keep access for</label>
+          <select class="input" id="code-days"><option value="1">1 day</option><option value="3">3 days</option><option value="7" selected>7 days</option><option value="30">30 days</option><option value="90">90 days</option></select></div>
+      </div>
+      <div class="scopes" id="code-scopes"></div>
+      <label class="scope" id="code-write-wrap"><input type="checkbox" id="code-write"> <span>Let them add notes, prescriptions and results to my record</span></label>
+      <div class="row" style="margin-top:12px"><button class="btn btn-primary" id="make-code">Make a code</button></div>
+      <div id="code-out" hidden>
+        <div class="code" id="code-text"></div>
+        <div class="hint">Valid for 1 hour, once. Share it only with the person helping you.</div>
+      </div>
+      <div class="msg" id="code-msg" role="status"></div>
+    </div>
+
+    <div class="card">
+      <h2>Emergency access</h2>
+      <div class="tog">
+        <p class="sub" style="margin:0;flex:1 1 360px">If you can't speak for yourself, a verified hospital doctor may open a <b>2-hour, read-only</b> view of your allergies, conditions and medicines. They must write why, you're told straight away, and it's logged. Off unless you turn it on.</p>
+        <label class="sw"><input type="checkbox" id="emergency" aria-label="Allow emergency access"><i></i></label>
+      </div>
+      <div class="msg" id="em-msg" role="status"></div>
+    </div>
+
+    <div class="card">
+      <h2>Records added by your care teams</h2>
+      <p class="sub">Notes, results and vitals a hospital added to your account, only where you allowed it.</p>
+      <div id="records"><div class="empty">Loading...</div></div>
+    </div>
+
+    <div class="card">
+      <h2>Who looked at your record</h2>
+      <p class="sub">A permanent log you can't be locked out of: every request, approval, view and emergency use.</p>
+      <div id="log"><div class="empty">Loading...</div></div>
+    </div>
+  </div>
+  <script src="../assets/qc-app.js"></script>
+  <script src="../assets/qc-page.js"></script>
+  <script src="../assets/js/care.js"></script>
+</body>
+</html>

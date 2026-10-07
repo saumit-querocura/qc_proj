@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https://app.querocura.com https://*.producthunt.com https://api.producthunt.com; connect-src 'self' https://app.querocura.com https://cloudflareinsights.com; media-src 'self'; frame-src 'none'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self' https://app.querocura.com mailto:">
 <title>What Happens to Your Health Data in an Emergency? — QueroCura</title>
 <meta name="description" content="When you can't speak for yourself in an emergency, your medical history either disappears into paperwork — or it becomes instantly, securely accessible. Here's how QueroCura's Emergency Glass Door and CuraVault change that.">
 <meta property="og:type" content="article">
@@ -93,6 +94,8 @@
   html[data-theme="dark"] .icon-chip { background: #18162e; color: #cfccdf; border-color: rgba(255,255,255,0.12); }
   html[data-theme="dark"] .pull-quote { color: #f2f0f8; }
 </style>
+<script src="../../assets/qc-csp.js"></script>
+<script src="../../assets/js/blog-health-data-in-an-emergency-h.js"></script>
 </head>
 <body>
 <div style="width: 100%; min-height: 100vh; background: #f6f5f1; overflow: hidden;">
@@ -113,23 +116,23 @@
       <a class="navlink" href="../../#contact" style="color: #100e2a; font-size: 15px; font-weight: 600;">Contact</a>
     </div>
     <div style="display: flex; align-items: center; gap: 10px;">
-      <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode" id="theme-toggle-btn">
+      <button class="theme-toggle" data-h-click="h1" aria-label="Toggle dark mode" id="theme-toggle-btn">
         <span id="theme-toggle-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z" stroke="#100e2a" stroke-width="1.7" stroke-linejoin="round"/></svg></span>
       </button>
       <a href="../../#contact" class="cta nav-cta-desktop" style="background: #0e8f83; color: #fff; font-size: 14px; font-weight: 700; padding: 11px 22px; border-radius: 999px;">Get in touch</a>
-      <button class="nav-hamburger" onclick="toggleMobileMenu()" aria-label="Open menu" style="align-items:center; justify-content:center; width:40px; height:40px; border-radius:10px; border:1.5px solid rgba(16,14,42,0.14); background:#fff; cursor:pointer; padding:0;">
+      <button class="nav-hamburger" data-h-click="h2" aria-label="Open menu" style="align-items:center; justify-content:center; width:40px; height:40px; border-radius:10px; border:1.5px solid rgba(16,14,42,0.14); background:#fff; cursor:pointer; padding:0;">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4 6h16M4 12h16M4 18h16" stroke="#100e2a" stroke-width="2" stroke-linecap="round"/></svg>
       </button>
     </div>
   </div>
   <div id="mobile-menu" style="display:none; position: sticky; top: 73px; z-index: 29; width: 100%; box-sizing: border-box; background: #f6f5f1; border-bottom: 1px solid rgba(16,14,42,0.08); box-shadow: 0 14px 24px -18px rgba(16,14,42,0.25);">
     <div style="display:flex; flex-direction:column; padding: 8px clamp(16px,4vw,48px) 20px;">
-      <a onclick="closeMobileMenu()" href="../../#about" style="color:#100e2a; font-size:16px; font-weight:600; padding:12px 0; border-bottom:1px solid rgba(16,14,42,0.08);">About</a>
-      <a onclick="closeMobileMenu()" href="../../#services" style="color:#100e2a; font-size:16px; font-weight:600; padding:12px 0; border-bottom:1px solid rgba(16,14,42,0.08);">Our platform</a>
-      <a onclick="closeMobileMenu()" href="../../#team" style="color:#100e2a; font-size:16px; font-weight:600; padding:12px 0; border-bottom:1px solid rgba(16,14,42,0.08);">Our team</a>
-      <a onclick="closeMobileMenu()" href="../" style="color:#0e8f83; font-size:16px; font-weight:700; padding:12px 0; border-bottom:1px solid rgba(16,14,42,0.08);">Blog</a>
-      <a onclick="closeMobileMenu()" href="../../#contact" style="color:#100e2a; font-size:16px; font-weight:600; padding:12px 0;">Contact</a>
-      <a onclick="closeMobileMenu()" href="../../#contact" class="cta" style="margin-top:14px; text-align:center; background: #0e8f83; color: #fff; font-size: 15px; font-weight: 700; padding: 13px 22px; border-radius: 999px;">Get in touch</a>
+      <a data-h-click="h3" href="../../#about" style="color:#100e2a; font-size:16px; font-weight:600; padding:12px 0; border-bottom:1px solid rgba(16,14,42,0.08);">About</a>
+      <a data-h-click="h4" href="../../#services" style="color:#100e2a; font-size:16px; font-weight:600; padding:12px 0; border-bottom:1px solid rgba(16,14,42,0.08);">Our platform</a>
+      <a data-h-click="h5" href="../../#team" style="color:#100e2a; font-size:16px; font-weight:600; padding:12px 0; border-bottom:1px solid rgba(16,14,42,0.08);">Our team</a>
+      <a data-h-click="h6" href="../" style="color:#0e8f83; font-size:16px; font-weight:700; padding:12px 0; border-bottom:1px solid rgba(16,14,42,0.08);">Blog</a>
+      <a data-h-click="h7" href="../../#contact" style="color:#100e2a; font-size:16px; font-weight:600; padding:12px 0;">Contact</a>
+      <a data-h-click="h8" href="../../#contact" class="cta" style="margin-top:14px; text-align:center; background: #0e8f83; color: #fff; font-size: 15px; font-weight: 700; padding: 13px 22px; border-radius: 999px;">Get in touch</a>
     </div>
   </div>
 
@@ -234,89 +237,7 @@
   </div>
 
 </div>
-<script>
-function toggleMobileMenu() {
-  const m = document.getElementById('mobile-menu');
-  m.style.display = (m.style.display === 'none' || !m.style.display) ? 'block' : 'none';
-}
-function closeMobileMenu() {
-  document.getElementById('mobile-menu').style.display = 'none';
-}
-
-// ---- Dark mode ----
-(function () {
-  var STORAGE_KEY = 'qc-theme';
-  var root = document.documentElement;
-
-  function darkenStyle(style) {
-    return style
-      .replace(/background(-color)?:\s*#f6f5f1/gi, 'background$1: #0d0c1f')
-      .replace(/background(-color)?:\s*#fff(?:fff)?(?![0-9a-f])/gi, 'background$1: #18162e')
-      .replace(/background(-color)?:\s*#ebe9e2/gi, 'background$1: #221f3d')
-      .replace(/background(-color)?:\s*#e6f6f4/gi, 'background$1: rgba(14,143,131,0.18)')
-      .replace(/background(-color)?:\s*#fdece7/gi, 'background$1: rgba(240,118,90,0.16)')
-      .replace(/background(-color)?:\s*#eae8fb/gi, 'background$1: rgba(124,111,219,0.18)')
-      .replace(/background(-color)?:\s*#e4f1fb/gi, 'background$1: rgba(47,143,209,0.16)')
-      .replace(/background(-color)?:\s*rgba\(246,\s*245,\s*241,/gi, 'background$1: rgba(13,12,31,')
-      .replace(/color:\s*#100e2a/gi, 'color: #f2f0f8')
-      .replace(/color:\s*#46435f/gi, 'color: #cfccdf')
-      .replace(/color:\s*#34324a/gi, 'color: #d7d4e8')
-      .replace(/color:\s*#6b6885/gi, 'color: #b7b3cc')
-      .replace(/color:\s*#6b6b6b/gi, 'color: #b3b0c4')
-      .replace(/color:\s*#8a879c/gi, 'color: #a9a6bd')
-      .replace(/color:\s*#a9a6bb/gi, 'color: #a9a6bd')
-      .replace(/color:\s*#0e8f83/gi, 'color: #7ee0d4')
-      .replace(/rgba\(16,\s*14,\s*42,/gi, 'rgba(255,255,255,');
-  }
-
-  var SUN_ICON = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="4.2" stroke="#f2f0f8" stroke-width="1.7"/><path d="M12 3v2.2M12 18.8V21M21 12h-2.2M5.2 12H3M18.4 5.6l-1.5 1.5M7.1 16.9l-1.5 1.5M18.4 18.4l-1.5-1.5M7.1 7.1L5.6 5.6" stroke="#f2f0f8" stroke-width="1.7" stroke-linecap="round"/></svg>';
-  var MOON_ICON = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z" stroke="#100e2a" stroke-width="1.7" stroke-linejoin="round"/></svg>';
-
-  function applyTheme(dark) {
-    document.querySelectorAll('[style]').forEach(function (el) {
-      if (el.dataset.origStyle === undefined) {
-        el.dataset.origStyle = el.getAttribute('style') || '';
-      }
-      el.setAttribute('style', dark ? darkenStyle(el.dataset.origStyle) : el.dataset.origStyle);
-    });
-    root.setAttribute('data-theme', dark ? 'dark' : 'light');
-    try { localStorage.setItem(STORAGE_KEY, dark ? 'dark' : 'light'); } catch (e) {}
-    document.querySelectorAll('#theme-toggle-icon').forEach(function (el) {
-      el.innerHTML = dark ? SUN_ICON : MOON_ICON;
-    });
-  }
-
-  window.toggleTheme = function () {
-    applyTheme(root.getAttribute('data-theme') !== 'dark');
-  };
-
-  var saved = null;
-  try { saved = localStorage.getItem(STORAGE_KEY); } catch (e) {}
-  // Light mode is the default regardless of system preference; dark mode only
-  // activates once someone explicitly picks it via the toggle (and is then
-  // remembered for their next visit).
-  var initialDark = saved === 'dark';
-  if (initialDark) applyTheme(true);
-})();
-
-// Scroll-reveal
-(function () {
-  var targets = document.querySelectorAll('.reveal');
-  if (!('IntersectionObserver' in window)) {
-    targets.forEach(function (el) { el.classList.add('visible'); });
-    return;
-  }
-  var io = new IntersectionObserver(function (entries) {
-    entries.forEach(function (entry) {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
-        io.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
-  targets.forEach(function (el) { io.observe(el); });
-})();
-</script>
+<script src="../../assets/js/blog-health-data-in-an-emergency-1.js"></script>
 <!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "cf10cc866a9f4ffeb50a6ce35a72e773"}'></script><!-- End Cloudflare Web Analytics -->
 </body>
 </html>

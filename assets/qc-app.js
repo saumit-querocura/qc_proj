@@ -574,6 +574,16 @@
     injectFamilyTab();
     syncActing();
     buildBell();
+    // Gentle nudges: confirm your e-mail, and hospital access requests waiting for your answer.
+    QC.me().then(function (me) {
+      if (!me || !me.logged_in) return;
+      if (window.QCVerifyBanner) window.QCVerifyBanner(me);
+      getJSON("/care/overview").then(function (d) {
+        var n = d && d.ok && d.requests ? d.requests.length : 0;
+        var link = n ? document.querySelector('.qc-ribbon a[href$="care/"]') : null;
+        if (link) link.textContent = "\ud83c\udfe5 Care teams (" + n + " waiting)";
+      });
+    });
     QC.avatar.sync();
     // Warm the next page on hover/touch so navigation feels instant.
     try {

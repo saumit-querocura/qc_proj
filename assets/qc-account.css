@@ -1,0 +1,11 @@
+/* Small, centred pages: forgot password, reset password, verify e-mail. */
+.solo { min-height: calc(100vh - 70px); display: flex; align-items: center; justify-content: center; padding: 28px 16px 70px; }
+.solo-card { width: min(460px, 100%); padding: 32px 28px; text-align: left; box-shadow: 0 34px 80px -34px rgba(16, 14, 42, .35); }
+.solo-card .page-title { font-size: 26px; }
+.solo-emoji { width: 58px; height: 58px; border-radius: 18px; display: flex; align-items: center; justify-content: center; font-size: 28px; margin-bottom: 14px; background: linear-gradient(135deg, rgba(14, 143, 131, .16), rgba(124, 111, 219, .16)); }
+.dev-note { margin-top: 14px; padding: 12px 14px; border-radius: 12px; background: rgba(201, 138, 16, .12); color: var(--warn); font-size: 12.5px; font-weight: 700; word-break: break-all; }
+.meter { height: 6px; border-radius: 99px; background: rgba(127, 127, 160, .2); overflow: hidden; margin-top: 8px; }
+.meter > i { display: block; height: 100%; width: 0; border-radius: 99px; background: var(--danger); transition: width .25s, background .25s; }
+.verify-banner { display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; padding: 9px 16px; background: rgba(201, 138, 16, .14); color: var(--ink); font-size: 13px; font-weight: 700; border-bottom: 1px solid rgba(201, 138, 16, .3); }
+.verify-banner button { border: none; background: var(--ink); color: var(--sand); border-radius: 999px; padding: 6px 14px; font: 800 12px 'Manrope', sans-serif; cursor: pointer; }
+.verify-banner .x { background: transparent; color: var(--muted); padding: 4px 8px; font-size: 14px; }

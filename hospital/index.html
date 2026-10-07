@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://app.querocura.com; connect-src 'self' https://app.querocura.com; object-src 'none'; base-uri 'self'; form-action 'self'">
+<title>QueroCura for Hospitals</title>
+<meta name="description" content="Connect your hospital or clinic to QueroCura. See what patients choose to share, record visits and results, and keep every access audited.">
+<meta name="referrer" content="no-referrer">
+<link rel="icon" type="image/x-icon" href="../icons/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://app.querocura.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700;800&family=Manrope:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500;1,9..144,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/qc-base.css">
+<link rel="stylesheet" href="../assets/qc-hospital.css">
+<script src="../assets/qc-csp.js"></script>
+</head>
+<body class="hp">
+  <header class="hp-top">
+    <a class="logo-wrap" href="../">
+      <img src="../assets/d4f7acc01b9438e998c9e7b9676584b0.png" alt="QueroCura">
+      <span class="logo-text"><span class="ink">Quero</span><span class="teal">Cura</span> <span class="hp-tag">for Hospitals</span></span>
+    </a>
+    <nav class="hp-nav" id="pub-nav">
+      <a href="#how">How it works</a><a href="#safety">Safety</a><a href="#faq">FAQ</a>
+      <a class="btn btn-sm btn-primary" href="#apply" id="nav-apply">Apply</a>
+      <a class="btn btn-sm" href="#signin" id="nav-signin">Sign in</a>
+    </nav>
+    <div class="hp-nav" id="app-nav" hidden>
+      <span class="hp-who" id="who"></span>
+      <span class="hp-idle" id="idle" title="You're signed out automatically after 20 minutes without activity"></span>
+      <button class="btn btn-sm" id="signout" type="button">Sign out</button>
+    </div>
+    <button class="theme-toggle" data-theme-toggle aria-label="Toggle dark mode"><span id="theme-toggle-icon"></span></button>
+  </header>
+
+  <!-- ===================== public: landing, apply, sign in ===================== -->
+  <main id="public">
+    <section class="hp-hero">
+      <div class="hp-orb o1"></div><div class="hp-orb o2"></div>
+      <div class="hp-wrap">
+        <span class="hp-eyebrow">Hospital onboarding</span>
+        <h1>Know your patient before they sit down.</h1>
+        <p class="lead">QueroCura for Hospitals connects your clinic, hospital or lab to the people you treat, with their permission, every time. See the vitals, medicines and results they choose to share. Write visits and results back to their record. No more retyping histories, no more lost paper.</p>
+        <div class="hp-cta"><a class="btn btn-primary" href="#apply">Apply to onboard your hospital</a><a class="btn hp-ghost" href="#signin">I already have an account</a></div>
+        <div class="hp-stats">
+          <div><b>Consent first</b><span>Nothing is visible until the patient says yes</span></div>
+          <div><b>Two-step sign-in</b><span>Authenticator app for every staff member</span></div>
+          <div><b>Every view logged</b><span>A tamper-evident record patients can read</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="hp-sec" id="how">
+      <div class="hp-wrap">
+        <span class="hp-kicker">How it works</span>
+        <h2>From application to first patient in four steps</h2>
+        <div class="hp-steps">
+          <div class="hp-step"><i>1</i><h3>Apply</h3><p>Tell us who you are and give a registration or licence number. It takes five minutes. You can sign in straight away to finish setting up.</p></div>
+          <div class="hp-step"><i>2</i><h3>We verify you</h3><p>Our team checks every organisation before it can reach any patient. You'll get an e-mail the moment you're approved.</p></div>
+          <div class="hp-step"><i>3</i><h3>Connect with consent</h3><p>The patient reads a one-time code at your front desk, or approves a request you send. They pick what you can see and for how long.</p></div>
+          <div class="hp-step"><i>4</i><h3>Care together</h3><p>Open the chart, add notes, prescriptions and vitals back to the patient's account, and invite your whole team with the right role for each person.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="hp-sec alt" id="safety">
+      <div class="hp-wrap">
+        <span class="hp-kicker">Built to be trusted</span>
+        <h2>Designed so patients can say yes</h2>
+        <div class="hp-grid">
+          <div class="hp-card"><h3>The patient decides</h3><p>Each connection has chosen sections, an end date and an off switch. Everything ends by itself, and patients can end it sooner.</p></div>
+          <div class="hp-card"><h3>Only what's needed</h3><p>Roles keep people to their job: doctors read and write, nurses add vitals and notes, front desk connects patients but sees no clinical data.</p></div>
+          <div class="hp-card"><h3>Two-step sign-in</h3><p>Staff sign in with a password and an authenticator app. Sessions end after 20 idle minutes and can be signed out everywhere in one tap.</p></div>
+          <div class="hp-card"><h3>A log nobody can edit</h3><p>Every request, view and record is written to a hash-chained audit log. The patient sees it too.</p></div>
+          <div class="hp-card"><h3>Emergency, carefully</h3><p>If a patient switched it on, a verified doctor can open a 2-hour, read-only essentials view with a written reason. The patient is told straight away.</p></div>
+          <div class="hp-card"><h3>Encrypted records</h3><p>Anything you write to a patient's account is encrypted at rest and belongs to them, including the right to delete it.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="hp-sec" id="join">
+      <div class="hp-wrap hp-two">
+        <div class="hp-panel" id="apply">
+          <h2>Apply to onboard</h2>
+          <p class="sub">We review every application. Use a work e-mail you can receive mail at.</p>
+          <form id="apply-form" novalidate autocomplete="on">
+            <div class="grid2">
+              <div class="field"><label for="a-org">Organisation name *</label><input class="input" id="a-org" maxlength="160" required></div>
+              <div class="field"><label for="a-type">Type</label><select class="input" id="a-type"></select></div>
+              <div class="field"><label for="a-reg">Registration / licence no. *</label><input class="input" id="a-reg" maxlength="80" required></div>
+              <div class="field"><label for="a-abdm">ABDM facility ID (if any)</label><input class="input" id="a-abdm" maxlength="60"></div>
+              <div class="field"><label for="a-city">City</label><input class="input" id="a-city" maxlength="80"></div>
+              <div class="field"><label for="a-state">State</label><input class="input" id="a-state" maxlength="80"></div>
+              <div class="field"><label for="a-phone">Phone</label><input class="input" id="a-phone" type="tel" maxlength="30"></div>
+              <div class="field"><label for="a-web">Website</label><input class="input" id="a-web" maxlength="200" placeholder="https://"></div>
+            </div>
+            <hr class="hp-hr">
+            <div class="grid2">
+              <div class="field"><label for="a-name">Your name *</label><input class="input" id="a-name" maxlength="120" autocomplete="name" required></div>
+              <div class="field"><label for="a-email">Work e-mail *</label><input class="input" id="a-email" type="email" maxlength="254" autocomplete="email" required></div>
+              <div class="field"><label for="a-pw">Password *</label><input class="input" id="a-pw" type="password" minlength="8" autocomplete="new-password" required><span class="hint">8+ characters. Not your name or a common password.</span></div>
+              <div class="field"><label for="a-pw2">Repeat password *</label><input class="input" id="a-pw2" type="password" autocomplete="new-password" required></div>
+            </div>
+            <div class="hp-hidden" aria-hidden="true"><label for="a-site">Leave this empty</label><input id="a-site" tabindex="-1" autocomplete="off"></div>
+            <label class="hp-check"><input type="checkbox" id="a-clin"> <span>I'm also a clinician who will treat patients here</span></label>
+            <label class="hp-check"><input type="checkbox" id="a-terms"> <span>I'm authorised to apply for this organisation and agree to handle patient information only for care the patient has agreed to. *</span></label>
+            <button class="btn btn-primary" id="apply-go" type="submit">Submit my application</button>
+            <div class="msg" id="apply-msg" role="status"></div>
+          </form>
+        </div>
+
+        <div class="hp-panel" id="signin">
+          <h2 id="signin-title">Hospital sign in</h2>
+          <p class="sub" id="signin-sub">For approved and pending organisations.</p>
+          <form id="signin-form" novalidate>
+            <div class="field"><label for="s-email">Work e-mail</label><input class="input" id="s-email" type="email" autocomplete="username" required></div>
+            <div class="field"><label for="s-pw">Password</label><input class="input" id="s-pw" type="password" autocomplete="current-password" required></div>
+            <div class="field" id="s-code-wrap" hidden><label for="s-code">6-digit code from your authenticator (or a recovery code)</label><input class="input" id="s-code" inputmode="numeric" autocomplete="one-time-code" maxlength="20"></div>
+            <button class="btn btn-primary" id="signin-go" type="submit">Sign in</button>
+            <div class="msg" id="signin-msg" role="status"></div>
+            <p class="hint"><a href="#forgot" id="forgot-link">Forgot your password?</a></p>
+          </form>
+          <form id="forgot-form" hidden novalidate>
+            <div class="field"><label for="f-email">Work e-mail</label><input class="input" id="f-email" type="email" required></div>
+            <button class="btn btn-primary" type="submit">Send reset link</button>
+            <button class="btn btn-ghost" id="forgot-back" type="button">Back</button>
+            <div class="msg" id="forgot-msg" role="status"></div>
+          </form>
+          <form id="invite-form" hidden novalidate>
+            <p class="sub" id="invite-who"></p>
+            <div class="field"><label for="i-pw">Create a password</label><input class="input" id="i-pw" type="password" minlength="8" autocomplete="new-password" required></div>
+            <button class="btn btn-primary" type="submit">Join the team</button>
+            <div class="msg" id="invite-msg" role="status"></div>
+          </form>
+          <form id="reset-form" hidden novalidate>
+            <div class="field"><label for="r-pw">New password</label><input class="input" id="r-pw" type="password" minlength="8" autocomplete="new-password" required></div>
+            <button class="btn btn-primary" type="submit">Save new password</button>
+            <div class="msg" id="reset-msg" role="status"></div>
+          </form>
+          <p class="hint" style="margin-top:16px">Are you a patient? <a href="../login/">Sign in to QueroCura</a> and open <b>Care teams</b>.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="hp-sec alt" id="faq">
+      <div class="hp-wrap narrow">
+        <span class="hp-kicker">Questions</span>
+        <h2>Good things to ask</h2>
+        <details><summary>Can we see a patient's data without asking them?</summary><p>No. The only exception is emergency access, which exists only for patients who turned it on, shows a short essentials view for two hours, needs a written reason from a doctor, and tells the patient immediately.</p></details>
+        <details><summary>What does it cost?</summary><p>We're onboarding our first hospitals now. Get in touch from the contact section on our home page and we'll talk.</p></details>
+        <details><summary>What can patients share with us?</summary><p>They pick from: basics and allergies, vitals, medicines, lab results, scan reports and recent symptom checks. Only results the patient confirmed are shown.</p></details>
+        <details><summary>Do you replace our hospital system?</summary><p>No. This sits next to it. You see what the patient shares and can write notes, prescriptions and vitals back to them.</p></details>
+        <details><summary>Who can see what at our hospital?</summary><p>Administrators manage the team. Doctors read and write. Nurses read and add vitals and notes. Front-desk staff connect patients but see no clinical data.</p></details>
+      </div>
+    </section>
+  </main>
+
+  <!-- ===================== signed in ===================== -->
+  <main id="portal" hidden>
+    <div class="hp-wrap">
+      <div id="banner"></div>
+      <div id="mfa-setup" hidden></div>
+      <div id="workspace" hidden>
+        <div class="hp-head">
+          <div><h1 id="org-name"></h1><div class="hint" id="org-meta"></div></div>
+          <div id="org-status"></div>
+        </div>
+        <nav class="hp-tabs" id="tabs" role="tablist"></nav>
+        <section id="tab-patients" class="tab"></section>
+        <section id="tab-connect" class="tab" hidden></section>
+        <section id="tab-team" class="tab" hidden></section>
+        <section id="tab-activity" class="tab" hidden></section>
+        <section id="tab-security" class="tab" hidden></section>
+      </div>
+    </div>
+  </main>
+
+  <div class="modal-back" id="chart-modal"><div class="modal wide" role="dialog" aria-modal="true" aria-labelledby="chart-title"><button class="modal-x" data-close="chart-modal" type="button" aria-label="Close">✕</button><div id="chart-body"></div></div></div>
+  <div class="modal-back" id="record-modal"><div class="modal" role="dialog" aria-modal="true"><button class="modal-x" data-close="record-modal" type="button" aria-label="Close">✕</button><div id="record-body"></div></div></div>
+
+  <footer class="hp-foot"><div class="hp-wrap">© 2026 QueroCura · <a href="../">Home</a> · <a href="../register/">For patients</a> · Patient information is shared only with the patient's consent.</div></footer>
+
+  <script src="../assets/qc-page.js"></script>
+  <script src="../assets/js/hospital.js"></script>
+</body>
+</html>

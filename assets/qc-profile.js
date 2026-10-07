@@ -92,7 +92,7 @@
     return '<div class="pill-row" role="radiogroup">' + opts.map(function (v) {
       var label = (labels && labels[v]) || (v.charAt(0).toUpperCase() + v.slice(1));
       var on = ctx.state[cat] === v;
-      return '<span class="pill' + (on ? ' sel' : '') + '" role="radio" aria-checked="' + on + '" tabindex="0" data-cat="' + cat + '" data-v="' + esc(v) + '" onclick="QCProfile.pick(this)" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();QCProfile.pick(this)}">' + esc(label) + '</span>';
+      return '<span class="pill' + (on ? ' sel' : '') + '" role="radio" aria-checked="' + on + '" tabindex="0" data-cat="' + cat + '" data-v="' + esc(v) + '" data-h-click="qcpPick" data-h-keydown="qcpPickKey">' + esc(label) + '</span>';
     }).join("") + '</div>';
   };
   P.pick = function (el) {
@@ -135,21 +135,21 @@
     var cur = ctx.state[cat] || [];
     var searchable = opt.search !== false && items.length > 14;
     var html = '';
-    if (searchable) html += '<input type="search" class="qcp-search" placeholder="Search ' + esc(opt.noun || "list") + '…" aria-label="Search" oninput="QCProfile.filter(this)">';
+    if (searchable) html += '<input type="search" class="qcp-search" placeholder="Search ' + esc(opt.noun || "list") + '…" aria-label="Search" data-h-input="qcpFilter">';
     html += '<div class="chip-cloud" data-cloud="' + cat + '">';
     items.forEach(function (item) {
       if (item === "None") {
-        html += '<span class="chip none-chip' + (cur.length === 0 ? ' sel' : '') + '" data-cat="' + cat + '" data-v="__none__" onclick="QCProfile.toggle(this)">None</span>';
+        html += '<span class="chip none-chip' + (cur.length === 0 ? ' sel' : '') + '" data-cat="' + cat + '" data-v="__none__" data-h-click="qcpToggle">None</span>';
       } else {
-        html += '<span class="chip' + (cur.indexOf(item) >= 0 ? ' sel' : '') + '" data-cat="' + cat + '" data-v="' + esc(item) + '" onclick="QCProfile.toggle(this)">' + esc(item) + '</span>';
+        html += '<span class="chip' + (cur.indexOf(item) >= 0 ? ' sel' : '') + '" data-cat="' + cat + '" data-v="' + esc(item) + '" data-h-click="qcpToggle">' + esc(item) + '</span>';
       }
     });
     cur.filter(function (v) { return items.indexOf(v) < 0; }).forEach(function (v) {
-      html += '<span class="chip sel custom-chip" data-cat="' + cat + '" data-v="' + esc(v) + '" onclick="QCProfile.toggle(this)">' + esc(v) + ' ×</span>';
+      html += '<span class="chip sel custom-chip" data-cat="' + cat + '" data-v="' + esc(v) + '" data-h-click="qcpToggle">' + esc(v) + ' ×</span>';
     });
     html += '</div><div class="qcp-add"><input type="text" class="extra-input" data-cat="' + cat + '" placeholder="' + esc(placeholder || "Add your own — then press Enter") + '" ' +
-      'onkeydown="if(event.key===\'Enter\'){event.preventDefault();QCProfile.add(\'' + cat + '\',this)}">' +
-      '<button type="button" class="qcp-add-btn" onclick="QCProfile.add(\'' + cat + '\',this.previousElementSibling)">+ Add</button></div>';
+      'data-cat="' + cat + '" data-h-keydown="qcpAddKey">' +
+      '<button type="button" class="qcp-add-btn" data-cat="' + cat + '" data-h-click="qcpAddBtn">+ Add</button></div>';
     return html;
   };
   P.filter = function (input) {
@@ -202,8 +202,8 @@
     var st = ctx.state;
     if (!P.pregnancyApplicable(st)) return "";
     return '<div class="sec-label">Currently pregnant?</div><div class="pill-row">' +
-      '<span class="pill' + (st.pregnant ? ' sel' : '') + '" tabindex="0" onclick="QCProfile.setPreg(true)">🤰 Yes</span>' +
-      '<span class="pill' + (!st.pregnant ? ' sel' : '') + '" tabindex="0" onclick="QCProfile.setPreg(false)">No</span></div>';
+      '<span class="pill' + (st.pregnant ? ' sel' : '') + '" tabindex="0" data-h-click="qcpPregYes">🤰 Yes</span>' +
+      '<span class="pill' + (!st.pregnant ? ' sel' : '') + '" tabindex="0" data-h-click="qcpPregNo">No</span></div>';
   };
   P.setPreg = function (v) { ctx.state.pregnant = !!v; changed(); ctx.rerender([]); };
 
@@ -247,4 +247,17 @@
     'html[data-theme="dark"] .qcp-search{background:#100e2a;color:#f2f0f8;border-color:rgba(255,255,255,.16)}' +
     'html[data-theme="dark"] .qcp-add-btn{background:#7ee0d4;color:#100e2a}';
   var st = document.createElement("style"); st.textContent = css; document.head.appendChild(st);
+})();
+
+
+(function () {
+  var H = (window.QCH = window.QCH || {});
+  H.qcpPick = function () { QCProfile.pick(this); };
+  H.qcpPickKey = function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); QCProfile.pick(this); } };
+  H.qcpFilter = function () { QCProfile.filter(this); };
+  H.qcpToggle = function () { QCProfile.toggle(this); };
+  H.qcpAddKey = function (e) { if (e.key === 'Enter') { e.preventDefault(); QCProfile.add(this.dataset.cat, this); } };
+  H.qcpAddBtn = function () { QCProfile.add(this.dataset.cat, this.previousElementSibling); };
+  H.qcpPregYes = function () { QCProfile.setPreg(true); };
+  H.qcpPregNo = function () { QCProfile.setPreg(false); };
 })();

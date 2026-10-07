@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https://app.querocura.com; connect-src 'self' https://app.querocura.com; object-src 'none'; base-uri 'self'; form-action 'self'">
+<title>Choose a new password — QueroCura</title>
+<meta name="robots" content="noindex">
+<meta name="referrer" content="no-referrer">
+<link rel="icon" type="image/x-icon" href="../icons/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700;800&family=Manrope:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/qc-base.css">
+<link rel="stylesheet" href="../assets/qc-account.css">
+<script src="../assets/qc-csp.js"></script>
+</head>
+<body>
+  <div class="topbar">
+    <a class="logo-wrap" href="../">
+      <img src="../assets/d4f7acc01b9438e998c9e7b9676584b0.png" alt="QueroCura">
+      <span class="logo-text"><span class="ink">Quero</span><span class="teal">Cura</span></span>
+    </a>
+  </div>
+
+  <main class="solo">
+    <div class="card solo-card">
+      <div class="solo-emoji" aria-hidden="true">🔐</div>
+      <h1 class="page-title">Choose a new password</h1>
+      <p class="page-sub" id="sub">Pick something you don't use anywhere else. After this, every device that was signed in will be signed out.</p>
+      <form id="reset-form" novalidate>
+        <div class="field"><label for="pw">New password</label><input class="input" id="pw" type="password" autocomplete="new-password" minlength="8" required>
+          <div class="meter" aria-hidden="true"><i id="meter"></i></div><span class="hint" id="strength">At least 8 characters. A few random words works well.</span></div>
+        <div class="field"><label for="pw2">Type it again</label><input class="input" id="pw2" type="password" autocomplete="new-password" required></div>
+        <button class="btn btn-primary" id="go" type="submit">Save new password</button>
+        <div class="msg" id="msg" role="status"></div>
+      </form>
+      <div id="done" hidden><div class="msg ok">Your password is updated.</div><p style="margin-top:14px"><a class="btn btn-primary" href="../login/">Sign in</a></p></div>
+      <p class="hint" style="margin-top:18px" id="again" hidden><a href="../forgot/">Ask for a new link</a></p>
+    </div>
+  </main>
+  <script src="../assets/qc-page.js"></script>
+  <script src="../assets/js/reset.js"></script>
+</body>
+</html>
