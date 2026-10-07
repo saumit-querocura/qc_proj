@@ -173,7 +173,7 @@ function renderNextUp() {
     (prep.length ? '<div class="nu-prep"><div class="nu-prep-bar"><i style="width:' + Math.round(done / prep.length * 100) + '%"></i></div><small>' + done + ' of ' + prep.length + ' prep items ready</small></div>' : '') +
     '<div class="nu-actions"><button class="nu-btn" id="nu-open">Details &amp; checklist</button>' +
     ((!next.ev.recurrence || next.ev.recurrence === "none") ? '<button class="nu-btn" id="nu-done">✓ Mark done</button>' : '') +
-    '<a class="nu-btn" style="text-decoration:none;color:#fff;" href="../insights/">🗣️ Questions to ask</a></div>';
+    '<a class="nu-btn" style="text-decoration:none;color:#fff;" href="../visit/' + (next.ev.type === "doctor" || !next.ev.type ? "?event=" + encodeURIComponent(next.ev.id || "") : "") + '">🗂️ Visit prep</a></div>';
   $("nu-open").addEventListener("click", () => openEditor(next.ev));
   const dn = $("nu-done"); if (dn) dn.addEventListener("click", () => saveEvent(Object.assign({}, next.ev, { status: "done" }), "Marked done — nice."));
 }

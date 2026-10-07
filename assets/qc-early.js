@@ -56,7 +56,8 @@
     "family": ME,
     "privacy": ME,
     "weekly": ME,
-    "care": ME.concat(["/care/overview"])
+    "care": ME.concat(["/care/overview"]),
+    "visit": ME.concat(["/insights/visit-prep"])
   };
   var seg = (location.pathname.replace(/\/+$/, "").split("/").pop() || "");
   if (PAGES[seg] && !/[?&]noprefetch/.test(location.search)) prefetch(PAGES[seg]);

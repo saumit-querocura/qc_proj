@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://app.querocura.com; connect-src 'self' https://app.querocura.com; object-src 'none'; base-uri 'self'; form-action 'self' https://app.querocura.com">
+<script src="../assets/qc-early.js?v=1f9411e7" async></script>
+<title>Visit prep — QueroCura</title>
+<meta name="robots" content="noindex">
+<meta name="referrer" content="no-referrer">
+<link rel="icon" type="image/x-icon" href="../icons/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://app.querocura.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/qc-base.css?v=7b9ea421">
+<style>
+  .shell { max-width: 820px; }
+  .hero { border: 1.5px solid rgba(14,143,131,.35); background: linear-gradient(135deg, rgba(14,143,131,.08), rgba(124,111,219,.08)); border-radius: 22px; padding: 20px; margin-bottom: 14px; }
+  .hero h2 { margin: 0 0 4px; font-size: 21px; } .hero .when { font-weight: 800; color: #0e8f83; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+  .chip { padding: 5px 12px; border-radius: 999px; font-size: 12.5px; font-weight: 700; background: rgba(127,127,160,.15); }
+  .chip.warn { background: rgba(210,140,40,.18); color: #b86f10; }
+  table.rd { width: 100%; border-collapse: collapse; font-size: 13.5px; } table.rd th { text-align: left; font-size: 11.5px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); padding: 6px 8px; }
+  table.rd td { padding: 9px 8px; border-top: 1px dashed var(--line); } table.rd td.num { font-weight: 800; white-space: nowrap; }
+  .flag { color: #b86f10; font-weight: 800; font-size: 12px; }
+  .qg { margin-bottom: 14px; } .qg h3 { margin: 0 0 6px; font-size: 15px; }
+  .qg ol { margin: 0; padding-left: 22px; font-size: 14px; line-height: 1.65; } .qg li { margin-bottom: 5px; }
+  .space { display: inline-block; width: 100%; border-bottom: 1px solid var(--line); height: 20px; }
+  .ck { list-style: none; padding: 0; margin: 0; font-size: 14px; } .ck li { padding: 5px 0; display: flex; gap: 10px; } .ck li::before { content: "±0"; font-size: 16px; }
+  .note { font-size: 12.5px; color: var(--muted); margin-top: 10px; }
+  .bar { display: flex; gap: 10px; flex-wrap: wrap; margin: 4px 0 14px; }
+  @media print {
+    .topbar, .bar, .page-eyebrow, #qc-verify-banner { display: none !important; }
+    body { background: #fff !important; color: #000 !important; } .card, .hero { box-shadow: none !important; border: 1px solid #bbb !important; background: #fff !important; break-inside: avoid; }
+    .shell { max-width: 100%; padding: 0; } a { color: #000; text-decoration: none; }
+  }
+</style>
+<script src="../assets/qc-csp.js?v=77f89cc2"></script>
+</head>
+<body>
+  <div class="topbar">
+    <a class="logo-wrap" href="../">
+      <img src="../assets/d4f7acc01b9438e998c9e7b9676584b0.png" alt="QueroCura">
+      <span class="logo-text"><span class="ink">Quero</span><span class="teal">Cura</span></span>
+    </a>
+    <nav class="tab-nav">
+      <a class="tab-link" href="../symptoms/"><span class="tl-ic">🔍</span>Symptoms</a>
+      <a class="tab-link" href="../vitals/"><span class="tl-ic">❤️</span>Vitals</a>
+      <a class="tab-link" href="../calendar/"><span class="tl-ic">📅</span>Calendar</a>
+      <a class="tab-link" href="../curavault/"><span class="tl-ic">🔒</span>CuraVault</a>
+      <a class="tab-link" href="../dashboard/"><span class="tl-ic">🏠</span>Dashboard</a>
+      <a class="tab-link" href="../insights/"><span class="tl-ic">✨</span>Insights</a>
+      <a class="tab-link" href="../profile/"><span class="tl-ic">👤</span>Profile</a>
+    </nav>
+    <div class="topbar-right">
+      <span class="user-pill" id="qc-user-chip"><span class="up-dot" id="qc-user-dot">?</span><span id="qc-user-name"></span></span>
+      <button class="theme-toggle" data-theme-toggle aria-label="Toggle dark mode"><span id="theme-toggle-icon"></span></button>
+      <button class="signout-btn" id="qc-signout-btn">Sign out</button>
+    </div>
+  </div>
+
+  <div class="shell">
+    <span class="page-eyebrow">Visit prep</span>
+    <h1 class="page-title">Walk into your appointment prepared</h1>
+    <p class="page-sub">Your readings, symptom checks, documents and questions for the next visit, on one page you can print or show on your phone.</p>
+    <div class="bar">
+      <button class="btn btn-primary" id="print" type="button">🖨️ Print or save as PDF</button>
+      <button class="btn" id="copy" type="button">📋 Copy as text</button>
+      <a class="btn" href="../calendar/?new=1&amp;type=doctor">📅 Add a visit</a>
+    </div>
+    <div id="out"><div class="card"><p class="sub">Putting your page together...</p></div></div>
+  </div>
+  <script src="../assets/qc-app.js?v=22a3a990"></script>
+  <script src="../assets/qc-page.js?v=c34c97a9"></script>
+  <script src="../assets/js/visit.js?v=de7ccf96"></script>
+</body>
+</html>

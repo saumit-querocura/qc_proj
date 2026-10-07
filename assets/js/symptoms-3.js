@@ -36,12 +36,19 @@
   const mic = $("#sym-mic");
   if (SR && mic) {
     mic.classList.add("on");
+    const langBtn = $("#sym-lang");
+    const LANGS = [["en-IN", "EN", "English"], ["hi-IN", "हि", "Hindi"]];
+    let li = 0;
+    try { li = Math.max(0, LANGS.findIndex(l => l[0] === localStorage.getItem("qc-voice-lang"))); } catch (e) {}
+    const showLang = () => { if (langBtn) { langBtn.classList.add("on"); langBtn.textContent = LANGS[li][1]; langBtn.setAttribute("aria-label", "Speaking language: " + LANGS[li][2]); } };
+    showLang();
+    if (langBtn) langBtn.addEventListener("click", () => { li = (li + 1) % LANGS.length; try { localStorage.setItem("qc-voice-lang", LANGS[li][0]); } catch (e) {} showLang(); QC.toast("Speaking language: " + LANGS[li][2], "ok"); });
     let rec = null, base = "";
     mic.addEventListener("click", () => {
       if (rec) { rec.stop(); return; }
       try {
         rec = new SR();
-        rec.lang = navigator.language || "en-IN"; rec.interimResults = true; rec.continuous = false;
+        rec.lang = LANGS[li][0]; rec.interimResults = true; rec.continuous = false;
         base = input.value ? input.value.replace(/\s+$/, "") + " " : "";
         rec.onresult = e => { let s = ""; for (let i = 0; i < e.results.length; i++) s += e.results[i][0].transcript; input.value = base + s; updateMeter(); };
         rec.onerror = () => { QC.toast("Couldn't hear that. Check microphone permission and try again.", "err"); };

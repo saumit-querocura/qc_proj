@@ -256,7 +256,7 @@ function renderQuestions(qs, groups) {
   box.innerHTML = body +
     '<div class="btn-row"><button type="button" class="btn-soft" id="q-copy">📋 Copy all (' + all.length + ')</button>' +
     (navigator.share ? '<button type="button" class="btn-soft" id="q-share">📤 Share</button>' : "") +
-    '<a class="btn-soft" href="../calendar/?new=1&type=doctor">📅 Schedule the visit</a></div>' +
+    '<a class="btn-soft" href="../visit/">🗂️ Open visit prep</a><a class="btn-soft" href="../calendar/?new=1&type=doctor">📅 Schedule the visit</a></div>' +
     '<p class="card-sub" style="margin-top:8px">Tick the ones you have asked. These are questions for your doctor, not advice. They update as you add readings, results and symptom checks.</p>';
   const text = () => all.map((q, i) => (i + 1) + ". " + q).join("\n");
   document.getElementById("q-copy").addEventListener("click", () => {
