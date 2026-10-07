@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://app.querocura.com; connect-src 'self' https://app.querocura.com; media-src 'self' blob:; frame-src 'self' blob:; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self' https://app.querocura.com">
 <title>Create your account — QueroCura</title>
 <meta name="robots" content="noindex">
 <link rel="icon" type="image/x-icon" href="../icons/favicon.ico">
@@ -227,6 +228,10 @@
         <p class="sub">Free — takes about a minute.</p>
         <div class="error" id="qc-error"></div>
         <form id="qc-register-form">
+      <div aria-hidden="true" style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden">
+        <label for="qc-website">Leave this field empty</label>
+        <input type="text" id="qc-website" name="website" tabindex="-1" autocomplete="off">
+      </div>
           <div class="field">
             <div class="field-inner">
               <input type="text" class="field-input" id="qc-name" name="name" autocomplete="name" placeholder=" " required
@@ -485,7 +490,7 @@ form.addEventListener("submit", async (e) => {
       method: "POST",
       credentials: "include",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password, display_name }),
+      body: JSON.stringify({ email, password, display_name, website: (document.getElementById("qc-website") || {}).value || "" }),
     });
     const regData = await regRes.json();
 

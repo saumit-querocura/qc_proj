@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://app.querocura.com; connect-src 'self' https://app.querocura.com; media-src 'self' blob:; frame-src 'self' blob:; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self' https://app.querocura.com">
+<title>Privacy &amp; sharing — QueroCura</title>
+<meta name="robots" content="noindex">
+<meta name="referrer" content="no-referrer">
+<link rel="icon" type="image/x-icon" href="../icons/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://app.querocura.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700;800&family=Manrope:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500;1,9..144,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/qc-base.css">
+<style>
+  .shell { max-width: 860px; }
+  .scopes { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 8px; margin-bottom: 12px; }
+  .scope { display: flex; gap: 10px; align-items: flex-start; border: 1.5px solid var(--line); border-radius: 14px; padding: 10px 12px; cursor: pointer; font-size: 13.5px; font-weight: 700; }
+  .scope input { margin-top: 3px; accent-color: #0e8f83; } .scope.on { border-color: #0e8f83; background: rgba(14,143,131,.08); }
+  .link-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding: 12px 0; border-bottom: 1px dashed var(--line); font-size: 13.5px; }
+  .link-row:last-child { border-bottom: none; } .link-row .grow { flex: 1 1 220px; } .link-row small { display: block; color: var(--muted); font-weight: 600; margin-top: 2px; }
+  .state { padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; }
+  .state.active { background: rgba(47,143,94,.15); color: #2f8f5e; } .state.expired, .state.revoked, .state.used { background: rgba(127,127,160,.18); color: var(--muted); } .state.locked { background: rgba(201,138,16,.18); color: #c98a10; }
+  .secret { font: 700 14px ui-monospace, Menlo, Consolas, monospace; background: rgba(127,127,160,.12); border-radius: 12px; padding: 12px 14px; word-break: break-all; margin: 6px 0 10px; }
+  .pin { font: 800 34px 'Space Grotesk', sans-serif; letter-spacing: .3em; text-align: center; padding: 14px; border-radius: 16px; background: rgba(14,143,131,.1); margin: 6px 0 10px; }
+  .danger { border-color: rgba(210,79,40,.45); } .danger h2 { color: var(--danger); }
+  .tog { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; }
+  .act { display: flex; gap: 10px; font-size: 13px; padding: 7px 0; border-bottom: 1px dashed var(--line); } .act time { color: var(--muted); font-weight: 600; min-width: 130px; }
+  .log { font-size: 12.5px; color: var(--muted); padding-left: 14px; margin: 6px 0 0; }
+</style>
+</head>
+<body>
+  <div class="topbar">
+    <a class="logo-wrap" href="../">
+      <img src="../assets/d4f7acc01b9438e998c9e7b9676584b0.png" alt="QueroCura">
+      <span class="logo-text"><span class="ink">Quero</span><span class="teal">Cura</span></span>
+    </a>
+    <nav class="tab-nav">
+      <a class="tab-link" href="../symptoms/"><span class="tl-ic">🔍</span>Symptoms</a>
+      <a class="tab-link soon" href="#" onclick="return false;" title="Chat with Cura — coming soon"><span class="tl-ic">💬</span>Cura Chat<span class="soon-tag">Soon</span></a>
+      <a class="tab-link" href="../vitals/"><span class="tl-ic">❤️</span>Vitals</a>
+      <a class="tab-link" href="../calendar/"><span class="tl-ic">📅</span>Calendar</a>
+      <a class="tab-link" href="../curavault/"><span class="tl-ic">🔒</span>CuraVault</a>
+      <a class="tab-link" href="../dashboard/"><span class="tl-ic">🏠</span>Dashboard</a>
+      <a class="tab-link" href="../insights/"><span class="tl-ic">✨</span>Insights</a>
+      <a class="tab-link" href="../profile/"><span class="tl-ic">👤</span>Profile</a>
+    </nav>
+    <div class="topbar-right">
+      <span class="user-pill" id="qc-user-chip"><span class="up-dot" id="qc-user-dot">?</span><span id="qc-user-name"></span></span>
+      <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode"><span id="theme-toggle-icon"></span></button>
+      <button class="signout-btn" id="qc-signout-btn">Sign out</button>
+    </div>
+  </div>
+
+  <div class="shell">
+    <span class="page-eyebrow">Privacy &amp; sharing</span>
+    <h1 class="page-title">You're in charge of your health data</h1>
+    <p class="page-sub">Share a summary with a doctor for a limited time, download everything we hold, or delete it all. No emails to anyone, no dark patterns.</p>
+
+    <div class="card" id="share">
+      <h2>🩺 Share with a doctor</h2>
+      <p class="sub" id="share-sub">Create a private, read-only link. It opens a clean summary of exactly what you choose, expires on its own, needs a 6-digit PIN, and you can switch it off at any moment.</p>
+      <div class="lbl" style="margin-bottom:8px">What to include</div>
+      <div class="scopes" id="scopes"></div>
+      <div class="grid2">
+        <div class="field"><label for="s-hours">Expires after</label><select class="input" id="s-hours"><option value="1">1 hour</option><option value="6">6 hours</option><option value="24" selected>24 hours</option><option value="72">3 days</option><option value="168">7 days</option></select></div>
+        <div class="field"><label for="s-views">Can be opened up to</label><select class="input" id="s-views"><option value="1">1 time</option><option value="3">3 times</option><option value="10" selected>10 times</option><option value="25">25 times</option></select></div>
+        <div class="field"><label for="s-label">Label (just for you)</label><input class="input" id="s-label" maxlength="40" placeholder="Dr. Rao, cardiology"></div>
+      </div>
+      <label class="scope on" style="margin-bottom:12px"><input type="checkbox" id="s-pin" checked><span>Require a 6-digit PIN <span class="hint" style="display:block;font-weight:600">Recommended. You'll tell the doctor the PIN separately, like by phone call.</span></span></label>
+      <button class="btn btn-primary" id="s-create">Create secure link</button>
+      <div class="msg" id="s-msg"></div>
+      <div class="lbl" style="margin:20px 0 4px">Your links</div>
+      <div id="links"><div class="hint">Loading…</div></div>
+    </div>
+
+    <div class="card">
+      <div class="tog"><div><h2>📬 Weekly summary email</h2><p class="sub" style="margin:0">A short, friendly “week in health” every Sunday. You can always read it at <a href="../weekly/">your weekly page</a>.</p></div>
+        <label class="scope" style="border:none;padding:0"><input type="checkbox" id="email-on"><span id="email-label">Email me</span></label></div>
+    </div>
+
+    <div class="card">
+      <h2>🔐 Sign-in &amp; devices</h2>
+      <p class="sub">Change your password, or sign out everywhere if you've used a shared computer. Your recent account activity is below.</p>
+      <div class="row"><button class="btn" id="open-pw">Change password</button><button class="btn" id="open-revoke">Sign out of all other devices</button></div>
+      <div class="lbl" style="margin:18px 0 4px">Recent activity</div>
+      <div id="activity"><div class="hint">Loading…</div></div>
+    </div>
+
+    <div class="card">
+      <h2>📦 Download my data</h2>
+      <p class="sub">A ZIP with everything we hold about you and the family profiles you manage: readings (CSV), calendar, symptom checks, profile, and the original CuraVault documents you uploaded.</p>
+      <button class="btn btn-dark" id="open-export">Download my data</button>
+    </div>
+
+    <div class="card danger">
+      <h2>🗑️ Delete my account</h2>
+      <p class="sub">This permanently erases your account, every family profile you manage, all readings, records and uploaded documents, share links and photos, on every device. We can't recover it. <b>Download your data first</b> if you may want it.</p>
+      <button class="btn btn-danger" id="open-delete">Delete my account…</button>
+    </div>
+  </div>
+
+  <!-- password prompt (re-auth) -->
+  <div class="modal-back" id="m-auth"><div class="modal">
+    <button class="modal-x" data-close="m-auth" aria-label="Close">✕</button>
+    <h2 id="auth-title">Confirm it's you</h2><p class="sub" id="auth-sub">Please enter your password to continue.</p>
+    <div class="field" id="auth-extra" style="display:none"><label for="auth-new">New password</label><input class="input" id="auth-new" type="password" autocomplete="new-password" placeholder="At least 8 characters"></div>
+    <div class="field" id="auth-confirm" style="display:none"><label for="auth-del">Type DELETE to confirm</label><input class="input" id="auth-del" autocomplete="off"></div>
+    <div class="field"><label for="auth-pw">Your password</label><input class="input" id="auth-pw" type="password" autocomplete="current-password"></div>
+    <button class="btn btn-primary" id="auth-go">Continue</button><div class="msg" id="auth-msg"></div>
+  </div></div>
+
+  <!-- link created -->
+  <div class="modal-back" id="m-link"><div class="modal">
+    <button class="modal-x" data-close="m-link" aria-label="Close">✕</button>
+    <h2>Your secure link is ready ✅</h2>
+    <p class="sub">Send the link and the PIN <b>separately</b>. For your safety the PIN is shown only now.</p>
+    <div class="lbl">Link</div><div class="secret" id="lk-url"></div>
+    <div class="row" style="margin-bottom:12px"><button class="btn btn-sm" id="lk-copy">Copy link</button><button class="btn btn-sm" id="lk-share">Share…</button></div>
+    <div id="lk-pin-wrap"><div class="lbl">PIN</div><div class="pin" id="lk-pin"></div><button class="btn btn-sm" id="lk-copy-pin">Copy PIN</button></div>
+    <p class="hint" id="lk-note" style="margin-top:14px"></p>
+  </div></div>
+
+<script src="../assets/qc-app.js"></script>
+<script src="../assets/qc-page.js"></script>
+<script>
+(function () {
+  var P = QCPage, esc = P.esc, api = P.api;
+  function el(id) { return document.getElementById(id); }
+  var OPTS = null, AUTH_MODE = null;
+
+  /* ---------- sharing ---------- */
+  function loadOptions() {
+    return api("/share/options").then(function (d) {
+      OPTS = d; var box = el("scopes");
+      box.innerHTML = Object.keys(d.scopes).map(function (k) {
+        var on = d.defaults.indexOf(k) >= 0;
+        return '<label class="scope' + (on ? " on" : "") + '"><input type="checkbox" data-scope="' + k + '"' + (on ? " checked" : "") + '><span>' + esc(d.scopes[k]) + '</span></label>';
+      }).join("");
+    });
+  }
+  el("scopes").addEventListener("change", function (e) { var l = e.target.closest(".scope"); if (l) l.classList.toggle("on", e.target.checked); });
+  el("s-pin").addEventListener("change", function (e) { e.target.closest(".scope").classList.toggle("on", e.target.checked); });
+
+  function when(ts) { var d = new Date(ts * 1000); return d.toLocaleString([], { day: "numeric", month: "short", hour: "numeric", minute: "2-digit" }); }
+  function left(ts) { var s = ts - Date.now() / 1000; if (s <= 0) return "expired"; var h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60); return (h >= 48 ? Math.floor(h / 24) + " days" : h ? h + "h " + m + "m" : m + " min") + " left"; }
+  function loadLinks() {
+    api("/share/list").then(function (d) {
+      var box = el("links");
+      if (!d.ok || !d.links.length) { box.innerHTML = '<div class="hint">No links yet. Anything you create appears here, with its views and an off switch.</div>'; return; }
+      box.innerHTML = d.links.map(function (l) {
+        var st = l.state.replace(" ", "");
+        return '<div class="link-row"><span class="state ' + (st === "usedup" ? "used" : st) + '">' + esc(l.state) + '</span><div class="grow"><b>' + esc(l.label || "Doctor link") + '</b>' + (l.subject_name ? ' <span class="hint">· ' + esc(l.subject_name) + '</span>' : "") +
+          '<small>' + l.scopes.map(function (s) { return esc((d.scopes[s] || s).split(" (")[0]); }).join(" · ") + '</small><small>Opened ' + l.views + ' of ' + l.max_views + ' · ' + (l.state === "active" ? esc(left(l.expires_ts)) : "expires " + esc(when(l.expires_ts))) + (l.pin_required ? " · PIN" : " · no PIN") + (l.revoke_reason ? " · " + esc(l.revoke_reason) : "") + '</small>' +
+          '<div class="log" id="log-' + l.id + '"></div></div>' +
+          '<button class="btn btn-sm" data-log="' + l.id + '">Access log</button>' + (l.state === "active" || l.state === "locked" ? '<button class="btn btn-sm btn-danger" data-off="' + l.id + '">Turn off</button>' : "") + '</div>';
+      }).join("");
+    });
+  }
+  el("links").addEventListener("click", function (e) {
+    var off = e.target.closest("[data-off]"), lg = e.target.closest("[data-log]");
+    if (off) api("/share/" + off.getAttribute("data-off") + "/revoke", { method: "POST" }).then(function (d) { P.toast(d.message, d.ok ? "ok" : "err"); loadLinks(); });
+    if (lg) { var id = lg.getAttribute("data-log"); api("/share/" + id + "/log").then(function (d) { var b = el("log-" + id); b.innerHTML = (d.log || []).length ? d.log.map(function (x) { return esc(when(x.ts)) + " · " + esc(x.device) + " · " + esc(x.outcome); }).join("<br>") : "Nobody has opened it yet."; }); }
+  });
+  el("s-create").addEventListener("click", function () {
+    var scopes = Array.prototype.map.call(document.querySelectorAll("[data-scope]:checked"), function (i) { return i.getAttribute("data-scope"); });
+    var msg = el("s-msg"); msg.className = "msg";
+    if (!scopes.length) { msg.className = "msg err"; msg.textContent = "Choose at least one thing to include."; return; }
+    var btn = el("s-create"); btn.disabled = true;
+    api("/share/create", { method: "POST", body: { scopes: scopes, hours: +el("s-hours").value, max_views: +el("s-views").value, label: el("s-label").value, pin_required: el("s-pin").checked } }).then(function (d) {
+      btn.disabled = false;
+      if (!d.ok) { msg.className = "msg err"; msg.textContent = d.message || "Couldn't create the link."; return; }
+      el("lk-url").textContent = d.url; el("lk-pin").textContent = d.pin ? d.pin.slice(0, 3) + " " + d.pin.slice(3) : ""; el("lk-pin-wrap").style.display = d.pin ? "" : "none";
+      el("lk-note").textContent = "Expires " + when(d.expires_ts) + " and can be opened up to " + d.max_views + " time" + (d.max_views === 1 ? "" : "s") + ". You can turn it off any time from this page.";
+      el("lk-share").style.display = navigator.share ? "" : "none";
+      el("lk-share").onclick = function () { navigator.share({ title: "Health summary", text: "A private health summary (link expires soon). I'll send the PIN separately.", url: d.url }).catch(function () {}); };
+      el("lk-copy-pin").onclick = function () { QC.copy(d.pin).then(function () { P.toast("PIN copied"); }); };
+      P.openModal("m-link"); loadLinks();
+    });
+  });
+  el("lk-copy").addEventListener("click", function () { QC.copy(el("lk-url").textContent).then(function () { P.toast("Link copied"); }, function () { P.toast("Couldn't copy. Select the link and copy it.", "err"); }); });
+
+  /* ---------- weekly email ---------- */
+  api("/digest/weekly").then(function (d) {
+    var e = d.email || {};
+    el("email-on").checked = !!e.on;
+    if (!e.available) { el("email-on").disabled = true; el("email-label").textContent = "Not available yet"; }
+  });
+  el("email-on").addEventListener("change", function () {
+    api("/digest/prefs", { method: "POST", body: { email: el("email-on").checked } }).then(function (d) { P.toast(d.ok ? (d.email ? "We'll email your weekly summary." : "No more emails.") : (d.message || "Couldn't change that."), d.ok ? "ok" : "err"); if (!d.ok) el("email-on").checked = !el("email-on").checked; });
+  });
+
+  /* ---------- activity ---------- */
+  var NICE = { password_changed: "Password changed", signed_out_everywhere: "Signed out of all other devices", data_exported: "Data downloaded", share_link_created: "Doctor link created", share_link_revoked: "Doctor link turned off", family_member_added: "Family profile added", family_member_deleted: "Family profile deleted", care_circle_invite: "Care-circle invite sent", care_circle_removed: "Care-circle access removed" };
+  function loadActivity() {
+    api("/account/activity").then(function (d) {
+      var b = el("activity");
+      b.innerHTML = (d.activity || []).length ? d.activity.slice(0, 12).map(function (a) { return '<div class="act"><time>' + esc(String(a.ts).replace("T", " ").slice(0, 16)) + '</time><span>' + esc(NICE[a.kind] || a.kind) + (a.detail ? " · " + esc(a.detail) : "") + '</span></div>'; }).join("") : '<div class="hint">Nothing yet.</div>';
+    });
+  }
+
+  /* ---------- re-auth actions ---------- */
+  function openAuth(mode) {
+    AUTH_MODE = mode; el("auth-msg").textContent = ""; el("auth-pw").value = ""; el("auth-new").value = ""; el("auth-del").value = "";
+    el("auth-extra").style.display = mode === "password" ? "" : "none"; el("auth-confirm").style.display = mode === "delete" ? "" : "none";
+    var T = { password: ["Change your password", "Enter your current password, then a new one. Other devices will be signed out.", "Change password"],
+      revoke: ["Sign out everywhere", "Every other device and browser will need to sign in again. This device stays signed in.", "Sign out other devices"],
+      export: ["Download my data", "For your security we ask for your password before preparing your data.", "Prepare my download"],
+      "delete": ["Delete my account", "This cannot be undone. All your data, family profiles, records and share links will be erased.", "Delete everything"] }[mode];
+    el("auth-title").textContent = T[0]; el("auth-sub").textContent = T[1]; el("auth-go").textContent = T[2];
+    el("auth-go").className = "btn " + (mode === "delete" ? "btn-danger" : "btn-primary");
+    P.openModal("m-auth");
+  }
+  el("open-pw").onclick = function () { openAuth("password"); }; el("open-revoke").onclick = function () { openAuth("revoke"); };
+  el("open-export").onclick = function () { openAuth("export"); }; el("open-delete").onclick = function () { openAuth("delete"); };
+  el("auth-go").addEventListener("click", function () {
+    var pw = el("auth-pw").value, msg = el("auth-msg"), btn = el("auth-go"); msg.className = "msg";
+    if (!pw) { msg.className = "msg err"; msg.textContent = "Please enter your password."; return; }
+    btn.disabled = true;
+    function done(d, okText) { btn.disabled = false; if (!d.ok) { msg.className = "msg err"; msg.textContent = d.message || "That didn't work."; return false; } P.closeModal("m-auth"); if (okText) P.toast(okText); return true; }
+    if (AUTH_MODE === "password") api("/account/password", { method: "POST", body: { password: pw, new_password: el("auth-new").value } }).then(function (d) { if (done(d, d.message)) loadActivity(); });
+    else if (AUTH_MODE === "revoke") api("/account/sessions/revoke", { method: "POST", body: { password: pw } }).then(function (d) { if (done(d, d.message)) loadActivity(); });
+    else if (AUTH_MODE === "delete") api("/account/delete", { method: "POST", body: { password: pw, confirm: el("auth-del").value } }).then(function (d) {
+      if (done(d)) { QC.clearCache(true); try { sessionStorage.clear(); } catch (e) {} alert("Your account and all of its data have been deleted."); location.href = "../"; }
+    });
+    else if (AUTH_MODE === "export") {
+      fetch(P.API + "/account/export", { method: "POST", credentials: "include", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ password: pw }) }).then(function (r) {
+        if (!r.ok) return r.json().catch(function () { return {}; }).then(function (d) { d.ok = false; return done(d); });
+        return r.blob().then(function (b) {
+          var a = document.createElement("a"); a.href = URL.createObjectURL(b); a.download = "querocura-my-data.zip"; document.body.appendChild(a); a.click(); a.remove(); setTimeout(function () { URL.revokeObjectURL(a.href); }, 4000);
+          done({ ok: true }, "Your download has started."); loadActivity();
+        });
+      }).catch(function () { done({ ok: false, message: "We couldn't reach QueroCura." }); });
+    }
+  });
+
+  P.init().then(function (me) {
+    if (!me || !me.logged_in) return;
+    if (me.acting) el("share-sub").innerHTML = "You're looking after <b>" + esc(me.acting.nickname) + "</b>, so a link made here shares <b>their</b> summary. " + el("share-sub").textContent;
+    loadOptions().then(loadLinks); loadActivity();
+    if (location.hash === "#share") el("share").scrollIntoView();
+  });
+})();
+</script>
+</body>
+</html>

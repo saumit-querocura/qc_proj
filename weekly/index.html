@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://app.querocura.com; connect-src 'self' https://app.querocura.com; media-src 'self' blob:; frame-src 'self' blob:; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self' https://app.querocura.com">
+<title>Your week in health — QueroCura</title>
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/x-icon" href="../icons/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://app.querocura.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700;800&family=Manrope:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500;1,9..144,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/qc-base.css">
+<style>
+  .shell { max-width: 780px; }
+  .wk-hero { position: relative; overflow: hidden; border-radius: 30px; color: #fff; padding: 28px clamp(20px,4vw,34px) 26px; margin-bottom: 18px; background: radial-gradient(circle at 85% 0%, rgba(126,224,212,.45), transparent 55%), radial-gradient(circle at 0% 100%, rgba(124,111,219,.5), transparent 55%), #100e2a; }
+  .wk-hero .week { font-size: 12px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; opacity: .7; }
+  .wk-hero h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: clamp(26px,4.5vw,36px); margin: 8px 0 18px; line-height: 1.18; }
+  .wk-row { display: flex; align-items: center; gap: 22px; flex-wrap: wrap; }
+  .ring { position: relative; width: 118px; height: 118px; flex: 0 0 auto; } .ring svg { transform: rotate(-90deg); } .ring .num { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; font: 800 34px 'Space Grotesk', sans-serif; line-height: 1; } .ring .num small { font: 700 11px 'Manrope', sans-serif; opacity: .7; margin-top: 4px; }
+  .delta { font-weight: 800; font-size: 14px; } .delta.up { color: #7ee0d4; } .delta.down { color: #f1c56b; }
+  .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 18px; }
+  .tile { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 14px 15px; text-align: center; } .tile b { font: 800 24px 'Space Grotesk', sans-serif; display: block; } .tile small { font-size: 12px; color: var(--muted); font-weight: 700; } .tile .lab { font-size: 11px; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); font-weight: 800; margin-top: 3px; }
+  .item { display: flex; gap: 12px; padding: 11px 0; border-bottom: 1px dashed var(--line); font-size: 14.5px; line-height: 1.5; } .item:last-child { border-bottom: none; } .item .ic { font-size: 22px; width: 30px; flex: 0 0 auto; text-align: center; } .item a.cta { font-weight: 800; white-space: nowrap; }
+  .win { animation: pop .5s backwards; } @keyframes pop { from { transform: translateY(10px); opacity: 0; } }
+  .fam { display: flex; gap: 10px; align-items: center; padding: 8px 0; font-size: 14px; } .fam span.e { font-size: 24px; }
+  .empty-hero { text-align: center; padding: 10px 0; color: var(--muted); }
+  @media print { .wk-hero { background: #fff !important; color: #000 !important; border: 1px solid #ccc; } }
+</style>
+</head>
+<body>
+  <div class="topbar">
+    <a class="logo-wrap" href="../">
+      <img src="../assets/d4f7acc01b9438e998c9e7b9676584b0.png" alt="QueroCura">
+      <span class="logo-text"><span class="ink">Quero</span><span class="teal">Cura</span></span>
+    </a>
+    <nav class="tab-nav">
+      <a class="tab-link" href="../symptoms/"><span class="tl-ic">🔍</span>Symptoms</a>
+      <a class="tab-link soon" href="#" onclick="return false;" title="Chat with Cura — coming soon"><span class="tl-ic">💬</span>Cura Chat<span class="soon-tag">Soon</span></a>
+      <a class="tab-link" href="../vitals/"><span class="tl-ic">❤️</span>Vitals</a>
+      <a class="tab-link" href="../calendar/"><span class="tl-ic">📅</span>Calendar</a>
+      <a class="tab-link" href="../curavault/"><span class="tl-ic">🔒</span>CuraVault</a>
+      <a class="tab-link" href="../dashboard/"><span class="tl-ic">🏠</span>Dashboard</a>
+      <a class="tab-link" href="../insights/"><span class="tl-ic">✨</span>Insights</a>
+      <a class="tab-link" href="../profile/"><span class="tl-ic">👤</span>Profile</a>
+    </nav>
+    <div class="topbar-right">
+      <span class="user-pill" id="qc-user-chip"><span class="up-dot" id="qc-user-dot">?</span><span id="qc-user-name"></span></span>
+      <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode"><span id="theme-toggle-icon"></span></button>
+      <button class="signout-btn" id="qc-signout-btn">Sign out</button>
+    </div>
+  </div>
+
+  <div class="shell">
+    <div id="wk"><div class="card"><div class="hint">Putting your week together…</div></div></div>
+    <div class="row no-print" style="justify-content:center;margin-top:8px">
+      <a class="btn" href="../privacy/#share">🩺 Share with a doctor</a>
+      <button class="btn" id="preview-mail">📬 Preview the email</button>
+      <button class="btn" onclick="window.print()">🖨️ Print</button>
+    </div>
+    <p class="hint" style="text-align:center;margin-top:16px">General wellness information, not medical advice. Manage emails in <a href="../privacy/">Privacy &amp; sharing</a>.</p>
+  </div>
+
+  <div class="modal-back" id="m-mail"><div class="modal" style="width:min(680px,100%)">
+    <button class="modal-x" data-close="m-mail" aria-label="Close">✕</button>
+    <h2>Email preview</h2><p class="sub" id="mail-subject"></p>
+    <iframe id="mail-frame" sandbox="" style="width:100%;height:540px;border:1px solid var(--line);border-radius:14px;background:#fff"></iframe>
+  </div></div>
+
+<script src="../assets/qc-app.js"></script>
+<script src="../assets/qc-page.js"></script>
+<script>
+(function () {
+  var P = QCPage, esc = P.esc, api = P.api;
+  function el(id) { return document.getElementById(id); }
+
+  function ring(score, color) {
+    var R = 50, C = 2 * Math.PI * R, off = C - (score / 100) * C;
+    return '<div class="ring"><svg width="118" height="118" viewBox="0 0 118 118"><circle cx="59" cy="59" r="' + R + '" fill="none" stroke="rgba(255,255,255,.18)" stroke-width="9"/><circle cx="59" cy="59" r="' + R + '" fill="none" stroke="' + esc(color || "#7ee0d4") + '" stroke-width="9" stroke-linecap="round" stroke-dasharray="' + C + '" stroke-dashoffset="' + C + '" id="ring-fg"/></svg><div class="num">' + score + '<small>health score</small></div></div>';
+  }
+  function tile(label, val, unit) { return val == null || val === "" ? "" : '<div class="tile"><b>' + esc(val) + (unit ? ' <small>' + esc(unit) + '</small>' : '') + '</b><div class="lab">' + esc(label) + '</div></div>'; }
+
+  function render(d) {
+    var t = d.tiles || {}, html = "";
+    var hero = '<div class="wk-hero"><div class="week">Your week in health · ' + esc(d.week_label) + '</div><h1>' + esc(d.headline) + '</h1><div class="wk-row">';
+    if (d.score != null) {
+      hero += ring(d.score, d.score_color) + '<div><div style="font:800 18px \'Space Grotesk\',sans-serif">' + esc(d.band || "") + '</div>' +
+        (d.score_delta ? '<div class="delta ' + (d.score_delta > 0 ? "up" : "down") + '">' + (d.score_delta > 0 ? "▲ up " : "▼ down ") + Math.abs(d.score_delta) + ' from last week</div>' : '<div style="opacity:.75;font-size:14px">First weekly snapshot saved. Next week you\'ll see how it moves.</div>') + '</div>';
+    } else {
+      hero += '<div style="opacity:.85;max-width:430px;line-height:1.55">Your health score appears once there\'s something to base it on. Log a reading, run a symptom check or upload a report and your story starts here.</div>';
+    }
+    hero += '</div></div>';
+    html += hero;
+    html += '<div class="tiles">' + tile("Days logged", t.days_logged + "/7") + tile("Avg BP", t.avg_bp, "mmHg") + tile("Avg pulse", t.avg_pulse, "bpm") + tile("Avg sugar", t.avg_glucose, "mg/dL") + tile("Avg steps", t.avg_steps != null ? t.avg_steps.toLocaleString() : null) + tile("Avg sleep", t.avg_sleep, "h") + '</div>';
+
+    if ((d.wins || []).length) html += '<div class="card"><h2>🎉 This week\'s wins</h2>' + d.wins.map(function (w, i) { return '<div class="item win" style="animation-delay:' + (i * .08) + 's"><span class="ic">' + esc(w.icon) + '</span><span>' + esc(w.text) + '</span></div>'; }).join("") + '</div>';
+    if ((d.nudges || []).length) html += '<div class="card"><h2>🌱 Gentle nudges</h2>' + d.nudges.map(function (n) { return '<div class="item"><span class="ic">' + esc(n.icon) + '</span><span style="flex:1">' + esc(n.text) + '</span>' + (n.href ? '<a class="cta" href="' + esc(".." + n.href) + '">' + esc(n.cta || "Open") + ' →</a>' : "") + '</div>'; }).join("") + '</div>';
+    if (!(d.wins || []).length && !(d.nudges || []).length) html += '<div class="card"><div class="empty-hero">🌤️ A quiet week. Nothing to celebrate or fix yet.</div></div>';
+    if ((d.coming_up || []).length) html += '<div class="card"><h2>📅 Coming up</h2>' + d.coming_up.map(function (c) { return '<div class="item"><span class="ic">🗓️</span><span><b>' + esc(c.title) + '</b><br><span class="hint">' + esc(String(c.when).replace("T", " ").slice(0, 16)) + '</span></span></div>'; }).join("") + '</div>';
+    if ((d.family || []).length) html += '<div class="card"><h2>🫶 Your family</h2>' + d.family.map(function (f) { return '<div class="fam"><span class="e">' + esc(f.emoji) + '</span><span><b>' + esc(f.name) + '</b> · ' + esc(f.line) + '</span></div>'; }).join("") + '<a class="btn btn-sm" href="../family/" style="margin-top:8px">Open the family garden</a></div>';
+    el("wk").innerHTML = html;
+    // animate the ring after it is in the page
+    var fg = document.getElementById("ring-fg");
+    if (fg && d.score != null) { var C = 2 * Math.PI * 50; setTimeout(function () { fg.style.transition = "stroke-dashoffset 1.2s cubic-bezier(.2,.8,.2,1)"; fg.style.strokeDashoffset = (C - d.score / 100 * C); }, 80); }
+    if ((d.wins || []).length >= 3) setTimeout(function () { P.confetti(["✨", "🌟", "💛"], 18); }, 500);
+  }
+
+  el("preview-mail").addEventListener("click", function () {
+    api("/digest/preview").then(function (d) {
+      if (!d.ok) { P.toast(d.message || "Couldn't build the preview.", "err"); return; }
+      el("mail-subject").textContent = d.subject; el("mail-frame").srcdoc = d.html; P.openModal("m-mail");
+    });
+  });
+
+  P.init().then(function (me) {
+    if (!me || !me.logged_in) return;
+    api("/digest/weekly").then(function (d) { if (!d.ok) { el("wk").innerHTML = '<div class="card"><div class="hint">' + esc(d.message || "We couldn't build your summary just now.") + '</div></div>'; return; } render(d); });
+  });
+})();
+</script>
+</body>
+</html>

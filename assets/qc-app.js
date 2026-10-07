@@ -68,7 +68,7 @@
   QC.stale = swrGet;
   QC.clearCache = function (clearAvatar) {      // pass true on sign-out to forget the profile photo as well
     try { Object.keys(sessionStorage).forEach(function (k) { if (k.indexOf(SWR) === 0) sessionStorage.removeItem(k); }); } catch (e) {}
-    try { if (clearAvatar) localStorage.removeItem("qc-avatar"); } catch (e) {}
+    try { if (clearAvatar) Object.keys(localStorage).forEach(function (k) { if (k.indexOf("qc-avatar") === 0) localStorage.removeItem(k); }); } catch (e) {}
     insightCache = {}; recCache = null; window.__qcPre = window.__qcPreRec = null;
   };
 
@@ -105,7 +105,7 @@
    * The photo is kept on this device as a small data URL (≈20 KB) keyed by its server version, so every page
    * paints it instantly, with one tiny check per session to see whether it changed. Targets: the top-bar
    * pill dot, the profile hero, and anything marked [data-qc-avatar]. */
-  var AV_KEY = "qc-avatar";
+  function avKey() { var a = QC.acting && QC.acting(); return "qc-avatar" + (a && a.member_id ? ":" + a.member_id : ""); }
   function avTargets() { return Array.prototype.slice.call(document.querySelectorAll("#qc-user-dot, #qc-id-avatar, #qc-profile-avatar, [data-qc-avatar]")); }
   function avPaint(url) {
     avTargets().forEach(function (el) {
@@ -115,11 +115,11 @@
   }
   QC.avatar = {
     paint: avPaint,
-    cached: function () { return lsGet(AV_KEY, null); },
+    cached: function () { return lsGet(avKey(), null); },
     /** Store a new photo (data URL + version) after an upload, or null after a removal. */
-    set: function (url, v) { if (url) lsSet(AV_KEY, { v: v, url: url }); else { try { localStorage.removeItem(AV_KEY); } catch (e) {} } try { sessionStorage.removeItem(SWR + "avatar-meta"); } catch (e) {} avPaint(url || null); },
+    set: function (url, v) { if (url) lsSet(avKey(), { v: v, url: url }); else { try { localStorage.removeItem(avKey()); } catch (e) {} } try { sessionStorage.removeItem(SWR + "avatar-meta"); } catch (e) {} avPaint(url || null); },
     sync: function () {
-      var c = lsGet(AV_KEY, null);
+      var c = lsGet(avKey(), null);
       if (c && c.url) avPaint(c.url);
       var meta = swrGet("avatar-meta");
       var p = meta ? Promise.resolve(meta) : getJSON("/profile/photo/meta").then(function (m) { if (m && m.ok) swrSet("avatar-meta", m); return m; });
@@ -418,6 +418,96 @@
     });
   };
 
+  /* ---------- family: whose health are we looking at? ----------
+   * One account can look after children, parents and partners ("family garden"). While a profile is selected the
+   * whole app (vitals, symptoms, CuraVault, calendar...) shows THAT person's data; the server decides what is shown,
+   * this part only tells the person clearly who they are looking at and makes switching back one tap. */
+  var ACT_KEY = "qc-acting";
+  QC.animals = { fox: "🦊", panda: "🐼", koala: "🐨", owl: "🦉", bunny: "🐰", bear: "🐻", tiger: "🐯", penguin: "🐧", elephant: "🐘", turtle: "🐢", dolphin: "🐬", butterfly: "🦋", unicorn: "🦄", lion: "🦁", frog: "🐸", hedgehog: "🦔" };
+  QC.tints = { peach: "#ffe1d1", mint: "#d3f1e7", sky: "#d6e9fb", lilac: "#e6dffa", butter: "#fcf1c9", rose: "#fcdbe4", sage: "#e0ebd5", coral: "#ffd0c6" };
+  QC.acting = function () { try { return JSON.parse(sessionStorage.getItem(ACT_KEY)); } catch (e) { return null; } };
+  function storeActing(a) { try { if (a) sessionStorage.setItem(ACT_KEY, JSON.stringify(a)); else sessionStorage.removeItem(ACT_KEY); } catch (e) {} }
+  function postJSON(path, body) {
+    return fetch(API_BASE + path, { method: "POST", credentials: "include", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body || {}) })
+      .then(function (r) { return r.json().catch(function () { return { ok: false, message: "Something went wrong." }; }).then(function (d) { d.status = r.status; return d; }); })
+      .catch(function () { return { ok: false, message: "We couldn't reach QueroCura. Check your connection and try again." }; });
+  }
+  QC.post = postJSON;
+  QC.me = function () { return getJSON("/auth/me"); };
+  QC.family = {
+    emoji: function (a) { return QC.animals[a] || "🙂"; },
+    tint: function (c) { return QC.tints[c] || "#e6dffa"; },
+    /** Start looking after a family profile (id) or go back to your own (null). Caches are per person, so they reset. */
+    switchTo: function (memberId) {
+      return postJSON("/family/switch", { member_id: memberId || null }).then(function (d) {
+        if (d && d.ok) { storeActing(d.acting || null); QC.clearCache(false); try { sessionStorage.setItem("qc-act-reload", d.acting ? d.acting.member_id : ""); } catch (e) {} }
+        return d;
+      });
+    }
+  };
+  function paintActing(a) {
+    document.documentElement.classList.toggle("qc-acting", !!a);
+    var old = $("#qc-acting-banner"); if (old) old.remove();
+    var oldChip = $("#qc-acting-chip"); if (oldChip) oldChip.remove();
+    if (!a) return;
+    var bar = $(".topbar");
+    var b = document.createElement("div");
+    b.id = "qc-acting-banner"; b.className = "qc-acting-banner"; b.setAttribute("role", "status");
+    b.style.setProperty("--tint", QC.family.tint(a.color));
+    b.innerHTML = '<span class="qa-face">' + QC.family.emoji(a.avatar) + '</span><span class="qa-text">You\u2019re looking after <b>' + esc(a.nickname) + '</b>' +
+      (a.role === "viewer" ? ' <span class="qa-view">\ud83d\udc40 view only</span>' : '') + ' \u2014 everything you see and add here is theirs.</span>' +
+      '<button type="button" class="qa-back" id="qc-acting-back">Back to my profile</button>';
+    if (bar && bar.parentNode) bar.parentNode.insertBefore(b, bar.nextSibling); else document.body.insertBefore(b, document.body.firstChild);
+    $("#qc-acting-back").addEventListener("click", function () {
+      QC.family.switchTo(null).then(function (d) { if (d && d.ok) location.reload(); });
+    });
+    var right = $(".topbar-right");
+    if (right) {
+      var chip = document.createElement("a");
+      chip.id = "qc-acting-chip"; chip.className = "qc-acting-chip"; var famTab = document.querySelector('a.tab-link[href$="family/"]'); chip.href = famTab ? famTab.getAttribute("href") : "../family/";
+      chip.style.setProperty("--tint", QC.family.tint(a.color));
+      chip.innerHTML = '<span>' + QC.family.emoji(a.avatar) + '</span>' + esc(a.nickname);
+      right.insertBefore(chip, right.firstChild);
+    }
+  }
+  function injectFamilyTab() {
+    var nav = $(".tab-nav"); if (!nav || nav.querySelector('a[href$="family/"]') || /Family/.test(nav.textContent)) return;
+    var prof = nav.querySelector('a[href$="profile/"]'); if (!prof) return;
+    var a = document.createElement("a");
+    a.className = "tab-link"; a.href = prof.getAttribute("href").replace("profile/", "family/");
+    a.innerHTML = '<span class="tl-ic">\ud83e\udec2</span>Family';
+    nav.insertBefore(a, prof);
+  }
+  function syncActing() {
+    paintActing(QC.acting());
+    return QC.me().then(function (d) {
+      if (!d || !d.logged_in) return;
+      var srv = d.acting || null, mine = QC.acting();
+      var same = (srv && srv.member_id) === (mine && mine.member_id);
+      storeActing(srv);
+      if (!same) {
+        QC.clearCache(false);
+        var done = ""; try { done = sessionStorage.getItem("qc-act-reload"); } catch (e) {}
+        if (done !== ((srv && srv.member_id) || "")) { try { sessionStorage.setItem("qc-act-reload", (srv && srv.member_id) || ""); } catch (e) {} location.reload(); return; }
+      }
+      paintActing(srv);
+    });
+  }
+  var famCss = document.createElement("style"); famCss.id = "qc-family-css";
+  famCss.textContent =
+    '.qc-acting-banner{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:9px clamp(16px,4vw,32px);background:var(--tint,#e6dffa);border-bottom:1px solid rgba(16,14,42,.08);font:600 13.5px/1.4 "Manrope",sans-serif;color:#100e2a;position:relative;z-index:15}' +
+    '.qc-acting-banner .qa-face{font-size:22px;line-height:1;animation:qaBob 3s ease-in-out infinite}' +
+    '@keyframes qaBob{50%{transform:translateY(-3px) rotate(-6deg)}}' +
+    '.qc-acting-banner .qa-text{flex:1 1 220px}.qa-view{display:inline-block;margin-left:6px;padding:1px 9px;border-radius:999px;background:rgba(16,14,42,.1);font-size:11.5px;font-weight:800}' +
+    '.qc-acting-banner .qa-back{border:1.5px solid rgba(16,14,42,.25);background:rgba(255,255,255,.7);color:#100e2a;border-radius:999px;padding:7px 14px;font:800 12.5px "Manrope",sans-serif;cursor:pointer}.qa-back:hover{background:#fff}' +
+    '.qc-ribbon{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 14px}.qc-ribbon a{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:999px;background:rgba(14,143,131,.09);border:1px solid rgba(14,143,131,.2);color:#0b6f66;font:800 12.5px Manrope,sans-serif;text-decoration:none;transition:transform .15s}.qc-ribbon a:hover{transform:translateY(-2px)}' +
+    'html[data-theme="dark"] .qc-ribbon a{background:rgba(126,224,212,.1);border-color:rgba(126,224,212,.25);color:#7ee0d4}' +
+    '.qc-acting-chip{display:inline-flex;align-items:center;gap:6px;padding:5px 13px 5px 6px;border-radius:999px;background:var(--tint,#e6dffa);font:800 12.5px "Manrope",sans-serif;color:#100e2a;text-decoration:none;white-space:nowrap}.qc-acting-chip span{font-size:17px}' +
+    'html.qc-acting .user-pill{display:none!important}' +
+    'html[data-theme="dark"] .qc-acting-banner,html[data-theme="dark"] .qc-acting-chip{color:#100e2a}' +
+    '@media (prefers-reduced-motion:reduce){.qc-acting-banner .qa-face{animation:none}}';
+  document.head.appendChild(famCss);
+
   /* ---------- styles for the shared pieces ---------- */
   var css = '' +
     '.qc-bell-wrap{position:relative;flex:0 0 auto}' +
@@ -481,6 +571,8 @@
 
   /* ---------- boot ---------- */
   QC.boot = function () {
+    injectFamilyTab();
+    syncActing();
     buildBell();
     QC.avatar.sync();
     // Warm the next page on hover/touch so navigation feels instant.

@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://app.querocura.com; connect-src 'self' https://app.querocura.com; media-src 'self' blob:; frame-src 'self' blob:; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self' https://app.querocura.com">
 <title>Profile — QueroCura</title>
 <meta name="robots" content="noindex">
 <link rel="icon" type="image/x-icon" href="../icons/favicon.ico">
@@ -246,6 +247,16 @@
     </div>
 
     <div id="qc-notify-card"></div>
+
+    <div class="sec-card" style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;justify-content:space-between">
+      <div style="flex:1 1 260px"><div style="font:700 16px 'Space Grotesk',sans-serif;margin-bottom:3px">Family, privacy &amp; sharing</div>
+        <div style="font-size:13.5px;opacity:.65;line-height:1.5">Look after the people you love, share a summary with a doctor, download your data, or delete your account.</div></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <a class="sec-edit-btn" style="text-decoration:none;display:inline-block" href="../family/">🫂 Family</a>
+        <a class="sec-edit-btn" style="text-decoration:none;display:inline-block" href="../privacy/">🔐 Privacy &amp; sharing</a>
+        <a class="sec-edit-btn" style="text-decoration:none;display:inline-block" href="../weekly/">📬 Weekly summary</a>
+      </div>
+    </div>
 
     <div id="qc-sections">
       <div class="sec-card"><div class="skeleton-line" style="width:40%"></div><div class="skeleton-line"></div><div class="skeleton-line" style="width:70%"></div></div>

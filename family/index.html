@@ -1,0 +1,451 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://app.querocura.com; connect-src 'self' https://app.querocura.com; media-src 'self' blob:; frame-src 'self' blob:; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self' https://app.querocura.com">
+<title>Family garden — QueroCura</title>
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/x-icon" href="../icons/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://app.querocura.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700;800&family=Manrope:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500;1,9..144,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/qc-base.css">
+<style>
+  .garden-hero { position: relative; overflow: hidden; border-radius: 30px; padding: 30px clamp(20px,4vw,38px) 28px; margin-bottom: 22px;
+    background: radial-gradient(circle at 10% 20%, rgba(126,224,212,.35), transparent 55%), radial-gradient(circle at 92% 12%, rgba(252,219,228,.7), transparent 50%), radial-gradient(circle at 70% 100%, rgba(252,241,201,.8), transparent 55%), #fbfaf6;
+    border: 1px solid var(--line); }
+  html[data-theme="dark"] .garden-hero { background: radial-gradient(circle at 10% 20%, rgba(14,143,131,.25), transparent 55%), radial-gradient(circle at 92% 12%, rgba(124,111,219,.22), transparent 50%), #18162e; }
+  .garden-hero .petal { position: absolute; font-size: 22px; opacity: .9; animation: drift 9s ease-in-out infinite; pointer-events: none; }
+  .petal.p1 { top: 14%; right: 9%; } .petal.p2 { top: 58%; right: 22%; animation-delay: -3s; font-size: 17px; } .petal.p3 { top: 24%; right: 34%; animation-delay: -6s; font-size: 15px; } .petal.p4 { bottom: 12%; right: 4%; animation-delay: -2s; }
+  @keyframes drift { 0%,100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-14px) rotate(14deg); } }
+  .hero-row { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; position: relative; }
+  .hero-stats { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; position: relative; }
+  .stat { background: rgba(255,255,255,.75); border: 1px solid rgba(16,14,42,.07); border-radius: 16px; padding: 9px 15px; font-size: 12.5px; font-weight: 700; color: #100e2a; }
+  .stat b { font: 800 19px 'Space Grotesk', sans-serif; display: block; }
+  html[data-theme="dark"] .stat { background: rgba(255,255,255,.08); color: #f2f0f8; }
+
+  .invite-banner { border-radius: 20px; padding: 14px 18px; margin-bottom: 18px; background: linear-gradient(135deg, #fcf1c9, #fcdbe4); color: #100e2a; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; font-weight: 700; font-size: 14px; }
+  .invite-banner .who { font-size: 26px; }
+
+  .garden { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 18px; margin-bottom: 26px; }
+  .pot { position: relative; border-radius: 28px; padding: 18px 18px 16px; background: var(--tint, #e6dffa); color: #100e2a; border: 1px solid rgba(16,14,42,.06); overflow: hidden; transition: transform .2s, box-shadow .2s; animation: grow .5s cubic-bezier(.2,.9,.3,1.2) backwards; }
+  .pot:hover { transform: translateY(-4px) rotate(-.4deg); box-shadow: 0 24px 44px -24px rgba(16,14,42,.4); }
+  @keyframes grow { from { transform: scale(.9) translateY(14px); opacity: 0; } }
+  .pot::after { content: ""; position: absolute; width: 150px; height: 150px; right: -50px; top: -50px; border-radius: 50%; background: rgba(255,255,255,.35); pointer-events: none; }
+  .pot-top { display: flex; align-items: center; gap: 12px; position: relative; z-index: 1; }
+  .face { width: 62px; height: 62px; border-radius: 50%; background: rgba(255,255,255,.8); display: flex; align-items: center; justify-content: center; font-size: 36px; cursor: pointer; flex: 0 0 auto; transition: transform .25s; box-shadow: 0 8px 18px -10px rgba(16,14,42,.5); position: relative; }
+  .face:hover { transform: scale(1.1) rotate(-6deg); } .face.bounce { animation: bounce .5s; }
+  @keyframes bounce { 30% { transform: translateY(-14px) scale(1.12); } 60% { transform: translateY(0) scale(.96); } }
+  .nm { font: 800 18px 'Space Grotesk', sans-serif; line-height: 1.15; } .rel { font-size: 12px; font-weight: 700; opacity: .7; margin-top: 2px; }
+  .mood { margin-left: auto; font-size: 26px; }
+  .plant { display: flex; align-items: center; gap: 12px; margin: 14px 0 6px; position: relative; z-index: 1; }
+  .plant .stage { font-size: 54px; line-height: 1; filter: drop-shadow(0 6px 6px rgba(16,14,42,.15)); animation: sway 4.5s ease-in-out infinite; transform-origin: 50% 100%; }
+  @keyframes sway { 50% { transform: rotate(4deg) scale(1.04); } }
+  .plant .cap { font-size: 12.5px; font-weight: 700; line-height: 1.4; }
+  .scoreline { display: flex; gap: 8px; flex-wrap: wrap; margin: 8px 0 4px; position: relative; z-index: 1; }
+  .pill { background: rgba(255,255,255,.7); border-radius: 999px; padding: 4px 11px; font-size: 11.5px; font-weight: 800; }
+  .pill.hot { background: #d24f28; color: #fff; }
+  .badges { display: flex; gap: 6px; flex-wrap: wrap; margin: 8px 0; position: relative; z-index: 1; }
+  .badge { font-size: 11px; font-weight: 800; background: rgba(255,255,255,.6); border-radius: 999px; padding: 3px 9px; }
+  .ideas { position: relative; z-index: 1; margin: 8px 0 2px; font-size: 12.5px; }
+  .ideas summary { cursor: pointer; font-weight: 800; }
+  .ideas ul { margin: 6px 0 2px; padding-left: 18px; line-height: 1.5; }
+  .actions { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 12px; position: relative; z-index: 1; }
+  .actions .btn { background: rgba(255,255,255,.85); color: #100e2a; border-color: transparent; padding: 7px 12px; font-size: 12.5px; }
+  .actions .btn.main { background: #100e2a; color: #fff; }
+  .skeleton { display: inline-block; width: 90px; height: 14px; border-radius: 8px; background: rgba(255,255,255,.55); animation: pulse 1.2s ease infinite; } @keyframes pulse { 50% { opacity: .45; } }
+  .add-pot { display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 10px; min-height: 250px; border: 2.5px dashed rgba(14,143,131,.4); border-radius: 28px; background: transparent; color: var(--teal); font: 800 15px 'Manrope', sans-serif; cursor: pointer; transition: background .2s, transform .2s; }
+  .add-pot:hover { background: rgba(14,143,131,.07); transform: translateY(-3px); } .add-pot .plus { font-size: 44px; line-height: 1; }
+
+  .two { display: grid; grid-template-columns: 1.3fr 1fr; gap: 18px; } @media (max-width: 860px) { .two { grid-template-columns: 1fr; } }
+  .evt { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 1px dashed var(--line); font-size: 13.5px; } .evt:last-child { border-bottom: none; }
+  .evt .dot { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 19px; flex: 0 0 auto; }
+  .evt small { display: block; color: var(--muted); font-weight: 600; font-size: 12px; }
+  .cheer { display: flex; gap: 10px; padding: 8px 0; font-size: 13.5px; align-items: center; } .cheer .e { font-size: 24px; }
+  .empty { color: var(--muted); font-size: 13.5px; padding: 8px 0; line-height: 1.5; }
+
+  /* modals */
+  .animals { display: grid; grid-template-columns: repeat(8, 1fr); gap: 6px; } @media (max-width: 480px) { .animals { grid-template-columns: repeat(4, 1fr); } }
+  .animal { aspect-ratio: 1; border-radius: 14px; border: 2px solid transparent; background: rgba(127,127,160,.1); font-size: 26px; cursor: pointer; transition: transform .15s; }
+  .animal:hover { transform: scale(1.12); } .animal.sel { border-color: #0e8f83; background: rgba(14,143,131,.14); transform: scale(1.08); }
+  .swatches { display: flex; gap: 8px; flex-wrap: wrap; } .sw { width: 30px; height: 30px; border-radius: 50%; border: 3px solid transparent; cursor: pointer; } .sw.sel { border-color: #100e2a; }
+  html[data-theme="dark"] .sw.sel { border-color: #f2f0f8; }
+  .pills { display: flex; gap: 7px; flex-wrap: wrap; } .rp { border: 1.5px solid var(--line); background: var(--card); color: var(--ink); border-radius: 999px; padding: 7px 14px; font: 800 12.5px 'Manrope', sans-serif; cursor: pointer; text-transform: capitalize; } .rp.sel { background: #0e8f83; border-color: #0e8f83; color: #fff; }
+  .preview { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 18px; background: var(--tint, #e6dffa); color: #100e2a; margin-bottom: 14px; } .preview .face { cursor: default; }
+  .sec-title { font: 800 12px 'Manrope', sans-serif; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin: 16px 0 8px; }
+
+  .ecard { border: 3px solid #d24f28; border-radius: 22px; padding: 20px; background: #fff; color: #100e2a; }
+  .ecard h3 { margin: 0; font: 800 22px 'Space Grotesk', sans-serif; display: flex; align-items: center; gap: 10px; }
+  .ecard .blood { margin-left: auto; background: #d24f28; color: #fff; border-radius: 12px; padding: 4px 12px; font: 800 20px 'Space Grotesk', sans-serif; }
+  .ecard dl { margin: 14px 0 0; display: grid; grid-template-columns: 120px 1fr; gap: 8px 12px; font-size: 14px; } .ecard dt { font-weight: 800; color: #6b6885; } .ecard dd { margin: 0; font-weight: 700; }
+  .ecard .foot { margin-top: 14px; font-size: 11.5px; color: #6b6885; }
+  .circle-row { display: flex; align-items: center; gap: 8px; padding: 6px 0; font-size: 13.5px; border-bottom: 1px dashed var(--line); }
+  @media print { body * { visibility: hidden; } #ecard-print, #ecard-print * { visibility: visible; } #ecard-print { position: absolute; left: 0; top: 0; width: 100%; } }
+</style>
+</head>
+<body>
+  <div class="topbar">
+    <a class="logo-wrap" href="../">
+      <img src="../assets/d4f7acc01b9438e998c9e7b9676584b0.png" alt="QueroCura">
+      <span class="logo-text"><span class="ink">Quero</span><span class="teal">Cura</span></span>
+    </a>
+    <nav class="tab-nav">
+      <a class="tab-link" href="../symptoms/"><span class="tl-ic">🔍</span>Symptoms</a>
+      <a class="tab-link soon" href="#" onclick="return false;" title="Chat with Cura — coming soon"><span class="tl-ic">💬</span>Cura Chat<span class="soon-tag">Soon</span></a>
+      <a class="tab-link" href="../vitals/"><span class="tl-ic">❤️</span>Vitals</a>
+      <a class="tab-link" href="../calendar/"><span class="tl-ic">📅</span>Calendar</a>
+      <a class="tab-link" href="../curavault/"><span class="tl-ic">🔒</span>CuraVault</a>
+      <a class="tab-link" href="../dashboard/"><span class="tl-ic">🏠</span>Dashboard</a>
+      <a class="tab-link" href="../insights/"><span class="tl-ic">✨</span>Insights</a>
+      <a class="tab-link active" href="#"><span class="tl-ic">🫂</span>Family</a>
+      <a class="tab-link" href="../profile/"><span class="tl-ic">👤</span>Profile</a>
+    </nav>
+    <div class="topbar-right">
+      <span class="user-pill" id="qc-user-chip"><span class="up-dot" id="qc-user-dot">?</span><span id="qc-user-name"></span></span>
+      <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode"><span id="theme-toggle-icon"></span></button>
+      <button class="signout-btn" id="qc-signout-btn">Sign out</button>
+    </div>
+  </div>
+
+  <div class="shell">
+    <div class="garden-hero">
+      <span class="petal p1">🌸</span><span class="petal p2">🦋</span><span class="petal p3">🍃</span><span class="petal p4">🌼</span>
+      <span class="page-eyebrow">Family garden</span>
+      <div class="hero-row">
+        <div>
+          <h1 class="page-title" style="margin-bottom:6px">Everyone you love, in one little garden</h1>
+          <p class="page-sub" style="margin:0">Look after kids, parents and partners from your own account. Each person gets their own space, their own plant, and their own private records.</p>
+        </div>
+        <button class="btn btn-primary" id="add-top">🌱 Plant someone new</button>
+      </div>
+      <div class="hero-stats" id="hero-stats"></div>
+    </div>
+
+    <div id="invites"></div>
+    <div class="garden" id="garden"><div class="pot" style="--tint:#e6dffa"><span class="skeleton"></span></div></div>
+
+    <div class="two">
+      <div class="card">
+        <h2>🗓️ This fortnight in the family</h2>
+        <p class="sub">Appointments, reminders and birthdays, all together.</p>
+        <div id="board"><div class="empty">Loading…</div></div>
+      </div>
+      <div class="card">
+        <h2>💌 Cheers wall</h2>
+        <p class="sub">Little notes of encouragement you've sent.</p>
+        <div id="cheers"><div class="empty">Nothing yet. Tap “Send a cheer” on someone's card.</div></div>
+      </div>
+    </div>
+
+    <div class="card" id="shared-card" style="display:none">
+      <h2>🫶 Shared with you</h2>
+      <p class="sub">People who've added you to their care circle.</p>
+      <div class="garden" id="shared"></div>
+    </div>
+
+    <p class="hint" style="text-align:center;margin-top:24px">Private by design: each profile's records are separate, only you (and anyone you invite) can open them, and you can delete a profile and everything in it at any time.</p>
+  </div>
+
+  <!-- add / edit -->
+  <div class="modal-back" id="m-edit"><div class="modal">
+    <button class="modal-x" data-close="m-edit" aria-label="Close">✕</button>
+    <h2 id="edit-title">Plant someone new 🌱</h2>
+    <p class="sub">Just a name is enough to begin. You can add details any time.</p>
+    <div class="preview" id="preview"><div class="face" id="pv-face">🐼</div><div><div class="nm" id="pv-name">New friend</div><div class="rel" id="pv-rel">family</div></div></div>
+    <div class="sec-title">Pick a buddy</div><div class="animals" id="animals"></div>
+    <div class="sec-title">Pick a colour</div><div class="swatches" id="swatches"></div>
+    <div class="sec-title">About them</div>
+    <div class="field"><label for="e-name">Name or nickname</label><input class="input" id="e-name" maxlength="30" placeholder="e.g. Aarav, Dadi, Mum"></div>
+    <div class="field"><label>Who are they to you?</label><div class="pills" id="relations"></div></div>
+    <div class="grid2">
+      <div class="field"><label for="e-bday">Birthday</label><input class="input" id="e-bday" type="date"></div>
+      <div class="field"><label for="e-sex">Sex</label><select class="input" id="e-sex"><option value="unknown">Prefer not to say</option><option value="female">Female</option><option value="male">Male</option><option value="other">Other</option></select></div>
+      <div class="field"><label for="e-blood">Blood group</label><select class="input" id="e-blood"><option value="unknown">Not sure</option><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>AB+</option><option>AB-</option><option>O+</option><option>O-</option></select></div>
+    </div>
+    <div class="sec-title">In an emergency (optional)</div>
+    <div class="grid2">
+      <div class="field"><label for="e-cname">Contact name</label><input class="input" id="e-cname" maxlength="60"></div>
+      <div class="field"><label for="e-cphone">Contact phone</label><input class="input" id="e-cphone" maxlength="24" inputmode="tel"></div>
+    </div>
+    <div class="field"><label for="e-notes">Anything a helper should know</label><textarea class="input" id="e-notes" rows="2" maxlength="300"></textarea></div>
+    <div class="row" style="justify-content:space-between"><button class="btn btn-danger btn-sm" id="e-delete" style="display:none">Remove…</button><span style="flex:1"></span><button class="btn" data-close="m-edit">Cancel</button><button class="btn btn-primary" id="e-save">Save</button></div>
+    <div class="msg" id="e-msg"></div>
+  </div></div>
+
+  <!-- emergency card -->
+  <div class="modal-back" id="m-card"><div class="modal">
+    <button class="modal-x" data-close="m-card" aria-label="Close">✕</button>
+    <h2>Emergency card</h2><p class="sub">Show this to a doctor or paramedic. Save or print it and keep a copy in a wallet or phone.</p>
+    <div id="ecard-print"></div>
+    <div class="row no-print" style="margin-top:14px"><button class="btn btn-dark" id="ecard-print-btn">🖨️ Print / save as PDF</button></div>
+  </div></div>
+
+  <!-- care circle -->
+  <div class="modal-back" id="m-circle"><div class="modal">
+    <button class="modal-x" data-close="m-circle" aria-label="Close">✕</button>
+    <h2 id="circle-title">Care circle</h2>
+    <p class="sub">Invite another QueroCura account to help look after this person. They'll see the invitation when they sign in with that email, and you can remove them any time.</p>
+    <div id="circle-list"></div>
+    <div class="sec-title">Invite someone</div>
+    <div class="grid2"><div class="field"><label for="c-email">Their email</label><input class="input" id="c-email" type="email" placeholder="partner@example.com"></div>
+    <div class="field"><label for="c-role">They can</label><select class="input" id="c-role"><option value="viewer">Look only</option><option value="manager">Look and add readings, records, events</option></select></div></div>
+    <button class="btn btn-primary" id="c-send">Send invite</button><div class="msg" id="c-msg"></div>
+  </div></div>
+
+  <!-- cheer -->
+  <div class="modal-back" id="m-cheer"><div class="modal">
+    <button class="modal-x" data-close="m-cheer" aria-label="Close">✕</button>
+    <h2 id="cheer-title">Send a cheer</h2><p class="sub">A tiny note that shows up on your family wall.</p>
+    <div class="pills" id="cheer-emojis" style="margin-bottom:12px"></div>
+    <div class="field"><label for="cheer-note">Say something kind (optional)</label><input class="input" id="cheer-note" maxlength="80" placeholder="Proud of you for logging your readings!"></div>
+    <button class="btn btn-primary" id="cheer-send">Send 💛</button>
+  </div></div>
+
+  <!-- remove -->
+  <div class="modal-back" id="m-remove"><div class="modal">
+    <button class="modal-x" data-close="m-remove" aria-label="Close">✕</button>
+    <h2 id="rm-title">Remove profile</h2>
+    <p class="sub">This permanently deletes the profile and <b>everything in it</b>: readings, symptom checks, calendar, CuraVault records and photos. It can't be undone. Consider <a href="../privacy/">exporting a copy</a> first.</p>
+    <div class="field"><label for="rm-name">Type their name to confirm</label><input class="input" id="rm-name"></div>
+    <div class="field"><label for="rm-pass">Your password</label><input class="input" id="rm-pass" type="password" autocomplete="current-password"></div>
+    <button class="btn btn-danger" id="rm-go">Delete forever</button><div class="msg" id="rm-msg"></div>
+  </div></div>
+
+<script src="../assets/qc-app.js"></script>
+<script src="../assets/qc-page.js"></script>
+<script>
+(function () {
+  var P = QCPage, esc = P.esc, api = P.api;
+  var HUB = null, EDIT_ID = null, SEL = { avatar: "panda", color: "mint", relation: "child" }, CIRCLE_ID = null, CHEER_ID = null, CHEER_EMOJI = "💛", RM_ID = null;
+  var ANIMAL = QC.animals, TINT = QC.tints;
+  var RELNICE = { child: "Child", parent: "Parent", grandparent: "Grandparent", partner: "Partner", sibling: "Sibling", relative: "Relative", friend: "Friend", other: "Someone special" };
+
+  function tintOf(c) { return TINT[c] || "#e6dffa"; }
+  function el(id) { return document.getElementById(id); }
+
+  function load() {
+    return api("/family").then(function (d) {
+      if (!d.ok) { el("garden").innerHTML = '<div class="empty">' + esc(d.message || "We couldn't load your family just now.") + '</div>'; return; }
+      HUB = d; render(); pulses();
+    });
+  }
+
+  function render() {
+    var H = HUB, me = H.me || {};
+    var members = H.members || [];
+    el("hero-stats").innerHTML =
+      '<div class="stat"><b>' + (members.length + 1) + '</b>in the garden</div>' +
+      '<div class="stat"><b>' + (H.family_streak ? "🔥 " + H.family_streak : "—") + '</b>day family streak</div>' +
+      '<div class="stat"><b>' + ((H.birthdays && H.birthdays[0]) ? "🎂 " + H.birthdays[0].in_days + "d" : "—") + '</b>' + ((H.birthdays && H.birthdays[0]) ? esc(H.birthdays[0].who) + "'s birthday" : "next birthday") + '</div>';
+
+    var inv = (H.invites || []).map(function (i) {
+      return '<div class="invite-banner"><span class="who">' + (ANIMAL[i.avatar] || "🙂") + '</span><span style="flex:1 1 220px"><b>' + esc(i.from_name) + '</b> invited you to help look after <b>' + esc(i.nickname) + '</b> (' + (i.role === "manager" ? "look & add" : "look only") + ').</span>' +
+        '<button class="btn btn-sm btn-dark" data-inv="' + i.access_id + '" data-acc="1">Accept</button><button class="btn btn-sm" data-inv="' + i.access_id + '" data-acc="0">Not now</button></div>';
+    }).join("");
+    el("invites").innerHTML = inv;
+
+    var acting = H.acting;
+    var html = meCard(me, acting);
+    members.forEach(function (m, idx) { html += potHtml(m, idx + 1, false); });
+    html += '<button class="add-pot" id="add-pot"><span class="plus">🌱</span>Plant someone new</button>';
+    el("garden").innerHTML = html;
+
+    // board
+    var rows = [];
+    (H.birthdays || []).forEach(function (b) { rows.push('<div class="evt"><span class="dot" style="background:#fcdbe4">🎂</span><div><b>' + esc(b.who) + ' turns ' + b.turning + '</b><small>' + (b.in_days === 0 ? "Today! 🎉" : "in " + b.in_days + " day" + (b.in_days === 1 ? "" : "s")) + '</small></div></div>'); });
+    (H.board || []).forEach(function (e) {
+      var d = e.when ? new Date(String(e.when).replace(" ", "T")) : null;
+      rows.push('<div class="evt"><span class="dot" style="background:' + tintOf(e.color || "lilac") + '">' + (ANIMAL[e.avatar] || "🌿") + '</span><div><b>' + esc(e.title) + '</b><small>' + esc(e.who) + (d && !isNaN(d) ? " · " + d.toLocaleDateString([], { weekday: "short", day: "numeric", month: "short" }) + ", " + d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }) : "") + '</small></div></div>');
+    });
+    el("board").innerHTML = rows.length ? rows.join("") : '<div class="empty">A quiet fortnight. 🌤️ Add appointments to the <a href="../calendar/">calendar</a> and they&rsquo;ll appear here.</div>';
+
+    el("cheers").innerHTML = (H.cheers || []).length ? H.cheers.map(function (c) {
+      return '<div class="cheer"><span class="e">' + esc(c.emoji) + '</span><div><b>' + esc(c.nickname) + '</b>' + (c.note ? ' · ' + esc(c.note) : "") + '<div class="hint">from ' + esc(c.from_name) + '</div></div></div>';
+    }).join("") : '<div class="empty">Nothing yet. Tap “Send a cheer” on someone\'s card. 💌</div>';
+
+    // shared with me
+    var sh = H.shared_with_me || [];
+    el("shared-card").style.display = sh.length ? "" : "none";
+    el("shared").innerHTML = sh.map(function (m, i) { return potHtml(m, i, true); }).join("");
+  }
+
+  function meCard(me, acting) {
+    var name = (me.name || "You").split(" ")[0];
+    return '<div class="pot" style="--tint:#d6e9fb;animation-delay:0s" data-mid="me"><div class="pot-top"><div class="face" data-bounce>🧑</div><div><div class="nm">' + esc(name) + ' <span class="chip" style="background:rgba(16,14,42,.1);color:inherit">you</span></div><div class="rel">Your own space</div></div><span class="mood" data-mood="me">·</span></div>' +
+      '<div class="plant" data-plant="me"><span class="stage">🌱</span><span class="cap"><span class="skeleton"></span></span></div><div class="scoreline" data-score="me"></div>' +
+      '<div class="actions"><a class="btn main" href="../dashboard/" data-home="1">' + (acting ? "Back to my space" : "Open my space") + '</a><a class="btn" href="../vitals/">💧 Water (log)</a></div></div>';
+  }
+
+  function potHtml(m, idx, shared) {
+    var tint = tintOf(m.color), emoji = ANIMAL[m.avatar] || "🙂", id = m.member_id;
+    var viewer = m.role === "viewer";
+    var badges = (m.badges || []).map(function (b) { return '<span class="badge">' + esc(b.emoji) + ' ' + esc(b.label) + '</span>'; }).join("");
+    var ideas = "";
+    if (!shared && m.care_ideas) {
+      var v = (m.care_ideas.vaccines || []).map(function (g) { return '<li><b>' + esc(g.when) + (g.state === "now" ? " (around now)" : " (coming up)") + ':</b> ' + g.items.map(esc).join(", ") + '</li>'; }).join("");
+      var c = (m.care_ideas.checkups || []).map(function (t) { return '<li>' + esc(t) + '</li>'; }).join("");
+      if (v || c) ideas = '<details class="ideas"><summary>🌼 Gentle ideas for ' + esc(m.nickname) + '</summary><ul>' + v + c + '</ul><div class="hint" style="color:inherit;opacity:.7">General guidance only — ask ' + (m.age != null && m.age < 18 ? "your paediatrician" : "your doctor") + ' what is right for them.</div></details>';
+    }
+    var bday = (!shared && m.birthday_info && m.birthday_info.in_days <= 14) ? '<span class="pill">🎂 ' + (m.birthday_info.in_days === 0 ? "birthday today!" : "birthday in " + m.birthday_info.in_days + "d") + '</span>' : "";
+    var streak = (!shared && m.streak) ? '<span class="pill">🔥 ' + m.streak + '-day streak</span>' : "";
+    var actions = '<button class="btn main" data-open="' + id + '">Open ' + esc(m.nickname) + '\'s space</button>';
+    if (!viewer) actions += '<button class="btn" data-water="' + id + '">💧 Water (log)</button>';
+    actions += '<button class="btn" data-card="' + id + '">🆘 Card</button>';
+    if (!shared) actions += '<button class="btn" data-cheer="' + id + '">💌 Cheer</button><button class="btn" data-circle="' + id + '">🫶 Circle</button><button class="btn" data-edit="' + id + '">✏️ Edit</button>';
+    else actions += '<button class="btn" data-leave="' + (m.access_id || "") + '" style="display:none"></button>';
+    return '<div class="pot" style="--tint:' + tint + ';animation-delay:' + (idx * .06) + 's" data-mid="' + id + '">' +
+      '<div class="pot-top"><div class="face" data-bounce>' + emoji + '</div><div><div class="nm">' + esc(m.nickname) + '</div><div class="rel">' + esc(RELNICE[m.relation] || m.relation) + (m.age != null ? ' · ' + m.age + (m.age === 1 ? ' yr' : ' yrs') : '') + (shared ? ' · ' + esc(m.owner_name || "") + "'s family" : "") + (viewer ? ' · view only' : '') + '</div></div><span class="mood" data-mood="' + id + '">·</span></div>' +
+      '<div class="plant" data-plant="' + id + '"><span class="stage">🌱</span><span class="cap"><span class="skeleton"></span></span></div>' +
+      '<div class="scoreline" data-score="' + id + '">' + bday + streak + '</div><div class="badges">' + badges + '</div>' + ideas +
+      '<div class="actions">' + actions + '</div></div>';
+  }
+
+  function pulses() {
+    var ids = ["me"].concat((HUB.members || []).map(function (m) { return m.member_id; })).concat((HUB.shared_with_me || []).map(function (m) { return m.member_id; }));
+    ids.forEach(function (id) {
+      api("/family/pulse/" + id).then(function (p) {
+        var plant = document.querySelector('[data-plant="' + id + '"]'), mood = document.querySelector('[data-mood="' + id + '"]'), sc = document.querySelector('[data-score="' + id + '"]');
+        if (!plant) return;
+        plant.innerHTML = '<span class="stage">' + (p.emoji || "🌱") + '</span><span class="cap">' + esc(p.caption || "") + '</span>';
+        if (mood) mood.textContent = p.mood || "🙂";
+        if (sc) {
+          var bits = "";
+          if (p.score != null) bits += '<span class="pill">Health score <b>' + p.score + '</b>' + (p.confidence_label === "Provisional" ? " · early days" : (p.band ? " · " + esc(p.band) : "")) + '</span>';
+          if (p.alerts) bits += '<span class="pill hot">' + p.alerts + ' alert' + (p.alerts > 1 ? "s" : "") + '</span>';
+          if (p.ongoing) bits += '<span class="pill">' + p.ongoing + ' ongoing</span>';
+          sc.innerHTML = bits + sc.innerHTML;
+        }
+      });
+    });
+  }
+
+  /* ---------- actions ---------- */
+  function go(id, page) {
+    var go = function () { location.href = page; };
+    if (id === "me") { QC.family.switchTo(null).then(go); return; }
+    QC.family.switchTo(id).then(function (d) { if (d && d.ok) go(); else P.toast((d && d.message) || "Couldn't open that profile.", "err"); });
+  }
+  document.addEventListener("click", function (e) {
+    var t = e.target;
+    var b = t.closest && t.closest("[data-bounce]"); if (b) { b.classList.remove("bounce"); void b.offsetWidth; b.classList.add("bounce"); P.confetti(["💛", "✨"], 5); return; }
+    if (t.closest("#add-top") || t.closest("#add-pot")) { openEdit(null); return; }
+    var home = t.closest("[data-home]"); if (home) { e.preventDefault(); go("me", "../dashboard/"); return; }
+    var o = t.closest("[data-open]"); if (o) { go(o.getAttribute("data-open"), "../dashboard/"); return; }
+    var w = t.closest("[data-water]"); if (w) { go(w.getAttribute("data-water"), "../vitals/"); return; }
+    var c = t.closest("[data-card]"); if (c) { openCard(c.getAttribute("data-card")); return; }
+    var ch = t.closest("[data-cheer]"); if (ch) { openCheer(ch.getAttribute("data-cheer")); return; }
+    var ci = t.closest("[data-circle]"); if (ci) { openCircle(ci.getAttribute("data-circle")); return; }
+    var ed = t.closest("[data-edit]"); if (ed) { openEdit(ed.getAttribute("data-edit")); return; }
+    var iv = t.closest("[data-inv]"); if (iv) { respond(iv.getAttribute("data-inv"), iv.getAttribute("data-acc") === "1"); return; }
+    var rv = t.closest("[data-revoke]"); if (rv) { api("/family/access/" + rv.getAttribute("data-revoke"), { method: "DELETE" }).then(function (d) { P.toast(d.message || "Done.", d.ok ? "ok" : "err"); load().then(function () { openCircle(CIRCLE_ID); }); }); return; }
+  });
+
+  function respond(id, accept) {
+    api("/family/invites/" + id + "/respond", { method: "POST", body: { accept: accept } }).then(function (d) { P.toast(d.message || "Done.", d.ok ? "ok" : "err"); if (accept && d.ok) P.confetti(); load(); });
+  }
+
+  /* add / edit */
+  function buildPickers() {
+    el("animals").innerHTML = Object.keys(ANIMAL).map(function (k) { return '<button type="button" class="animal' + (SEL.avatar === k ? " sel" : "") + '" data-a="' + k + '" aria-label="' + k + '">' + ANIMAL[k] + '</button>'; }).join("");
+    el("swatches").innerHTML = Object.keys(TINT).map(function (k) { return '<button type="button" class="sw' + (SEL.color === k ? " sel" : "") + '" data-c="' + k + '" style="background:' + TINT[k] + '" aria-label="' + k + '"></button>'; }).join("");
+    el("relations").innerHTML = Object.keys(RELNICE).map(function (k) { return '<button type="button" class="rp' + (SEL.relation === k ? " sel" : "") + '" data-r="' + k + '">' + esc(RELNICE[k]) + '</button>'; }).join("");
+    preview();
+  }
+  function preview() {
+    el("preview").style.setProperty("--tint", tintOf(SEL.color));
+    el("pv-face").textContent = ANIMAL[SEL.avatar] || "🙂";
+    el("pv-name").textContent = el("e-name").value.trim() || "New friend";
+    el("pv-rel").textContent = RELNICE[SEL.relation] || "family";
+  }
+  el("animals").addEventListener("click", function (e) { var b = e.target.closest("[data-a]"); if (b) { SEL.avatar = b.getAttribute("data-a"); buildPickers(); } });
+  el("swatches").addEventListener("click", function (e) { var b = e.target.closest("[data-c]"); if (b) { SEL.color = b.getAttribute("data-c"); buildPickers(); } });
+  el("relations").addEventListener("click", function (e) { var b = e.target.closest("[data-r]"); if (b) { SEL.relation = b.getAttribute("data-r"); var d = { child: "panda", parent: "owl", grandparent: "turtle", partner: "fox", sibling: "bunny" }; if (!EDIT_ID && d[SEL.relation]) SEL.avatar = d[SEL.relation]; buildPickers(); } });
+  el("e-name").addEventListener("input", preview);
+
+  function openEdit(id) {
+    EDIT_ID = id; el("e-msg").textContent = "";
+    var m = id ? (HUB.members || []).filter(function (x) { return x.member_id === id; })[0] : null;
+    el("edit-title").textContent = m ? "Edit " + m.nickname : "Plant someone new 🌱";
+    SEL = m ? { avatar: m.avatar, color: m.color, relation: m.relation } : { avatar: "panda", color: Object.keys(TINT)[Math.floor(Math.random() * 8)], relation: "child" };
+    el("e-name").value = m ? m.nickname : ""; el("e-bday").value = m ? (m.birthday || "") : ""; el("e-sex").value = m ? (m.sex || "unknown") : "unknown";
+    el("e-blood").value = "unknown"; el("e-cname").value = m ? (m.contact_name || "") : ""; el("e-cphone").value = m ? (m.contact_phone || "") : ""; el("e-notes").value = m ? (m.notes || "") : "";
+    el("e-delete").style.display = m ? "" : "none";
+    buildPickers(); P.openModal("m-edit");
+  }
+  el("e-save").addEventListener("click", function () {
+    var body = { nickname: el("e-name").value.trim(), relation: SEL.relation, avatar: SEL.avatar, color: SEL.color, birthday: el("e-bday").value, sex: el("e-sex").value,
+      contact_name: el("e-cname").value, contact_phone: el("e-cphone").value, notes: el("e-notes").value };
+    if (el("e-blood").value !== "unknown") body.blood_type = el("e-blood").value;
+    if (!body.nickname) { el("e-msg").className = "msg err"; el("e-msg").textContent = "Give them a name or nickname."; return; }
+    var btn = el("e-save"); btn.disabled = true;
+    api(EDIT_ID ? "/family/members/" + EDIT_ID : "/family/members", { method: EDIT_ID ? "PATCH" : "POST", body: body }).then(function (d) {
+      btn.disabled = false;
+      if (!d.ok) { el("e-msg").className = "msg err"; el("e-msg").textContent = d.message || "Couldn't save."; return; }
+      P.closeModal("m-edit"); P.toast(d.message || "Saved.");
+      if (!EDIT_ID) P.confetti(["🌸", "🌼", "💛", "🦋", "✨"], 34);
+      load();
+    });
+  });
+  el("e-delete").addEventListener("click", function () { RM_ID = EDIT_ID; var m = (HUB.members || []).filter(function (x) { return x.member_id === RM_ID; })[0]; el("rm-title").textContent = "Remove " + (m ? m.nickname : "profile"); el("rm-name").value = ""; el("rm-pass").value = ""; el("rm-msg").textContent = ""; P.closeModal("m-edit"); P.openModal("m-remove"); });
+  el("rm-go").addEventListener("click", function () {
+    var btn = el("rm-go"); btn.disabled = true;
+    api("/family/members/" + RM_ID, { method: "DELETE", body: { confirm: el("rm-name").value, password: el("rm-pass").value } }).then(function (d) {
+      btn.disabled = false;
+      if (!d.ok) { el("rm-msg").className = "msg err"; el("rm-msg").textContent = d.message || "Couldn't remove."; return; }
+      P.closeModal("m-remove"); P.toast(d.message || "Removed."); QC.clearCache(false); load();
+    });
+  });
+
+  /* emergency card */
+  function openCard(id) {
+    api("/family/members/" + id + "/card").then(function (d) {
+      if (!d.ok) { P.toast(d.message || "Couldn't open the card.", "err"); return; }
+      var c = d.card, list = function (a) { return a && a.length ? a.map(esc).join(", ") : "None recorded"; };
+      el("ecard-print").innerHTML = '<div class="ecard"><h3>🆘 ' + esc(c.name) + (c.blood_type && c.blood_type !== "unknown" ? '<span class="blood">' + esc(c.blood_type) + '</span>' : '') + '</h3>' +
+        '<dl><dt>Age</dt><dd>' + (c.age != null ? esc(c.age) + " years" : "Not recorded") + '</dd><dt>Allergic to</dt><dd style="color:#d24f28">' + list(c.allergies) + '</dd>' +
+        (c.other_allergies && c.other_allergies.length ? '<dt>Other allergies</dt><dd>' + list(c.other_allergies) + '</dd>' : '') +
+        '<dt>Conditions</dt><dd>' + list(c.conditions) + '</dd><dt>Medicines</dt><dd>' + (c.medications ? esc(c.medications) : "None recorded") + '</dd>' +
+        '<dt>Call</dt><dd>' + (c.contact_name || c.contact_phone ? esc(c.contact_name) + " " + esc(c.contact_phone) : "No contact added") + '</dd>' + (c.notes ? '<dt>Notes</dt><dd>' + esc(c.notes) + '</dd>' : '') + '</dl>' +
+        '<div class="foot">Made with QueroCura on ' + esc(c.generated) + '. Information is what the family entered, not verified by a doctor.</div></div>';
+      P.openModal("m-card");
+    });
+  }
+  el("ecard-print-btn").addEventListener("click", function () { window.print(); });
+
+  /* care circle */
+  function openCircle(id) {
+    CIRCLE_ID = id; var m = (HUB.members || []).filter(function (x) { return x.member_id === id; })[0]; if (!m) return;
+    el("circle-title").textContent = m.nickname + "'s care circle"; el("c-msg").textContent = ""; el("c-email").value = "";
+    el("circle-list").innerHTML = (m.circle || []).length ? m.circle.map(function (c) {
+      return '<div class="circle-row"><span>' + (c.status === "active" ? "✅" : "⏳") + '</span><span style="flex:1">' + esc(c.invite_email) + ' <span class="hint">· ' + (c.role === "manager" ? "look & add" : "look only") + ' · ' + (c.status === "active" ? "joined" : "waiting") + '</span></span><button class="btn btn-sm" data-revoke="' + c.id + '">Remove</button></div>';
+    }).join("") : '<div class="empty">Just you for now.</div>';
+    P.openModal("m-circle");
+  }
+  el("c-send").addEventListener("click", function () {
+    api("/family/members/" + CIRCLE_ID + "/invite", { method: "POST", body: { email: el("c-email").value, role: el("c-role").value } }).then(function (d) {
+      el("c-msg").className = "msg " + (d.ok ? "ok" : "err"); el("c-msg").textContent = d.message || "";
+      if (d.ok) load().then(function () { openCircle(CIRCLE_ID); el("c-msg").className = "msg ok"; el("c-msg").textContent = d.message; });
+    });
+  });
+
+  /* cheers */
+  function openCheer(id) {
+    CHEER_ID = id; CHEER_EMOJI = "💛"; var m = (HUB.members || []).filter(function (x) { return x.member_id === id; })[0];
+    el("cheer-title").textContent = "Send a cheer to " + (m ? m.nickname : "");
+    el("cheer-emojis").innerHTML = (HUB.options.cheers || []).map(function (e) { return '<button type="button" class="rp' + (e === CHEER_EMOJI ? " sel" : "") + '" data-e="' + e + '" style="font-size:20px">' + e + '</button>'; }).join("");
+    P.openModal("m-cheer");
+  }
+  el("cheer-emojis").addEventListener("click", function (e) { var b = e.target.closest("[data-e]"); if (!b) return; CHEER_EMOJI = b.getAttribute("data-e"); Array.prototype.forEach.call(el("cheer-emojis").children, function (x) { x.classList.toggle("sel", x === b); }); });
+  el("cheer-send").addEventListener("click", function () {
+    api("/family/members/" + CHEER_ID + "/cheer", { method: "POST", body: { emoji: CHEER_EMOJI, note: el("cheer-note").value } }).then(function (d) {
+      P.toast(d.message || "Sent!", d.ok ? "ok" : "err"); if (d.ok) { P.closeModal("m-cheer"); el("cheer-note").value = ""; P.confetti([CHEER_EMOJI, "✨"], 18); load(); }
+    });
+  });
+
+  P.init().then(function (me) { if (me && me.logged_in) load(); });
+})();
+</script>
+</body>
+</html>
