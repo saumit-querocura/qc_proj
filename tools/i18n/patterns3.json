@@ -1,0 +1,11 @@
+[
+ ["^(.+) appears above a common reference threshold$", "$1 सामान्य संदर्भ सीमा से ऊपर दिखता है"],
+ ["^(.+) appears below a common reference threshold$", "$1 सामान्य संदर्भ सीमा से नीचे दिखता है"],
+ ["^(.+) found$", "$1 मिला"],
+ ["^(\\d+) vital reading\\(s\\) were recorded\\.$", "$1 वाइटल रीडिंग दर्ज हुईं।"],
+ ["^(\\d+) blood-report-like upload\\(s\\) were found\\.$", "$1 ब्लड-रिपोर्ट जैसे अपलोड मिले।"],
+ ["^Extracted (\\d+) lab marker\\(s\\)\\.$", "$1 लैब मार्कर निकाले गए।"],
+ ["^(\\d+) item\\(s\\) may need context or follow-up\\.$", "$1 चीज़ों को संदर्भ या फ़ॉलो-अप की ज़रूरत हो सकती है।"],
+ ["^Detected health themes: (.+)\\.$", "पहचाने गए सेहत के विषय: $1।"],
+ ["^In (.+), CuraVault found (\\d+) month\\(s\\) with blood-report activity, (\\d+) extracted marker\\(s\\), and (\\d+) item\\(s\\) needing context\\.$", "$1 में CuraVault को ब्लड-रिपोर्ट गतिविधि वाले $2 महीने, $3 निकाले गए मार्कर और संदर्भ चाहने वाली $4 चीज़ें मिलीं।"]
+]

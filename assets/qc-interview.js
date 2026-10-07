@@ -118,7 +118,7 @@
 
   function loadPlan(detail) {
     state.detail = detail;
-    return call("/diagnosis/interview-plan", { text: state.text, detail: detail }).then(function (plan) {
+    return call("/diagnosis/interview-plan", { text: state.text, detail: detail, lang: (window.QCI18n && QCI18n.lang) || "en" }).then(function (plan) {
       state.plan = plan; state.flat = [];
       plan.stages.forEach(function (s) { s.questions.forEach(function (q) { state.flat.push({ stage: s, q: q }); }); });
       state.idx = 0; state.answers = {}; state.emergency = false;
@@ -250,7 +250,7 @@
 
   function showReview() {
     card('<div class="qi-load"><div class="qi-spin"></div>Putting your answers together…</div>');
-    call("/diagnosis/interview-compile", { text: state.text, detail: state.detail, answers: state.answers }).then(function (r) {
+    call("/diagnosis/interview-compile", { text: state.text, detail: state.detail, answers: state.answers, lang: (window.QCI18n && QCI18n.lang) || "en" }).then(function (r) {
       state.result = r; renderReview(r);
     }).catch(function () {
       // compile endpoint unavailable: build the addendum locally from option phrases

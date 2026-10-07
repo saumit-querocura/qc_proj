@@ -62,6 +62,24 @@
     return '<svg class="spark" viewBox="0 0 ' + w + ' ' + h + '" preserveAspectRatio="none" aria-hidden="true"><polyline fill="none" stroke="' + color + '" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" points="' + pts + '"/></svg>';
   }
 
+  function briefCard(b) {
+    if (!b) return "";
+    var h = '<div class="card brief"><h2>📝 Pre-visit brief</h2>';
+    var ap = b.appointment;
+    if (ap) h += '<p class="hint" style="margin:0 0 8px">' + esc(ap.title || "Visit") + (ap.when ? " · " + esc(fmtDate(ap.when)) : "") + (ap.location ? " · " + esc(ap.location) : "") + '</p>';
+    h += '<div class="panel-name">Reason for visit (patient\'s words)</div><p class="reason">' + (b.reason ? esc(b.reason) : '<span class="hint">Not stated</span>') + '</p>';
+    if (b.concerns && b.concerns.length) h += '<div class="panel-name">What worries the patient most</div><ol class="q">' + b.concerns.map(function (c) { return "<li>" + esc(c) + "</li>"; }).join("") + "</ol>";
+    var sl = b.since_last_visit || {};
+    h += '<div class="panel-name">What has changed' + (sl.date ? " since the last logged visit (" + esc(fmtDate(sl.date)) + ")" : " in the last 90 days") + '</div>';
+    h += b.changes && b.changes.length ? '<ul class="q">' + b.changes.map(function (c) { return "<li>" + esc(c) + "</li>"; }).join("") + "</ul>" : '<p class="hint">Nothing notable logged in this period.</p>';
+    if (b.symptom_checks && b.symptom_checks.length) {
+      h += '<div class="panel-name">Symptom checks the patient ran</div><ul class="q">' + b.symptom_checks.map(function (c) { return "<li>" + esc(fmtDate(c.date)) + ": closest pattern <b>" + esc(c.result) + "</b>" + (c.urgency ? " (" + esc(c.urgency) + ")" : "") + "</li>"; }).join("") + "</ul>";
+    }
+    if (b.flagged_labs && b.flagged_labs.length) h += '<div class="panel-name">Lab values outside the usual range</div><p>' + b.flagged_labs.map(esc).join(", ") + "</p>";
+    h += '<p class="hint" style="margin-bottom:0">' + esc(b.note || "") + "</p></div>";
+    return h;
+  }
+
   function render(resp) {
     var d = resp.data, p = d.patient || {}, s = d.summary, out = [];
     var exp = new Date(resp.expires_ts * 1000);
@@ -80,6 +98,7 @@
     }
     out.push('</div>');
 
+    if (d.brief) out.push(briefCard(d.brief));
     if (d.ongoing && d.ongoing.length) out.push('<div class="card"><h2>🔁 Ongoing concerns</h2><div class="chips" style="margin-top:0">' + d.ongoing.map(function (o) { return '<span class="chip amber">' + esc(o.name) + (o.days_open != null ? " · " + o.days_open + " days" : "") + '</span>'; }).join("") + '</div></div>');
 
     if (d.vitals) {

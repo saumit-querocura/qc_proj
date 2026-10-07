@@ -29,14 +29,21 @@
   .space { display: inline-block; width: 100%; border-bottom: 1px solid var(--line); height: 20px; }
   .ck { list-style: none; padding: 0; margin: 0; font-size: 14px; } .ck li { padding: 5px 0; display: flex; gap: 10px; } .ck li::before { content: "±0"; font-size: 16px; }
   .note { font-size: 12.5px; color: var(--muted); margin-top: 10px; }
+  .scopes { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 8px; margin: 8px 0 12px; }
+  .scope { display: flex; gap: 10px; align-items: flex-start; border: 1.5px solid var(--line); border-radius: 14px; padding: 9px 12px; cursor: pointer; font-size: 13.5px; font-weight: 700; }
+  .scope input { margin-top: 3px; accent-color: #0e8f83; } .scope.on { border-color: #0e8f83; background: rgba(14,143,131,.08); }
+  .shared { display: flex; gap: 22px; flex-wrap: wrap; margin-top: 16px; padding-top: 16px; border-top: 1px dashed var(--line); } .shared .grow { flex: 1 1 300px; }
+  .qrbox { background: #fff; padding: 8px; border-radius: 14px; border: 1px solid var(--line); align-self: flex-start; min-width: 226px; min-height: 226px; }
+  .pin { font: 800 34px 'Space Grotesk', sans-serif; letter-spacing: .22em; padding: 12px 16px; border-radius: 14px; background: rgba(14,143,131,.1); display: inline-block; }
   .bar { display: flex; gap: 10px; flex-wrap: wrap; margin: 4px 0 14px; }
   @media print {
-    .topbar, .bar, .page-eyebrow, #qc-verify-banner { display: none !important; }
+    .topbar, .bar, .page-eyebrow, #qc-verify-banner, .no-print { display: none !important; }
     body { background: #fff !important; color: #000 !important; } .card, .hero { box-shadow: none !important; border: 1px solid #bbb !important; background: #fff !important; break-inside: avoid; }
     .shell { max-width: 100%; padding: 0; } a { color: #000; text-decoration: none; }
   }
 </style>
 <script src="../assets/qc-csp.js?v=77f89cc2"></script>
+<script src="../assets/qc-i18n.js?v=5c084ad5"></script>
 </head>
 <body>
   <div class="topbar">
@@ -73,6 +80,6 @@
   </div>
   <script src="../assets/qc-app.js?v=22a3a990"></script>
   <script src="../assets/qc-page.js?v=c34c97a9"></script>
-  <script src="../assets/js/visit.js?v=de7ccf96"></script>
+  <script src="../assets/js/visit.js?v=de20b34d"></script>
 </body>
 </html>

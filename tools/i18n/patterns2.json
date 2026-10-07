@@ -1,0 +1,270 @@
+[
+ [
+  "^(\\d+) ongoing$",
+  "$1 जारी"
+ ],
+ [
+  "^(\\d+) signals?$",
+  "$1 संकेत"
+ ],
+ [
+  "^· (low|moderate|high) confidence$",
+  "· $1 विश्वसनीयता"
+ ],
+ [
+  "^\\(notice (.+)\\)$",
+  "(सूचना $1)"
+ ],
+ [
+  "^(Chrome|Edge|Firefox|Safari|Opera|Brave|Samsung Internet|Browser|App|QueroCura app) on (Windows|macOS|Mac|Linux|Android|iOS|iPhone|iPad|ChromeOS|Unknown device)$",
+  "$2 पर $1"
+ ],
+ [
+  "^Here's your week, (.+)\\.$",
+  "$1, यह रहा आपका हफ़्ता।"
+ ],
+ [
+  "^(.+): closest match$",
+  "$1: सबसे क़रीबी मिलान"
+ ],
+ [
+  "^(.*advice\\.) Prepared (.+?)\\.?$",
+  "$1 तैयार किया गया: $2"
+ ],
+ [
+  "^(Provisional|Good|High) confidence · last (\\d+) days$",
+  "$1 विश्वसनीयता · पिछले $2 दिन"
+ ],
+ [
+  "^Based on your last (\\d+) days\\. A wellness estimate, not a diagnosis — it starts at 100 and moves with your vitals, symptom checks, conditions and lifestyle\\.$",
+  "आपके पिछले $1 दिनों पर आधारित। यह सेहत का अनुमान है, निदान नहीं — यह 100 से शुरू होता है और आपके वाइटल्स, लक्षण जाँचों, स्थितियों और जीवनशैली के साथ बदलता है।"
+ ],
+ [
+  "^(\\d+)× in symptom checks · last (.+)$",
+  "लक्षण जाँचों में $1× · आख़िरी $2"
+ ],
+ [
+  "^(\\d+)× · (.+)$",
+  "$1× · $2"
+ ],
+ [
+  "^None of your last (\\d+) symptom checks? came back urgent or emergency — a good sign\\.$",
+  "आपकी पिछली $1 लक्षण जाँचों में से कोई भी तात्कालिक या आपातकालीन नहीं निकली — यह अच्छा संकेत है।"
+ ],
+ [
+  "^Recent symptom check suggested: (.+)$",
+  "हाल की लक्षण जाँच ने सुझाया: $1"
+ ],
+ [
+  "^(\\d+) ongoing conditions? on your profile \\((.+)\\)$",
+  "आपकी प्रोफ़ाइल में $1 जारी स्थितियाँ ($2)"
+ ],
+ [
+  "^(\\d+) past conditions? in your history$",
+  "आपके इतिहास में $1 पुरानी स्थितियाँ"
+ ],
+ [
+  "^(\\d+) follow-up check-ins? said things got worse$",
+  "$1 फ़ॉलो-अप जाँचों में हालत बिगड़ने की बात कही गई"
+ ],
+ [
+  "^Came up (\\d+) times in your symptom checks - worth raising with a doctor\\.$",
+  "आपकी लक्षण जाँचों में $1 बार सामने आया — डॉक्टर से चर्चा करने लायक़।"
+ ],
+ [
+  "^(\\d+) urgent symptom checks? recently$",
+  "हाल में $1 तात्कालिक लक्षण जाँचें"
+ ],
+ [
+  "^(\\d+) critical lab results? in CuraVault$",
+  "CuraVault में $1 गंभीर लैब नतीजे"
+ ],
+ [
+  "^(\\d+) lab markers? outside the usual range$",
+  "$1 लैब मार्कर सामान्य दायरे से बाहर"
+ ],
+ [
+  "^(\\d+) borderline lab markers?$",
+  "$1 सीमा-रेखा वाले लैब मार्कर"
+ ],
+ [
+  "^(\\d+) imaging reports? with findings to review$",
+  "$1 इमेजिंग रिपोर्ट जिनके निष्कर्ष देखने लायक़ हैं"
+ ],
+ [
+  "^(.+) has been (rising|falling) lately$",
+  "$1 हाल में $2 दिख रहा है"
+ ],
+ [
+  "^You've also logged (\\d+) symptom checks? in the same (\\d+)-day window — worth mentioning both together at your next check-up\\.$",
+  "आपने उसी $2 दिन की अवधि में $1 लक्षण जाँच भी दर्ज की है — अगली जाँच में दोनों का साथ ज़िक्र करना ठीक रहेगा।"
+ ],
+ [
+  "^(.+) keeps coming up$",
+  "$1 बार-बार सामने आ रहा है"
+ ],
+ [
+  "^(.+) flagged as urgent$",
+  "$1 तात्कालिक चिह्नित"
+ ],
+ [
+  "^Logged (\\d+) times in the last (\\d+) days, most recently on (.+)\\. A recurring pattern like this is worth flagging to a doctor\\.$",
+  "पिछले $2 दिनों में $1 बार दर्ज हुआ, सबसे हाल में $3 को। इस तरह का दोहराव वाला पैटर्न डॉक्टर को बताने लायक़ है।"
+ ],
+ [
+  "^(.+) has come up (\\d+) times$",
+  "$1 $2 बार सामने आया"
+ ],
+ [
+  "^How is your (.+) now\\?$",
+  "आपका $1 अब कैसा है?"
+ ],
+ [
+  "^Get (.+) checked soon$",
+  "$1 की जाँच जल्द कराएँ"
+ ],
+ [
+  "^Keep a closer eye on (.+)$",
+  "$1 पर नज़दीकी नज़र रखें"
+ ],
+ [
+  "^(\\d+) of your recent symptom checks came back urgent or emergency\\.$",
+  "आपकी हाल की $1 लक्षण जाँचें तात्कालिक या आपातकालीन निकलीं।"
+ ],
+ [
+  "^Bring up (.+) at your next visit$",
+  "अगली मुलाक़ात में $1 की चर्चा करें"
+ ],
+ [
+  "^It's come up (\\d+) times in your symptom checks — worth a proper look\\.$",
+  "आपकी लक्षण जाँचों में यह $1 बार सामने आया है — इसे ठीक से दिखाना चाहिए।"
+ ],
+ [
+  "^No (.+) readings yet$",
+  "अभी कोई $1 रीडिंग नहीं"
+ ],
+ [
+  "^Log a (.+) reading to unlock its trend chart\\.$",
+  "$1 की रीडिंग दर्ज करें ताकि उसका ट्रेंड चार्ट खुल सके।"
+ ],
+ [
+  "^(\\d+) urgent-or-worse signal\\(s\\) in the last (\\d+) days\\. Including (\\d+) follow-up check-ins? that said things got worse\\.$",
+  "पिछले $2 दिनों में $1 तात्कालिक-या-गंभीर संकेत। इनमें $3 फ़ॉलो-अप जाँचें शामिल हैं जिनमें हालत बिगड़ने की बात कही गई।"
+ ],
+ [
+  "^Symptom checks flagged urgent or emergency: (\\d+) \\(closest patterns: (.+)\\)\\.$",
+  "तात्कालिक या आपातकालीन चिह्नित लक्षण जाँचें: $1 (सबसे क़रीबी पैटर्न: $2)।"
+ ],
+ [
+  "^Symptom checks logged: (\\d+); most recent pattern: (.+)\\.$",
+  "दर्ज लक्षण जाँचें: $1; सबसे हाल का पैटर्न: $2।"
+ ],
+ [
+  "^Lab values outside the usual range: (.+)\\.$",
+  "सामान्य दायरे से बाहर लैब मान: $1।"
+ ],
+ [
+  "^Alert raised in the app: (.+)\\.$",
+  "ऐप में उठाया गया अलर्ट: $1।"
+ ],
+ [
+  "^(.+) \\((low|high)\\)$",
+  "$1 ($2)"
+ ],
+ [
+  "^(.+): latest (.+?) (°C|%|bpm|mmHg|mg/dL|kg), (going up|going down) over (\\d+) readings \\(range (.+) to (.+)\\)\\.$",
+  "$1: ताज़ा $2 $3, $4 — $5 रीडिंग में (दायरा $6 से $7)।"
+ ],
+ [
+  "^(.+): latest (.+?) (°C|%|bpm|mmHg|mg/dL|kg) over (\\d+) readings \\(range (.+) to (.+)\\)\\.$",
+  "$1: ताज़ा $2 $3 — $4 रीडिंग में (दायरा $5 से $6)।"
+ ],
+ [
+  "^(.+): latest (.+?) (°C|%|bpm|mmHg|mg/dL|kg), (going up|going down)\\.$",
+  "$1: ताज़ा $2 $3, $4।"
+ ],
+ [
+  "^(.+): latest (.+?) (°C|%|bpm|mmHg|mg/dL|kg)\\.$",
+  "$1: ताज़ा $2 $3।"
+ ],
+ [
+  "^My blood pressure has been running (.+)\\. What is my target, do I need tests \\(kidney, heart, eyes\\), and how often should I check it at home\\?$",
+  "मेरा ब्लड प्रेशर $1 चल रहा है। मेरा लक्ष्य क्या है, क्या मुझे जाँचें (गुर्दे, दिल, आँखें) करानी चाहिए, और घर पर कितनी बार मापना चाहिए?"
+ ],
+ [
+  "^My blood sugar readings have been flagged as (.+)\\. Do I need an HbA1c or other test, and what range should I aim for\\?$",
+  "मेरी ब्लड शुगर की रीडिंग को $1 चिह्नित किया गया है। क्या मुझे HbA1c या कोई और जाँच करानी चाहिए, और मेरा लक्ष्य दायरा क्या हो?"
+ ],
+ [
+  "^My oxygen saturation readings have been flagged as (.+)\\. Does this need a chest check or lung test, and what level means I should seek help\\?$",
+  "मेरी ऑक्सीजन सैचुरेशन की रीडिंग को $1 चिह्नित किया गया है। क्या इसके लिए छाती की जाँच या फेफड़ों का टेस्ट चाहिए, और किस स्तर पर मुझे मदद लेनी चाहिए?"
+ ],
+ [
+  "^My pulse has been flagged as (.+)\\. Do I need an ECG or heart rhythm test, and when should I worry\\?$",
+  "मेरी नब्ज़ को $1 चिह्नित किया गया है। क्या मुझे ECG या दिल की धड़कन की लय की जाँच चाहिए, और मुझे कब चिंता करनी चाहिए?"
+ ],
+ [
+  "^I have had temperatures flagged as (.+)\\. What is the cause likely to be, and which tests should I have if it keeps coming back\\?$",
+  "मेरे तापमान को $1 चिह्नित किया गया है। इसकी संभावित वजह क्या है, और अगर यह बार-बार लौटे तो कौन-सी जाँचें करानी चाहिए?"
+ ],
+ [
+  "^(.+) has come up (\\d+) times in my symptom checks\\. Is something ongoing behind it, and which test would confirm or rule it out\\?$",
+  "मेरी लक्षण जाँचों में $1 $2 बार सामने आया है। क्या इसके पीछे कुछ लगातार चल रहा है, और कौन-सी जाँच इसकी पुष्टि करेगी या इसे ख़ारिज करेगी?"
+ ],
+ [
+  "^I had (\\d+) symptom checks? flagged as urgent \\((.+)\\)\\. Do I need follow-up tests, and what should I do if it happens again\\?$",
+  "मेरी $1 लक्षण जाँच तात्कालिक चिह्नित हुई ($2)। क्या मुझे फ़ॉलो-अप जाँचें करानी चाहिए, और दोबारा ऐसा हो तो मुझे क्या करना चाहिए?"
+ ],
+ [
+  "^I had (\\d+) symptom checks? flagged as urgent\\. Do I need follow-up tests, and what should I do if it happens again\\?$",
+  "मेरी $1 लक्षण जाँच तात्कालिक चिह्नित हुई। क्या मुझे फ़ॉलो-अप जाँचें करानी चाहिए, और दोबारा ऐसा हो तो मुझे क्या करना चाहिए?"
+ ],
+ [
+  "^My latest symptom check pointed to (.+)\\. Does that fit what you find, and what else could it be\\?$",
+  "मेरी ताज़ा लक्षण जाँच में $1 का संकेत मिला। क्या यह आपकी जाँच से मेल खाता है, और इसके अलावा और क्या हो सकता है?"
+ ],
+ [
+  "^Given my (.+), which readings or symptoms should I track between visits, and when should I contact you\\?$",
+  "मेरी $1 को देखते हुए, मुलाक़ातों के बीच मुझे कौन-सी रीडिंग या लक्षण दर्ज करने चाहिए, और आपसे कब संपर्क करना चाहिए?"
+ ],
+ [
+  "^(.+) has come up (\\d+) times recently — is this something ongoing I should be managing differently\\?$",
+  "$1 हाल में $2 बार सामने आया है — क्या यह कुछ ऐसा है जो चल रहा है और जिसे मुझे अलग तरह से संभालना चाहिए?"
+ ],
+ [
+  "^My (.+) has been flagged as (.+) lately — should I be concerned, and is there anything I should change before my next visit\\?$",
+  "मेरा $1 हाल में $2 चिह्नित हुआ है — क्या मुझे चिंता करनी चाहिए, और अगली मुलाक़ात से पहले मुझे कुछ बदलना चाहिए?"
+ ],
+ [
+  "^I had (\\d+) symptom checks? flagged urgent recently \\(around (.+)\\) — do I need any follow-up testing\\?$",
+  "हाल में मेरी $1 लक्षण जाँच तात्कालिक चिह्नित हुई ($2 के आसपास) — क्या मुझे कोई फ़ॉलो-अप जाँच करानी चाहिए?"
+ ],
+ [
+  "^I had (\\d+) symptom checks? flagged urgent recently — do I need any follow-up testing\\?$",
+  "हाल में मेरी $1 लक्षण जाँच तात्कालिक चिह्नित हुई — क्या मुझे कोई फ़ॉलो-अप जाँच करानी चाहिए?"
+ ],
+ [
+  "^Given my (.+), are there specific vitals or symptoms I should be tracking between visits\\?$",
+  "मेरी $1 को देखते हुए, क्या कुछ ख़ास वाइटल्स या लक्षण हैं जिन पर मुझे मुलाक़ातों के बीच नज़र रखनी चाहिए?"
+ ],
+ [
+  "^My results show this pattern: (.+)\\. What could be causing it, and which tests or changes should come next\\?$",
+  "मेरे नतीजों में यह पैटर्न दिख रहा है: $1। इसकी वजह क्या हो सकती है, और आगे कौन-सी जाँचें या बदलाव होने चाहिए?"
+ ],
+ [
+  "^My (.+) was (low|high) \\((.+)\\)\\. What could explain that, and when should I re-test\\?(?: (.+))?$",
+  "मेरा $1 $2 था ($3)। इसकी क्या वजह हो सकती है, और मुझे दोबारा जाँच कब करानी चाहिए? $4"
+ ],
+ [
+  "^My latest (.+) report says the (.+) is (.+) mm, up from (.+) mm\\. Does this need action, and what is the follow-up plan\\?$",
+  "मेरी ताज़ा $1 रिपोर्ट के अनुसार $2 $3 मिमी है, जो पहले $4 मिमी था। क्या इस पर कार्रवाई चाहिए, और फ़ॉलो-अप की योजना क्या है?"
+ ],
+ [
+  "^My (.+) report mentions (.+)\\. What does it mean for me, and do I need further tests or a specialist\\?$",
+  "मेरी $1 रिपोर्ट में $2 का ज़िक्र है। मेरे लिए इसका क्या मतलब है, और क्या मुझे और जाँचें या किसी विशेषज्ञ की ज़रूरत है?"
+ ],
+ [
+  "^(\\d+) urgent-or-worse signal\\(s\\) in the last (\\d+) days\\.$",
+  "पिछले $2 दिनों में $1 तात्कालिक-या-गंभीर संकेत।"
+ ]
+]

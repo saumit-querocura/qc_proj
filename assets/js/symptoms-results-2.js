@@ -69,7 +69,12 @@ const TRIAGE_LEVELS = [
 ];
 const SAFE_STEPS = ["Rest and avoid pushing through it", "Drink water or clear fluids regularly", "Note when it started and what makes it better or worse", "Log your vitals so QueroCura can track the trend"];
 
+const ENGINE_LEVEL = { self: "self_care", monitor: "monitor", soon: "see_doctor", urgent: "urgent", emergency: "emergency" };
+const ENGINE_WORD = { self: "low", monitor: "low", soon: "medium", urgent: "urgent", emergency: "emergency" };
+function engineLevel(data) { return (data && data.syndrome_engine && data.syndrome_engine.urgency_level) || ""; }
+
 function triageLevelFor(data) {
+  if (ENGINE_LEVEL[engineLevel(data)]) return ENGINE_LEVEL[engineLevel(data)];
   const hay = [data.urgency, data.triage, data.overall_urgency].join(" ").toLowerCase();
   if (/emergency|999|112/.test(hay)) return "emergency";
   if (/urgent|high|same[- ]day/.test(hay)) return "urgent";
@@ -243,8 +248,9 @@ function renderResult(rawData, interview) {
   const governor = raw.final_intelligence_governor || null;
 
   const urgencyWord = data.urgency || data.triage || "Unknown";
-  const uColor = urgencyColor(urgencyWord);
-  const isSevere = /high|urgent|emergency/i.test(urgencyWord) || (board && board.safety_override);
+  const sevWord = ENGINE_WORD[engineLevel(data)] || urgencyWord;
+  const uColor = urgencyColor(sevWord);
+  const isSevere = /high|urgent|emergency/i.test(sevWord) || (board && board.safety_override);
 
   if (data.name) {
     document.getElementById("results-title").textContent = data.name;

@@ -227,7 +227,7 @@ async function runAnalysis(text, busyBtn, round) {
       method: "POST",
       credentials: "include",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text }),
+      body: JSON.stringify({ text, lang: (window.QCI18n && QCI18n.lang) || "en" }),
     });
     const data = await res.json();
     if (!res.ok || data.ok === false) throw new Error(data.err || data.message || "Couldn't analyze that just now.");

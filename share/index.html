@@ -36,6 +36,8 @@
   table { width: 100%; border-collapse: collapse; font-size: 13.5px; } th { text-align: left; font-size: 11px; letter-spacing: .05em; text-transform: uppercase; color: rgba(16,14,42,.5); padding: 6px 8px; border-bottom: 1.5px solid rgba(16,14,42,.1); } td { padding: 8px; border-bottom: 1px solid rgba(16,14,42,.06); vertical-align: top; }
   .st { font-size: 11px; font-weight: 800; border-radius: 999px; padding: 2px 9px; background: rgba(47,143,94,.14); color: #2f8f5e; text-transform: capitalize; } .st.high, .st.low, .st.abnormal, .st.critical { background: rgba(210,79,40,.14); color: #b8411f; } .st.borderline { background: rgba(201,138,16,.16); color: #946108; }
   .panel-name { font: 800 12.5px 'Manrope', sans-serif; letter-spacing: .05em; text-transform: uppercase; color: #0b6f66; margin: 14px 0 4px; }
+  ol.q { margin: 0; padding-left: 22px; } ol.q li { margin: 6px 0; }
+  .brief { border: 2px solid #0e8f83; } .brief .reason { font-size: 16px; font-weight: 700; margin: 2px 0 4px; }
   ul.q { margin: 0; padding-left: 20px; } ul.q li { margin: 6px 0; }
   .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 12px; } .tile { background: #f6f5f1; border-radius: 14px; padding: 11px 13px; } .tile b { font: 800 22px 'Space Grotesk', sans-serif; display: block; } .tile span { font-size: 11.5px; font-weight: 700; color: rgba(16,14,42,.55); text-transform: uppercase; letter-spacing: .04em; }
   .foot { font-size: 12px; color: rgba(16,14,42,.55); line-height: 1.6; margin-top: 22px; }
@@ -45,6 +47,7 @@
   @media (prefers-color-scheme: dark) { body { background: #100e2a; color: #f2f0f8; } .card { background: #18162e; border-color: rgba(255,255,255,.1); } .tile { background: #100e2a; } td, th { border-color: rgba(255,255,255,.1); } .pin-boxes input { background: #18162e; color: #f2f0f8; border-color: rgba(255,255,255,.2); } .btn.ghost { background: #18162e; color: #f2f0f8; border-color: rgba(255,255,255,.2); } .head .meta, .gate p, .hint, .foot, .tile span { color: #a9a6bd; } .logo { color: #f2f0f8; } }
 </style>
 <script src="../assets/qc-csp.js?v=77f89cc2"></script>
+<script src="../assets/qc-i18n.js?v=5c084ad5"></script>
 </head>
 <body>
 <div class="wrap">
@@ -64,6 +67,6 @@
   <div id="report" style="display:none"></div>
 </div>
 
-<script src="../assets/js/share-1.js?v=5051896b"></script>
+<script src="../assets/js/share-1.js?v=1dbf0741"></script>
 </body>
 </html>

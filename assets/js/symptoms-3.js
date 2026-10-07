@@ -40,6 +40,7 @@
     const LANGS = [["en-IN", "EN", "English"], ["hi-IN", "हि", "Hindi"]];
     let li = 0;
     try { li = Math.max(0, LANGS.findIndex(l => l[0] === localStorage.getItem("qc-voice-lang"))); } catch (e) {}
+    if (window.QCI18n && QCI18n.lang === "hi" && !localStorage.getItem("qc-voice-lang")) li = 1;      // a Hindi screen speaks Hindi unless the person chose otherwise
     const showLang = () => { if (langBtn) { langBtn.classList.add("on"); langBtn.textContent = LANGS[li][1]; langBtn.setAttribute("aria-label", "Speaking language: " + LANGS[li][2]); } };
     showLang();
     if (langBtn) langBtn.addEventListener("click", () => { li = (li + 1) % LANGS.length; try { localStorage.setItem("qc-voice-lang", LANGS[li][0]); } catch (e) {} showLang(); QC.toast("Speaking language: " + LANGS[li][2], "ok"); });
