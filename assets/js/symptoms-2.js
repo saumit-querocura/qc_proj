@@ -159,6 +159,7 @@ function showQuestionPhase(questions, baseText) {
 
     list.innerHTML =
       '<div class="qc-question sqp-step">' + escapeHtml(q.question) + '</div>' +
+      (q.why ? '<div class="sqp-step" style="font-size:12.5px;line-height:1.5;opacity:.7;margin:-4px 0 12px;max-width:440px">Why I ask: ' + escapeHtml(q.why) + '</div>' : '') +
       '<div class="qc-btns sqp-step">' +
         '<button type="button" class="qc-btn" data-qc-answer="yes">Yes</button>' +
         '<button type="button" class="qc-btn" data-qc-answer="no">No</button>' +

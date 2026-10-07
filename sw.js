@@ -1,9 +1,11 @@
 /* QueroCura service worker.
  *  1. Web Push: shows reminders / check-ins and opens the right page when tapped.
- *  2. Speed: images, icons and web fonts are served from cache after the first visit.
- * Pages, scripts and API calls are NEVER cached here, so signed-in content and new releases always come
- * straight from the network. */
-const CACHE = "qc-static-v1";
+ *  2. Speed: images, icons, web fonts and the site's own scripts/styles are served from cache after the first visit.
+ *     Scripts and styles are only kept when their URL carries a content hash (?v=...): a changed file gets a new URL, so a
+ *     release is picked up on the next page load. They are also re-checked in the background, so even a file whose hash
+ *     was forgotten is fresh on the visit after.
+ * Pages and API calls are NEVER cached here, so signed-in content always comes straight from the network. */
+const CACHE = "qc-static-v2";
 const STATIC_HOSTS = ["fonts.gstatic.com"];
 
 self.addEventListener("install", () => self.skipWaiting());
@@ -23,6 +25,17 @@ self.addEventListener("fetch", event => {
   const url = new URL(req.url);
   const sameOrigin = url.origin === self.location.origin;
   const isMedia = sameOrigin && /\.(?:png|jpe?g|webp|svg|ico|woff2?)$/i.test(url.pathname) && (url.pathname.startsWith("/assets/") || url.pathname.startsWith("/icons/"));
+  const isVersionedCode = sameOrigin && /\.(?:js|css)$/i.test(url.pathname) && /^[0-9a-f]{6,}$/.test(url.searchParams.get("v") || "");
+  if (isVersionedCode) {
+    event.respondWith((async () => {
+      const cache = await caches.open(CACHE);
+      const hit = await cache.match(req);
+      const refresh = fetch(req).then(res => { if (res && res.ok) cache.put(req, res.clone()); return res; });
+      if (hit) { event.waitUntil(refresh.catch(() => {})); return hit; }
+      return refresh;
+    })());
+    return;
+  }
   if (!(isMedia || STATIC_HOSTS.includes(url.hostname))) return;     // everything else: untouched
   event.respondWith((async () => {
     const cache = await caches.open(CACHE);

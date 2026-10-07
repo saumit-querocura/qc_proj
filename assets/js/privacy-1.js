@@ -77,6 +77,23 @@
       }).join("");
     });
   }
+  function loadDevices() {
+    api("/account/devices").then(function (d) {
+      var box = el("devices");
+      if (!d.ok || !d.devices.length) { box.innerHTML = '<div class="hint">No other sign-ins recorded yet.</div>'; return; }
+      box.innerHTML = d.devices.map(function (x) {
+        return '<div class="act"><time>' + esc(when(x.last_seen_ts)) + '</time><span style="flex:1"><b>' + esc(x.device) + '</b>' + (x.current ? ' <span class="chip">this device</span>' : '') +
+          ' <span class="hint">· signed in ' + esc(when(x.signed_in_ts)) + '</span></span>' +
+          (x.current ? '' : '<button class="btn btn-sm" data-signout-device="' + esc(x.id) + '" type="button">Sign out</button>') + '</div>';
+      }).join("");
+    });
+  }
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest && e.target.closest("[data-signout-device]");
+    if (!b) return;
+    b.disabled = true;
+    api("/account/devices/" + encodeURIComponent(b.getAttribute("data-signout-device")) + "/revoke", { method: "POST" }).then(function (r) { P.toast(r.message || "Done", r.ok ? "" : "err"); loadDevices(); });
+  });
   function loadActivity() {
     api("/account/activity").then(function (d) {
       var b = el("activity");
@@ -122,7 +139,7 @@
   P.init().then(function (me) {
     if (!me || !me.logged_in) return;
     if (me.acting) el("share-sub").innerHTML = "You're looking after <b>" + esc(me.acting.nickname) + "</b>, so a link made here shares <b>their</b> summary. " + el("share-sub").textContent;
-    loadOptions().then(loadLinks); loadActivity(); loadConsents();
+    loadOptions().then(loadLinks); loadActivity(); loadConsents(); loadDevices();
     if (location.hash === "#share") el("share").scrollIntoView();
   });
 })();

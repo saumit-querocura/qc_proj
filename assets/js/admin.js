@@ -16,7 +16,7 @@
     KEY = el("key").value.trim(); el("key").value = "";
     call("/hospital/admin/orgs?status=pending").then(function (r) {
       if (!r.ok) { KEY = ""; el("key-msg").className = "msg err"; el("key-msg").textContent = r.status === 404 ? "That key wasn't accepted." : (r.message || "Something went wrong."); return; }
-      el("key-form").hidden = true; el("panel").hidden = false; draw();
+      el("key-form").hidden = true; el("panel").hidden = false; draw(); security();
     });
   });
 
@@ -58,6 +58,21 @@
       QCPage.toast(r.message || "Done", r.ok ? "" : "err"); draw();
     });
   });
+
+  function security() {
+    call("/hospital/admin/security-summary").then(function (r) {
+      var box = el("sec-body");
+      if (!r.ok) { box.textContent = "Couldn't load."; return; }
+      var o = r.orgs || {}, a = r.auth || {}, em = r.emergency_accesses_30d || [];
+      box.innerHTML = '<div class="grid2">' +
+        '<div><b>' + (o.pending || 0) + '</b> waiting · <b>' + (o.active || 0) + '</b> active · <b>' + (o.suspended || 0) + '</b> suspended · <b>' + (o.rejected || 0) + '</b> rejected' +
+        (r.oldest_pending_ts ? '<div class="hint">Oldest application waiting since ' + esc(when(r.oldest_pending_ts)) + '</div>' : '') + '</div>' +
+        '<div>Failed sign-ins (24h): <b>' + (a.failed_sign_ins_24h || 0) + '</b><br>Sign-ups (24h): <b>' + (a.sign_ups_24h || 0) + '</b> of ' + (a.sign_up_attempts_24h || 0) + ' attempts<br>Password-reset requests (24h): <b>' + (a.password_resets_24h || 0) + '</b></div>' +
+        '<div>Audit log: <b style="color:' + (r.audit_chain && r.audit_chain.ok ? "var(--good)" : "var(--danger)") + '">' + (r.audit_chain && r.audit_chain.ok ? "intact (" + r.audit_chain.entries + " entries)" : "DOES NOT VERIFY") + '</b></div></div>' +
+        '<h3 style="margin:14px 0 6px;font-size:14px">Emergency accesses, last 30 days (' + em.length + ')</h3>' +
+        (em.length ? em.map(function (x) { return '<div class="hint" style="padding:4px 0">' + esc(when(x.ts)) + ' · <b>' + esc(x.org_name || "?") + '</b> (' + esc(x.staff_name || "") + '): ' + esc(x.detail || "") + '</div>'; }).join("") : '<div class="hint">None.</div>');
+    });
+  }
 
   el("verify").addEventListener("click", function () {
     var m = el("verify-msg"); m.className = "msg"; m.textContent = "Checking…";

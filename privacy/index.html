@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://app.querocura.com; connect-src 'self' https://app.querocura.com; media-src 'self' blob:; frame-src 'self' blob:; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self' https://app.querocura.com">
+<script src="../assets/qc-early.js?v=c944ae27" async></script>
 <title>Privacy &amp; sharing — QueroCura</title>
 <meta name="robots" content="noindex">
 <meta name="referrer" content="no-referrer">
@@ -12,7 +13,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://app.querocura.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700;800&family=Manrope:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500;1,9..144,600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../assets/qc-base.css">
+<link rel="stylesheet" href="../assets/qc-base.css?v=7b9ea421">
 <style>
   .shell { max-width: 860px; }
   .scopes { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 8px; margin-bottom: 12px; }
@@ -29,8 +30,8 @@
   .act { display: flex; gap: 10px; font-size: 13px; padding: 7px 0; border-bottom: 1px dashed var(--line); } .act time { color: var(--muted); font-weight: 600; min-width: 130px; }
   .log { font-size: 12.5px; color: var(--muted); padding-left: 14px; margin: 6px 0 0; }
 </style>
-<script src="../assets/qc-csp.js"></script>
-<script src="../assets/js/privacy-h.js"></script>
+<script src="../assets/qc-csp.js?v=77f89cc2"></script>
+<script src="../assets/js/privacy-h.js?v=6ed874fe"></script>
 </head>
 <body>
   <div class="topbar">
@@ -86,6 +87,8 @@
       <h2>🔐 Sign-in &amp; devices</h2>
       <p class="sub">Change your password, or sign out everywhere if you've used a shared computer. Your recent account activity is below.</p>
       <div class="row"><button class="btn" id="open-pw">Change password</button><button class="btn" id="open-revoke">Sign out of all other devices</button></div>
+      <div class="lbl" style="margin:18px 0 4px">Where you're signed in</div>
+      <div id="devices"><div class="hint">Loading…</div></div>
       <div class="lbl" style="margin:18px 0 4px">Recent activity</div>
       <div id="activity"><div class="hint">Loading…</div></div>
     </div>
@@ -130,8 +133,8 @@
     <p class="hint" id="lk-note" style="margin-top:14px"></p>
   </div></div>
 
-<script src="../assets/qc-app.js"></script>
-<script src="../assets/qc-page.js"></script>
-<script src="../assets/js/privacy-1.js"></script>
+<script src="../assets/qc-app.js?v=22a3a990"></script>
+<script src="../assets/qc-page.js?v=c34c97a9"></script>
+<script src="../assets/js/privacy-1.js?v=23a989f6"></script>
 </body>
 </html>

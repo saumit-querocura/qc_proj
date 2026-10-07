@@ -66,6 +66,13 @@
   function swrGet(k) { try { var v = JSON.parse(sessionStorage.getItem(SWR + k)); if (v && Date.now() - v.t < SWR_MAX_AGE) return v.d; } catch (e) {} return null; }
   function swrSet(k, d) { try { sessionStorage.setItem(SWR + k, JSON.stringify({ t: Date.now(), d: d })); } catch (e) {} }
   QC.stale = swrGet;
+  /* Run non-urgent work after the page has painted and the browser is idle. */
+  QC.idle = function (fn, delay) {
+    setTimeout(function () {
+      if (window.requestIdleCallback) window.requestIdleCallback(function () { try { fn(); } catch (e) {} }, { timeout: 4000 });
+      else { try { fn(); } catch (e) {} }
+    }, delay || 0);
+  };
   QC.clearCache = function (clearAvatar) {      // pass true on sign-out to forget the profile photo as well
     try { Object.keys(sessionStorage).forEach(function (k) { if (k.indexOf(SWR) === 0) sessionStorage.removeItem(k); }); } catch (e) {}
     try { if (clearAvatar) Object.keys(localStorage).forEach(function (k) { if (k.indexOf("qc-avatar") === 0) localStorage.removeItem(k); }); } catch (e) {}
@@ -171,13 +178,15 @@
     defaultReminders: { surgery: [10080, 1440, 120], test: [1440, 120], specialist: [4320, 1440, 120], vaccine: [1440] },
     localEvents: function () { return lsGet(LOCAL_KEY, []); },
     saveLocal: function (list) { lsSet(LOCAL_KEY, list); },
+    cached: function () { return swrGet("cal-events"); },
     list: function () {
       return fetch(API_BASE + "/calendar/events", { credentials: "include" })
         .then(function (r) { if (!r.ok) throw new Error("http " + r.status); return r.json(); })
-        .then(function (d) { if (!d.ok) throw new Error("not ok"); QC.cal.mode = "server"; return d.events || []; })
+        .then(function (d) { if (!d.ok) throw new Error("not ok"); QC.cal.mode = "server"; swrSet("cal-events", d.events || []); return d.events || []; })
         .catch(function () { QC.cal.mode = "local"; return QC.cal.localEvents(); });
     },
     save: function (ev) {
+      try { sessionStorage.removeItem(SWR + "cal-events"); } catch (e) {}
       var isNew = !ev.id;
       if (QC.cal.mode === "server") {
         var url = API_BASE + "/calendar/events" + (isNew ? "" : "/" + encodeURIComponent(ev.id));
@@ -191,6 +200,7 @@
       return Promise.resolve(ev);
     },
     remove: function (id) {
+      try { sessionStorage.removeItem(SWR + "cal-events"); } catch (e) {}
       if (QC.cal.mode === "server" && String(id).indexOf("local-") !== 0) {
         return fetch(API_BASE + "/calendar/events/" + encodeURIComponent(id), { method: "DELETE", credentials: "include" }).then(function (r) { if (!r.ok) throw new Error("Couldn't delete."); });
       }
@@ -575,15 +585,16 @@
     syncActing();
     buildBell();
     // Gentle nudges: confirm your e-mail, and hospital access requests waiting for your answer.
-    QC.me().then(function (me) {
+    QC.idle(function () { QC.me().then(function (me) {
       if (!me || !me.logged_in) return;
       if (window.QCVerifyBanner) window.QCVerifyBanner(me);
+      if (!document.querySelector(".qc-ribbon")) return;
       getJSON("/care/overview").then(function (d) {
         var n = d && d.ok && d.requests ? d.requests.length : 0;
         var link = n ? document.querySelector('.qc-ribbon a[href$="care/"]') : null;
         if (link) link.textContent = "\ud83c\udfe5 Care teams (" + n + " waiting)";
       });
-    });
+    }); }, 2500);
     QC.avatar.sync();
     // Warm the next page on hover/touch so navigation feels instant.
     try {
@@ -605,7 +616,7 @@
       var nav = $(".tab-nav"), cur = nav && $(".tab-link.active", nav);
       if (nav && cur && nav.scrollWidth > nav.clientWidth) nav.scrollLeft = Math.max(0, cur.offsetLeft - (nav.clientWidth - cur.offsetWidth) / 2);
     } catch (e) {}
-    QC.refreshAlerts({});
+    QC.idle(function () { QC.refreshAlerts({}); }, 1800);
     setInterval(function () { QC.refreshAlerts({ toast: false }); }, 5 * 60 * 1000);
     document.addEventListener("visibilitychange", function () { if (!document.hidden) QC.refreshAlerts({ toast: false }); });
   };

@@ -443,6 +443,8 @@ $("qc-signout-btn").addEventListener("click", async () => {
 
 /* ---------- init ---------- */
 (async function init() {
+  const early = QC.cal.cached && QC.cal.cached();
+  if (early) { events = early; try { renderAll(); } catch (e) {} }          // last known events, instantly; the real list replaces them below
   const [meData, profData] = await Promise.all([
     fetch(API_BASE + "/auth/me", { credentials: "include" }).then(r => r.json()).catch(() => ({ logged_in: false })),
     fetch(API_BASE + "/profile", { credentials: "include" }).then(r => r.json()).catch(() => null),
@@ -466,8 +468,8 @@ $("qc-signout-btn").addEventListener("click", async () => {
   // once there is something to be reminded about, offer reminders on this device
   if (events.length && window.QCPush) setTimeout(() => QCPush.maybePrompt(), 3500);
   const staleRec = QC.stale("records"); if (staleRec) setSuggestions(staleRec);
-  QC.records().then(r => { if (r && r.ok !== false) setSuggestions(r); });
   renderAll();
+  QC.idle(() => QC.records().then(r => { if (r && r.ok !== false) setSuggestions(r); }), 600);
 
   // deep links, e.g. from Insights / symptom results: ?new=1&type=doctor&title=...
   const q = new URLSearchParams(location.search);

@@ -1,0 +1,9 @@
+# If you believe you have found a security problem in QueroCura, please tell us before telling anyone else.
+Contact: mailto:saumit@querocura.com
+Expires: 2027-10-01T00:00:00.000Z
+Preferred-Languages: en
+Canonical: https://querocura.com/.well-known/security.txt
+Policy: https://querocura.com/privacy-notice/
+
+# Please include what you found, how to reproduce it, and which account or page it affects.
+# Don't access other people's data, and don't run automated scanners against patient accounts. We'll acknowledge reports promptly.
