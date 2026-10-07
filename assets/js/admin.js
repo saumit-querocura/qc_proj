@@ -16,7 +16,7 @@
     KEY = el("key").value.trim(); el("key").value = "";
     call("/hospital/admin/orgs?status=pending").then(function (r) {
       if (!r.ok) { KEY = ""; el("key-msg").className = "msg err"; el("key-msg").textContent = r.status === 404 ? "That key wasn't accepted." : (r.message || "Something went wrong."); return; }
-      el("key-form").hidden = true; el("panel").hidden = false; draw(); security();
+      el("key-form").hidden = true; el("panel").hidden = false; draw(); security(); mail(); speed();
     });
   });
 
@@ -73,6 +73,41 @@
         (em.length ? em.map(function (x) { return '<div class="hint" style="padding:4px 0">' + esc(when(x.ts)) + ' · <b>' + esc(x.org_name || "?") + '</b> (' + esc(x.staff_name || "") + '): ' + esc(x.detail || "") + '</div>'; }).join("") : '<div class="hint">None.</div>');
     });
   }
+
+  function mail() {
+    call("/hospital/admin/mail-status").then(function (r) {
+      var b = el("mail-body");
+      if (!r.ok) { b.textContent = "Couldn't load."; return; }
+      b.innerHTML = r.configured
+        ? 'Sending through <b>' + esc(r.provider) + '</b> as <b>' + esc(r.from) + '</b>' + (r.smtp_host ? ' (' + esc(r.smtp_host) + ':' + esc(r.smtp_port) + ')' : '') +
+          (r.last_ok_ts ? '<div class="hint">Last success: ' + esc(when(r.last_ok_ts)) + '</div>' : '') +
+          (r.last_error ? '<div class="msg err" style="display:block">Last failure (' + esc(when(r.last_error_ts)) + '): ' + esc(r.last_error) + '</div>' : '')
+        : '<b>No e-mail provider is set.</b> Set <code>RESEND_API_KEY</code>, <code>BREVO_API_KEY</code>, <code>SENDGRID_API_KEY</code> or <code>SMTP_HOST</code> on the server.';
+    });
+  }
+  el("mail-send").addEventListener("click", function () {
+    var m = el("mail-msg"); m.className = "msg"; m.textContent = "Sending…";
+    call("/hospital/admin/mail-test", { method: "POST", body: { to: el("mail-to").value.trim() } }).then(function (r) {
+      m.className = "msg " + (r.ok ? "ok" : "err");
+      m.textContent = r.ok ? "Sent. Check the inbox (and spam) of that address." : (r.last_error || r.message || "Sending failed.");
+      mail();
+    });
+  });
+
+  function speed() {
+    el("speed-body").textContent = "Measuring…";
+    call("/hospital/admin/speed").then(function (r) {
+      var b = el("speed-body");
+      if (!r.ok) { b.textContent = "Couldn't measure."; return; }
+      var rt = r.db_round_trip_ms || {}, med = rt.median;
+      var verdict = med == null ? "" : med <= 30 ? "good" : med <= 100 ? "slow" : "very slow";
+      b.innerHTML = '<div>Database round trip: <b>' + (med == null ? esc(rt.error || "n/a") : med + " ms") + '</b> ' + (verdict ? '<span class="pill ' + (verdict === "good" ? "active" : "rejected") + '">' + verdict + '</span>' : "") + '</div>' +
+        '<div class="hint">Main database: ' + esc((r.main && r.main.host) || "local file") + (r.main && r.main.region ? " (" + esc(r.main.region) + ")" : "") + '</div>' +
+        '<div class="hint">CuraVault database: ' + esc((r.curavault && r.curavault.host) || "local file") + (r.curavault && r.curavault.region ? " (" + esc(r.curavault.region) + ")" : "") + '</div>' +
+        '<div class="hint">' + esc(r.advice || "") + '</div>';
+    });
+  }
+  el("speed-again").addEventListener("click", speed);
 
   el("verify").addEventListener("click", function () {
     var m = el("verify-msg"); m.className = "msg"; m.textContent = "Checking…";

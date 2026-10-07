@@ -243,15 +243,27 @@ function renderPlan(plan) {
   ).join("");
 }
 
-function renderQuestions(qs) {
+function renderQuestions(qs, groups) {
   const card = document.getElementById("qc-q-card"), box = document.getElementById("qc-q-wrap");
-  if (!qs || !qs.length) { card.style.display = "none"; return; }
+  const gs = (groups || []).filter(g => g && g.questions && g.questions.length);
+  if (!gs.length && (!qs || !qs.length)) { card.style.display = "none"; return; }
   card.style.display = "";
-  box.innerHTML = '<ol class="q-list">' + qs.map(q => '<li>' + QC.esc(q) + '</li>').join("") + '</ol>' +
-    '<div class="btn-row"><button type="button" class="btn-soft" id="q-copy">📋 Copy questions</button><a class="btn-soft" href="../calendar/?new=1&type=doctor">📅 Schedule the visit</a></div>';
+  const all = gs.length ? gs.reduce((a, g) => a.concat(g.questions), []) : qs;
+  const body = gs.length
+    ? gs.map((g, gi) => '<details class="q-group"' + (gi < 2 ? " open" : "") + '><summary>' + QC.esc(g.icon || "") + " " + QC.esc(g.title) + ' <span class="q-count">' + g.questions.length + '</span></summary><ol class="q-list">' +
+        g.questions.map(q => '<li><label><input type="checkbox" class="q-tick"> <span>' + QC.esc(q) + '</span></label></li>').join("") + '</ol></details>').join("")
+    : '<ol class="q-list">' + qs.map(q => '<li>' + QC.esc(q) + '</li>').join("") + '</ol>';
+  box.innerHTML = body +
+    '<div class="btn-row"><button type="button" class="btn-soft" id="q-copy">📋 Copy all (' + all.length + ')</button>' +
+    (navigator.share ? '<button type="button" class="btn-soft" id="q-share">📤 Share</button>' : "") +
+    '<a class="btn-soft" href="../calendar/?new=1&type=doctor">📅 Schedule the visit</a></div>' +
+    '<p class="card-sub" style="margin-top:8px">Tick the ones you have asked. These are questions for your doctor, not advice. They update as you add readings, results and symptom checks.</p>';
+  const text = () => all.map((q, i) => (i + 1) + ". " + q).join("\n");
   document.getElementById("q-copy").addEventListener("click", () => {
-    QC.copy(qs.map((q, i) => (i + 1) + ". " + q).join("\n")).then(() => QC.toast("Questions copied — paste them into your notes.", "ok"), () => QC.toast("Couldn't copy.", "err"));
+    QC.copy(text()).then(() => QC.toast("Questions copied. Paste them into your notes.", "ok"), () => QC.toast("Couldn't copy.", "err"));
   });
+  const sh = document.getElementById("q-share");
+  if (sh) sh.addEventListener("click", () => { navigator.share({ title: "Questions for my doctor", text: text() }).catch(() => {}); });
 }
 
 function renderGaps(gaps) {
@@ -313,7 +325,7 @@ function paintInsights(data, scoreData) {
   each(() => renderCorrelations(data.correlations));
   each(() => renderFrequency(data.condition_frequency));
   each(() => renderPlan(data.action_plan));
-  each(() => renderQuestions(data.doctor_questions));
+  each(() => renderQuestions(data.doctor_questions, data.doctor_question_groups));
   each(() => renderGaps(data.missing_data));
 }
 function setFresh(state) {

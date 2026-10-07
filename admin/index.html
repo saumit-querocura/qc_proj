@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data:; connect-src 'self' https://app.querocura.com; object-src 'none'; base-uri 'self'; form-action 'self'">
+<link rel="preconnect" href="https://app.querocura.com" crossorigin>
 <title>QueroCura admin</title>
 <meta name="robots" content="noindex, nofollow">
 <meta name="referrer" content="no-referrer">
@@ -34,6 +35,10 @@
     </form>
     <section id="panel" hidden>
       <div class="card" id="sec-card"><h2>Security overview</h2><div id="sec-body" class="hint">Loading…</div></div>
+      <div class="card"><h2>E-mail</h2><div id="mail-body" class="hint">Loading…</div>
+        <div class="row" style="margin-top:10px"><input class="input" id="mail-to" type="email" placeholder="Send a test to…" style="flex:1 1 240px"><button class="btn btn-sm btn-primary" id="mail-send" type="button">Send test e-mail</button></div>
+        <div class="msg" id="mail-msg" role="status"></div></div>
+      <div class="card"><h2>Speed</h2><div id="speed-body" class="hint">Measuring…</div><button class="btn btn-sm" id="speed-again" type="button" style="margin-top:8px">Measure again</button></div>
       <div class="row" style="justify-content:space-between"><h1 class="page-title" style="margin:0">Hospital applications</h1><button class="btn btn-sm" id="verify" type="button">Verify audit log</button></div>
       <div class="msg" id="verify-msg" role="status"></div>
       <div class="tabs" id="tabs"></div>
@@ -41,6 +46,6 @@
     </section>
   </main>
   <script src="../assets/qc-page.js?v=c34c97a9"></script>
-  <script src="../assets/js/admin.js?v=17b1a26b"></script>
+  <script src="../assets/js/admin.js?v=d031dfc0"></script>
 </body>
 </html>

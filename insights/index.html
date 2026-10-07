@@ -254,6 +254,14 @@
   .prio.high { background: rgba(210,79,40,0.14); color: #b3401f; } .prio.medium { background: rgba(201,138,16,0.16); color: #8a5f0a; } .prio.low { background: rgba(14,143,131,0.12); color: #0b6f66; }
   .plan-title { font-weight: 700; font-size: 14px; } .plan-detail { font-size: 12.5px; color: rgba(16,14,42,0.6); line-height: 1.5; margin-top: 2px; }
   .q-list { margin: 0; padding-left: 20px; font-size: 14px; line-height: 1.7; } .q-list li { margin-bottom: 6px; }
+  .q-group { border: 1px solid var(--line, #e5e7eb); border-radius: 12px; padding: 4px 14px; margin-bottom: 10px; background: var(--surface, transparent); }
+  .q-group summary { cursor: pointer; font-weight: 700; font-size: 14px; padding: 10px 0; list-style: none; display: flex; gap: 8px; align-items: center; }
+  .q-group summary::-webkit-details-marker { display: none; }
+  .q-count { margin-left: auto; font-size: 12px; font-weight: 600; opacity: .65; }
+  .q-group .q-list { list-style: none; padding-left: 0; margin-bottom: 10px; }
+  .q-group label { display: flex; gap: 10px; align-items: flex-start; cursor: pointer; }
+  .q-group .q-tick { margin-top: 5px; }
+  .q-group .q-tick:checked + span { opacity: .5; text-decoration: line-through; }
   .btn-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
   .btn-soft { background: transparent; border: 1.5px solid rgba(16,14,42,0.16); color: #100e2a; font-family: 'Manrope', sans-serif; font-size: 13px; font-weight: 700; padding: 9px 18px; border-radius: 999px; cursor: pointer; text-decoration: none; display: inline-block; transition: transform 0.18s, background 0.18s; }
   .btn-soft:hover { background: rgba(16,14,42,0.05); transform: translateY(-2px); color: #100e2a; }
@@ -483,6 +491,6 @@
   </div>
 
 <script src="../assets/qc-app.js?v=22a3a990"></script>
-<script src="../assets/js/insights-3.js?v=dc7197c5"></script>
+<script src="../assets/js/insights-3.js?v=15fed619"></script>
 </body>
 </html>
