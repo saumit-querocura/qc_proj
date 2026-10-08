@@ -3,7 +3,7 @@
  *   QCInterview.run({ text, apiBase }) -> Promise
  *     resolves { text, summary, emergency, red_flags, answers, helpline }  when finished
  *              { cancelled: true }                                          when the person closes it
- *              null                                                         when no interview is available (old backend, offline, no questions)
+ *              null                                                         when a successful legacy response has no questions
  *
  * The questions come from POST /diagnosis/interview-plan (tailored to the symptoms,
  * the person's profile and latest vitals). Answers are folded back into text by
@@ -91,7 +91,7 @@
   var done;
   function finish(result) {
     if (!root || root.hidden) return;
-    root.hidden = true; document.body.style.overflow = "";
+    root.hidden = true; if (state) state.active = false; document.body.style.overflow = "";
     var d = done; done = null; if (d) d(result);
   }
 
@@ -103,34 +103,100 @@
   /* ---------------- flow ---------------- */
   QI.run = function (opts) {
     ensureDom();
+    if (done) finish({ cancelled: true });
     API = opts.apiBase || API;
-    state = { text: opts.text, detail: "standard", plan: null, flat: [], idx: 0, answers: {}, emergency: false };
+    state = { text: opts.text, detail: "standard", plan: null, flat: [], idx: 0, answers: {}, emergency: false, active: true, busy: false, adaptive: false, cache: {}, resume: opts.resume && opts.resume.original_text === opts.text ? opts.resume : null };
     return new Promise(function (resolve) {
       done = resolve;
       root.hidden = false; document.body.style.overflow = "hidden";
       root.innerHTML = '<div class="qi-card"><div class="qi-load"><div class="qi-spin"></div>Thinking about the right questions to ask…</div></div>';
-      loadPlan("standard").then(function (plan) {
-        if (!plan || !plan.question_count) { finish(null); return; }
-        showIntro();
-      }).catch(function () { finish(null); });   // older backend / offline: carry on without an interview
+      var owner = state;
+      function startInterview() {
+        if (state !== owner || !owner.active) return;
+        loadPlan(owner.resume ? owner.resume.detail : "standard", owner.resume).then(function (plan) {
+          if (state !== owner || !owner.active || !plan) return;
+          if (state.adaptive && !plan.next_question) { renderReview(plan); return; }
+          if (!plan.question_count) { finish(null); return; }
+          showIntro();
+        }).catch(function () { if (state === owner && owner.active) showFailure(startInterview); });
+      }
+      startInterview();
     });
   };
 
-  function loadPlan(detail) {
-    state.detail = detail;
-    return call("/diagnosis/interview-plan", { text: state.text, detail: detail, lang: (window.QCI18n && QCI18n.lang) || "en" }).then(function (plan) {
-      state.plan = plan; state.flat = [];
-      plan.stages.forEach(function (s) { s.questions.forEach(function (q) { state.flat.push({ stage: s, q: q }); }); });
-      state.idx = 0; state.answers = {}; state.emergency = false;
-      return plan;
+  function requestBody() {
+    return { text: state.text, detail: state.detail, answers: state.answers, adaptive: true,
+      state_token: state.token, lang: (window.QCI18n && window.QCI18n.lang) || "en" };
+  }
+
+  function adopt(plan) {
+    state.plan = plan; state.adaptive = plan.schema_version === 2 && plan.adaptive === true;
+    if (state.adaptive) {
+      state.token = plan.state_token;
+      state.answers = plan.accepted_answers || {};
+      state.flat = Object.keys(state.answers).filter(function (id) { return state.cache[id]; }).map(function (id) { return state.cache[id]; });
+      if (plan.next_question) {
+        var q = plan.next_question, item = {stage:{title: q.stage || "Your symptoms"},q:q};
+        state.cache[q.id] = item; state.flat.push(item);
+      }
+      state.idx = plan.next_question ? state.flat.length - 1 : state.flat.length;
+      state.result = plan;
+    } else {
+      state.flat = [];
+      (plan.stages || []).forEach(function (s) { s.questions.forEach(function (q) { state.flat.push({stage:s,q:q}); }); });
+      state.idx = 0;
+    }
+  }
+
+  function showFailure(retry) {
+    if (!state.active) return;
+    state.busy = false;
+    card('<h2 class="qi-title">We could not update your interview</h2><p class="qi-lead">Your answers are still here. Check your connection and try again. If your symptoms are severe, seek urgent medical help.</p><div class="qi-nav"><button class="qi-btn" id="qi-retry">Try again</button><button class="qi-btn qi-ghost" id="qi-cancel">Close</button></div>');
+    $("#qi-retry").onclick = retry;
+    $("#qi-cancel").onclick = function () { finish({cancelled:true}); };
+  }
+
+  function loadPlan(detail, resume) {
+    var owner = state;
+    owner.detail = detail; owner.answers = {}; owner.token = undefined; owner.cache = {};
+    if (resume) {
+      owner.answers = resume.answers || {}; owner.token = resume.state_token;
+      owner.cache = resume.question_cache || {};
+    }
+    return call("/diagnosis/interview-plan", requestBody()).then(function (plan) {
+      if (state !== owner || !owner.active) return null;
+      adopt(plan); return plan;
     });
+  }
+
+  function advance(skip) {
+    if (state.busy || !state.active) return;
+    var owner = state, q = state.flat[state.idx].q;
+    if (skip || owner.answers[q.id] === undefined) owner.answers[q.id] = null;
+    if (!owner.adaptive) { owner.idx++; showQuestion(); return; }
+    owner.busy = true;
+    card('<div class="qi-load"><div class="qi-spin"></div>Choosing the next relevant question…</div><button class="qi-link" id="qi-cancel">Close</button>');
+    $("#qi-cancel").onclick = function () { finish({cancelled:true}); };
+    call("/diagnosis/interview-plan", requestBody()).then(function (plan) {
+      if (state !== owner || !owner.active) return;
+      owner.busy = false; adopt(plan);
+      if (!plan.next_question) renderReview(plan); else showQuestion();
+    }).catch(function () { if (state === owner && owner.active) showFailure(function () { advance(false); }); });
+  }
+
+  function queueAdvance() {
+    if (state.busy) return;
+    var owner = state;
+    owner.busy = true;
+    root.querySelectorAll('button:not(.qi-x)').forEach(function (b) { b.disabled = true; });
+    setTimeout(function () { if (owner === state && owner.active) { owner.busy = false; advance(false); } }, 220);
   }
 
   function card(inner) { root.innerHTML = '<div class="qi-card">' + inner + '</div>'; root.scrollTop = 0; }
 
   function showIntro() {
     var p = state.plan, mins = Math.max(1, Math.round(p.estimated_seconds / 60));
-    var depth = [["quick", "Quick", "about 6 questions"], ["standard", "Standard", "about 12 questions"], ["detailed", "Detailed", "up to 20 questions"]];
+    var depth = [["quick", "Quick", "up to 7 questions"], ["standard", "Standard", "up to 13 questions"], ["detailed", "Detailed", "up to 21 questions"]];
     card(
       '<div class="qi-top"><span class="qi-stage">Symptom interview</span><button class="qi-x" id="qi-close" aria-label="Close">✕</button></div>' +
       '<h2 class="qi-title">Let\'s understand your ' + esc(p.title) + ' properly</h2>' +
@@ -142,14 +208,18 @@
       '<div class="qi-nav"><button class="qi-btn" id="qi-start">Start · ~' + mins + ' min</button><span class="qi-spacer"></span><button class="qi-link" id="qi-skipall">Skip and analyse now</button></div>'
     );
     $("#qi-close").onclick = function () { finish({ cancelled: true }); };
-    $("#qi-skipall").onclick = function () { finish(null); };
-    $("#qi-start").onclick = function () { state.idx = 0; showQuestion(); };
+    $("#qi-skipall").onclick = function () { if (state.adaptive) showReview(); else finish(null); };
+    $("#qi-start").onclick = function () { if (!state.adaptive) state.idx = 0; showQuestion(); };
     $("#qi-start").focus();
     root.querySelectorAll(".qi-dp").forEach(function (b) {
       b.onclick = function () {
         var d = b.getAttribute("data-d"); if (d === state.detail) return;
         card('<div class="qi-load"><div class="qi-spin"></div>Updating the questions…</div>');
-        loadPlan(d).then(showIntro).catch(function () { finish(null); });
+        var owner = state;
+        function updateDepth() {
+          loadPlan(d).then(function (p) { if (p) { if (state.adaptive && !p.next_question) renderReview(p); else showIntro(); } }).catch(function () { if (state === owner && owner.active) showFailure(updateDepth); });
+        }
+        updateDepth();
       };
     });
   }
@@ -166,7 +236,7 @@
     var html =
       '<div class="qi-top"><span class="qi-stage">' + esc(item.stage.title) + '</span><button class="qi-x" id="qi-close" aria-label="Close">✕</button></div>' +
       '<div class="qi-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + pct + '"><i style="width:' + Math.max(4, pct) + '%"></i></div>' +
-      '<div class="qi-count">Question ' + (state.idx + 1) + ' of ' + total + '</div>' +
+      '<div class="qi-count">Question ' + (state.idx + 1) + (state.adaptive ? ' · tailored to your answers' : ' of ' + total) + '</div>' +
       '<div id="qi-banners"></div>' +
       '<h2 class="qi-q" id="qi-qtext">' + esc(q.prompt) + '</h2>' +
       '<div class="qi-why"><span>💡</span><span>' + esc(q.why) + '</span></div>';
@@ -190,8 +260,8 @@
     $("#qi-close").onclick = function () { finish({ cancelled: true }); };
     if (q.red_flag) $("#qi-skipq").style.display = "none";
     var back = $("#qi-back"); if (back) back.onclick = function () { state.idx--; showQuestion(); };
-    $("#qi-skipq").onclick = function () { delete state.answers[q.id]; state.idx++; showQuestion(); };
-    var next = $("#qi-next"); if (next) next.onclick = function () { state.idx++; showQuestion(); };
+    $("#qi-skipq").onclick = function () { advance(true); };
+    var next = $("#qi-next"); if (next) next.onclick = function () { advance(false); };
 
     // wire controls + restore any earlier answer
     var prev = state.answers[q.id];
@@ -199,7 +269,7 @@
       var btns = root.querySelectorAll(".qi-sc");
       function paint(n) { btns.forEach(function (b) { var on = String(b.getAttribute("data-n")) === String(n); b.classList.toggle("on", on); b.setAttribute("aria-checked", on); b.style.background = on ? b.style.getPropertyValue("--c") : ""; }); }
       if (prev !== undefined) paint(prev);
-      btns.forEach(function (b) { b.onclick = function () { state.answers[q.id] = parseInt(b.getAttribute("data-n"), 10); paint(state.answers[q.id]); setTimeout(function () { state.idx++; showQuestion(); }, 220); }; });
+      btns.forEach(function (b) { b.onclick = function () { state.answers[q.id] = parseInt(b.getAttribute("data-n"), 10); paint(state.answers[q.id]); queueAdvance(); }; });
     } else if (q.type === "text") {
       var ta = $("#qi-text"); if (prev) ta.value = prev;
       ta.oninput = function () { state.answers[q.id] = ta.value; };
@@ -225,7 +295,7 @@
             state.answers[q.id] = cur.slice(); repaint();
           } else {
             cur = o.value; state.answers[q.id] = cur; repaint();
-            setTimeout(function () { state.idx++; showQuestion(); }, 240);
+            queueAdvance();
           }
         };
       });
@@ -249,24 +319,14 @@
   }
 
   function showReview() {
+    var owner = state;
+    if (!owner.active || owner.busy) return;
+    owner.busy = true;
     card('<div class="qi-load"><div class="qi-spin"></div>Putting your answers together…</div>');
-    call("/diagnosis/interview-compile", { text: state.text, detail: state.detail, answers: state.answers, lang: (window.QCI18n && QCI18n.lang) || "en" }).then(function (r) {
-      state.result = r; renderReview(r);
-    }).catch(function () {
-      // compile endpoint unavailable: build the addendum locally from option phrases
-      var phrases = [], summary = [], red = [], emergency = false;
-      state.flat.forEach(function (it) {
-        var q = it.q, a = state.answers[q.id]; if (a === undefined || a === "" || (Array.isArray(a) && !a.length)) return;
-        if (q.type === "scale") { phrases.push("Severity: " + a + "/10."); summary.push({ question: "Severity", answer: a + "/10" }); return; }
-        if (q.type === "text") { phrases.push(String(a)); summary.push({ question: q.prompt, answer: String(a) }); return; }
-        var chosen = Array.isArray(a) ? a : [a], labels = [];
-        chosen.forEach(function (v) { var o = q.options.filter(function (x) { return x.value === v; })[0]; if (!o || o.value === "none") return; labels.push(o.label); if (o.phrase) phrases.push(o.phrase); if (q.red_flag) { red.push({ value: o.value, label: o.label, critical: !!o.critical }); if (o.critical) emergency = true; } });
-        if (labels.length) summary.push({ question: q.prompt, answer: labels.join("; ") });
-      });
-      var add = phrases.filter(function (p, i) { return phrases.indexOf(p) === i; }).join(". ");
-      var r = { ok: true, addendum: add, summary: summary, red_flags: red, emergency: emergency, text: add ? (state.text.replace(/\s+$/, "") + ". " + add) : state.text, helpline: "" };
-      state.result = r; renderReview(r);
-    });
+    call("/diagnosis/interview-compile", requestBody()).then(function (r) {
+      if (state !== owner || !owner.active) return;
+      owner.busy = false; owner.result = r; renderReview(r);
+    }).catch(function () { if (state === owner && owner.active) showFailure(showReview); });
   }
 
   function renderReview(r) {
@@ -274,16 +334,18 @@
     card(
       '<div class="qi-top"><span class="qi-stage">Almost done</span><button class="qi-x" id="qi-close" aria-label="Close">✕</button></div>' +
       '<div class="qi-bar"><i style="width:100%"></i></div>' +
-      (r.emergency ? '<div class="qi-emerg" role="alert"><b>🚨 Please don\'t wait</b>Some of your answers can signal an emergency. Call your local emergency number (112 in India) or go to the nearest emergency department now. You can still see the analysis below.<br><a href="tel:112">Call 112</a></div>' : '') +
+      (r.emergency || (r.assessment && r.assessment.status === "urgent_action" && r.assessment.urgency_level === "emergency") ? '<div class="qi-emerg" role="alert"><b>🚨 Please don\'t wait</b>Some of your answers can signal an emergency. Call your local emergency number (112 in India) or go to the nearest emergency department now. You can still see the analysis below.<br><a href="tel:112">Call 112</a></div>' : '') +
       (r.helpline ? '<div class="qi-help" role="alert">💜 ' + esc(r.helpline) + '</div>' : '') +
+      (r.assessment ? '<div class="qi-help" role="status">' + esc(r.assessment.message) + '</div>' : '') +
       '<h2 class="qi-title">Here\'s what I\'ll factor in</h2>' +
       (rows ? '<div class="qi-sum">' + rows + '</div>' : '<p class="qi-lead">You skipped every question, so the analysis will use just what you described.</p>') +
       '<div class="qi-nav"><button class="qi-btn" id="qi-go">Analyse my symptoms →</button><button class="qi-btn qi-ghost" id="qi-edit">← Change an answer</button></div>'
     );
     $("#qi-close").onclick = function () { finish({ cancelled: true }); };
-    $("#qi-edit").onclick = function () { state.idx = Math.max(0, state.flat.length - 1); showQuestion(); };
+    if (!state.flat.length || (r.assessment && r.assessment.status === "urgent_action")) $("#qi-edit").hidden = true;
+    $("#qi-edit").onclick = function () { state.idx = Math.max(0, state.adaptive ? Object.keys(state.answers).length - 1 : state.flat.length - 1); showQuestion(); };
     $("#qi-go").onclick = function () {
-      finish({ text: r.text, summary: r.summary || [], emergency: !!r.emergency, red_flags: r.red_flags || [], answers: state.answers, helpline: r.helpline || "", detail: state.detail });
+      finish({ text: r.text, original_text: state.text, state_token: r.state_token || state.token, question_cache: state.cache, summary: r.summary || [], emergency: !!r.emergency, red_flags: r.red_flags || [], answers: state.answers, helpline: r.helpline || "", detail: state.detail, adaptive: state.adaptive, assessment: r.assessment });
     };
     $("#qi-go").focus();
   }
