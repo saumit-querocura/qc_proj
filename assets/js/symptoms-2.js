@@ -193,18 +193,24 @@ function showQuestionPhase(questions, baseText) {
 
 // The structured interview answers for this check, carried through to the results page.
 let qcInterview = null;
+let qcResume = null;
 
 async function runAnalysis(text, busyBtn, round) {
+  const originalText = text;
   const errEl = document.getElementById("sym-err");
   errEl.textContent = "";
   if (busyBtn) busyBtn.disabled = true;
 
   // First pass only: ask the specific, personalised interview questions (onset,
   // character, severity, red flags, exposures ...) before analysing. If the
-  // interview isn't available (older backend / offline) this quietly returns null.
+  // a successful legacy response has no questions, it returns null.
   if (!round && window.QCInterview) {
     let iv = null;
-    try { iv = await QCInterview.run({ text, apiBase: API_BASE }); } catch (e) { iv = null; }
+    try { iv = await QCInterview.run({ text, apiBase: API_BASE, resume: qcResume }); qcResume = null; } catch (e) {
+      errEl.textContent = "The interview could not be started. Please try again.";
+      if (busyBtn) busyBtn.disabled = false;
+      return;
+    }
     if (iv && iv.cancelled) {
       if (busyBtn) busyBtn.disabled = false;
       updatePickerBtn();
@@ -227,7 +233,7 @@ async function runAnalysis(text, busyBtn, round) {
       method: "POST",
       credentials: "include",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text, lang: (window.QCI18n && QCI18n.lang) || "en" }),
+      body: JSON.stringify(Object.assign({ text, lang: (window.QCI18n && QCI18n.lang) || "en" }, qcInterview && qcInterview.adaptive ? {adaptive:true, original_text:qcInterview.original_text, state_token:qcInterview.state_token, answers:qcInterview.answers, detail:qcInterview.detail} : {})),
     });
     const data = await res.json();
     if (!res.ok || data.ok === false) throw new Error(data.err || data.message || "Couldn't analyze that just now.");
@@ -237,7 +243,7 @@ async function runAnalysis(text, busyBtn, round) {
     // -- only on the first round, and only when the backend actually sent
     // them (top two candidates weren't clearly separated).
     const questions = data.clarifying_questions || [];
-    if (questions.length && (round || 0) === 0) {
+    if (questions.length && (round || 0) === 0 && !(qcInterview && qcInterview.adaptive) && !(data.assessment && data.assessment.status === "needs_information")) {
       showQuestionPhase(questions, text);
     } else {
       // Results now live on their own page (results/index.html) instead of
@@ -249,7 +255,7 @@ async function runAnalysis(text, busyBtn, round) {
       // tool here. The results page redirects back here if it ever finds
       // this empty (e.g. a stale bookmark or the back button).
       try {
-        sessionStorage.setItem("qc-symptom-result", JSON.stringify({ data, baseText: text, round: round || 0, ts: Date.now(), interview: qcInterview ? { summary: qcInterview.summary, emergency: qcInterview.emergency, red_flags: qcInterview.red_flags, helpline: qcInterview.helpline } : null }));
+        sessionStorage.setItem("qc-symptom-result", JSON.stringify({ data, baseText: originalText, round: round || 0, ts: Date.now(), interview: qcInterview }));
       } catch (e) {}
       window.location.href = "results/";
       return;
@@ -532,3 +538,14 @@ document.getElementById("qc-checkin-dismiss").addEventListener("click", () => {
   document.getElementById("qc-user-name").textContent = name ? name.split(" ")[0] : "";
   loadCheckin();
 })();
+
+// Carry the original complaint back from an insufficient-information result.
+try {
+  const resumed = sessionStorage.getItem("qc-symptom-resume");
+  if (resumed) {
+    const saved = JSON.parse(resumed);
+    document.getElementById("sym-input").value = saved.text || '';
+    qcResume = saved.interview;
+    sessionStorage.removeItem("qc-symptom-resume");
+  }
+} catch (e) {}
