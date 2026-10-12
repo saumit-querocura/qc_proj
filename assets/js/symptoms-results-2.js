@@ -243,6 +243,23 @@ function normalizeResponse(data) {
 function renderResult(rawData, interview) {
   const data = normalizeResponse(rawData);
   const wrap = document.getElementById("sym-results");
+  const assessment = data.assessment;
+  if (assessment && (assessment.status === "needs_information" || assessment.status === "urgent_action")) {
+    const urgent = assessment.status === "urgent_action";
+    document.getElementById("results-title").textContent = urgent ? "Please seek medical help" : "More information is needed";
+    document.getElementById("results-sub").textContent = assessment.message;
+    const labels = {chief_complaint:"Where do you feel unwell, and what feels different?",associated_or_localizing_symptoms:"Tell us where you feel it and any symptoms that occur together.",symptom_characteristics:"Describe what the symptom feels like and how it affects you.",onset_and_duration:"When did this start, and is it changing?",patient_context_clarification:"Clarify the patient information that differs from your profile."};
+    wrap.innerHTML = '<div class="card" role="' + (urgent ? 'alert' : 'status') + '"><p>' + escapeHtml(assessment.message) + '</p>' +
+      (urgent ? '<p>Do not delay care to finish more questions.</p>' + (assessment.urgency_level === 'emergency' ? '<a href="tel:112">Call 112 in India</a><p>Elsewhere, call your local emergency number.</p>' : '<p>Arrange prompt in-person medical assessment.</p>') :
+        '<ul>' + (assessment.missing_information || []).map(k => '<li>' + escapeHtml(labels[k] || String(k).replace(/_/g,' ')) + '</li>').join('') + '</ul><button class="btn" id="qc-continue-interview">Add details and continue</button>') + '</div>';
+    const more = document.getElementById('qc-continue-interview');
+    if (more) more.onclick = function () {
+      try { const saved = JSON.parse(sessionStorage.getItem(RESULT_KEY) || '{}'); sessionStorage.setItem('qc-symptom-resume', JSON.stringify({text:saved.baseText || '',interview:saved.interview || null})); } catch (e) {}
+      window.location.href = '../';
+    };
+    document.getElementById("bottom-actions").style.display = "flex";
+    return;
+  }
   const raw = data.raw || data.diagnosis || {};
   const board = raw.medical_reasoning_board || null;
   const governor = raw.final_intelligence_governor || null;
