@@ -30,9 +30,16 @@ def main():
         rx += json.load(open(pp, encoding="utf-8"))
     for pat, tpl in rx:
         re.compile(pat)
-        top = max([int(x) for x in re.findall(r"\$(\d)", tpl)] or [0])
+        top = max([int(x) for x in re.findall(r"[$@](\d)", tpl)] or [0])
         if top > re.compile(pat).groups:
             sys.exit("template uses $%d but the pattern has %d group(s): %r" % (top, re.compile(pat).groups, pat))
+    # a key written with an emoji or arrow at its edge also works without it (the runtime strips decoration, then looks the words up)
+    deco = "[\s\u2190-\u21ff\u2300-\u23ff\u2600-\u27bf\u2b00-\u2bff\ufe0f\u200d\u00b7\u2022+\-\U0001F000-\U0001FAFF]"
+    edge = re.compile("^(" + deco + "*)(.*?)(" + deco + "*)$", re.S)
+    for k, v in list(d.items()):
+        mk, mv = edge.match(k), edge.match(v) if isinstance(v, str) else None
+        if mk and mv and (mk.group(1) or mk.group(3)) and mk.group(2).strip() and mv.group(2).strip():
+            d.setdefault(mk.group(2).strip(), mv.group(2).strip())
     for k, v in d.items():
         if not isinstance(v, str) or not v.strip():
             sys.exit("empty translation for %r" % k)

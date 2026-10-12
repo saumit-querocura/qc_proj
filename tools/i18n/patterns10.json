@@ -1,0 +1,3 @@
+[
+ ["^(.+?) (asked for access|viewed your information|added a record|connected using your code|opened EMERGENCY access|accessed your Vault)$", "$1 $2"]
+]

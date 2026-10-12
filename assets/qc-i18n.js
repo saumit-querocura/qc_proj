@@ -11,7 +11,7 @@
  */
 (function () {
   "use strict";
-  var KEY = "qc-lang", HI_V = "5b31306e";
+  var KEY = "qc-lang", HI_V = "5124831b";
   var lang = "en";
   try { lang = localStorage.getItem(KEY) || ""; } catch (e) {}
   if (!/^(en|hi)$/.test(lang)) {
@@ -19,9 +19,10 @@
     lang = pref.indexOf("hi") === 0 ? "hi" : "en";
   }
   var DICT = null, RX = [], debug = /[?&]i18n-debug=1/.test(location.search);
-  var API = { lang: lang, t: function (s) { return s; }, set: set, missing: [] };
+  var API = { lang: lang, t: function (s) { return s; }, set: set, missing: [], partial: [] };
   window.QCI18n = API;
   document.documentElement.setAttribute("data-lang", lang);
+  document.documentElement.setAttribute("lang", lang);          // screen readers, spell-check and font selection follow the page language
   if (lang === "hi") {            // no flash of English: keep the page hidden until the first pass is done (or 1.5 s, whichever comes first)
     var hide = document.createElement("style");
     hide.textContent = "html[data-lang=hi]:not([data-i18n-ready]) body{visibility:hidden}";
@@ -79,12 +80,21 @@
     if (DICT[g]) return DICT[g];
     var d = dateish(g);
     if (d !== null) return d;
-    if (g.indexOf(", ") > 0) return g.split(", ").map(part).join(", ");
+    var c = core(g);
+    if (c !== null) return c;
     if (!DICTLC) {
       DICTLC = {};
       for (var k in DICT) { if (DICT.hasOwnProperty(k) && k.length < 60) DICTLC[k.toLowerCase()] = DICT[k]; }
     }
-    return DICTLC[g.toLowerCase()] || g;
+    var hit = DICTLC[g.toLowerCase()];
+    if (hit) return hit;
+    if (/^possible /.test(g)) return "संभावित " + part(g.slice(9));
+    if (/; /.test(g)) return g.split("; ").map(part).join("; ");
+    if (g.indexOf(", ") > 0) return g.split(", ").map(part).join(", ");
+    if (g.indexOf(" · ") > 0) return g.split(" · ").map(part).join(" · ");
+    if (g.indexOf(" and ") > 0) return g.split(" and ").map(part).join(" और ");
+    if (/[A-Za-z]{3,}/.test(g) && API.partial.indexOf(g) < 0 && API.partial.length < 200) API.partial.push(g);   // a name or value inside a Hindi sentence that has no Hindi form
+    return g;
   }
 
   function core(n) {
@@ -93,7 +103,7 @@
     for (var i = 0; i < RX.length; i++) {
       var m = RX[i][0].exec(n);
       if (m) {
-        return RX[i][1].replace(/\$(\d)/g, function (_, d) { return part(m[+d] || ""); }).replace(/\s+$/, "");
+        return RX[i][1].replace(/([$@])(\d)/g, function (_, k, d) { var g = m[+d] || ""; return k === "@" ? g : part(g); }).replace(/\s+$/, "");   // $n is translated if it can be; @n is a person's name or other text kept as typed
       }
     }
     return null;
@@ -106,6 +116,7 @@
   var DATEISH = /^[A-Za-z0-9 ,.:\/\-–·]+$/;
   /* A date written with English month and weekday names ("Monday, September 28", "Oct 7, 2026 · 6:25 pm") becomes day-first Hindi. */
   function dateish(n) {
+    if (!/\d/.test(n)) return null;          // a bare "May" or "June" is a name or a word, not a date
     if (n.length > 48 || !DATEISH.test(n) || !/\b(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec|Mon|Tue|Wed|Thu|Fri|Sat|Sun)[a-z]*\b/.test(n) && !/\d\s?[ap]m\b/i.test(n)) return null;
     var out = n.replace(/\b([A-Z][a-z]{2,8}) (\d{1,2})\b(?:,? (\d{4}))?/g, function (m, mo, d, y) { return MONTHS[mo] ? d + " " + mo + (y ? " " + y : "") : m; })
       .replace(/\b[A-Z][a-z]{2,8}\b/g, function (w) { return MONTHS[w] || DAYS[w] || w; })
@@ -116,22 +127,26 @@
   /* Several sentences in one text node ("Extracted 12 lab marker(s). 2 item(s) may need follow-up."): each is looked up on its own;
      the whole is translated only when every sentence is known, so a half-English paragraph never appears. */
   function sentences(n) {
-    var parts = n.match(/[^.!?]+(?:[.!?]+|$)/g);
-    if (!parts || parts.length < 2) return null;
-    var out = [];
-    for (var i = 0; i < parts.length; i++) {
-      var p = parts[i].trim();
-      if (!p) continue;
-      var t = core(p);
-      if (t === null) return null;
-      out.push(t);
+    var re = /[^.!?]+(?:[.!?]+|$)/g, m, ends = [];
+    while ((m = re.exec(n))) { ends.push(re.lastIndex); if (re.lastIndex >= n.length) break; }
+    if (ends.length < 2) return null;
+    var out = [], i = 0, start = 0;
+    while (i < ends.length) {                 // take the longest run of sentences that is known as one piece, so "6.5% or more" or a two-sentence entry still matches
+      var hit = null, j = ends.length;
+      for (; j > i; j--) {
+        var t = core(n.slice(start, ends[j - 1]).trim());
+        if (t !== null) { hit = t; break; }
+      }
+      if (hit === null) return null;
+      out.push(hit);
+      start = ends[j - 1]; i = j;
     }
     return out.join(" ");
   }
 
   function lookup(text, quiet) {
     var n = norm(text);
-    if (!n || !/[A-Za-z]{2}/.test(n)) return null;
+    if (!DICT || !n || !/[A-Za-z]{2}/.test(n)) return null;
     var hit = core(n);
     if (hit === null) hit = dateish(n);
     if (hit === null) hit = sentences(n);
@@ -273,6 +288,20 @@
     }).observe(document.body, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ATTRS });
   }
 
+  /* ---- browser dialogs (alert / confirm / prompt) are not part of the page, so they are translated here ---- */
+  function dialogs() {
+    ["alert", "confirm", "prompt"].forEach(function (fn) {
+      var orig = window[fn];
+      if (typeof orig !== "function") return;
+      window[fn] = function (msg) {
+        var args = Array.prototype.slice.call(arguments);
+        if (typeof msg === "string") args[0] = lookup(msg, true) || msg;
+        if (fn === "prompt" && typeof args[1] === "string") args[1] = lookup(args[1], true) || args[1];
+        return orig.apply(window, args);
+      };
+    });
+  }
+
   /* ---- dates follow the language ---- */
   function localise() {
     ["toLocaleString", "toLocaleDateString", "toLocaleTimeString"].forEach(function (fn) {
@@ -317,6 +346,7 @@
     if (lang !== "hi") return;
     fonts();
     localise();
+    dialogs();
   });
   if (lang === "hi") load(function () { ready(start); });
 })();

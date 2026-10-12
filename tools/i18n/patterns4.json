@@ -1,0 +1,8 @@
+[
+ ["^All (\\d+) confirmed lab markers are within range\\.$", "सभी $1 पुष्ट लैब मार्कर दायरे के भीतर हैं।"],
+ ["^(\\d+) of (\\d+) confirmed lab markers are outside the usual range\\.$", "$2 में से $1 पुष्ट लैब मार्कर सामान्य दायरे से बाहर हैं।"],
+ ["^Calculated from your creatinine, age and sex \\(CKD-EPI 2021\\)\\. Stage (.+)\\. Needs 3\\+ months of results to classify kidney disease\\.$", "आपके क्रिएटिनिन, उम्र और लिंग से गणना की गई (CKD-EPI 2021)। चरण $1। गुर्दे की बीमारी का वर्गीकरण करने के लिए 3+ महीनों के नतीजे चाहिए।"],
+ ["^HbA1c is (in the diabetes range|in the prediabetes range)$", "HbA1c $1 है"],
+ ["^(.+) \\((.+) since (.+)\\)$", "$1 ($3 से $2)"],
+ ["^above (.+)$", "$1 से ऊपर"]
+]

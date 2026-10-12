@@ -1,0 +1,10 @@
+[
+ [
+  "^Stop reminders for (.+?)\\? Follow your clinician's instructions before changing treatment\\.$",
+  "$1 के रिमाइंडर रोकें? इलाज में कोई भी बदलाव करने से पहले अपने डॉक्टर के निर्देश मानें।"
+ ],
+ [
+  "^Profile (\\d+)% complete\\. Adding <b>(.+?)<\\/b> would sharpen your health score and symptom checks\\.$",
+  "प्रोफ़ाइल $1% पूरी। <b>$2</b> जोड़ने से आपका सेहत स्कोर और लक्षण जाँचें और सटीक होंगी।"
+ ]
+]

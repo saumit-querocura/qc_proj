@@ -1,0 +1,110 @@
+[
+ [
+  "^The radiologist recommends follow-up within about (\\d+) months?\\(s\\)\\.?$",
+  "रेडियोलॉजिस्ट लगभग $1 महीने में फ़ॉलो-अप की सलाह देते हैं"
+ ],
+ [
+  "^The radiologist recommends follow-up within about (\\d+) months?\\.?$",
+  "रेडियोलॉजिस्ट लगभग $1 महीने में फ़ॉलो-अप की सलाह देते हैं"
+ ],
+ [
+  "^Ejection fraction (.+)% — normal$",
+  "इजेक्शन फ़्रैक्शन $1% — सामान्य"
+ ],
+ [
+  "^Ejection fraction (.+)% — low-normal$",
+  "इजेक्शन फ़्रैक्शन $1% — सामान्य का निचला सिरा"
+ ],
+ [
+  "^Ejection fraction (.+)% — mildly reduced$",
+  "इजेक्शन फ़्रैक्शन $1% — हल्का घटा हुआ"
+ ],
+ [
+  "^Ejection fraction (.+)% — reduced$",
+  "इजेक्शन फ़्रैक्शन $1% — घटा हुआ"
+ ],
+ [
+  "^T-score (.+) — normal$",
+  "T-स्कोर $1 — सामान्य"
+ ],
+ [
+  "^T-score (.+) — low bone density \\(osteopenia\\)$",
+  "T-स्कोर $1 — कम हड्डी घनत्व (ऑस्टियोपीनिया)"
+ ],
+ [
+  "^T-score (.+) — osteoporosis range$",
+  "T-स्कोर $1 — ऑस्टियोपोरोसिस का दायरा"
+ ],
+ [
+  "^Calcium score (.+) — (mild|moderate|extensive)$",
+  "कैल्शियम स्कोर $1 — $2"
+ ],
+ [
+  "^Common bile duct (.+) mm — (dilated|normal)$",
+  "कॉमन बाइल डक्ट $1 mm — $2"
+ ],
+ [
+  "^Prostate volume (.+) mL — (.+)$",
+  "प्रोस्टेट का आयतन $1 mL — $2"
+ ],
+ [
+  "^Cardiothoracic ratio (.+) — (enlarged|normal)$",
+  "कार्डियोथोरेसिक अनुपात $1 — $2"
+ ],
+ [
+  "^This (.+?) report of the (.+?) reads as normal, with no significant abnormality described\\.$",
+  "यह $2 की $1 रिपोर्ट सामान्य पढ़ी जाती है, इसमें कोई उल्लेखनीय असामान्यता नहीं बताई गई।"
+ ],
+ [
+  "^This (.+?) report reads as normal, with no significant abnormality described\\.$",
+  "यह $1 रिपोर्ट सामान्य पढ़ी जाती है, इसमें कोई उल्लेखनीय असामान्यता नहीं बताई गई।"
+ ],
+ [
+  "^This (.+?) report of the (.+?) mentions only minor or age-related findings: ([^.]+)\\.$",
+  "यह $2 की $1 रिपोर्ट सिर्फ़ मामूली या उम्र से जुड़े निष्कर्षों का ज़िक्र करती है: $3।"
+ ],
+ [
+  "^This (.+?) report mentions only minor or age-related findings: ([^.]+)\\.$",
+  "यह $1 रिपोर्ट सिर्फ़ मामूली या उम्र से जुड़े निष्कर्षों का ज़िक्र करती है: $2।"
+ ],
+ [
+  "^This (.+?) report of the (.+?) describes: ([^.]+)\\.$",
+  "यह $2 की $1 रिपोर्ट बताती है: $3।"
+ ],
+ [
+  "^This (.+?) report describes: ([^.]+)\\.$",
+  "यह $1 रिपोर्ट बताती है: $2।"
+ ],
+ [
+  "^This (.+?) report of the (.+?) could not be summarised reliably\\.$",
+  "इस $2 की $1 रिपोर्ट का भरोसेमंद सारांश नहीं बन सका।"
+ ],
+ [
+  "^This (.+?) report could not be summarised reliably\\.$",
+  "इस $1 रिपोर्ट का भरोसेमंद सारांश नहीं बन सका।"
+ ],
+ [
+  "^Stated grade or measurement: ([^.]+)\\.$",
+  "बताया गया ग्रेड या माप: $1।"
+ ],
+ [
+  "^The radiologist recommends follow-up within about (\\d+) month\\(s\\): ([^.]+)\\.$",
+  "रेडियोलॉजिस्ट लगभग $1 महीने में फ़ॉलो-अप की सलाह देते हैं: $2।"
+ ],
+ [
+  "^The radiologist recommends follow-up: ([^.]+)\\.$",
+  "रेडियोलॉजिस्ट फ़ॉलो-अप की सलाह देते हैं: $1।"
+ ],
+ [
+  "^(BI-RADS|Bosniak|Fazekas|LI-RADS|PI-RADS|TI-RADS|Lung-RADS) (.+?) — (.+)$",
+  "$1 $2 — $3"
+ ],
+ [
+  "^Kellgren–Lawrence (.+?) — (.+)$",
+  "केलग्रेन–लॉरेंस $1 — $2"
+ ],
+ [
+  "^Critical result: (.+)$",
+  "गंभीर नतीजा: $1"
+ ]
+]

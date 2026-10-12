@@ -1,0 +1,98 @@
+[
+ [
+  "^(.+?)'s care circle$",
+  "$1 का केयर सर्कल"
+ ],
+ [
+  "^(.+?)'s space$",
+  "$1 की जगह"
+ ],
+ [
+  "^<b>How is this now\\?<\\/b> You checked this (.+?)\\. Are you feeling better\\?$",
+  "<b>अब कैसा है?</b> आपने इसे $1 जाँचा था। क्या आप बेहतर महसूस कर रहे हैं?"
+ ],
+ [
+  "^This check is saved to <a>Insights → Ongoing conditions<\\/a>, so you can always see what's been flagged\\. In a day or two I'll ask how you're feeling, and once you say you're better it comes off your ongoing list\\. It's a possibility, not a diagnosis\\. Already living with <b>(.+?)<\\/b>\\? <a>Add it to my profile<\\/a>\\.$",
+  "यह जाँच <a>इनसाइट्स → जारी बीमारियाँ</a> में सहेजी गई है, ताकि आप हमेशा देख सकें कि क्या चिह्नित हुआ। एक-दो दिन में मैं पूछूँगा कि आप कैसा महसूस कर रहे हैं, और आपके बेहतर बताने पर यह आपकी जारी सूची से हट जाएगी। यह एक संभावना है, निदान नहीं। क्या आप पहले से <b>$1</b> के साथ जी रहे हैं? <a>इसे मेरी प्रोफ़ाइल में जोड़ें</a>।"
+ ],
+ [
+  "^birthday in (\\d+)d$",
+  "जन्मदिन में $1 दिन"
+ ],
+ [
+  "^(.+?) must be a number\\.$",
+  "$1 एक संख्या होनी चाहिए।"
+ ],
+ [
+  "^(.+?) of (.+?) doesn't look right \\(expected (.+?)–(.+?)\\)\\.$",
+  "$2 का $1 सही नहीं लगता (अपेक्षित $3–$4)।"
+ ],
+ [
+  "^That looks like °F — about (.+?) °C\\. Enter °C\\.$",
+  "यह °F जैसा लगता है — लगभग $1 °C। °C में डालें।"
+ ],
+ [
+  "^That's a (\\d+)% jump — kg, not lb\\?$",
+  "यह $1% की छलाँग है — kg में, lb नहीं?"
+ ],
+ [
+  "^ends in (\\d+) days$",
+  "$1 दिन में समाप्त"
+ ],
+ [
+  "^ends in (\\d+) h$",
+  "$1 घंटे में समाप्त"
+ ],
+ [
+  "^ends in (\\d+) min$",
+  "$1 मिनट में समाप्त"
+ ],
+ [
+  "^Today, (.+?)$",
+  "आज, $1"
+ ],
+ [
+  "^Tomorrow, (.+?)$",
+  "कल, $1"
+ ],
+ [
+  "^(.+?) \\(about your (.+?) check\\)$",
+  "$1 (आपकी $2 जाँच के बारे में)"
+ ],
+ [
+  "^couldn't read: (.+?)$",
+  "पढ़ नहीं सके: $1"
+ ],
+ [
+  "^Delete \"(.+?)\"\\? This can't be undone\\.$",
+  "\"$1\" हटाएँ? यह वापस नहीं हो सकता।"
+ ],
+ [
+  "^(.+?) days ago$",
+  "$1 दिन पहले"
+ ],
+ [
+  "^You approved a request from (.+?)$",
+  "आपने $1 का अनुरोध मंज़ूर किया"
+ ],
+ [
+  "^You declined a request from (.+?)$",
+  "आपने $1 का अनुरोध अस्वीकार किया"
+ ],
+ [
+  "^You turned off access for (.+?)$",
+  "आपने $1 की पहुँच बंद की"
+ ],
+ [
+  "^<b>(.+?)<\\/b> invited you to help look after <b>(.+?)<\\/b> \\(look & add\\)\\.$",
+  "<b>$1</b> ने आपको <b>$2</b> की देखभाल में मदद के लिए बुलाया है (देखें और जोड़ें)।"
+ ],
+ [
+  "^<b>(.+?)<\\/b> invited you to help look after <b>(.+?)<\\/b> \\(look only\\)\\.$",
+  "<b>$1</b> ने आपको <b>$2</b> की देखभाल में मदद के लिए बुलाया है (सिर्फ़ देखें)।"
+ ],
+ [
+  "^Looks like <span>(.+?)<\\/span>\\. I picked “(.+?)” for you; change it if that's wrong\\.$",
+  "यह <span>$1</span> जैसा लगता है। मैंने आपके लिए “$2” चुना है; ग़लत हो तो बदल लें।"
+ ]
+]

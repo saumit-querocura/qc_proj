@@ -1,0 +1,102 @@
+[
+ [
+  "^in about (\\d+) minute(?:s?)$",
+  "लगभग $1 मिनट में"
+ ],
+ [
+  "^Too many sign-in attempts\\. Please wait (\\d+) minute(?:s?) and try again, or reset your password\\.$",
+  "साइन-इन की बहुत ज़्यादा कोशिशें हुईं। कृपया $1 मिनट रुककर दोबारा कोशिश करें, या अपना पासवर्ड रीसेट करें।"
+ ],
+ [
+  "^You can look after up to (\\d+) people from one account\\.$",
+  "आप एक खाते से अधिकतम $1 लोगों की देखभाल कर सकते हैं।"
+ ],
+ [
+  "^Welcome to the family, (.+?)!$",
+  "परिवार में आपका स्वागत है, @1!"
+ ],
+ [
+  "^(.+?)'s profile and everything in it has been deleted\\.$",
+  "$1 की प्रोफ़ाइल और उसमें सब कुछ हटा दिया गया है।"
+ ],
+ [
+  "^A care circle can have up to (\\d+) people\\.$",
+  "एक केयर सर्कल में अधिकतम $1 लोग हो सकते हैं।"
+ ],
+ [
+  "^Invite saved\\. They'll see it when they sign in to QueroCura with (.+?)\\.$",
+  "न्योता सहेज लिया गया। जब वे $1 से QueroCura में साइन इन करेंगे तो उन्हें दिखेगा।"
+ ],
+ [
+  "^Sent (.+?) to (.+?)$",
+  "$2 को $1 भेजा गया"
+ ],
+ [
+  "^You have (\\d+) active links\\. Please remove one first\\.$",
+  "आपके $1 लिंक चालू हैं। कृपया पहले एक हटाएँ।"
+ ],
+ [
+  "^That (.+?) value doesn't look right\\. Please check it\\.$",
+  "वह $1 का मान सही नहीं लगता। कृपया जाँच लें।"
+ ],
+ [
+  "^Very low oxygen level — SpO₂ below 92%\\. Seek urgent medical care\\.$",
+  "ऑक्सीजन का स्तर बहुत कम — SpO₂ 92% से नीचे। तुरंत चिकित्सा सहायता लें।"
+ ],
+ [
+  "^Low oxygen level — SpO₂ between 92–94%\\.$",
+  "ऑक्सीजन का स्तर कम — SpO₂ 92–94% के बीच।"
+ ],
+ [
+  "^You logged your vitals on (\\d+) of 7 days\\. That kind of consistency is what makes trends meaningful\\.$",
+  "आपने 7 में से $1 दिन वाइटल्स दर्ज किए। यही निरंतरता रुझानों को सार्थक बनाती है।"
+ ],
+ [
+  "^You logged vitals on (\\d+) day(?:s?) this week\\. Every reading helps\\.$",
+  "आपने इस हफ़्ते $1 दिन वाइटल्स दर्ज किए। हर रीडिंग मदद करती है।"
+ ],
+ [
+  "^Your blood pressure averaged (\\d+)\\/(\\d+) this week, comfortably in the usual range\\.$",
+  "इस हफ़्ते आपका ब्लड प्रेशर औसतन $1/$2 रहा, जो आराम से सामान्य दायरे में है।"
+ ],
+ [
+  "^You told us (.+?) cleared up\\. We're glad you're feeling better\\.$",
+  "आपने बताया कि $1 ठीक हो गया। हमें ख़ुशी है कि आप बेहतर महसूस कर रहे हैं।"
+ ],
+ [
+  "^Your health score is up (\\d+) points from last week\\.$",
+  "आपका सेहत स्कोर पिछले हफ़्ते से $1 अंक बढ़ा है।"
+ ],
+ [
+  "^You averaged about (.+?) steps a day\\. Your body will thank you\\.$",
+  "आपने रोज़ औसतन लगभग $1 क़दम चले। आपका शरीर आपका शुक्रिया करेगा।"
+ ],
+ [
+  "^Your sleep averaged ([\\d.]+) hours, right where most adults do best\\.$",
+  "आपकी नींद औसतन $1 घंटे रही, जो ज़्यादातर वयस्कों के लिए सबसे अच्छी है।"
+ ],
+ [
+  "^Your blood pressure averaged (\\d+)\\/(\\d+), a little high\\. If this keeps up, mention it to your doctor\\.$",
+  "आपका ब्लड प्रेशर औसतन $1/$2 रहा, थोड़ा ऊँचा। अगर यह बना रहे तो अपने डॉक्टर को बताएँ।"
+ ],
+ [
+  "^Your health score dipped (\\d+) points\\. Insights shows what moved it\\.$",
+  "आपका सेहत स्कोर $1 अंक गिरा। इनसाइट्स में दिखता है कि क्या बदला।"
+ ],
+ [
+  "^How is your (.+?) now\\? A quick check-in keeps your score honest\\.$",
+  "आपका $1 अब कैसा है? एक छोटा-सा हाल-चाल आपके स्कोर को सटीक रखता है।"
+ ],
+ [
+  "^(\\d+) day(?:s?) of readings$",
+  "$1 दिन की रीडिंग"
+ ],
+ [
+  "^A steady week, (.+?)\\.$",
+  "एक स्थिर हफ़्ता, @1।"
+ ],
+ [
+  "^A great week, (.+?)\\.$",
+  "शानदार हफ़्ता, @1।"
+ ]
+]
