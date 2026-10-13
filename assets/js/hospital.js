@@ -154,15 +154,24 @@
     el("org-status").innerHTML = org.status === "active" ? '<span class="pill ok">✓ Verified by QueroCura</span>' : org.status === "pending" ? '<span class="pill wait">⏳ Verification pending</span>' : '<span class="pill bad">' + esc(org.status) + '</span>';
     if (org.status === "pending") banner.innerHTML = '<div class="notice wait">Thanks for applying. Our team is verifying <b>' + esc(org.name) + '</b> (registration ' + esc(org.registration_no || "") + '). You can set up your team and security now. Patient connections switch on as soon as you\'re approved, and we\'ll e-mail you.</div>';
     if (org.status === "rejected" || org.status === "suspended") banner.innerHTML = '<div class="notice bad">This organisation isn\'t active. ' + esc(org.review_note || "Please contact QueroCura support.") + '</div>';
-    var tabs = [["overview", "Overview", true], ["patients", "Patients", can("roster")], ["connect", "Connect", can("request")], ["team", "Team", can("team")], ["activity", "Activity log", can("audit")], ["security", "My security", true]].filter(function (t) { return t[2]; });
+    // The hospital's working tabs (queue, beds, orders, handover, setup) come from hospital-ops.js, in the order a shift uses them.
+    var OPS = window.QCOps ? window.QCOps.tabs(can) : [];
+    var tabs = [["overview", "Today", true]].concat(OPS.filter(function (t) { return t[3] === "flow"; }))
+      .concat([["patients", "Patients", can("roster")], ["connect", "Connect", can("request")]])
+      .concat(OPS.filter(function (t) { return t[3] === "admin"; }))
+      .concat([["team", "Team", can("team")], ["activity", "Activity log", can("audit")], ["security", "My security", true]]).filter(function (t) { return t[2]; });
     if (!tabs.some(function (t) { return t[0] === tabNow; })) tabNow = tabs[0][0];
     el("tabs").innerHTML = tabs.map(function (t) { return '<button type="button" role="tab" data-tab="' + t[0] + '" class="' + (t[0] === tabNow ? "on" : "") + '">' + t[1] + '</button>'; }).join("");
     switchTab(tabNow);
   }
   el("tabs").addEventListener("click", function (e) { var b = e.target.closest("[data-tab]"); if (b) { tabNow = b.getAttribute("data-tab"); [].forEach.call(el("tabs").children, function (c) { c.classList.toggle("on", c === b); }); switchTab(tabNow); } });
   function switchTab(t) {
-    ["overview", "patients", "connect", "team", "activity", "security"].forEach(function (x) { show(el("tab-" + x), x === t); });
-    ({ overview: loadOverview, patients: loadPatients, connect: renderConnect, team: loadTeam, activity: loadActivity, security: renderSecurity })[t]();
+    var own = { overview: loadOverview, patients: loadPatients, connect: renderConnect, team: loadTeam, activity: loadActivity, security: renderSecurity };
+    var ops = window.QCOps ? window.QCOps.loaders() : {};
+    [].forEach.call(document.querySelectorAll("#workspace > section.tab"), function (sec) { show(sec, sec.id === "tab-" + t); });
+    if (window.QCOps) window.QCOps.leave();
+    show(el("tab-board"), t === "overview");
+    (own[t] || ops[t] || loadOverview)();
   }
 
   /* ---------- MFA setup (required before any patient data) ---------- */
@@ -194,6 +203,7 @@
   var SEV_LABEL = { emergency: "Emergency", urgent: "Urgent", warning: "Check" };
   function sevPill(sev) { return sev ? '<span class="sev sev-' + esc(sev) + '">' + esc(SEV_LABEL[sev] || sev) + "</span>" : ""; }
   function loadOverview() {
+    if (window.QCOps) window.QCOps.board(el("tab-board"));
     var box = el("tab-overview");
     box.innerHTML = '<div class="kpis">' + new Array(6).join('<div class="kpi skel"></div>') + "</div>";
     api("/hospital/dashboard").then(function (r) {
@@ -279,7 +289,8 @@
         "<small>" + esc(i.purpose || "") + "</small><small" + (soon ? ' class="soon"' : "") + ">" + (s === "waiting" ? "Requested " + esc(when(i.created_ts)) : live ? esc(left(i.expires_ts)) + " · " + esc(i.via === "code" ? "connected with patient's code" : i.via === "request" ? "approved by patient" : "emergency") : s === "revoked" ? "Turned off by the patient " + esc(when(i.revoked_ts)) : "Ended " + esc(when(i.expires_ts))) + "</small>" +
         alerts + '<div class="tagrow">' + allergy + tags + "</div></div>" +
         '<div class="row-actions">' + (live && can("read") ? '<button class="btn btn-sm btn-primary" data-chart="' + esc(i.id) + '" type="button">Open chart</button>' : "") +
-        (live && i.can_write && (can("write") || can("write_basic")) ? '<button class="btn btn-sm" data-add="' + esc(i.id) + '" data-name="' + esc(i.patient_name || "") + '" type="button">Add record</button>' : "") + "</div></div>";
+        (live && i.can_write && (can("write") || can("write_basic")) ? '<button class="btn btn-sm" data-add="' + esc(i.id) + '" data-name="' + esc(i.patient_name || "") + '" type="button">Add record</button>' : "") +
+        (live && can("ops") && window.QCOps ? '<button class="btn btn-sm" data-checkin="' + esc(i.id) + '" type="button">Check in</button>' : "") + "</div></div>";
     }).join("");
     box.innerHTML = html;
     var qi = el("pt-q");
@@ -291,6 +302,7 @@
     var f = e.target.closest("[data-filter]"); if (f) { FILTER = f.getAttribute("data-filter"); drawRoster(); return; }
     var g = e.target.closest("[data-goto]"); if (g) { tabNow = g.getAttribute("data-goto"); render(); return; }
     var c = e.target.closest("[data-chart]"); if (c) { openChart(c.getAttribute("data-chart")); return; }
+    var ci = e.target.closest("[data-checkin]"); if (ci && window.QCOps) { window.QCOps.checkIn(ci.getAttribute("data-checkin")); return; }
     var a = e.target.closest("[data-add]"); if (a) openRecord(a.getAttribute("data-add"), a.getAttribute("data-name"));
   });
 
@@ -556,7 +568,7 @@
     else if ((t = e.target.closest("[data-enable]"))) api("/hospital/team/" + t.getAttribute("data-enable"), { method: "POST", body: { disabled: false } }).then(function (r) { P.toast(r.message, r.ok ? "" : "err"); loadTeam(); });
     else if ((t = e.target.closest("[data-mfareset]"))) { if (!window.confirm("They'll have to set up their authenticator again. Continue?")) return; api("/hospital/mfa/reset", { method: "POST", body: { staff_id: t.getAttribute("data-mfareset") } }).then(function (r) { P.toast(r.message, r.ok ? "" : "err"); loadTeam(); }); }
     else if ((t = e.target.closest("[data-roles]"))) {
-      var cur = t.getAttribute("data-cur").split(","), all = ["admin", "doctor", "nurse", "frontdesk"], pick = window.prompt("Roles (comma separated): " + all.join(", "), cur.join(", "));
+      var cur = t.getAttribute("data-cur").split(","), all = Object.keys((OPTS && OPTS.roles) || { admin: 1, doctor: 1, nurse: 1, frontdesk: 1, lab: 1, manager: 1 }), pick = window.prompt("Roles (comma separated): " + all.join(", "), cur.join(", "));
       if (pick === null) return;
       api("/hospital/team/" + t.getAttribute("data-roles"), { method: "POST", body: { roles: pick.split(",").map(function (x) { return x.trim().toLowerCase(); }).filter(Boolean) } }).then(function (r) { P.toast(r.message, r.ok ? "" : "err"); loadTeam(); });
     }
@@ -585,6 +597,14 @@
     });
     el("out-all").addEventListener("click", function () { api("/hospital/signout-all", { method: "POST" }).then(function () { goPublic("Signed out everywhere. Please sign in again."); }); });
   }
+
+  /* ---------- what hospital-ops.js uses ---------- */
+  window.QCHosp = {
+    P: P, api: api, esc: esc, el: el, show: show, say: say, when: when, left: left, initials: initials, can: can, guard: guard,
+    me: function () { return ME; }, opts: function () { return OPTS; }, roster: function () { return ROSTER; },
+    loadRoster: function () { return api("/hospital/roster").then(function (r) { if (r && r.ok) ROSTER = r.items; return ROSTER; }); },
+    openChart: openChart, openRecord: openRecord, go: function (t) { tabNow = t; render(); },
+  };
 
   /* ---------- boot ---------- */
   P.init({ requireLogin: false });

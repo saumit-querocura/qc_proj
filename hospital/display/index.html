@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data:; connect-src 'self' https://app.querocura.com; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex, nofollow">
+<title>Now serving</title>
+<link rel="icon" type="image/x-icon" href="../../icons/favicon.ico">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  body { font-family: 'Manrope', sans-serif; color: #f2f0f8; background: radial-gradient(1200px 700px at 10% -10%, rgba(14,143,131,.35), transparent 60%), radial-gradient(900px 600px at 110% 110%, rgba(124,111,219,.3), transparent 60%), #0b0a1c; overflow: hidden; }
+  .top { display: flex; align-items: center; gap: 18px; padding: 2.2vh 3vw; border-bottom: 1px solid rgba(255,255,255,.08); }
+  .top h1 { margin: 0; font: 700 clamp(20px, 2.6vw, 40px) 'Space Grotesk', sans-serif; letter-spacing: -.01em; }
+  .top .lbl { font-size: clamp(13px, 1.3vw, 20px); opacity: .65; font-weight: 700; }
+  .top .clock { margin-left: auto; font: 700 clamp(22px, 2.8vw, 44px) 'Space Grotesk', sans-serif; font-variant-numeric: tabular-nums; }
+  .top button { background: rgba(255,255,255,.08); color: inherit; border: 1px solid rgba(255,255,255,.15); border-radius: 999px; padding: 10px 16px; font: 800 14px 'Manrope', sans-serif; cursor: pointer; }
+  .top button.on { background: #0e8f83; border-color: #0e8f83; }
+  .grid { display: grid; gap: 2vw; padding: 3vh 3vw; height: calc(100% - 11vh); grid-template-columns: repeat(var(--cols, 2), 1fr); grid-auto-rows: 1fr; }
+  .dept { background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1); border-radius: 28px; padding: 2.5vh 2vw; display: flex; flex-direction: column; min-height: 0; position: relative; overflow: hidden; }
+  .dept h2 { margin: 0; font: 700 clamp(18px, 2.2vw, 38px) 'Space Grotesk', sans-serif; }
+  .dept .room { font-size: clamp(13px, 1.3vw, 22px); font-weight: 800; color: #7ee0d4; margin-top: 2px; }
+  .now { display: flex; align-items: baseline; gap: 1.5vw; margin: auto 0; }
+  .now small { font-size: clamp(12px, 1.2vw, 20px); text-transform: uppercase; letter-spacing: .12em; font-weight: 800; opacity: .6; writing-mode: vertical-rl; transform: rotate(180deg); }
+  .now b { font: 700 clamp(64px, 11vw, 200px)/1 'Space Grotesk', sans-serif; font-variant-numeric: tabular-nums; background: linear-gradient(135deg, #fff, #7ee0d4); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .now .also { display: flex; flex-direction: column; gap: 6px; font: 700 clamp(20px, 2.4vw, 42px) 'Space Grotesk', sans-serif; opacity: .55; }
+  .now .idle { font-size: clamp(18px, 2vw, 32px); opacity: .5; font-weight: 700; }
+  .next { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .next span { font-size: clamp(12px, 1.1vw, 18px); font-weight: 800; opacity: .55; text-transform: uppercase; letter-spacing: .08em; margin-right: 6px; }
+  .next i { font: 700 clamp(18px, 2vw, 34px) 'Space Grotesk', sans-serif; font-style: normal; padding: 4px 16px; border-radius: 14px; background: rgba(255,255,255,.08); }
+  .dept.flash { animation: flash 2.4s ease; }
+  @keyframes flash { 0%, 30%, 60% { box-shadow: 0 0 0 0 rgba(126,224,212,0); background: rgba(14,143,131,.35); } 15%, 45% { box-shadow: 0 0 0 10px rgba(126,224,212,.35); } 100% { background: rgba(255,255,255,.05); } }
+  .msg { display: flex; align-items: center; justify-content: center; height: 80vh; font-size: clamp(18px, 2vw, 30px); opacity: .7; text-align: center; padding: 20px; }
+  .foot { position: fixed; bottom: 1.4vh; right: 3vw; font-size: 12px; opacity: .4; font-weight: 700; }
+  @media (max-width: 700px) { .grid { --cols: 1 !important; height: auto; } body { overflow: auto; } }
+  @media (prefers-reduced-motion: reduce) { .dept.flash { animation: none; } }
+</style>
+</head>
+<body>
+  <div class="top"><div><h1 id="org">Now serving</h1><div class="lbl" id="label"></div></div><button type="button" id="voice" aria-pressed="false">🔊 Announce tokens</button><div class="clock" id="clock"></div></div>
+  <div id="grid" class="grid"><div class="msg">Connecting…</div></div>
+  <div class="foot">QueroCura · token numbers only</div>
+  <script src="../../assets/js/hospital-display.js?v=f21c2fc2"></script>
+</body>
+</html>

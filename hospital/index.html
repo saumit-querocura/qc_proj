@@ -13,7 +13,7 @@
 <link rel="preconnect" href="https://app.querocura.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700;800&family=Manrope:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500;1,9..144,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../assets/qc-base.css?v=7b9ea421">
-<link rel="stylesheet" href="../assets/qc-hospital.css?v=9a517818">
+<link rel="stylesheet" href="../assets/qc-hospital.css?v=c770ee4d">
 <script src="../assets/qc-csp.js?v=77f89cc2"></script>
 </head>
 <body class="hp">
@@ -60,7 +60,22 @@
           <div class="hp-step"><i>1</i><h3>Apply</h3><p>Tell us who you are and give a registration or licence number. It takes five minutes. You can sign in straight away to finish setting up.</p></div>
           <div class="hp-step"><i>2</i><h3>We verify you</h3><p>Our team checks every organisation before it can reach any patient. You'll get an e-mail the moment you're approved.</p></div>
           <div class="hp-step"><i>3</i><h3>Connect with consent</h3><p>The patient reads a one-time code at your front desk, or approves a request you send. They pick what you can see and for how long.</p></div>
-          <div class="hp-step"><i>4</i><h3>Care together</h3><p>Open the chart, add notes, prescriptions and vitals back to the patient's account, and invite your whole team with the right role for each person.</p></div>
+          <div class="hp-step"><i>4</i><h3>Run your day</h3><p>Check patients in to a token queue, triage emergencies, admit to a bed, send tests to the lab, hand over between shifts and discharge with a checklist. Results go back to the patient's own record.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="hp-sec" id="flow">
+      <div class="hp-wrap">
+        <span class="hp-kicker">One place for the whole hospital</span>
+        <h2>From the front desk to discharge</h2>
+        <div class="hp-grid">
+          <div class="hp-card"><h3>🎟️ OPD queue and tokens</h3><p>Check patients in to a department, call them in, see waits as they grow. A waiting-room TV shows the numbers being served, never names.</p></div>
+          <div class="hp-card"><h3>🚑 Emergency triage</h3><p>Five triage levels with time-to-be-seen targets. The sickest are always first, and anyone past their target is flagged.</p></div>
+          <div class="hp-card"><h3>🛏️ Live bed board</h3><p>Every ward and bed at a glance: occupied, going home, being cleaned, reserved. Admitting suggests the right free bed.</p></div>
+          <div class="hp-card"><h3>🧪 Orders between departments</h3><p>Tests, scans, nursing tasks and consults go to the right team with a priority and a due time. Results flow back to the patient's record.</p></div>
+          <div class="hp-card"><h3>🤝 Shift handover</h3><p>Short SBAR handovers per ward or patient, acknowledged by the next shift so nothing falls between them.</p></div>
+          <div class="hp-card"><h3>📊 Command centre</h3><p>Occupancy, waits, overdue orders and department load, live, with the few things that need attention right now.</p></div>
         </div>
       </div>
     </section>
@@ -151,8 +166,9 @@
         <details><summary>Can we see a patient's data without asking them?</summary><p>No. The only exception is emergency access, which exists only for patients who turned it on, shows a short essentials view for two hours, needs a written reason from a doctor, and tells the patient immediately.</p></details>
         <details><summary>What does it cost?</summary><p>We're onboarding our first hospitals now. Get in touch from the contact section on our home page and we'll talk.</p></details>
         <details><summary>What can patients share with us?</summary><p>They pick from: basics and allergies, vitals, medicines, lab results, scan reports and recent symptom checks. Only results the patient confirmed are shown.</p></details>
-        <details><summary>Do you replace our hospital system?</summary><p>No. This sits next to it. You see what the patient shares and can write notes, prescriptions and vitals back to them.</p></details>
-        <details><summary>Who can see what at our hospital?</summary><p>Administrators manage the team. Doctors read and write. Nurses read and add vitals and notes. Front-desk staff connect patients but see no clinical data.</p></details>
+        <details><summary>Do you replace our hospital system?</summary><p>For many clinics and nursing homes it can be the day-to-day system: departments, an OPD token queue with a waiting-room screen, emergency triage, a live bed board, orders between departments, shift handover and discharge checklists. Larger hospitals can run it next to their existing system for the patient-consented parts.</p></details>
+        <details><summary>Who can see what at our hospital?</summary><p>Administrators manage the team, departments and wards. Doctors read and write, order tests, admit and discharge. Nurses read, add vitals and notes, and work nursing tasks and handovers. Front-desk staff connect and check in patients and run the queue and beds, but see no clinical data. Lab and radiology staff see only the test orders sent to them. Operations managers see the command centre and beds, not charts.</p></details>
+        <details><summary>What does the waiting-room screen show?</summary><p>Token numbers and room names only, never a name. Each screen has its own private link that an administrator can switch off at any time.</p></details>
       </div>
     </section>
   </main>
@@ -168,7 +184,13 @@
           <div id="org-status"></div>
         </div>
         <nav class="hp-tabs" id="tabs" role="tablist"></nav>
+        <div id="tab-board"></div>
         <section id="tab-overview" class="tab"></section>
+        <section id="tab-queue" class="tab" hidden></section>
+        <section id="tab-beds" class="tab" hidden></section>
+        <section id="tab-orders" class="tab" hidden></section>
+        <section id="tab-handover" class="tab" hidden></section>
+        <section id="tab-setup" class="tab" hidden></section>
         <section id="tab-patients" class="tab" hidden></section>
         <section id="tab-connect" class="tab" hidden></section>
         <section id="tab-team" class="tab" hidden></section>
@@ -180,11 +202,13 @@
 
   <div class="modal-back" id="chart-modal"><div class="modal wide" role="dialog" aria-modal="true" aria-labelledby="chart-title"><button class="modal-x" data-close="chart-modal" type="button" aria-label="Close">✕</button><div id="chart-body"></div></div></div>
   <div class="cmdk-back" id="cmdk" hidden><div class="cmdk" role="dialog" aria-modal="true" aria-label="Jump to a patient or a page"><input class="cmdk-in" id="cmdk-in" placeholder="Search patients, or type a page: overview, connect, team…" autocomplete="off" aria-label="Search"><div class="cmdk-list" id="cmdk-list" role="listbox"></div><div class="cmdk-foot"><kbd>↑</kbd><kbd>↓</kbd> move · <kbd>Enter</kbd> open · <kbd>Esc</kbd> close</div></div></div>
+  <div class="modal-back" id="ops-modal"><div class="modal wide" role="dialog" aria-modal="true" aria-labelledby="ops-title"><button class="modal-x" data-close="ops-modal" type="button" aria-label="Close">✕</button><div id="ops-body"></div></div></div>
   <div class="modal-back" id="record-modal"><div class="modal" role="dialog" aria-modal="true"><button class="modal-x" data-close="record-modal" type="button" aria-label="Close">✕</button><div id="record-body"></div></div></div>
 
   <footer class="hp-foot"><div class="hp-wrap">© 2026 QueroCura · <a href="../">Home</a> · <a href="../register/">For patients</a> · Patient information is shared only with the patient's consent.</div></footer>
 
   <script src="../assets/qc-page.js?v=c34c97a9"></script>
-  <script src="../assets/js/hospital.js?v=32845dcc"></script>
+  <script src="../assets/js/hospital-ops.js?v=df508e53"></script>
+  <script src="../assets/js/hospital.js?v=babc0756"></script>
 </body>
 </html>

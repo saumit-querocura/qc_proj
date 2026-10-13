@@ -34,12 +34,19 @@
   .act { display: flex; gap: 10px; font-size: 13px; padding: 7px 0; border-bottom: 1px dashed var(--line); } .act time { color: var(--muted); font-weight: 600; min-width: 128px; }
   .act.emg { color: var(--danger); font-weight: 700; }
   .empty { color: var(--muted); font-size: 13.5px; padding: 6px 0; }
+  .visit-card { display: flex; align-items: center; gap: 18px; padding: 20px 22px; border-radius: 22px; margin-bottom: 16px; color: #fff; background: linear-gradient(135deg, #0e8f83, #2f8fd1 60%, #7c6fdb); box-shadow: 0 24px 50px -30px rgba(14,143,131,.8); }
+  .visit-card.called { background: linear-gradient(135deg, #d24f28, #e8a23a); animation: visitPulse 1.6s ease-in-out infinite; }
+  @keyframes visitPulse { 50% { transform: scale(1.015); } }
+  .visit-l { flex: 1; display: flex; flex-direction: column; gap: 3px; min-width: 0; } .visit-k { font-size: 12px; font-weight: 800; opacity: .85; text-transform: uppercase; letter-spacing: .05em; } .visit-l b { font: 700 22px 'Space Grotesk', sans-serif; } .visit-s { font-size: 15px; font-weight: 700; } .visit-u { font-size: 11.5px; opacity: .7; font-weight: 700; }
+  .visit-big { text-align: center; font: 800 46px/1 'Space Grotesk', sans-serif; background: rgba(255,255,255,.16); border-radius: 18px; padding: 12px 18px; } .visit-big small { display: block; font: 800 10.5px 'Manrope', sans-serif; text-transform: uppercase; letter-spacing: .08em; opacity: .85; margin-bottom: 4px; }
+  @media (prefers-reduced-motion: reduce) { .visit-card.called { animation: none; } }
+
   .sw { position: relative; width: 50px; height: 28px; flex: 0 0 auto; } .sw input { opacity: 0; width: 100%; height: 100%; position: absolute; inset: 0; margin: 0; cursor: pointer; z-index: 2; }
   .sw i { position: absolute; inset: 0; border-radius: 99px; background: rgba(127,127,160,.35); transition: background .2s; } .sw i::after { content: ""; position: absolute; top: 3px; left: 3px; width: 22px; height: 22px; border-radius: 50%; background: #fff; transition: transform .2s; }
   .sw input:checked + i { background: #0e8f83; } .sw input:checked + i::after { transform: translateX(22px); }
 </style>
 <script src="../assets/qc-csp.js?v=77f89cc2"></script>
-<script src="../assets/qc-i18n.js?v=df8bfcd7"></script>
+<script src="../assets/qc-i18n.js?v=568d9873"></script>
 </head>
 <body>
   <div class="topbar">
@@ -68,6 +75,7 @@
     <h1 class="page-title">Your hospitals &amp; clinics, on your terms</h1>
     <p class="page-sub">A hospital can only see your QueroCura data if you say yes. You choose what they see and for how long, and you can switch it off in one tap. Everything they do is listed below.</p>
 
+    <div id="visits"></div>
     <div id="waiting"></div>
 
     <div class="card" id="connected-card">
@@ -117,6 +125,6 @@
   </div>
   <script src="../assets/qc-app.js?v=22a3a990"></script>
   <script src="../assets/qc-page.js?v=c34c97a9"></script>
-  <script src="../assets/js/care.js?v=f59d52cb"></script>
+  <script src="../assets/js/care.js?v=850d2586"></script>
 </body>
 </html>

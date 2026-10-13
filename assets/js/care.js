@@ -67,7 +67,10 @@
 
   var ACTIONS = { request_approved: "approved a request from", request_declined: "declined a request from", access_requested: "asked for access", access_revoked: "turned off access for",
     chart_viewed: "viewed your information", record_added: "added a record", connected_by_code: "connected using your code", connect_code_made: "made a connect code",
-    emergency_access_opened: "opened EMERGENCY access", emergency_pref_changed: "changed the emergency-access setting" };
+    emergency_access_opened: "opened EMERGENCY access", emergency_pref_changed: "changed the emergency-access setting",
+    checked_in: "checked you in", called_in: "called you in", consultation_started: "started your consultation", visit_finished: "finished your visit", marked_not_here: "marked you as not here",
+    admitted: "admitted you", transferred: "moved you to another bed", discharge_planned: "planned your discharge", discharged: "discharged you", visit_closed: "closed your visit",
+    order_placed: "ordered a test or task", order_completed: "completed a test or task", order_cancelled: "cancelled an order", handover_written: "wrote a shift handover about you", visit_viewed: "looked at your visit" };
   var YOU = { request_approved: 1, request_declined: 1, access_revoked: 1, connect_code_made: 1, emergency_pref_changed: 1 };
   function renderLog(entries) {
     var box = el("log");
@@ -81,10 +84,34 @@
     }).join("");
   }
 
+  /* ---- live hospital visit: where you are in the queue, or which bed you are in ---- */
+  var VHI = { "Your visit": "आपकी विज़िट", "Your token": "आपका टोकन", "You're next": "अगली बारी आपकी है", "%n ahead of you": "आपसे पहले %n लोग", "Please go in now": "कृपया अभी अंदर जाएँ", "With the doctor": "डॉक्टर के साथ",
+    "Admitted": "भर्ती", "Going home soon": "जल्द घर जाना है", "Finished": "पूरा हुआ", "bed": "बेड", "Updates by itself": "अपने-आप अपडेट होता है", "Room": "कमरा" };
+  function V(x) { return (window.QCI18n && QCI18n.lang === "hi" && VHI[x]) || x; }
+  var visitTimer = null;
+  function renderVisits(list) {
+    var box = el("visits"); if (!box) return;
+    var open = (list || []).filter(function (v) { return v.status !== "closed"; });
+    clearInterval(visitTimer);
+    if (!open.length) { box.innerHTML = ""; return; }
+    box.innerHTML = open.map(function (v) {
+      var big = "", line = "";
+      if (v.status === "waiting") { big = v.token ? "#" + v.token : ""; line = v.ahead === 0 ? V("You're next") : V("%n ahead of you").replace("%n", v.ahead); }
+      else if (v.status === "called") { big = v.token ? "#" + v.token : ""; line = V("Please go in now") + (v.room ? " · " + v.room : ""); }
+      else if (v.status === "in_consult") { line = V("With the doctor"); }
+      else if (v.status === "admitted" || v.status === "discharge_planned") { big = v.bed || ""; line = (v.status === "admitted" ? V("Admitted") : V("Going home soon")) + (v.ward ? " · " + v.ward : ""); }
+      return '<div class="visit-card' + (v.status === "called" ? " called" : "") + '"><div class="visit-l"><span class="visit-k">🏥 ' + esc(V("Your visit")) + " · " + esc(v.org) + '</span><b>' + esc(v.dept || v.kind || "") + "</b>" +
+        '<span class="visit-s">' + esc(line) + (v.room && v.status === "waiting" ? " · " + esc(V("Room")) + " " + esc(v.room) : "") + '</span><span class="visit-u">' + esc(V("Updates by itself")) + "</span></div>" +
+        (big ? '<div class="visit-big"><small>' + esc(v.status === "admitted" || v.status === "discharge_planned" ? V("bed") : V("Your token")) + "</small>" + esc(big) + "</div>" : "") + "</div>";
+    }).join("");
+    visitTimer = setInterval(function () { if (!document.hidden) api("/care/visits").then(function (r) { if (r && r.ok) renderVisits(r.visits); }); }, 20000);
+  }
+
   function load() {
     return api("/care/overview").then(function (d) {
       if (!d.ok) return;
       DATA = d;
+      renderVisits(d.visits);
       renderWaiting(); renderConnected(); renderRecords();
       el("emergency").checked = !!d.emergency_opt_in;
       el("code-profile").innerHTML = profileOptions(d.profiles);

@@ -1,3 +1,18 @@
 {
- "What to do now": "अभी क्या करें"
+ "What to do now": "अभी क्या करें",
+ "checked you in": "ने आपको चेक-इन किया",
+ "called you in": "ने आपको अंदर बुलाया",
+ "started your consultation": "ने आपकी जाँच शुरू की",
+ "finished your visit": "ने आपकी विज़िट पूरी की",
+ "marked you as not here": "ने आपको अनुपस्थित दर्ज किया",
+ "admitted you": "ने आपको भर्ती किया",
+ "moved you to another bed": "ने आपको दूसरे बेड पर शिफ़्ट किया",
+ "planned your discharge": "ने आपकी छुट्टी की योजना बनाई",
+ "discharged you": "ने आपको छुट्टी दी",
+ "closed your visit": "ने आपकी विज़िट बंद की",
+ "ordered a test or task": "ने एक जाँच या काम का ऑर्डर दिया",
+ "completed a test or task": "ने एक जाँच या काम पूरा किया",
+ "cancelled an order": "ने एक ऑर्डर रद्द किया",
+ "wrote a shift handover about you": "ने आपके बारे में शिफ़्ट हैंडओवर लिखा",
+ "looked at your visit": "ने आपकी विज़िट देखी"
 }
