@@ -46,7 +46,7 @@
   .sw input:checked + i { background: #0e8f83; } .sw input:checked + i::after { transform: translateX(22px); }
 </style>
 <script src="../assets/qc-csp.js?v=77f89cc2"></script>
-<script src="../assets/qc-i18n.js?v=568d9873"></script>
+<script src="../assets/qc-i18n.js?v=4a7a7ba8"></script>
 </head>
 <body>
   <div class="topbar">
@@ -112,6 +112,15 @@
     </div>
 
     <div class="card">
+      <h2>AI help with my scans</h2>
+      <div class="tog">
+        <p class="sub" style="margin:0;flex:1 1 360px">Hospitals you connect to can ask an AI to prepare a draft read of your X-rays, CT, MRI and ultrasound images. Names and IDs are removed first, a doctor checks every finding and signs the report, and each AI read is listed below. Turn this off and they will read your scans without AI.</p>
+        <label class="sw"><input type="checkbox" id="ai-imaging" aria-label="Allow AI help with my scans"><i></i></label>
+      </div>
+      <div class="msg" id="ai-msg" role="status"></div>
+    </div>
+
+    <div class="card">
       <h2>Records added by your care teams</h2>
       <p class="sub">Notes, results and vitals a hospital added to your account, only where you allowed it.</p>
       <div id="records"><div class="empty">Loading...</div></div>
@@ -125,6 +134,6 @@
   </div>
   <script src="../assets/qc-app.js?v=22a3a990"></script>
   <script src="../assets/qc-page.js?v=c34c97a9"></script>
-  <script src="../assets/js/care.js?v=850d2586"></script>
+  <script src="../assets/js/care.js?v=3b8a3be0"></script>
 </body>
 </html>

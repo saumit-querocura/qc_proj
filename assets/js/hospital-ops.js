@@ -250,7 +250,8 @@
       }
       // orders
       h += '<div class="ops-sec"><div class="ops-h">Orders and tasks <span class="mini">' + x.orders.length + "</span></div>" + (x.orders.length ? x.orders.map(orderRow).join("") : '<div class="mini">Nothing ordered yet.</div>') +
-        (open && x.access_active && canAny("orders", "write_basic") ? '<button class="btn btn-sm" type="button" data-neworder>+ New order</button>' : "") + "</div>";
+        (open && x.access_active && canAny("orders", "write_basic") ? '<button class="btn btn-sm" type="button" data-neworder>+ New order</button>' : "") +
+        (x.access_active && can("imaging") && window.QCImaging ? ' <button class="btn btn-sm" type="button" data-newstudy>🩻 + Imaging study</button>' : "") + "</div>";
       if (x.handover && x.handover.length) h += '<div class="ops-sec"><div class="ops-h">Handover notes</div>' + x.handover.map(handoverCard).join("") + "</div>";
       if (x.earlier && x.earlier.length) h += '<div class="mini" style="margin-top:12px">Came in through: ' + x.earlier.map(function (e) { return esc(e.kind.toUpperCase() + " · " + (e.dept || "") + " · " + new Date(e.created_ts * 1000).toLocaleDateString()); }).join(" → ") + "</div>";
       var b = modal(h);
@@ -268,6 +269,7 @@
         }
         if ((t = e.target.closest("[data-chart]"))) { closeModal(); H().openChart(t.getAttribute("data-chart")); return; }
         if (e.target.closest("[data-neworder]")) return newOrder(x);
+        if (e.target.closest("[data-newstudy]")) return window.QCImaging.newStudy({ grant_id: x.grant_id, encounter_id: x.id, indication: x.reason || "" });
         if (e.target.closest("[data-dsum]")) { closeModal(); H().openRecord(x.grant_id, x.patient_name); setTimeout(function () { var k = document.querySelector('[data-kind="discharge"]'); if (k) k.click(); }, 50); return; }
         if ((t = e.target.closest("[data-oact]"))) return orderStep(t.getAttribute("data-id"), t.getAttribute("data-oact"));
       };
@@ -420,11 +422,13 @@
     procedure: ["IV line", "Catheterisation", "Suturing", "Nebulisation", "Plaster / splint"],
   };
   function orderRow(o) {
+    ORDERS[o.id] = o;
     var due = o.due_ts && o.status !== "done" && o.status !== "cancelled" ? (o.overdue ? '<b class="late">overdue by ' + ago(o.due_ts).replace(" ago", "") + "</b>" : dueIn(o.due_ts)) : "";
     var acts = [];
     if (o.status === "ordered" && can("fulfil")) acts.push(["accept", "Accept"]);
     if ((o.status === "ordered" || o.status === "accepted") && can("fulfil")) acts.push(["start", "Start"]);
     if (["ordered", "accepted", "in_progress"].indexOf(o.status) >= 0 && (can("fulfil") || (can("orders") && (o.kind === "consult" || o.kind === "procedure")))) acts.push(["done", o.kind === "lab" || o.kind === "imaging" ? "Enter result" : "Mark done"]);
+    if (o.kind === "imaging" && ["ordered", "accepted", "in_progress"].indexOf(o.status) >= 0 && can("imaging") && window.QCImaging && o.grant_id) acts.unshift(["images", "🩻 Attach images"]);
     if (["ordered", "accepted", "in_progress"].indexOf(o.status) >= 0 && can("orders")) acts.push(["cancel", "Cancel"]);
     return '<div class="ord ' + o.status + (o.overdue ? " overdue" : "") + " p-" + o.priority + '"><span class="ord-ic">' + (KIND_IC[o.kind] || "•") + '</span><div class="grow"><div class="ord-t"><b>' + esc(o.item == null ? o.kind_label : o.item) + "</b>" +
       (o.priority !== "routine" ? '<span class="pri ' + (o.priority === "stat" ? "emergency" : "urgent") + '">' + esc(o.priority.toUpperCase()) + "</span>" : "") + '<span class="ord-st">' + esc(o.status.replace("_", " ")) + "</span></div>" +
@@ -436,7 +440,9 @@
     var m = Math.round((ts - Date.now() / 1000) / 60);
     return m < 60 ? "due in " + Math.max(1, m) + " min" : m < 18 * 60 ? "due " + clock(ts) : "due " + new Date(ts * 1000).toLocaleDateString([], { day: "numeric", month: "short" }) + " " + clock(ts);
   }
+  var ORDERS = {};
   function orderStep(id, act) {
+    if (act === "images") { var o = ORDERS[id] || {}; closeModal(); window.QCImaging.newStudy({ grant_id: o.grant_id, order_id: id, encounter_id: o.encounter_id, indication: o.item || "", modality: /ct/i.test(o.item || "") ? "ct" : /mri/i.test(o.item || "") ? "mri" : /ultra|usg|sono/i.test(o.item || "") ? "us" : /x-?ray/i.test(o.item || "") ? "xray" : "" }); return; }
     if (act === "done") {
       var b = modal('<h2 id="ops-title">Complete the order</h2><div class="field"><label for="od-r">Result, report or note</label><textarea class="input" id="od-r" rows="6" maxlength="4000" placeholder="e.g. Hb 11.2 g/dL, WBC 4,200, platelets 92,000"></textarea><div class="mini">Lab and imaging results are added to the patient\'s own record when they allowed records to be added.</div></div><button class="btn btn-primary" type="button" id="od-go">Complete</button><div class="msg" id="od-msg"></div>');
       el("od-r").focus();
@@ -639,11 +645,12 @@
         ["beds", "Beds", c("ops", "read", "structure"), "flow"],
         ["orders", "Orders", c("ops", "read", "orders", "fulfil"), "flow"],
         ["handover", "Handover", c("handover"), "flow"],
+        ["imaging", "Imaging", c("imaging", "read"), "flow"],
         ["setup", "Setup", c("structure"), "admin"],
       ];
     },
-    loaders: function () { return { queue: function () { S.tab = "queue"; loadQueue(); }, beds: function () { S.tab = "beds"; loadBeds(); }, orders: function () { S.tab = "orders"; loadOrders(); }, handover: function () { S.tab = "handover"; loadHandover(); }, setup: function () { S.tab = "setup"; loadSetup(); } }; },
-    leave: function () { clearInterval(S.timer); clearInterval(S.ticker); S.tab = ""; },
+    loaders: function () { return { queue: function () { S.tab = "queue"; loadQueue(); }, beds: function () { S.tab = "beds"; loadBeds(); }, orders: function () { S.tab = "orders"; loadOrders(); }, handover: function () { S.tab = "handover"; loadHandover(); }, imaging: function () { S.tab = "imaging"; if (window.QCImaging) window.QCImaging.load(); }, setup: function () { S.tab = "setup"; loadSetup(); } }; },
+    leave: function () { clearInterval(S.timer); clearInterval(S.ticker); S.tab = ""; if (window.QCImaging) window.QCImaging.leave(); },
     board: function (box) { board(box); },
     checkIn: function (grantId) { checkIn(grantId); },
   };

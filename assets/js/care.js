@@ -70,7 +70,11 @@
     emergency_access_opened: "opened EMERGENCY access", emergency_pref_changed: "changed the emergency-access setting",
     checked_in: "checked you in", called_in: "called you in", consultation_started: "started your consultation", visit_finished: "finished your visit", marked_not_here: "marked you as not here",
     admitted: "admitted you", transferred: "moved you to another bed", discharge_planned: "planned your discharge", discharged: "discharged you", visit_closed: "closed your visit",
-    order_placed: "ordered a test or task", order_completed: "completed a test or task", order_cancelled: "cancelled an order", handover_written: "wrote a shift handover about you", visit_viewed: "looked at your visit" };
+    order_placed: "ordered a test or task", order_completed: "completed a test or task", order_cancelled: "cancelled an order", handover_written: "wrote a shift handover about you", visit_viewed: "looked at your visit",
+    imaging_study_added: "added a scan to your visit", imaging_study_viewed: "looked at your scan", imaging_ai_requested: "asked an AI to prepare a draft read of your scan",
+    imaging_ai_draft_ready: "received an AI draft of your scan (not shown to you until a doctor signs)", imaging_report_signed: "signed your scan report", imaging_addendum: "added a note to your scan report",
+    imaging_ai_preference: "changed AI help with your scans" };
+  YOU.imaging_ai_preference = 1;
   var YOU = { request_approved: 1, request_declined: 1, access_revoked: 1, connect_code_made: 1, emergency_pref_changed: 1 };
   function renderLog(entries) {
     var box = el("log");
@@ -114,6 +118,7 @@
       renderVisits(d.visits);
       renderWaiting(); renderConnected(); renderRecords();
       el("emergency").checked = !!d.emergency_opt_in;
+      if (el("ai-imaging")) el("ai-imaging").checked = d.ai_imaging_allowed !== false;
       el("code-profile").innerHTML = profileOptions(d.profiles);
       el("code-scopes").innerHTML = scopeBoxes(d.scopes, ["summary", "vitals", "medicines", "labs"], "cs");
       return api("/care/log");
@@ -164,6 +169,14 @@
     var on = this.checked, msg = el("em-msg"), box = this;
     api("/care/emergency", { method: "POST", body: { enabled: on } }).then(function (r) {
       if (r.ok) { msg.className = "msg ok"; msg.textContent = on ? "Emergency access is on." : "Emergency access is off."; load(); }
+      else { box.checked = !on; msg.className = "msg err"; msg.textContent = r.message || "Couldn't change that."; }
+    });
+  });
+
+  el("ai-imaging").addEventListener("change", function () {
+    var on = this.checked, msg = el("ai-msg"), box = this;
+    api("/care/ai-imaging", { method: "POST", body: { allowed: on } }).then(function (r) {
+      if (r.ok) { msg.className = "msg ok"; msg.textContent = on ? "Hospitals may use AI to help read your scans." : "Hospitals will read your scans without AI."; load(); }
       else { box.checked = !on; msg.className = "msg err"; msg.textContent = r.message || "Couldn't change that."; }
     });
   });
