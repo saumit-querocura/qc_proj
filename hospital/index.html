@@ -13,7 +13,7 @@
 <link rel="preconnect" href="https://app.querocura.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700;800&family=Manrope:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500;1,9..144,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../assets/qc-base.css?v=7b9ea421">
-<link rel="stylesheet" href="../assets/qc-hospital.css?v=c8eb8136">
+<link rel="stylesheet" href="../assets/qc-hospital.css?v=9a517818">
 <script src="../assets/qc-csp.js?v=77f89cc2"></script>
 </head>
 <body class="hp">
@@ -168,7 +168,8 @@
           <div id="org-status"></div>
         </div>
         <nav class="hp-tabs" id="tabs" role="tablist"></nav>
-        <section id="tab-patients" class="tab"></section>
+        <section id="tab-overview" class="tab"></section>
+        <section id="tab-patients" class="tab" hidden></section>
         <section id="tab-connect" class="tab" hidden></section>
         <section id="tab-team" class="tab" hidden></section>
         <section id="tab-activity" class="tab" hidden></section>
@@ -178,11 +179,12 @@
   </main>
 
   <div class="modal-back" id="chart-modal"><div class="modal wide" role="dialog" aria-modal="true" aria-labelledby="chart-title"><button class="modal-x" data-close="chart-modal" type="button" aria-label="Close">✕</button><div id="chart-body"></div></div></div>
+  <div class="cmdk-back" id="cmdk" hidden><div class="cmdk" role="dialog" aria-modal="true" aria-label="Jump to a patient or a page"><input class="cmdk-in" id="cmdk-in" placeholder="Search patients, or type a page: overview, connect, team…" autocomplete="off" aria-label="Search"><div class="cmdk-list" id="cmdk-list" role="listbox"></div><div class="cmdk-foot"><kbd>↑</kbd><kbd>↓</kbd> move · <kbd>Enter</kbd> open · <kbd>Esc</kbd> close</div></div></div>
   <div class="modal-back" id="record-modal"><div class="modal" role="dialog" aria-modal="true"><button class="modal-x" data-close="record-modal" type="button" aria-label="Close">✕</button><div id="record-body"></div></div></div>
 
   <footer class="hp-foot"><div class="hp-wrap">© 2026 QueroCura · <a href="../">Home</a> · <a href="../register/">For patients</a> · Patient information is shared only with the patient's consent.</div></footer>
 
   <script src="../assets/qc-page.js?v=c34c97a9"></script>
-  <script src="../assets/js/hospital.js?v=2def2a06"></script>
+  <script src="../assets/js/hospital.js?v=32845dcc"></script>
 </body>
 </html>

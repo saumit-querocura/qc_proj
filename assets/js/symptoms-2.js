@@ -204,7 +204,19 @@ async function runAnalysis(text, busyBtn, round) {
   // First pass only: ask the specific, personalised interview questions (onset,
   // character, severity, red flags, exposures ...) before analysing. If the
   // a successful legacy response has no questions, it returns null.
-  if (!round && window.QCInterview) {
+  if (!round && window.QCReason) {
+    // The reasoning interview: one question at a time, chosen by the same engine that writes the result,
+    // with the differential shown live as the person answers.
+    let iv = null;
+    try { iv = await QCReason.run({ text, apiBase: API_BASE }); } catch (e) { iv = null; }
+    if (iv && iv.cancelled) {
+      if (busyBtn) busyBtn.disabled = false;
+      updatePickerBtn();
+      return;
+    }
+    if (iv && iv.thin) { text = iv.text; qcInterview = null; }
+    else if (iv && iv.reasoned) { qcInterview = iv; text = iv.text; }
+  } else if (!round && window.QCInterview) {
     let iv = null;
     try { iv = await QCInterview.run({ text, apiBase: API_BASE, resume: qcResume }); qcResume = null; } catch (e) {
       errEl.textContent = "The interview could not be started. Please try again.";
@@ -243,7 +255,7 @@ async function runAnalysis(text, busyBtn, round) {
     // -- only on the first round, and only when the backend actually sent
     // them (top two candidates weren't clearly separated).
     const questions = data.clarifying_questions || [];
-    if (questions.length && (round || 0) === 0 && !(qcInterview && qcInterview.adaptive) && !(data.assessment && data.assessment.status === "needs_information")) {
+    if (questions.length && (round || 0) === 0 && !(qcInterview && (qcInterview.adaptive || qcInterview.reasoned)) && !(data.assessment && data.assessment.status === "needs_information")) {
       showQuestionPhase(questions, text);
     } else {
       // Results now live on their own page (results/index.html) instead of
@@ -334,7 +346,7 @@ const SYMPTOM_CATS = [
     ["rash","🔴","Rash"], ["unilateral rash","↔️","Rash on One Side Only"], ["painful rash","🔥","Painful Rash"],
     ["skin blisters","🫧","Blisters on Skin"], ["burning skin","🔥","Burning / Tingling Skin"], ["cellulitis rash","🟥","Spreading Red / Hot Skin"],
     ["itching","🐜","Itching"], ["hives","🐝","Hives / Welts"], ["swelling lips","👄","Swollen Face or Lips"],
-    ["rash with fever","🌡️","Rash with Fever"],
+    ["rash and fever","🌡️","Rash with Fever"],
   ]},
   { name: "Eyes", icon: "👁️", items: [
     ["eye redness","👁️","Red / Pink Eyes"], ["eye discharge","🟡","Sticky / Watery Eye Discharge"], ["eye itching","😣","Itchy Eyes"], ["eye pain","😩","Eye Pain"],

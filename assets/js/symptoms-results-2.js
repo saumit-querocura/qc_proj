@@ -103,15 +103,17 @@ function buildTriage(data) {
   };
 }
 
-function triageHtml(data) {
+function triageHtml(data, opts) {
   const t = buildTriage(data), c = t.meta.color;
+  const bare = !!(opts && opts.noHead);   // when a hero above already says the verdict
   const meter = TRIAGE_LEVELS.map((l, i) =>
     '<div class="tm-seg' + (i <= t.idx ? ' on' : '') + (i === t.idx ? ' now' : '') + '"><div class="tm-bar"></div><div class="tm-label">' + l.label + '</div></div>').join("");
   let html = '<div class="card reveal triage-card" style="--tc:' + c + '">' +
+    (bare ? '<div class="section-label" style="margin-top:0;">What to do now</div>' :
     '<div class="triage-head"><div class="triage-ic">' + t.meta.icon + '</div><div>' +
       '<div class="section-label" style="margin:0 0 2px;">Home triage</div>' +
       '<div class="triage-headline">' + escapeHtml(t.headline) + '</div>' +
-      '<div class="triage-sum">' + escapeHtml(t.summary) + '</div></div></div>' +
+      '<div class="triage-sum">' + escapeHtml(t.summary) + '</div></div></div>') +
     '<div class="triage-meter" aria-label="Triage level: ' + escapeHtml(t.meta.label) + '">' + meter + '</div>' +
     '<div class="care-cols"><div><div class="section-label" style="margin-top:0;">Safe to do now</div>' + listHtml("care-list do", t.steps) + '</div>' +
     '<div>' + (t.avoid.length ? '<div class="section-label" style="margin-top:0;">Best avoided</div>' + listHtml("care-list avoid", t.avoid) : '') + '</div></div>';
@@ -243,6 +245,12 @@ function normalizeResponse(data) {
 function renderResult(rawData, interview) {
   const data = normalizeResponse(rawData);
   const wrap = document.getElementById("sym-results");
+  // A check that went through the reasoning interview has the whole line of reasoning to show: one page, in the order
+  // a person needs it (assets/qc-result-reasoning.js).
+  if (interview && interview.reasoned && window.QCResReason) {
+    QCResReason.render(wrap, data, interview, { buildTriage, triageHtml, wireTriageActions, wireOngoing, ongoingNoteHtml, scrubList, scrubText, listHtml });
+    return;
+  }
   const assessment = data.assessment;
   if (assessment && (assessment.status === "needs_information" || assessment.status === "urgent_action")) {
     const urgent = assessment.status === "urgent_action";

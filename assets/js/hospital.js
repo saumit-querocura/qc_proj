@@ -12,7 +12,7 @@
   }
   function initials(name) { return (name || "?").trim().split(/\s+/).slice(0, 2).map(function (w) { return w[0].toUpperCase(); }).join(""); }
 
-  var OPTS = null, ME = null, PERMS = [], IDLE_MS = 20 * 60 * 1000, lastActive = Date.now(), tabNow = "patients", FILTER = "active", ROSTER = [];
+  var OPTS = null, ME = null, PERMS = [], IDLE_MS = 20 * 60 * 1000, lastActive = Date.now(), tabNow = "overview", FILTER = "active", ROSTER = [], SIGNALS = {}, QUERY = "", SORT = "attention";
   function can(p) { return PERMS.indexOf(p) >= 0; }
 
   /* ===================================================== public side ===================================================== */
@@ -134,7 +134,7 @@
     if (rem <= 0) { api("/hospital/logout", { method: "POST" }); closeAll(); goPublic("You were signed out after 20 minutes of inactivity."); return; }
     el("idle").textContent = rem < 5 * 60 * 1000 ? "Signing out in " + Math.floor(rem / 60000) + ":" + ("0" + Math.floor(rem / 1000 % 60)).slice(-2) : "";
   }, 1000);
-  function closeAll() { P.closeModal("chart-modal"); P.closeModal("record-modal"); el("chart-body").innerHTML = ""; }
+  function closeAll() { P.closeModal("chart-modal"); P.closeModal("record-modal"); el("chart-body").innerHTML = ""; closeCmdk(); }
 
   // Any API reply that says the session ended sends us back to sign-in.
   function guard(r) {
@@ -154,15 +154,15 @@
     el("org-status").innerHTML = org.status === "active" ? '<span class="pill ok">✓ Verified by QueroCura</span>' : org.status === "pending" ? '<span class="pill wait">⏳ Verification pending</span>' : '<span class="pill bad">' + esc(org.status) + '</span>';
     if (org.status === "pending") banner.innerHTML = '<div class="notice wait">Thanks for applying. Our team is verifying <b>' + esc(org.name) + '</b> (registration ' + esc(org.registration_no || "") + '). You can set up your team and security now. Patient connections switch on as soon as you\'re approved, and we\'ll e-mail you.</div>';
     if (org.status === "rejected" || org.status === "suspended") banner.innerHTML = '<div class="notice bad">This organisation isn\'t active. ' + esc(org.review_note || "Please contact QueroCura support.") + '</div>';
-    var tabs = [["patients", "Patients", can("roster")], ["connect", "Connect", can("request")], ["team", "Team", can("team")], ["activity", "Activity log", can("audit")], ["security", "My security", true]].filter(function (t) { return t[2]; });
+    var tabs = [["overview", "Overview", true], ["patients", "Patients", can("roster")], ["connect", "Connect", can("request")], ["team", "Team", can("team")], ["activity", "Activity log", can("audit")], ["security", "My security", true]].filter(function (t) { return t[2]; });
     if (!tabs.some(function (t) { return t[0] === tabNow; })) tabNow = tabs[0][0];
     el("tabs").innerHTML = tabs.map(function (t) { return '<button type="button" role="tab" data-tab="' + t[0] + '" class="' + (t[0] === tabNow ? "on" : "") + '">' + t[1] + '</button>'; }).join("");
     switchTab(tabNow);
   }
   el("tabs").addEventListener("click", function (e) { var b = e.target.closest("[data-tab]"); if (b) { tabNow = b.getAttribute("data-tab"); [].forEach.call(el("tabs").children, function (c) { c.classList.toggle("on", c === b); }); switchTab(tabNow); } });
   function switchTab(t) {
-    ["patients", "connect", "team", "activity", "security"].forEach(function (x) { show(el("tab-" + x), x === t); });
-    ({ patients: loadPatients, connect: renderConnect, team: loadTeam, activity: loadActivity, security: renderSecurity })[t]();
+    ["overview", "patients", "connect", "team", "activity", "security"].forEach(function (x) { show(el("tab-" + x), x === t); });
+    ({ overview: loadOverview, patients: loadPatients, connect: renderConnect, team: loadTeam, activity: loadActivity, security: renderSecurity })[t]();
   }
 
   /* ---------- MFA setup (required before any patient data) ---------- */
@@ -190,6 +190,49 @@
     });
   }
 
+  /* ---------- overview ---------- */
+  var SEV_LABEL = { emergency: "Emergency", urgent: "Urgent", warning: "Check" };
+  function sevPill(sev) { return sev ? '<span class="sev sev-' + esc(sev) + '">' + esc(SEV_LABEL[sev] || sev) + "</span>" : ""; }
+  function loadOverview() {
+    var box = el("tab-overview");
+    box.innerHTML = '<div class="kpis">' + new Array(6).join('<div class="kpi skel"></div>') + "</div>";
+    api("/hospital/dashboard").then(function (r) {
+      if (guard(r)) return;
+      if (!r.ok) { box.innerHTML = '<div class="notice bad">' + esc(r.message || "Couldn't load the overview.") + "</div>"; return; }
+      var d = r.data || {}, k = d.kpis || {}, active = ME.org.status === "active";
+      var hour = new Date().getHours(), hello = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
+      var h = '<div class="ov-hello"><div><h2>' + hello + ", " + esc((ME.staff.name || "").replace(/^(dr|doctor|mr|mrs|ms|prof)\.?\s+/i, "").split(" ")[0] || "there") + '</h2><p class="sub">' +
+        (active ? "Here's what needs you today at " + esc(ME.org.name) + "." : "Your organisation is being verified. Patient features switch on once it's approved.") + '</p></div>' +
+        '<button type="button" class="btn btn-sm cmdk-hint" data-cmdk>Search <kbd>' + (/Mac|iPhone|iPad/.test(navigator.platform) ? "⌘" : "Ctrl") + "</kbd><kbd>K</kbd></button></div>";
+      if (active) {
+        var tiles = [["connected", "Connected patients", "👥", "patients"], ["waiting", "Waiting for patient", "⏳", "patients"], ["expiring", "Access ends in 72 h", "⌛", "patients"],
+          ["charts_7d", "Charts opened (7 days)", "📂", "activity"], ["records_7d", "Records added (7 days)", "📝", "activity"], ["emergency_30d", "Emergency access (30 days)", "🚨", "activity"]];
+        h += '<div class="kpis">' + tiles.map(function (t) {
+          var v = k[t[0]] == null ? "–" : k[t[0]];
+          return '<button type="button" class="kpi' + (t[0] === "emergency_30d" && v > 0 ? " kpi-alert" : "") + '" data-goto="' + t[3] + '"><span class="kpi-ic">' + t[2] + '</span><b>' + esc(v) + "</b><span>" + esc(t[1]) + "</span></button>";
+        }).join("") + "</div>";
+        if (k.team) h += '<div class="mfa-meter"><span>Two-step sign-in on for <b>' + esc(k.mfa_on) + " of " + esc(k.team) + "</b> team members</span><i><u style=\"width:" + Math.round(100 * (k.mfa_on || 0) / k.team) + '%"></u></i></div>';
+      }
+      h += '<div class="ov-grid"><div class="card"><div class="card-h"><h2>Needs attention</h2><span class="mini">From what each patient shares with you</span></div>' +
+        ((d.attention || []).length ? d.attention.map(function (a) {
+          return '<button type="button" class="att" data-chart="' + esc(a.id) + '"><div class="avatar sm">' + esc(initials(a.patient_name)) + '</div><div class="grow"><b>' + esc(a.patient_name || "Patient") + "</b>" + (a.reference ? ' <span class="mini">· ' + esc(a.reference) + "</span>" : "") +
+            a.alerts.map(function (x) { return '<small>' + sevPill(x.severity) + " " + esc(x.text) + "</small>"; }).join("") + '</div><span class="go">Open chart →</span></button>';
+        }).join("") : '<div class="empty calm">✓ Nothing flagged in your patients\' shared readings or recent checks.</div>') + "</div>" +
+        '<div class="card"><div class="card-h"><h2>Access ending soon</h2></div>' + ((d.expiring || []).length ? d.expiring.map(function (x) {
+          return '<div class="exp"><div class="avatar sm">' + esc(initials(x.patient_name)) + '</div><div class="grow"><b>' + esc(x.patient_name || "Patient") + "</b><small>" + esc(left(x.expires_ts)) + (x.via === "emergency" ? " · emergency" : "") + "</small></div></div>";
+        }).join("") + '<p class="mini" style="margin:10px 0 0">Ask the patient to extend from their app if you still need access.</p>' : '<div class="empty calm">No access ends in the next 3 days.</div>') + "</div>" +
+        '<div class="card span2"><div class="card-h"><h2>Recent activity</h2><button type="button" class="btn btn-sm btn-ghost" data-goto="activity">Full log →</button></div>' +
+        ((d.recent || []).length ? '<div class="feed">' + d.recent.map(function (e) { return '<div class="' + (e.emergency ? "emg" : "") + '"><time>' + esc(when(e.ts)) + "</time><span><b>" + esc(e.staff_name || "Someone") + "</b> " + esc(NICE[e.action] || e.action.replace(/_/g, " ")) + "</span></div>"; }).join("") + "</div>" : '<div class="empty">Nothing yet.</div>') + "</div></div>";
+      if (active && can("request")) h += '<div class="quick"><button type="button" class="btn btn-primary" data-goto="connect">+ Connect a patient</button>' + (can("team") ? '<button type="button" class="btn" data-goto="team">Invite a colleague</button>' : "") + "</div>";
+      box.innerHTML = h;
+    });
+  }
+  el("tab-overview").addEventListener("click", function (e) {
+    var g = e.target.closest("[data-goto]"); if (g) { tabNow = g.getAttribute("data-goto"); render(); return; }
+    var c = e.target.closest("[data-chart]"); if (c) { openChart(c.getAttribute("data-chart")); return; }
+    if (e.target.closest("[data-cmdk]")) openCmdk();
+  });
+
   /* ---------- patients ---------- */
   function stateOf(i) { return i.kind === "request" ? "waiting" : i.state; }
   function loadPatients() {
@@ -197,29 +240,52 @@
     box.innerHTML = '<div class="empty">Loading…</div>';
     api("/hospital/roster").then(function (r) {
       if (guard(r)) return;
-      if (!r.ok) { box.innerHTML = '<div class="notice bad">' + esc(r.message || "Couldn't load.") + '</div>'; return; }
+      if (!r.ok) { box.innerHTML = '<div class="notice bad">' + esc(r.message || "Couldn't load.") + "</div>"; return; }
       ROSTER = r.items; drawRoster();
+      if (can("read") && ROSTER.some(function (i) { return stateOf(i) === "active"; })) {
+        api("/hospital/roster/signals").then(function (s) { if (s && s.ok) { SIGNALS = s.signals || {}; drawRoster(); } });
+      }
     });
   }
+  var SEV_RANK = { emergency: 0, urgent: 1, warning: 2 };
   function drawRoster() {
-    var box = el("tab-patients");
+    var box = el("tab-patients"), keepFocus = document.activeElement && document.activeElement.id === "pt-q";
     var counts = { active: 0, waiting: 0, ended: 0 };
     ROSTER.forEach(function (i) { var s = stateOf(i); counts[s === "active" ? "active" : s === "waiting" ? "waiting" : "ended"]++; });
-    var rows = ROSTER.filter(function (i) { var s = stateOf(i); return FILTER === "ended" ? (s === "expired" || s === "revoked") : s === FILTER; });
+    var q = QUERY.trim().toLowerCase();
+    var rows = ROSTER.filter(function (i) { var s = stateOf(i); return FILTER === "ended" ? (s === "expired" || s === "revoked") : s === FILTER; })
+      .filter(function (i) { return !q || ((i.patient_name || "") + " " + (i.reference || "") + " " + (i.purpose || "")).toLowerCase().indexOf(q) >= 0; });
+    rows.sort(function (a, b) {
+      if (SORT === "expiring") return (a.expires_ts || 9e12) - (b.expires_ts || 9e12);
+      if (SORT === "name") return (a.patient_name || "").localeCompare(b.patient_name || "");
+      if (SORT === "recent") return (b.created_ts || 0) - (a.created_ts || 0);
+      var sa = SIGNALS[a.id] && SIGNALS[a.id].top, sb = SIGNALS[b.id] && SIGNALS[b.id].top;
+      return ((sa ? SEV_RANK[sa] : 9) - (sb ? SEV_RANK[sb] : 9)) || ((a.expires_ts || 9e12) - (b.expires_ts || 9e12));
+    });
     var html = '<div class="filters">' + [["active", "Connected"], ["waiting", "Waiting for patient"], ["ended", "Ended"]].map(function (f) { return '<button type="button" class="chipbtn' + (FILTER === f[0] ? " on" : "") + '" data-filter="' + f[0] + '">' + f[1] + " (" + counts[f[0]] + ")</button>"; }).join("") +
-      '<span class="grow"></span>' + (can("request") ? '<button class="btn btn-sm btn-primary" type="button" data-goto="connect">+ Connect a patient</button>' : "") + '</div>';
-    if (!rows.length) html += '<div class="card"><div class="empty">' + (FILTER === "active" ? "No connected patients yet. Use <b>Connect</b> to enter a patient's code or send them a request." : FILTER === "waiting" ? "No requests are waiting." : "Nothing here.") + '</div></div>';
+      '<span class="grow"></span>' + (can("request") ? '<button class="btn btn-sm btn-primary" type="button" data-goto="connect">+ Connect a patient</button>' : "") + "</div>" +
+      '<div class="pt-tools"><div class="search"><span aria-hidden="true">🔎</span><input id="pt-q" type="search" placeholder="Search by name, MRN or purpose  ( / )" value="' + esc(QUERY) + '" aria-label="Search patients"></div>' +
+      '<label class="mini">Sort <select id="pt-sort" class="input input-sm">' + [["attention", "Needs attention first"], ["expiring", "Access ending first"], ["recent", "Newest first"], ["name", "Name"]].map(function (o) { return '<option value="' + o[0] + '"' + (SORT === o[0] ? " selected" : "") + ">" + o[1] + "</option>"; }).join("") + "</select></label></div>";
+    if (!rows.length) html += '<div class="card"><div class="empty">' + (q ? "No one matches “" + esc(QUERY) + "”." : FILTER === "active" ? "No connected patients yet. Use <b>Connect</b> to enter a patient's code or send them a request." : FILTER === "waiting" ? "No requests are waiting." : "Nothing here.") + "</div></div>";
     html += rows.map(function (i) {
-      var s = stateOf(i), live = s === "active";
-      var tags = (i.scopes || []).map(function (x) { return '<span class="tag">' + esc((OPTS && OPTS.scopes[x]) || x) + '</span>'; }).join("");
+      var s = stateOf(i), live = s === "active", sig = SIGNALS[i.id];
+      var tags = (i.scopes || []).map(function (x) { return '<span class="tag">' + esc((OPTS && OPTS.scopes[x]) || x) + "</span>"; }).join("");
       if (i.via === "emergency") tags = '<span class="tag emg">EMERGENCY ACCESS</span>' + tags;
       if (i.can_write) tags += '<span class="tag teal">can add records</span>';
-      return '<div class="pt"><div class="avatar">' + esc(initials(i.patient_name)) + '</div><div class="grow"><h3>' + esc(i.patient_name || "Patient") + (i.reference ? ' <span class="mini">· ' + esc(i.reference) + '</span>' : "") + '</h3>' +
-        '<small>' + esc(i.purpose || "") + '</small><small>' + (s === "waiting" ? "Requested " + esc(when(i.created_ts)) : live ? esc(left(i.expires_ts)) + " · " + esc(i.via === "code" ? "connected with patient's code" : i.via === "request" ? "approved by patient" : "emergency") : s === "revoked" ? "Turned off by the patient " + esc(when(i.revoked_ts)) : "Ended " + esc(when(i.expires_ts))) + '</small><div class="tagrow">' + tags + '</div></div>' +
+      var soon = live && i.expires_ts && i.expires_ts - Date.now() / 1000 < 72 * 3600;
+      var alerts = sig && sig.alerts && sig.alerts.length ? '<div class="pt-alerts">' + sig.alerts.map(function (a) { return "<span>" + sevPill(a.severity) + " " + esc(a.text) + "</span>"; }).join("") + "</div>" : "";
+      var allergy = sig && sig.med_allergies ? '<span class="tag allergy">⚠ ' + esc(sig.med_allergies) + " medicine allerg" + (sig.med_allergies === 1 ? "y" : "ies") + "</span>" : "";
+      return '<div class="pt' + (sig && sig.top ? " pt-" + esc(sig.top) : "") + '"><div class="avatar">' + esc(initials(i.patient_name)) + '</div><div class="grow"><h3>' + esc(i.patient_name || "Patient") + (i.reference ? ' <span class="mini">· ' + esc(i.reference) + "</span>" : "") + "</h3>" +
+        "<small>" + esc(i.purpose || "") + "</small><small" + (soon ? ' class="soon"' : "") + ">" + (s === "waiting" ? "Requested " + esc(when(i.created_ts)) : live ? esc(left(i.expires_ts)) + " · " + esc(i.via === "code" ? "connected with patient's code" : i.via === "request" ? "approved by patient" : "emergency") : s === "revoked" ? "Turned off by the patient " + esc(when(i.revoked_ts)) : "Ended " + esc(when(i.expires_ts))) + "</small>" +
+        alerts + '<div class="tagrow">' + allergy + tags + "</div></div>" +
         '<div class="row-actions">' + (live && can("read") ? '<button class="btn btn-sm btn-primary" data-chart="' + esc(i.id) + '" type="button">Open chart</button>' : "") +
-        (live && i.can_write && (can("write") || can("write_basic")) ? '<button class="btn btn-sm" data-add="' + esc(i.id) + '" data-name="' + esc(i.patient_name || "") + '" type="button">Add record</button>' : "") + '</div></div>';
+        (live && i.can_write && (can("write") || can("write_basic")) ? '<button class="btn btn-sm" data-add="' + esc(i.id) + '" data-name="' + esc(i.patient_name || "") + '" type="button">Add record</button>' : "") + "</div></div>";
     }).join("");
     box.innerHTML = html;
+    var qi = el("pt-q");
+    qi.addEventListener("input", function () { QUERY = qi.value; drawRoster(); });
+    el("pt-sort").addEventListener("change", function () { SORT = this.value; drawRoster(); });
+    if (keepFocus) { qi.focus(); qi.setSelectionRange(qi.value.length, qi.value.length); }
   }
   el("tab-patients").addEventListener("click", function (e) {
     var f = e.target.closest("[data-filter]"); if (f) { FILTER = f.getAttribute("data-filter"); drawRoster(); return; }
@@ -229,57 +295,170 @@
   });
 
   /* ---------- chart ---------- */
-  function list(arr, empty) { return arr && arr.length ? arr.map(function (x) { return '<span class="chip">' + esc(x) + '</span>'; }).join(" ") : '<span class="mini">' + (empty || "None recorded") + '</span>'; }
+  function list(arr, empty) { return arr && arr.length ? arr.map(function (x) { return '<span class="chip">' + esc(x) + "</span>"; }).join(" ") : '<span class="mini">' + (empty || "None recorded") + "</span>"; }
+  // A small, honest trend line: real readings only, oldest on the left, the latest value and its date labelled.
+  function trend(history, key, label, unit, lo, hi, key2) {
+    var pts = (history || []).filter(function (v) { return v[key] != null && v[key] !== ""; }).slice(0, 30).reverse();
+    if (pts.length < 2) return "";
+    var vals = pts.map(function (v) { return +v[key]; }).concat(key2 ? pts.map(function (v) { return +v[key2] || +v[key]; }) : []);
+    var mn = Math.min.apply(null, vals.concat(lo != null ? [lo] : [])), mx = Math.max.apply(null, vals.concat(hi != null ? [hi] : []));
+    if (mx === mn) { mx += 1; mn -= 1; }
+    var W = 260, H = 70, pad = 6;
+    function x(i) { return pad + i * (W - 2 * pad) / (pts.length - 1); }
+    function y(v) { return H - pad - (v - mn) * (H - 2 * pad) / (mx - mn); }
+    function line(k, cls) { return '<polyline class="' + cls + '" points="' + pts.map(function (v, i) { return x(i).toFixed(1) + "," + y(+v[k]).toFixed(1); }).join(" ") + '"/>'; }
+    var band = lo != null && hi != null ? '<rect class="band" x="0" width="' + W + '" y="' + y(hi).toFixed(1) + '" height="' + Math.max(1, y(lo) - y(hi)).toFixed(1) + '"/>' : "";
+    var last = pts[pts.length - 1], out = last[key] != null && ((hi != null && +last[key] > hi) || (lo != null && +last[key] < lo));
+    return '<div class="trend' + (out ? " out" : "") + '"><div class="trend-h"><span>' + esc(label) + '</span><b>' + esc(last[key]) + (key2 ? "/" + esc(last[key2]) : "") + " <small>" + esc(unit) + '</small></b></div><svg viewBox="0 0 ' + W + " " + H + '" preserveAspectRatio="none" role="img" aria-label="' + esc(label) + ' trend">' + band + line(key, "l1") + (key2 ? line(key2, "l2") : "") +
+      '<circle cx="' + x(pts.length - 1).toFixed(1) + '" cy="' + y(+last[key]).toFixed(1) + '" r="3.2"/></svg><div class="trend-f"><span>' + esc(String(pts[0].ts || "").slice(0, 10)) + "</span><span>" + esc(String(last.ts || "").slice(0, 10)) + "</span></div></div>";
+  }
+  var KIND_ICON = { symptoms: "🩺", record: "📝", vitals: "❤️", labs: "🧪", imaging: "🩻" };
   function openChart(grantId) {
     var body = el("chart-body"); body.innerHTML = '<div class="empty">Opening chart…</div>'; P.openModal("chart-modal");
     api("/hospital/grants/" + encodeURIComponent(grantId) + "/chart").then(function (r) {
       if (guard(r)) return;
-      if (!r.ok) { body.innerHTML = '<h2>Can\'t open this chart</h2><div class="msg err">' + esc(r.message || "Access ended.") + '</div>'; return; }
-      var d = r.data, p = d.patient || {}, g = d.grant || {}, h = "";
-      h += '<div class="ch-head"><div class="avatar" style="width:54px;height:54px;font-size:18px">' + esc(initials(p.name)) + '</div><div><h2 id="chart-title">' + esc(p.name || "Patient") + '</h2><div class="hint">' + [p.age ? p.age + " yrs" : "", p.sex && p.sex !== "unknown" ? p.sex : "", p.blood_type && p.blood_type !== "unknown" ? "Blood " + p.blood_type : ""].filter(Boolean).map(esc).join(" · ") + '</div></div></div>';
-      h += '<div class="notice wait no-print" style="margin-bottom:12px">Shared by the patient · ' + esc(left(g.expires_ts)) + ' · this view is recorded in the audit log.' + (g.via === "emergency" ? ' <b>Emergency access.</b>' : "") + '</div>';
+      if (!r.ok) { body.innerHTML = "<h2>Can't open this chart</h2><div class=\"msg err\">" + esc(r.message || "Access ended.") + "</div>"; return; }
+      var d = r.data, p = d.patient || {}, g = d.grant || {}, sn = d.snapshot || {}, h = "";
+      h += '<div class="ch-head"><div class="avatar" style="width:54px;height:54px;font-size:18px">' + esc(initials(p.name)) + '</div><div class="grow"><h2 id="chart-title">' + esc(p.name || "Patient") + '</h2><div class="hint">' + [p.age ? p.age + " yrs" : "", p.sex && p.sex !== "unknown" ? p.sex : "", p.blood_type && p.blood_type !== "unknown" ? "Blood " + p.blood_type : ""].filter(Boolean).map(esc).join(" · ") + "</div></div>" +
+        '<div class="row-actions no-print"><button class="btn btn-sm" id="print-chart" type="button">🖨 Print</button>' + (g.can_write && (can("write") || can("write_basic")) ? '<button class="btn btn-sm btn-primary" id="chart-add" type="button">+ Add a record</button>' : "") + "</div></div>";
+      // what could hurt the patient goes first, in red, before anything else
+      if (d.summary) h += sn.allergies && sn.allergies.length ? '<div class="allergy-bar">⚠ <b>Medicine allergies:</b> ' + sn.allergies.map(esc).join(", ") + (sn.other_allergies && sn.other_allergies.length ? ' <span class="mini">· also ' + sn.other_allergies.map(esc).join(", ") + "</span>" : "") + "</div>" : '<div class="allergy-bar none">No medicine allergies recorded by the patient.</div>';
+      var alerts = [];
+      if (sn.pregnant) alerts.push('<span class="sev sev-urgent">Pregnant</span>');
+      (sn.urgent_checks || []).forEach(function (x) { alerts.push(sevPill(x.triage === "Emergency" ? "emergency" : "urgent") + " Symptom check " + esc(String(x.ts || "").slice(0, 10)) + ": " + esc(x.condition || "")); });
+      (sn.vitals_flags || []).forEach(function (f) { alerts.push(sevPill("warning") + " " + esc(f.title || f.message)); });
+      if ((sn.abnormal_labs || []).length) alerts.push(sevPill("warning") + " " + sn.abnormal_labs.length + " lab result" + (sn.abnormal_labs.length > 1 ? "s" : "") + " outside range: " + sn.abnormal_labs.slice(0, 4).map(function (m) { return esc(m.name) + " " + esc(m.value == null ? "" : m.value) + " " + esc(m.unit || ""); }).join(", "));
+      if (alerts.length) h += '<div class="ch-alerts">' + alerts.map(function (a) { return "<div>" + a + "</div>"; }).join("") + "</div>";
+      h += '<div class="notice wait no-print" style="margin:10px 0">Shared by the patient · ' + esc(left(g.expires_ts)) + " · this view is recorded in the audit log." + (g.via === "emergency" ? " <b>Emergency access.</b>" : "") + "</div>";
+      var tabs = [["snap", "Snapshot"], ["timeline", "Timeline"]];
+      if (d.vitals) tabs.push(["vitals", "Vitals"]);
+      if (d.labs || d.imaging) tabs.push(["results", "Results"]);
+      tabs.push(["team", "Team records" + (d.records && d.records.length ? " (" + d.records.length + ")" : "")]);
+      h += '<div class="ch-tabs no-print" role="tablist">' + tabs.map(function (t, i) { return '<button type="button" role="tab" data-ctab="' + t[0] + '" class="' + (i ? "" : "on") + '">' + t[1] + "</button>"; }).join("") + "</div>";
+      // snapshot
+      var snap = "";
       if (d.summary) {
         var s = d.summary;
-        h += '<div class="ch-box"><h4>Allergies &amp; conditions</h4><div style="margin-bottom:8px"><b class="mini">Medicine allergies</b><br>' + list(s.medicine_allergies, "None recorded") + '</div><div style="margin-bottom:8px"><b class="mini">Other allergies</b><br>' + list(s.other_allergies) + '</div><div style="margin-bottom:8px"><b class="mini">Conditions</b><br>' + list(s.conditions) + '</div>' +
-          (s.past_conditions && s.past_conditions.length ? '<div style="margin-bottom:8px"><b class="mini">Past conditions</b><br>' + list(s.past_conditions) + '</div>' : "") +
-          (s.family_history && s.family_history.length ? '<div><b class="mini">Family history</b><br>' + list(s.family_history) + '</div>' : "") + (s.pregnant ? '<div style="margin-top:8px"><span class="tag emg">Pregnant</span></div>' : "") + '</div>';
+        snap += '<div class="ch-box"><h4>Conditions</h4>' + list(s.conditions) + (s.past_conditions && s.past_conditions.length ? '<div style="margin-top:8px"><b class="mini">Past</b><br>' + list(s.past_conditions) + "</div>" : "") + (s.family_history && s.family_history.length ? '<div style="margin-top:8px"><b class="mini">Family history</b><br>' + list(s.family_history) + "</div>" : "") +
+          '<div class="mini" style="margin-top:8px">' + ["Smoking: " + (s.smoking || "not stated"), "Alcohol: " + (s.alcohol || "not stated"), "Exercise: " + (s.exercise || "not stated")].map(esc).join(" · ") + "</div></div>";
       }
-      if (d.medicines) h += '<div class="ch-box"><h4>Current medicines</h4>' + (d.medicines.length ? '<div class="scroll-x"><table class="t"><thead><tr><th>Medicine</th><th>Dose</th><th>Schedule</th></tr></thead><tbody>' + d.medicines.map(function (m) { return "<tr><td>" + esc(m.name) + "</td><td>" + esc(m.dose || "") + "</td><td>" + esc(m.schedule || "") + "</td></tr>"; }).join("") + "</tbody></table></div>" : '<span class="mini">None on file</span>') + '</div>';
+      if (d.medicines) snap += '<div class="ch-box"><h4>Current medicines</h4>' + (d.medicines.length ? '<div class="scroll-x"><table class="t"><thead><tr><th>Medicine</th><th>Dose</th><th>Schedule</th></tr></thead><tbody>' + d.medicines.map(function (m) { return "<tr><td>" + esc(m.name) + "</td><td>" + esc(m.dose || "") + "</td><td>" + esc(m.schedule || "") + "</td></tr>"; }).join("") + "</tbody></table></div>" : '<span class="mini">None on file</span>') + "</div>";
       if (d.vitals) {
         var L = d.vitals.latest || {}, names = [["sys_bp", "Systolic", "mmHg"], ["dia_bp", "Diastolic", "mmHg"], ["pulse", "Pulse", "bpm"], ["spo2", "SpO₂", "%"], ["temp", "Temp", "°"], ["glucose", "Glucose", "mg/dL"], ["weight", "Weight", "kg"]];
-        h += '<div class="ch-box"><h4>Latest vitals' + (L.ts ? " · " + esc(L.ts) : "") + '</h4><div class="vit">' + names.filter(function (n) { return L[n[0]] != null; }).map(function (n) { return "<div><b>" + esc(L[n[0]]) + "</b><span>" + n[1] + " " + n[2] + "</span></div>"; }).join("") + '</div>' +
-          (d.vitals.flags || []).map(function (f) { return '<div class="flag"><b>' + esc(f.title) + "</b> " + esc(f.message) + "</div>"; }).join("") +
-          ((d.vitals.history || []).length > 1 ? '<div class="scroll-x" style="margin-top:10px"><table class="t"><thead><tr><th>When</th><th>BP</th><th>Pulse</th><th>SpO₂</th><th>Glucose</th><th>Weight</th></tr></thead><tbody>' + d.vitals.history.slice(0, 10).map(function (v) { return "<tr><td>" + esc(v.ts) + "</td><td>" + (v.sys_bp ? esc(v.sys_bp + "/" + v.dia_bp) : "–") + "</td><td>" + esc(v.pulse || "–") + "</td><td>" + esc(v.spo2 || "–") + "</td><td>" + esc(v.glucose || "–") + "</td><td>" + esc(v.weight || "–") + "</td></tr>"; }).join("") + "</tbody></table></div>" : "") + '</div>';
+        snap += '<div class="ch-box"><h4>Latest vitals' + (L.ts ? " · " + esc(L.ts) : "") + '</h4><div class="vit">' + (names.filter(function (n) { return L[n[0]] != null; }).map(function (n) { return "<div><b>" + esc(L[n[0]]) + "</b><span>" + n[1] + " " + n[2] + "</span></div>"; }).join("") || '<span class="mini">No readings shared yet</span>') + "</div></div>";
       }
-      if (d.labs) h += '<div class="ch-box"><h4>Lab results (confirmed by the patient)</h4>' + (d.labs.headline ? '<p style="margin:0 0 8px;font-weight:700">' + esc(d.labs.headline) + '</p>' : "") + ((d.labs.panels || []).length ? d.labs.panels.map(function (pn) { return '<div style="margin-bottom:10px"><b>' + esc(pn.name) + '</b><div class="scroll-x"><table class="t"><tbody>' + pn.markers.map(function (m) { return "<tr><td>" + esc(m.name) + "</td><td><b>" + esc(m.value == null ? "" : m.value) + "</b> " + esc(m.unit || "") + "</td><td>" + esc(m.range || "") + "</td><td>" + esc(m.status || "") + "</td><td>" + esc(m.date || "") + "</td></tr>"; }).join("") + "</tbody></table></div></div>"; }).join("") : '<span class="mini">No confirmed results</span>') + '</div>';
-      if (d.imaging) h += '<div class="ch-box"><h4>Scan reports</h4>' + (d.imaging.length ? d.imaging.map(function (x) { return "<p style='margin:0 0 8px'><b>" + esc(x.modality || "Scan") + "</b> " + esc(x.date || "") + "<br>" + esc(x.summary || x.overall || "") + "</p>"; }).join("") : '<span class="mini">None on file</span>') + '</div>';
-      if (d.symptoms) h += '<div class="ch-box"><h4>Recent symptom checks</h4>' + (d.symptoms.length ? d.symptoms.map(function (x) { return "<div>" + esc(x.ts) + " · " + esc(x.condition || "") + (x.triage ? ' <span class="chip">' + esc(x.triage) + "</span>" : "") + "</div>"; }).join("") : '<span class="mini">None</span>') + '</div>';
-      if (d.records && d.records.length) h += '<div class="ch-box"><h4>Added by your team</h4>' + d.records.map(function (x) { return '<div style="margin-bottom:10px"><b>' + esc(x.title) + '</b> <span class="chip">' + esc(x.kind) + '</span> <span class="mini">' + esc(x.by || "") + " · " + esc(when(x.ts)) + '</span><div style="white-space:pre-wrap;margin-top:4px">' + esc(x.text) + "</div></div>"; }).join("") + '</div>';
-      h += '<p class="mini">' + esc(d.disclaimer || "") + '</p><div class="row no-print"><button class="btn" id="print-chart" type="button">Print</button>' + (g.can_write && (can("write") || can("write_basic")) ? '<button class="btn btn-primary" id="chart-add" type="button">Add a record</button>' : "") + '</div>';
+      if (d.symptoms) snap += '<div class="ch-box"><h4>Recent symptom checks</h4>' + (d.symptoms.length ? d.symptoms.slice(0, 6).map(function (x) { return "<div class=\"tl-row\"><span>" + esc(String(x.ts || "").slice(0, 16)) + "</span><span>" + esc(x.condition || "") + (x.triage ? ' <span class="chip">' + esc(x.triage) + "</span>" : "") + "</span></div>"; }).join("") : '<span class="mini">None</span>') + '<p class="mini" style="margin:8px 0 0">Automated pattern matches from what the patient typed, not diagnoses.</p></div>';
+      // timeline
+      var tl = (d.timeline || []).length ? '<div class="timeline">' + d.timeline.map(function (t) { return '<div class="tl tl-' + esc(t.kind) + '"><span class="tl-dot">' + (KIND_ICON[t.kind] || "•") + '</span><div><time>' + esc(String(t.ts).slice(0, 16)) + "</time><b>" + esc(t.title) + "</b>" + (t.detail ? "<span>" + esc(t.detail) + "</span>" : "") + "</div></div>"; }).join("") + "</div>" : '<div class="empty">Nothing dated has been shared yet.</div>';
+      // vitals trends
+      var vh = d.vitals ? d.vitals.history || [] : [];
+      var vt = d.vitals ? '<div class="trends">' + [trend(vh, "sys_bp", "Blood pressure", "mmHg", 90, 140, "dia_bp"), trend(vh, "pulse", "Pulse", "bpm", 50, 100), trend(vh, "spo2", "SpO₂", "%", 94, 100), trend(vh, "glucose", "Glucose", "mg/dL", 70, 140), trend(vh, "temp", "Temperature", "°", null, null), trend(vh, "weight", "Weight", "kg", null, null)].join("") + "</div>" +
+        ((d.vitals.flags || []).map(function (f) { return '<div class="flag"><b>' + esc(f.title) + "</b> " + esc(f.message) + "</div>"; }).join("")) +
+        (vh.length > 1 ? '<details class="raw"><summary>All readings (' + vh.length + ')</summary><div class="scroll-x"><table class="t"><thead><tr><th>When</th><th>BP</th><th>Pulse</th><th>SpO₂</th><th>Glucose</th><th>Temp</th><th>Weight</th></tr></thead><tbody>' + vh.map(function (v) { return "<tr><td>" + esc(v.ts) + "</td><td>" + (v.sys_bp ? esc(v.sys_bp + "/" + v.dia_bp) : "–") + "</td><td>" + esc(v.pulse || "–") + "</td><td>" + esc(v.spo2 || "–") + "</td><td>" + esc(v.glucose || "–") + "</td><td>" + esc(v.temp || "–") + "</td><td>" + esc(v.weight || "–") + "</td></tr>"; }).join("") + "</tbody></table></div></details>" : "") : "";
+      if (d.vitals && vt.indexOf("<svg") < 0) vt = '<div class="empty">Trends appear once the patient has shared two or more readings.</div>' + vt;
+      // results
+      var res = "";
+      if (d.labs) res += '<div class="ch-box"><h4>Lab results (confirmed by the patient)</h4>' + (d.labs.headline ? '<p style="margin:0 0 8px;font-weight:700">' + esc(d.labs.headline) + "</p>" : "") + ((d.labs.panels || []).length ? d.labs.panels.map(function (pn) { return '<div style="margin-bottom:10px"><b>' + esc(pn.name) + '</b><div class="scroll-x"><table class="t"><tbody>' + pn.markers.map(function (m) { var bad = /high|low|abnormal|critical/i.test(m.status || ""); return "<tr" + (bad ? ' class="lab-out"' : "") + "><td>" + esc(m.name) + "</td><td><b>" + esc(m.value == null ? "" : m.value) + "</b> " + esc(m.unit || "") + "</td><td>" + esc(m.range || "") + "</td><td>" + esc(m.status || "") + "</td><td>" + esc(m.trend || "") + "</td><td>" + esc(m.date || "") + "</td></tr>"; }).join("") + "</tbody></table></div></div>"; }).join("") : '<span class="mini">No confirmed results</span>') + "</div>";
+      if (d.imaging) res += '<div class="ch-box"><h4>Scan reports</h4>' + (d.imaging.length ? d.imaging.map(function (x) { return "<p style='margin:0 0 8px'><b>" + esc(x.modality || "Scan") + "</b> " + esc(x.date || "") + "<br>" + esc(x.summary || x.overall || "") + "</p>"; }).join("") : '<span class="mini">None on file</span>') + "</div>";
+      // team records
+      var tr = d.records && d.records.length ? d.records.map(function (x) { return '<div class="ch-box rec"><div class="rec-h"><b>' + esc(x.title) + '</b> <span class="chip">' + esc((OPTS && OPTS.record_kinds[x.kind]) || x.kind) + '</span><span class="mini">' + esc(x.by || "") + " · " + esc(when(x.ts)) + '</span></div><div class="rec-b">' + esc(x.text) + "</div></div>"; }).join("") : '<div class="empty">Your team hasn\'t added anything yet.</div>';
+      h += '<div class="ch-pane" data-cpane="snap">' + (snap || '<div class="empty">The patient hasn\'t shared a summary.</div>') + '</div><div class="ch-pane" data-cpane="timeline" hidden>' + tl + '</div>' +
+        (d.vitals ? '<div class="ch-pane" data-cpane="vitals" hidden>' + vt + "</div>" : "") + (d.labs || d.imaging ? '<div class="ch-pane" data-cpane="results" hidden>' + res + "</div>" : "") + '<div class="ch-pane" data-cpane="team" hidden>' + tr + "</div>";
+      h += '<p class="mini" style="margin-top:14px">' + esc(d.disclaimer || "") + "</p>";
       body.innerHTML = h;
-      var pr = el("print-chart"); if (pr) pr.addEventListener("click", function () { window.print(); });
+      body.querySelector(".ch-tabs") && body.querySelector(".ch-tabs").addEventListener("click", function (e) {
+        var b = e.target.closest("[data-ctab]"); if (!b) return;
+        [].forEach.call(this.children, function (c) { c.classList.toggle("on", c === b); });
+        [].forEach.call(body.querySelectorAll("[data-cpane]"), function (p) { p.hidden = p.getAttribute("data-cpane") !== b.getAttribute("data-ctab"); });
+      });
+      var pr = el("print-chart"); if (pr) pr.addEventListener("click", function () { [].forEach.call(body.querySelectorAll("[data-cpane]"), function (p) { p.hidden = false; }); window.print(); });
       var ad = el("chart-add"); if (ad) ad.addEventListener("click", function () { P.closeModal("chart-modal"); openRecord(grantId, p.name); });
     });
   }
 
+  // Note templates: headings a clinician fills in.  They are only text; nothing is decided for the clinician.
+  var TEMPLATES = {
+    note: "Subjective:\n\nObjective:\n\nAssessment:\n\nPlan:\n",
+    visit: "Reason for visit:\n\nFindings:\n\nAssessment:\n\nPlan and follow-up:\n",
+    prescription: "Prescribed by:\n\nMedicines (name, strength, dose, how often, for how long):\n1.\n\nInstructions:\n",
+    lab: "Test:\nResult:\nReference range:\nComment:\n",
+    referral: "Referred to (speciality / doctor):\nUrgency:\nReason for referral:\nRelevant history and findings:\nQuestions for the specialist:\n",
+    discharge: "Admitted:\nDischarged:\nDiagnosis at discharge:\nCourse in hospital:\nMedicines on discharge:\nFollow-up (when and with whom):\nWarning signs to return for:\n"
+  };
   function openRecord(grantId, name) {
-    var kinds = can("write") ? Object.keys(OPTS.record_kinds) : ["note", "vital"];
-    el("record-body").innerHTML = '<h2>Add to ' + esc(name || "the patient") + '\'s record</h2><p class="sub">The patient sees this in their app. It is encrypted and recorded in the audit log.</p>' +
-      '<form id="rec-form" novalidate><div class="field"><label for="rec-kind">What are you adding?</label><select class="input" id="rec-kind">' + kinds.map(function (k) { return '<option value="' + k + '">' + esc(OPTS.record_kinds[k]) + "</option>"; }).join("") + '</select></div>' +
+    var ORDER = ["note", "visit", "prescription", "lab", "vital", "referral", "discharge"];
+    var kinds = can("write") ? ORDER.filter(function (k) { return OPTS.record_kinds[k]; }).concat(Object.keys(OPTS.record_kinds).filter(function (k) { return ORDER.indexOf(k) < 0; })) : ["note", "vital"];
+    el("record-body").innerHTML = "<h2>Add to " + esc(name || "the patient") + "'s record</h2><p class=\"sub\">The patient sees this in their app. It is encrypted and recorded in the audit log.</p>" +
+      '<form id="rec-form" novalidate><div class="field"><label for="rec-kind">What are you adding?</label><div class="kind-pick" id="rec-kinds">' + kinds.map(function (k, i) { return '<button type="button" data-kind="' + k + '" class="' + (i ? "" : "on") + '">' + esc(OPTS.record_kinds[k]) + "</button>"; }).join("") + '</div><input type="hidden" id="rec-kind" value="' + kinds[0] + '"></div>' +
       '<div class="field"><label for="rec-title">Title</label><input class="input" id="rec-title" maxlength="120" placeholder="e.g. OPD visit"></div>' +
-      '<div id="rec-vitals" hidden><div class="grid2">' + [["sys_bp", "Systolic (mmHg)"], ["dia_bp", "Diastolic (mmHg)"], ["pulse", "Pulse (bpm)"], ["spo2", "SpO₂ (%)"], ["temp", "Temperature"], ["glucose", "Glucose (mg/dL)"], ["weight", "Weight (kg)"]].map(function (v) { return '<div class="field"><label>' + v[1] + '</label><input class="input" data-vital="' + v[0] + '" inputmode="decimal"></div>'; }).join("") + '</div></div>' +
-      '<div class="field"><label for="rec-text">Details</label><textarea class="input" id="rec-text" rows="5" maxlength="6000"></textarea></div><button class="btn btn-primary" type="submit">Save to record</button><div class="msg" id="rec-msg" role="status"></div></form>';
+      '<div id="rec-vitals" hidden><div class="grid2">' + [["sys_bp", "Systolic (mmHg)"], ["dia_bp", "Diastolic (mmHg)"], ["pulse", "Pulse (bpm)"], ["spo2", "SpO₂ (%)"], ["temp", "Temperature"], ["glucose", "Glucose (mg/dL)"], ["weight", "Weight (kg)"]].map(function (v) { return '<div class="field"><label>' + v[1] + '</label><input class="input" data-vital="' + v[0] + '" inputmode="decimal"></div>'; }).join("") + "</div></div>" +
+      '<div class="field"><label for="rec-text">Details <button type="button" class="link-btn" id="rec-tpl">Use the template</button></label><textarea class="input mono" id="rec-text" rows="9" maxlength="6000"></textarea><div class="mini" id="rec-count">0 / 6000</div></div><button class="btn btn-primary" type="submit">Save to record</button><div class="msg" id="rec-msg" role="status"></div></form>';
     P.openModal("record-modal");
-    var kind = el("rec-kind"); kind.addEventListener("change", function () { show(el("rec-vitals"), kind.value === "vital"); }); show(el("rec-vitals"), kind.value === "vital");
+    var kind = el("rec-kind"), text = el("rec-text");
+    function setKind(k) {
+      kind.value = k;
+      [].forEach.call(el("rec-kinds").children, function (b) { b.classList.toggle("on", b.getAttribute("data-kind") === k); });
+      show(el("rec-vitals"), k === "vital"); show(el("rec-tpl"), !!TEMPLATES[k]);
+      if (!text.value.trim() && TEMPLATES[k]) text.value = TEMPLATES[k];
+    }
+    el("rec-kinds").addEventListener("click", function (e) {
+      var b = e.target.closest("[data-kind]"); if (!b) return;
+      var k = b.getAttribute("data-kind");
+      if (Object.keys(TEMPLATES).some(function (t) { return text.value === TEMPLATES[t]; })) text.value = "";
+      setKind(k);
+    });
+    el("rec-tpl").addEventListener("click", function () { if (!text.value.trim() || window.confirm("Replace what you've written with the template?")) text.value = TEMPLATES[kind.value] || ""; text.focus(); });
+    text.addEventListener("input", function () { el("rec-count").textContent = text.value.length + " / 6000"; });
+    setKind(kinds[0]);
     el("rec-form").addEventListener("submit", function (e) {
       e.preventDefault(); var msg = el("rec-msg"), vitals = {};
       [].forEach.call(document.querySelectorAll("[data-vital]"), function (i) { if (i.value.trim() !== "") vitals[i.getAttribute("data-vital")] = parseFloat(i.value); });
-      api("/hospital/grants/" + encodeURIComponent(grantId) + "/records", { method: "POST", body: { kind: kind.value, title: el("rec-title").value, text: el("rec-text").value, vitals: kind.value === "vital" ? vitals : undefined } }).then(function (r) {
+      var body = text.value === TEMPLATES[kind.value] ? "" : text.value;
+      api("/hospital/grants/" + encodeURIComponent(grantId) + "/records", { method: "POST", body: { kind: kind.value, title: el("rec-title").value, text: body, vitals: kind.value === "vital" ? vitals : undefined } }).then(function (r) {
         if (guard(r)) return;
         if (r.ok) { P.toast(r.message); P.closeModal("record-modal"); } else say(msg, r.message || "Couldn't save.", "err");
       });
     });
   }
+
+  /* ---------- command palette (Ctrl/⌘ K) and "/" to search ---------- */
+  var CMD_SEL = 0, CMD_ITEMS = [];
+  function openCmdk() {
+    if (!ME || ME.mfa_setup_needed) return;
+    show(el("cmdk"), true); var i = el("cmdk-in"); i.value = ""; drawCmdk(); i.focus();
+    if (!ROSTER.length && can("roster")) api("/hospital/roster").then(function (r) { if (r && r.ok) { ROSTER = r.items; drawCmdk(); } });
+  }
+  function closeCmdk() { show(el("cmdk"), false); }
+  function drawCmdk() {
+    var q = el("cmdk-in").value.trim().toLowerCase();
+    var pages = [["overview", "Overview", "🏠"], ["patients", "Patients", "👥"], ["connect", "Connect a patient", "🔗"], ["team", "Team", "🧑‍⚕️"], ["activity", "Activity log", "📜"], ["security", "My security", "🔐"]]
+      .filter(function (p) { return (p[0] !== "team" || can("team")) && (p[0] !== "activity" || can("audit")) && (p[0] !== "connect" || can("request")) && (p[0] !== "patients" || can("roster")); });
+    var people = ROSTER.filter(function (r) { return stateOf(r) === "active"; }).map(function (r) { return { kind: "patient", id: r.id, label: r.patient_name || "Patient", hint: (r.reference ? r.reference + " · " : "") + left(r.expires_ts) }; });
+    CMD_ITEMS = people.concat(pages.map(function (p) { return { kind: "page", id: p[0], label: p[1], hint: "Go to", icon: p[2] }; }))
+      .filter(function (it) { return !q || (it.label + " " + (it.hint || "")).toLowerCase().indexOf(q) >= 0; }).slice(0, 12);
+    CMD_SEL = Math.min(CMD_SEL, Math.max(0, CMD_ITEMS.length - 1));
+    el("cmdk-list").innerHTML = CMD_ITEMS.length ? CMD_ITEMS.map(function (it, i) { return '<button type="button" role="option" class="' + (i === CMD_SEL ? "on" : "") + '" data-i="' + i + '"><span class="ci">' + (it.kind === "patient" ? '<span class="avatar sm">' + esc(initials(it.label)) + "</span>" : it.icon) + "</span><b>" + esc(it.label) + '</b><span class="mini">' + esc(it.hint || "") + "</span></button>"; }).join("") : '<div class="empty">No match.</div>';
+  }
+  function runCmd(it) {
+    if (!it) return; closeCmdk();
+    if (it.kind === "patient") { if (can("read")) openChart(it.id); else { tabNow = "patients"; render(); } }
+    else { tabNow = it.id; render(); }
+  }
+  el("cmdk-in").addEventListener("input", function () { CMD_SEL = 0; drawCmdk(); });
+  el("cmdk-in").addEventListener("keydown", function (e) {
+    if (e.key === "ArrowDown") { e.preventDefault(); CMD_SEL = Math.min(CMD_ITEMS.length - 1, CMD_SEL + 1); drawCmdk(); }
+    else if (e.key === "ArrowUp") { e.preventDefault(); CMD_SEL = Math.max(0, CMD_SEL - 1); drawCmdk(); }
+    else if (e.key === "Enter") { e.preventDefault(); runCmd(CMD_ITEMS[CMD_SEL]); }
+  });
+  el("cmdk-list").addEventListener("click", function (e) { var b = e.target.closest("[data-i]"); if (b) runCmd(CMD_ITEMS[+b.getAttribute("data-i")]); });
+  el("cmdk").addEventListener("click", function (e) { if (e.target === el("cmdk")) closeCmdk(); });
+  document.addEventListener("keydown", function (e) {
+    if (!ME) return;
+    if ((e.ctrlKey || e.metaKey) && (e.key === "k" || e.key === "K")) { e.preventDefault(); if (el("cmdk").hidden) openCmdk(); else closeCmdk(); return; }
+    if (e.key === "Escape" && !el("cmdk").hidden) { closeCmdk(); return; }
+    var typing = /INPUT|TEXTAREA|SELECT/.test((document.activeElement || {}).tagName || "");
+    if (e.key === "/" && !typing && tabNow === "patients" && el("pt-q")) { e.preventDefault(); el("pt-q").focus(); }
+  });
 
   /* ---------- connect ---------- */
   function scopeBoxes(prefix, checked) {

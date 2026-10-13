@@ -3649,6 +3649,7 @@ window.QC_HI = {
 "Plenty of fluids, in small frequent sips": "खूब तरल पदार्थ, छोटे-छोटे घूँट में बार-बार",
 "Joints": "जोड़ों में",
 "Both": "दोनों",
+"What to do now": "अभी क्या करें",
 "Event added — we'll remind you": "इवेंट जुड़ गया। हम आपको याद दिलाएँगे",
 "Event updated": "इवेंट अपडेट हो गया",
 "Written imaging report": "लिखित इमेजिंग रिपोर्ट",
