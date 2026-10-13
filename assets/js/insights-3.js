@@ -283,9 +283,9 @@ function renderCorrelations(correlations) {
     return;
   }
   wrap.innerHTML = '<div class="insight-grid">' + correlations.map(c => (
-    '<div class="insight-card">' +
+    '<div class="insight-card' + (c.icon === "🌱" ? " qi-fallback" : "") + '">' +
       '<span class="ic-emoji">' + (c.icon || '💡') + '</span>' +
-      '<div><div class="ic-title">' + c.title + '</div><div class="ic-detail">' + c.detail + '</div></div>' +
+      '<div><div class="ic-title">' + QC.esc(c.title) + '</div><div class="ic-detail">' + QC.esc(c.detail) + '</div></div>' +
     '</div>'
   )).join("") + '</div>';
 }
@@ -304,7 +304,7 @@ function renderFrequency(freq) {
   const max = Math.max(...freq.map(c => c.count));
   wrap.innerHTML = '<div class="freq-list">' + freq.map(c => (
     '<div class="freq-row">' +
-      '<span class="fq-name">' + c.name + '</span>' +
+      '<span class="fq-name">' + QC.esc(c.name) + '</span>' +
       '<div class="fq-bar-wrap"><div class="fq-bar" style="width:' + Math.max(6, (c.count / max) * 100) + '%"></div></div>' +
       '<span class="fq-count">' + c.count + '× · ' + fmtDate(c.last_seen) + '</span>' +
     '</div>'
@@ -360,6 +360,31 @@ async function loadInsights(days, force) {
   }
 }
 
+/* ---- Cura's read: personal baselines, robust trends and patterns ---- */
+let qcIntel = null, intelSeq = 0;
+function paintIntel(d) {
+  qcIntel = d;
+  const each = fn => { try { fn(); } catch (e) { console.error(e); } };
+  each(() => QCIntel.read(document.getElementById("intel-read"), d, {}));
+  each(() => QCIntel.metrics(document.getElementById("intel-metrics"), d, { height: 190 }));
+  each(() => QCIntel.derived(document.getElementById("intel-derived"), d));
+  each(() => QCIntel.quality(document.getElementById("intel-quality"), d));
+  each(() => QCIntel.read(document.getElementById("intel-patterns"), d, { bare: true, kinds: ["tod", "correlation", "symptom_link", "variability", "step"] }));
+  each(() => {
+    const hr = document.getElementById("qc-hero-read");
+    if (d.has_data && d.headline) { hr.textContent = d.headline; hr.className = "hero-read lv-" + d.level; hr.hidden = false; } else hr.hidden = true;
+  });
+}
+async function loadIntel(days, force) {
+  const seq = ++intelSeq;
+  const stale = QCIntel.stale(days);
+  if (stale && !force) paintIntel(stale);
+  const d = await QCIntel.get(days, force);
+  if (seq !== intelSeq) return;
+  if (d && d.ok) paintIntel(d);
+  else if (!stale) ["intel-read", "intel-metrics"].forEach(id => { document.getElementById(id).innerHTML = '<div class="empty-note">Couldn\'t load this right now. <button type="button" class="btn-soft" data-act="reload-insights">Try again</button></div>'; });
+}
+
 function initDaySelect() {
   const btns = document.querySelectorAll("#qc-day-select .day-btn");
   btns.forEach(b => {
@@ -367,6 +392,7 @@ function initDaySelect() {
       btns.forEach(x => x.classList.remove("active"));
       b.classList.add("active");
       loadInsights(parseInt(b.getAttribute("data-days"), 10));
+      loadIntel(parseInt(b.getAttribute("data-days"), 10));
     });
   });
 }
@@ -606,6 +632,7 @@ document.getElementById("qc-signout-btn").addEventListener("click", async () => 
   setTodayChrome();
   initDaySelect();
   loadInsights(qcDays);
+  loadIntel(qcDays);
   loadRecords();
   const [meData, profResult] = await Promise.all([
     fetch(API_BASE + "/auth/me", { credentials: "include" }).then(r => r.json()).catch(() => ({ logged_in: false })),
@@ -626,5 +653,12 @@ document.getElementById("qc-signout-btn").addEventListener("click", async () => 
 
 
 document.addEventListener('click', function (e) {
-  if (e.target.closest && e.target.closest('[data-act="reload-insights"]')) loadInsights(qcDays, true);
+  if (e.target.closest && e.target.closest('[data-act="reload-insights"]')) { loadInsights(qcDays, true); loadIntel(qcDays, true); }
 });
+
+/* keep the section jumps just under the top bar, whose height changes as it wraps */
+(function () {
+  function place() { const tb = document.querySelector(".topbar"), j = document.querySelector(".jump"); if (tb && j) j.style.top = tb.offsetHeight + "px"; }
+  place();
+  window.addEventListener("resize", place);
+})();

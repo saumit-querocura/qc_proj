@@ -55,7 +55,7 @@ function renderFlags(flags) {
   flags.forEach(f => {
     const el = document.createElement("div");
     el.className = "flag " + f.level;
-    el.innerHTML = '<span class="flag-dot"></span><span>' + f.message + "</span>";
+    el.innerHTML = '<span class="flag-dot"></span><span>' + QC.esc(f.message) + "</span>";
     box.appendChild(el);
   });
 }
@@ -113,6 +113,18 @@ function emptyCardHtml(m) {
   '</a>';
 }
 
+const INTEL_KEY = { bp: "sys_bp", spo2: "spo2", pulse: "pulse", temp: "temp", glucose: "glucose", weight: "weight" };
+let qcIntel = null, qcSnap = null;
+function intelExtras(m) {
+  const t = qcIntel && window.QCIntel ? QCIntel.tile(qcIntel, INTEL_KEY[m.key]) : null;
+  if (!t) return "";
+  let h = "";
+  if (t.spark) h += '<div class="sc-spark">' + t.spark + '</div>';
+  if (t.usual) h += '<div class="sc-usual">usual ' + QC.esc(t.usual) + '</div>';
+  if (t.trend) h += '<div class="sc-trend">' + (t.trend.direction === "rising" ? "↗ rising" : "↘ falling") + '</div>';
+  return h;
+}
+
 function ringCardHtml(m, value, unit, sev) {
   const R = 30, C = 2 * Math.PI * R;
   let pct;
@@ -123,8 +135,12 @@ function ringCardHtml(m, value, unit, sev) {
     pct = range ? clamp01((parseFloat(value) - range[0]) / (range[1] - range[0])) : 0.5;
     if (pct < 0.12) pct = 0.12;
   }
-  const color = severityColor(sev);
+  let color = severityColor(sev);
   const off = C - pct * C;
+  // standard ranges say "normal", but the reading is far from this person's own normal: say so
+  const t = qcIntel && window.QCIntel ? QCIntel.tile(qcIntel, INTEL_KEY[m.key]) : null;
+  let word = severityWord(m, sev);
+  if (!sev && t && /^unusual/.test(t.status)) { color = "#c98a10"; word = "Unusual for you"; }
   return '<div class="snap-card">' +
     '<div class="snap-ring-wrap">' +
       '<svg width="74" height="74" viewBox="0 0 74 74">' +
@@ -137,7 +153,8 @@ function ringCardHtml(m, value, unit, sev) {
       '</div>' +
     '</div>' +
     '<div class="sc-label">' + m.label + '</div>' +
-    '<div class="sc-status" style="color:' + color + '"><span class="sc-status-dot" style="background:' + color + '"></span>' + severityWord(m, sev) + '</div>' +
+    '<div class="sc-status" style="color:' + color + '"><span class="sc-status-dot" style="background:' + color + '"></span>' + word + '</div>' +
+    intelExtras(m) +
   '</div>';
 }
 
@@ -178,6 +195,7 @@ function carriedCardHtml(m, value, unit, ts) {
 }
 
 function renderSnapshot(latest, flags, history) {
+  qcSnap = [latest, flags, history];
   const box = document.getElementById("qc-snapshot");
   latest = latest || {};
   box.innerHTML = SNAPSHOT_METRICS.map(m => {
@@ -357,7 +375,7 @@ function renderProfileCard(profile, user) {
   const chipsBox = document.getElementById("qc-profile-chips");
   const allergies = [].concat(profile.med_allergies || [], profile.food_allergies || [], profile.env_allergies || []);
   chipsBox.innerHTML = allergies.length
-    ? allergies.slice(0, 6).map(a => '<span class="profile-chip">' + a + '</span>').join("")
+    ? allergies.slice(0, 6).map(a => '<span class="profile-chip">' + QC.esc(a) + '</span>').join("")
     : '<span class="profile-chip">No known allergies logged</span>';
 }
 
@@ -414,19 +432,45 @@ function renderAnalysis(data) {
     '<span class="lb-dot" style="background:' + lvl.color + '"></span>' +
     'Overall level: ' + lvl.word +
   '</div>';
-  html += '<div class="summary-line" style="font-weight:500;">' + (data.summary || "") + '</div>';
+  html += '<div class="summary-line" style="font-weight:500;">' + QC.esc(data.summary || "") + '</div>';
   if (data.flags && data.flags.length) {
     html += data.flags.map(f => {
       const m = LEVEL_META[f.level] || LEVEL_META.normal;
       return '<div class="flag-row-detailed" style="background:' + m.color + '1a; color:' + m.color + '">' +
         '<span class="flag-dot" style="background:' + m.color + '"></span>' +
-        '<span>' + f.message + '<span class="frd-meta">' + (f.metric || "") + (f.value !== undefined && f.value !== null ? ": " + f.value : "") + '</span></span>' +
+        '<span>' + QC.esc(f.message) + '<span class="frd-meta">' + QC.esc(f.metric || "") + (f.value !== undefined && f.value !== null ? ": " + QC.esc(f.value) : "") + '</span></span>' +
       '</div>';
     }).join("");
   } else {
     html += '<div class="empty-note" style="margin-top:10px;">No alerts from Cura right now — keep logging to help it learn your baseline.</div>';
   }
   wrap.innerHTML = html;
+}
+
+/* ---- Cura's read: personal baselines, trends and patterns (one call feeds the read, the charts and the tiles) ---- */
+let intelSeq = 0;
+async function loadIntel(days, force) {
+  const seq = ++intelSeq;
+  const stale = QCIntel.stale(days);
+  if (stale && !force) paintIntel(stale);
+  const d = await QCIntel.get(days, force);
+  if (seq !== intelSeq) return;
+  if (d && d.ok) paintIntel(d);
+  else if (!stale) ["qc-read", "qc-intel-metrics", "qc-read-full"].forEach(id => { const e = document.getElementById(id); if (e) e.innerHTML = '<div class="empty-note">Couldn\'t load this right now.</div>'; });
+}
+function paintIntel(d) {
+  qcIntel = d;
+  const each = fn => { try { fn(); } catch (e) { console.error(e); } };
+  each(() => QCIntel.read(document.getElementById("qc-read"), d, { limit: 3, compact: true, more: "#analysis", methods: false }));
+  each(() => QCIntel.read(document.getElementById("qc-read-full"), d, {}));
+  each(() => QCIntel.metrics(document.getElementById("qc-intel-metrics"), d, { height: 170 }));
+  each(() => QCIntel.derived(document.getElementById("qc-derived"), d));
+  each(() => QCIntel.quality(document.getElementById("qc-quality"), d));
+  each(() => {
+    const hr = document.getElementById("qc-hero-read");
+    if (d.has_data && d.headline) { hr.textContent = d.headline; hr.className = "hero-read lv-" + d.level; hr.hidden = false; } else hr.hidden = true;
+  });
+  if (qcSnap) each(() => renderSnapshot.apply(null, qcSnap));
 }
 
 let qcInsightsDays = 14;
@@ -451,7 +495,9 @@ function initDaySelect() {
     b.addEventListener("click", () => {
       btns.forEach(x => x.classList.remove("active"));
       b.classList.add("active");
-      loadInsights(parseInt(b.getAttribute("data-days"), 10));
+      const dd = parseInt(b.getAttribute("data-days"), 10);
+      loadInsights(dd);
+      loadIntel(dd);
     });
   });
 }
@@ -495,6 +541,18 @@ function setGreetingChrome() {
   return word;
 }
 
+function openPanel(name) {
+  const t = document.querySelector('.section-tab[data-panel="' + name + '"]');
+  if (t) { t.click(); t.scrollIntoView({ behavior: "smooth", block: "start" }); }
+}
+document.addEventListener("click", e => {
+  const a = e.target.closest && e.target.closest('a[href="#analysis"], a[href="#qc-read-card"]');
+  if (!a) return;
+  e.preventDefault();
+  if (a.getAttribute("href") === "#analysis") openPanel("analysis");
+  else document.getElementById("qc-read-card").scrollIntoView({ behavior: "smooth", block: "start" });
+});
+
 function initSectionTabs() {
   const tabs = document.querySelectorAll(".section-tab");
   tabs.forEach(t => {
@@ -504,6 +562,8 @@ function initSectionTabs() {
       document.querySelectorAll(".section-panel").forEach(p => {
         p.classList.toggle("active", p.getAttribute("data-panel") === t.getAttribute("data-panel"));
       });
+      // charts measure their width when drawn; redraw the ones that were hidden
+      if (qcIntel && t.getAttribute("data-panel") === "trends") QCIntel.metrics(document.getElementById("qc-intel-metrics"), qcIntel, { height: 170 });
     });
   });
 }
@@ -686,7 +746,7 @@ document.getElementById("qc-checkin-dismiss").addEventListener("click", () => {
   initDaySelect();
   startTipRotator();
   // These four don't depend on each other — load them together.
-  await Promise.all([loadLatest(), loadHistory(), loadInsights(14), loadCheckin(), scoreLoad, loadUpcoming()]);
+  await Promise.all([loadLatest(), loadHistory(), loadInsights(14), loadIntel(14), loadCheckin(), scoreLoad, loadUpcoming()]);
   QC.refreshAlerts({ toast: true }).then(renderAttention);
   setTimeout(() => { if (window.QCPush) QCPush.maybePrompt(); }, 5000);
 })();

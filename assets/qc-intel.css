@@ -1,0 +1,95 @@
+/* Personal health intelligence and charts (Dashboard + Insights). */
+.qi-read, .qi-m, .qi-d, .qi-q { --qi-ink: #100e2a; --qi-muted: rgba(16,14,42,0.56); --qi-line: rgba(16,14,42,0.09); --qi-card: #fff; --qi-soft: #fbfaf6; }
+html[data-theme="dark"] .qi-read, html[data-theme="dark"] .qi-m, html[data-theme="dark"] .qi-d, html[data-theme="dark"] .qi-q { --qi-ink: #f2f0f8; --qi-muted: #a9a6bd; --qi-line: rgba(255,255,255,0.1); --qi-card: #18162e; --qi-soft: #100e2a; }
+
+/* ---- Cura's read ---- */
+.qi-read { position: relative; }
+.qi-read-h { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 14px; flex-wrap: wrap; }
+.qi-read-t { flex: 1; min-width: 200px; }
+.qi-eyebrow { font-size: 10.5px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; color: #7c6fdb; margin-bottom: 4px; }
+html[data-theme="dark"] .qi-eyebrow { color: #b8b0ff; }
+.qi-headline { font-family: 'Fraunces', serif; font-size: clamp(18px, 2.2vw, 22px); font-weight: 600; line-height: 1.3; color: var(--qi-ink); }
+.qi-brain { flex: 0 0 auto; width: 44px; height: 44px; border-radius: 14px; background: linear-gradient(135deg, #7c6fdb, #0e8f83); display: flex; align-items: center; justify-content: center; gap: 3px; box-shadow: 0 10px 22px -12px rgba(124,111,219,.8); }
+.qi-brain i { width: 5px; border-radius: 3px; background: rgba(255,255,255,.9); animation: qiPulse 1.6s ease-in-out infinite; }
+.qi-brain i:nth-child(1) { height: 12px; } .qi-brain i:nth-child(2) { height: 20px; animation-delay: .2s; } .qi-brain i:nth-child(3) { height: 14px; animation-delay: .4s; }
+@keyframes qiPulse { 50% { transform: scaleY(.55); opacity: .7; } }
+@media (prefers-reduced-motion: reduce) { .qi-brain i { animation: none; } }
+.qi-caution .qi-brain { background: linear-gradient(135deg, #d24f28, #c98a10); } .qi-watch .qi-brain { background: linear-gradient(135deg, #c98a10, #7c6fdb); }
+.qi-how { border: 1px solid var(--qi-line); background: transparent; color: var(--qi-muted); font: 700 12px 'Manrope', sans-serif; padding: 7px 12px; border-radius: 999px; cursor: pointer; }
+.qi-how:hover { color: var(--qi-ink); border-color: #7c6fdb; }
+.qi-methods { font-size: 13px; line-height: 1.55; color: var(--qi-muted); background: rgba(124,111,219,.06); border: 1px solid rgba(124,111,219,.18); border-radius: 14px; padding: 12px 16px; margin-bottom: 14px; }
+.qi-methods p { margin: 0 0 8px; } .qi-methods ul { margin: 0 0 8px; padding-left: 18px; } .qi-methods b { color: var(--qi-ink); }
+.qi-findings { display: flex; flex-direction: column; gap: 10px; }
+.qi-f { display: flex; gap: 12px; padding: 13px 14px; border-radius: 16px; border: 1px solid var(--qi-line); border-left: 4px solid #2f8fd1; background: var(--qi-card); transition: transform .15s; }
+.qi-f:hover { transform: translateX(2px); }
+.qi-f.sev-caution { border-left-color: #d24f28; background: linear-gradient(90deg, rgba(210,79,40,.06), transparent 60%), var(--qi-card); }
+.qi-f.sev-watch { border-left-color: #c98a10; background: linear-gradient(90deg, rgba(201,138,16,.07), transparent 60%), var(--qi-card); }
+.qi-f.sev-good { border-left-color: #0e8f83; }
+.qi-f-ic { font-size: 20px; line-height: 1; padding-top: 2px; }
+.qi-f-b { flex: 1; min-width: 0; }
+.qi-f-t { display: flex; gap: 10px; align-items: flex-start; justify-content: space-between; } .qi-f-t b { font-size: 14.5px; line-height: 1.35; color: var(--qi-ink); }
+.qi-f-sev, .qi-f-more summary { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; color: var(--qi-muted); margin-top: 3px; }
+.qi-f-more summary { cursor: pointer; list-style: none; } .qi-f-more summary::-webkit-details-marker { display: none; } .qi-f-more summary::after { content: " ▾"; } .qi-f-more[open] summary::after { content: " ▴"; }
+.qi-f-d { font-size: 13.5px; line-height: 1.55; color: var(--qi-muted); margin-top: 5px; }
+.qi-ev { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; } .qi-ev span { font: 700 11px ui-monospace, Consolas, monospace; padding: 3px 8px; border-radius: 8px; background: rgba(124,111,219,.09); color: #6a5fd0; }
+html[data-theme="dark"] .qi-ev span { color: #c9c2ff; background: rgba(168,155,245,.14); }
+.qi-conf { display: inline-flex; gap: 3px; flex: 0 0 auto; padding-top: 5px; } .qi-conf i { width: 7px; height: 7px; border-radius: 50%; background: var(--qi-line); } .qi-conf i.on { background: #7c6fdb; }
+.qi-more { display: inline-block; margin-top: 12px; font-weight: 800; font-size: 13px; }
+.qi-empty { font-size: 14px; color: var(--qi-muted, rgba(16,14,42,.5)); padding: 6px 0; }
+
+/* ---- measurement cards ---- */
+.qi-mgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 420px), 1fr)); gap: 16px; }
+.qi-m { border: 1px solid var(--qi-line); border-radius: 20px; padding: 16px 16px 14px; background: var(--qi-soft); min-width: 0; }
+.qi-m-h { display: flex; align-items: center; gap: 10px; } .qi-m-h b { font-family: 'Space Grotesk', sans-serif; font-size: 15px; flex: 1; color: var(--qi-ink); }
+.qi-m-ic { width: 32px; height: 32px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px; background: color-mix(in srgb, var(--c) 14%, transparent); }
+.qi-chip { font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 999px; white-space: nowrap; }
+.qi-chip.ok { background: rgba(14,143,131,.12); color: #0b7d72; } .qi-chip.warn { background: rgba(201,138,16,.14); color: #93670b; } .qi-chip.bad { background: rgba(210,79,40,.14); color: #b3401f; } .qi-chip.learn { background: rgba(124,111,219,.12); color: #6a5fd0; }
+html[data-theme="dark"] .qi-chip.ok { color: #7ee0d4; } html[data-theme="dark"] .qi-chip.warn { color: #f0cd8a; } html[data-theme="dark"] .qi-chip.bad { color: #ff9b7d; } html[data-theme="dark"] .qi-chip.learn { color: #c9c2ff; }
+.qi-m-v { display: flex; align-items: baseline; gap: 6px; margin: 10px 0 2px; } .qi-m-v .big { font-family: 'Fraunces', serif; font-size: 30px; font-weight: 600; color: var(--qi-ink); } .qi-m-v .u { font-size: 12px; color: var(--qi-muted); font-weight: 700; }
+.qi-m-when { margin-left: auto; font-size: 11.5px; color: var(--qi-muted); font-weight: 700; }
+.qi-m-usual { font-size: 12.5px; color: var(--qi-muted); margin-bottom: 6px; } .qi-m-usual b { color: var(--qi-ink); }
+.qi-chart { position: relative; min-height: 120px; margin: 6px -4px 4px; }
+.qi-stats { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+.qi-stat { display: flex; flex-direction: column; padding: 6px 10px; border-radius: 12px; background: var(--qi-card); border: 1px solid var(--qi-line); min-width: 70px; }
+.qi-stat small { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; color: var(--qi-muted); } .qi-stat b { font-size: 13px; color: var(--qi-ink); } .qi-stat em { font-style: normal; font-size: 10.5px; color: var(--qi-muted); font-family: ui-monospace, Consolas, monospace; }
+.qi-stat.strong { border-color: rgba(124,111,219,.4); background: rgba(124,111,219,.06); }
+.qi-fc { margin-top: 10px; font-size: 12.5px; color: var(--qi-muted); background: rgba(201,138,16,.08); border-radius: 12px; padding: 8px 11px; } .qi-fc b { color: var(--qi-ink); }
+.qi-empty-state { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 6px; padding: 22px 10px; color: rgba(16,14,42,.55); } .qi-empty-state .ic { font-size: 30px; } .qi-empty-state b { color: inherit; font-size: 15px; }
+html[data-theme="dark"] .qi-empty-state { color: #a9a6bd; }
+.qi-btn { display: inline-block; margin-top: 6px; background: #0e8f83; color: #fff !important; font-weight: 800; font-size: 13px; padding: 8px 18px; border-radius: 999px; text-decoration: none; }
+
+/* ---- derived metrics ---- */
+.qi-dgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr)); gap: 12px; }
+.qi-d { border: 1px solid var(--qi-line); border-radius: 16px; padding: 14px; background: var(--qi-soft); display: flex; flex-direction: column; gap: 4px; }
+.qi-d small { font-size: 10.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; color: var(--qi-muted); } .qi-d b { font-family: 'Fraunces', serif; font-size: 22px; color: var(--qi-ink); } .qi-d b em { font: 700 12px 'Manrope', sans-serif; color: var(--qi-muted); font-style: normal; }
+.qi-d span { font-size: 12px; line-height: 1.45; color: var(--qi-muted); } .qi-d.warn { border-color: rgba(201,138,16,.45); }
+.qi-bpcat b.c-normal { color: #0e8f83; } .qi-bpcat b.c-elevated { color: #c98a10; } .qi-bpcat b.c-stage1 { color: #d2702a; } .qi-bpcat b.c-stage2 { color: #d24f28; }
+.qi-scale { display: flex; gap: 3px; margin: 4px 0; } .qi-scale i { flex: 1; height: 7px; border-radius: 4px; opacity: .3; } .qi-scale i.on { opacity: 1; box-shadow: 0 0 0 2px var(--qi-card), 0 0 0 3.5px currentColor; }
+.qi-scale .s0 { background: #0e8f83; color: #0e8f83; } .qi-scale .s1 { background: #c98a10; color: #c98a10; } .qi-scale .s2 { background: #d2702a; color: #d2702a; } .qi-scale .s3 { background: #d24f28; color: #d24f28; }
+
+/* ---- data quality ---- */
+.qi-q-stats { display: flex; flex-wrap: wrap; gap: 18px; margin-bottom: 12px; } .qi-q-stats span { display: flex; flex-direction: column; font-size: 11px; font-weight: 700; color: var(--qi-muted); text-transform: uppercase; letter-spacing: .04em; }
+.qi-q-stats b { font-family: 'Fraunces', serif; font-size: 20px; color: var(--qi-ink); text-transform: none; letter-spacing: 0; }
+.qi-cal { display: grid; grid-template-columns: repeat(auto-fill, 14px); gap: 4px; } .qi-cal.dense { grid-template-columns: repeat(auto-fill, 9px); gap: 3px; }
+.qi-cal i { height: 14px; border-radius: 4px; background: var(--qi-line); } .qi-cal.dense i { height: 9px; border-radius: 2px; } .qi-cal i.on { background: linear-gradient(135deg, #0e8f83, #2f8fd1); }
+.qi-tips { margin: 12px 0 0; padding-left: 18px; font-size: 13px; line-height: 1.55; color: var(--qi-muted); }
+
+/* ---- charts ---- */
+.qcc { position: relative; width: 100%; }
+.qcc-svg { display: block; overflow: visible; font-family: 'Manrope', sans-serif; }
+.qcc-grid { stroke: rgba(16,14,42,.07); } .qcc-tick { font-size: 10px; fill: rgba(16,14,42,.45); font-weight: 600; }
+.qcc-pop { stroke: rgba(16,14,42,.28); stroke-dasharray: 2 5; }
+.qcc-band { fill: rgba(14,143,131,.13); } .qcc-band2 { fill: rgba(240,160,122,.12); } .qcc-bandlab { font-size: 9.5px; font-weight: 800; fill: #0b7d72; text-transform: uppercase; letter-spacing: .05em; }
+.qcc-line { fill: none; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; } .qcc-line2 { fill: none; stroke-width: 1.8; stroke-dasharray: 0; opacity: .85; stroke-linejoin: round; }
+.qcc-area { opacity: .08; } .qcc-dot { stroke: #fff; stroke-width: 1.5; } .qcc-dot2 { opacity: .9; }
+.qcc-anom { fill: none; stroke: #d24f28; stroke-width: 2; }
+.qcc-step { stroke: #7c6fdb; stroke-width: 1.5; stroke-dasharray: 4 4; } .qcc-steplab { font-size: 9.5px; font-weight: 800; fill: #6a5fd0; }
+.qcc-cone { opacity: .12; } .qcc-fc { stroke-width: 2; stroke-dasharray: 5 5; fill: none; }
+.qcc-guide { stroke: rgba(16,14,42,.25); stroke-width: 1; } .qcc-hit { fill: transparent; cursor: crosshair; }
+.qcc-tip { position: absolute; pointer-events: none; background: #100e2a; color: #fff; border-radius: 10px; padding: 6px 10px; font-size: 12px; white-space: nowrap; box-shadow: 0 10px 24px -10px rgba(0,0,0,.5); z-index: 2; }
+.qcc-tip b { font-size: 14px; } .qcc-tip span { display: block; font-size: 11px; opacity: .75; } .qcc-tip span.w { opacity: 1; color: #7ee0d4; font-weight: 700; }
+.qcc-spark { display: block; }
+html[data-theme="dark"] .qcc-grid { stroke: rgba(255,255,255,.07); } html[data-theme="dark"] .qcc-tick { fill: #8f8ba3; } html[data-theme="dark"] .qcc-pop { stroke: rgba(255,255,255,.3); }
+html[data-theme="dark"] .qcc-dot { stroke: #18162e; } html[data-theme="dark"] .qcc-bandlab { fill: #7ee0d4; } html[data-theme="dark"] .qcc-steplab { fill: #c9c2ff; }
+html[data-theme="dark"] .qcc-guide { stroke: rgba(255,255,255,.3); } html[data-theme="dark"] .qcc-tip { background: #f2f0f8; color: #100e2a; } html[data-theme="dark"] .qcc-tip span.w { color: #0b7d72; }
+@media (max-width: 520px) { .qi-m { padding: 14px 12px; } .qi-m-v .big { font-size: 26px; } .qi-read-h { gap: 10px; } }

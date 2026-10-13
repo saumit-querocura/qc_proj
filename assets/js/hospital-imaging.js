@@ -13,7 +13,7 @@
   function toast(m, k) { H().P.toast(m, k); }
   var ICON = { xray: "🦴", ct: "🌀", mri: "🧲", us: "🔊", pet: "☢️", mammo: "🎗️", fluoro: "🎞️", other: "🖼️" };
   var STAT = { uploaded: ["Waiting for a read", ""], analysing: ["AI reading…", "wait"], draft: ["AI draft ready", "ok"], failed: ["AI read failed", "bad"], signed: ["Signed", "ok"] };
-  var S = { filter: "to_report", settings: null, poll: null, study: null, urls: {}, view: { i: 0, z: 1, x: 0, y: 0, b: 100, c: 100, inv: false, boxes: true, cmp: false, cmpUrl: null, focus: null } };
+  var S = { filter: "to_report", settings: null, poll: null, study: null, urls: {}, view: { i: 0, z: 1, x: 0, y: 0, b: 100, c: 100, inv: false, boxes: true, cmp: false, cmpUrl: null, focus: null, measure: false, heat: false, meas: {} } };
 
   function fetchImage(sid, idx) {
     var key = sid + ":" + idx;
@@ -22,6 +22,32 @@
       .then(function (r) { if (!r.ok) throw new Error("image"); return r.blob(); })
       .then(function (b) { var u = URL.createObjectURL(b); S.urls[key] = u; return u; });
   }
+  function fetchHeat(sid, idx) {
+    var key = sid + ":heat:" + idx;
+    if (S.urls[key]) return Promise.resolve(S.urls[key]);
+    return fetch(H().P.API + "/hospital/imaging/studies/" + encodeURIComponent(sid) + "/images/" + idx + "/asymmetry", { credentials: "include", cache: "no-store" })
+      .then(function (r) { if (!r.ok) throw new Error("heat"); return r.blob(); })
+      .then(function (b) { var u = URL.createObjectURL(b); S.urls[key] = u; return u; });
+  }
+
+  /* calipers: lengths in millimetres when the DICOM pixel spacing is known, otherwise in image pixels */
+  function measLen(m) {
+    var im = (S.study.images || [])[S.view.i] || {};
+    var dx = (m[2] - m[0]) * (im.width || 1), dy = (m[3] - m[1]) * (im.height || 1);
+    if (im.cal) return (Math.sqrt(Math.pow(dx * im.cal.mm_x, 2) + Math.pow(dy * im.cal.mm_y, 2))).toFixed(1) + " mm";
+    return Math.round(Math.sqrt(dx * dx + dy * dy)) + " px";
+  }
+  function drawMeas() {
+    var svg = el("img-meas"), lab = el("img-mlabels"); if (!svg) return;
+    var list = S.view.meas[S.view.i] || [];
+    svg.innerHTML = list.map(function (m) { return '<line x1="' + m[0] * 100 + '" y1="' + m[1] * 100 + '" x2="' + m[2] * 100 + '" y2="' + m[3] * 100 + '" vector-effect="non-scaling-stroke"/>'; }).join("");
+    lab.innerHTML = list.map(function (m) { return '<span style="left:' + (m[0] + m[2]) * 50 + "%;top:" + (m[1] + m[3]) * 50 + '%">' + measLen(m) + "</span>"; }).join("");
+  }
+  function frac(e) {
+    var r = el("img-main").getBoundingClientRect();
+    return [Math.min(1, Math.max(0, (e.clientX - r.left) / r.width)), Math.min(1, Math.max(0, (e.clientY - r.top) / r.height))];
+  }
+
   function freeImages() { Object.keys(S.urls).forEach(function (k) { URL.revokeObjectURL(S.urls[k]); }); S.urls = {}; }
 
   /* ---------------------------------------------------------------- worklist */
@@ -137,7 +163,7 @@
     api("/hospital/imaging/studies/" + encodeURIComponent(sid)).then(function (r) {
       if (H().guard(r)) return;
       if (!r.ok) { toast(r.message, "err"); return; }
-      if (!S.study || S.study.id !== sid) { freeImages(); S.view = { i: 0, z: 1, x: 0, y: 0, b: 100, c: 100, inv: false, boxes: true, cmp: false, cmpUrl: null, focus: null }; }
+      if (!S.study || S.study.id !== sid) { freeImages(); S.view = { i: 0, z: 1, x: 0, y: 0, b: 100, c: 100, inv: false, boxes: true, cmp: false, cmpUrl: null, focus: null, measure: false, heat: false, meas: {} }; }
       S.study = r.item;
       render();
       if (r.item.ai_status === "queued" || r.item.ai_status === "running") S.poll = setTimeout(function () { if (el("img-ws")) openStudy(sid); }, 4000);
@@ -149,18 +175,22 @@
     var tech = Object.keys(s.meta || {}).filter(function (k) { return ["source", "text_masked", "detected_modality"].indexOf(k) < 0; }).map(function (k) { return esc(k.replace(/([a-z])([A-Z])/g, "$1 $2")) + ": " + esc(s.meta[k]); }).join(" · ");
     var qIssues = [];
     (s.images || []).forEach(function (im) { (im.quality.issues || []).forEach(function (x) { if (qIssues.indexOf(x) < 0) qIssues.push(x); }); });
-    var h = '<div id="img-ws" class="img-ws"><div class="img-viewer"><div class="img-stage" id="img-stage"><div class="img-canvas" id="img-canvas"><div class="img-frame"><img id="img-main" alt="Study image" draggable="false"><div class="img-boxes" id="img-boxes"></div></div></div>' +
+    var h = '<div id="img-ws" class="img-ws"><div class="img-viewer"><div class="img-stage" id="img-stage"><div class="img-canvas" id="img-canvas"><div class="img-frame"><img id="img-main" alt="Study image" draggable="false"><img id="img-heat" class="img-heat" alt="" hidden><div class="img-boxes" id="img-boxes"></div><svg class="img-meas" id="img-meas" viewBox="0 0 100 100" preserveAspectRatio="none"></svg><div class="img-mlabels" id="img-mlabels"></div></div></div>' +
       '<div class="img-cmp" id="img-cmp" hidden><img id="img-prior" alt="Prior study"><span>Prior</span></div><div class="img-label" id="img-label"></div></div>' +
       '<div class="img-tools"><button type="button" data-z="1.25" title="Zoom in">＋</button><button type="button" data-z="0.8" title="Zoom out">－</button><button type="button" data-reset title="Reset">⟲</button>' +
       '<label title="Brightness">☀<input type="range" min="40" max="220" value="' + S.view.b + '" id="vb"></label><label title="Contrast">◐<input type="range" min="40" max="300" value="' + S.view.c + '" id="vc"></label>' +
       '<button type="button" data-inv class="' + (S.view.inv ? "on" : "") + '" title="Invert">⬛⬜</button>' + (ai ? '<button type="button" data-boxes class="' + (S.view.boxes ? "on" : "") + '" title="Show AI findings">▢ Findings</button>' : "") +
-      (s.prior_id ? '<button type="button" data-cmp class="' + (S.view.cmp ? "on" : "") + '">⇆ Prior</button>' : "") + "</div>" +
+      (s.prior_id ? '<button type="button" data-cmp class="' + (S.view.cmp ? "on" : "") + '">⇆ Prior</button>' : "") +
+      '<button type="button" data-measure class="' + (S.view.measure ? "on" : "") + '" title="Measure: drag across the image">📏 Measure</button>' +
+      (s.pixel_analysis ? '<button type="button" data-heat class="' + (S.view.heat ? "on" : "") + '" title="Left-right asymmetry map (pixel statistics, not AI)">◐ Asymmetry</button>' : "") + "</div>" +
       '<div class="img-thumbs">' + (s.images || []).map(function (im) { return '<button type="button" class="img-th' + (im.idx === S.view.i ? " on" : "") + '" data-i="' + im.idx + '"><img data-src="' + im.idx + '" alt=""><span>' + esc(im.label) + "</span></button>"; }).join("") + "</div></div>";
     // side panel
     h += '<div class="img-side"><div class="img-pt"><span class="img-ic big">' + (ICON[s.modality] || "🖼️") + '</span><div><h2 id="ops-title">' + esc(s.modality_label + " · " + s.region) + '</h2><div class="mini">' + esc(s.patient_name) + " · " + esc(H().when(s.created_ts)) + " · uploaded by " + esc(s.created_by || "") + "</div></div></div>" +
       (s.indication ? '<div class="img-q"><span>Clinical question</span>' + esc(s.indication) + "</div>" : "") + (tech ? '<div class="mini img-tech">' + tech + "</div>" : "") +
       (qIssues.length ? '<div class="img-warn">⚠ Image quality: ' + qIssues.map(esc).join(" ") + "</div>" : "") + (!s.access_active ? '<div class="notice bad">The patient\'s access has ended.</div>' : "");
     h += aiPanel(s);
+    h += guidancePanel(s);
+    h += pixelPanel(s);
     h += reportPanel(s);
     h += "</div></div>";
     modalHtml(h, true);
@@ -189,6 +219,11 @@
     (ai.review_notes || []).forEach(function (n) { notes[n.finding_id] = n; });
     var h = '<div class="img-ai done"><div class="img-ai-h">🧠 AI draft <span class="mini">· not a report · ' + esc(s.ai_model || "") + " · " + esc(H().when(s.ai_done_ts)) + "</span></div>";
     if (ai.critical_alert.present) h += '<div class="img-crit" role="alert">🚨 <b>Possible critical finding:</b> ' + esc(ai.critical_alert.reason) + ". Confirm on the images and act on it now if you agree.</div>";
+    if (ai.reliability) {
+      var rl = ai.reliability;
+      h += '<div class="img-rel ' + rl.band + '"><div class="img-rel-s"><b>' + rl.score + '</b><span>/100</span></div><div class="grow"><b>Draft reliability: ' + esc(rl.band) + "</b>" +
+        '<div class="img-rel-bar"><i style="width:' + rl.score + '%"></i></div><div class="mini">' + rl.why.map(esc).join(" · ") + "</div></div></div>";
+    }
     var q = ai.quality;
     h += '<div class="img-qa ' + (q.adequate && q.matches_request ? "ok" : "bad") + '">' + (q.adequate ? "✓ Diagnostic quality" : "⚠ Limited quality") + " · " + esc([q.identified_modality, q.identified_region, q.views].filter(Boolean).join(", ")) + (q.matches_request ? "" : " · <b>does not match the request</b>") + (q.issues.length ? '<div class="mini">' + q.issues.map(esc).join(" ") + "</div>" : "") + "</div>";
     if (ai.answer_to_clinical_question) h += '<div class="img-answer"><span>Answer to the clinical question</span>' + esc(ai.answer_to_clinical_question) + "</div>";
@@ -197,7 +232,10 @@
       return '<div class="img-f sev-' + f.severity + (d ? " " + d : "") + (S.view.focus === f.id ? " focus" : "") + '" data-f="' + esc(f.id) + '"><div class="img-f-t"><span class="sev sev-' + (f.severity === "critical" ? "emergency" : f.severity === "significant" ? "urgent" : "warning") + '">' + esc(f.severity) + "</span><b>" + esc(f.title) + "</b>" +
         '<span class="img-conf" title="AI confidence"><i style="width:' + Math.round(f.confidence * 100) + '%"></i></span><small>' + Math.round(f.confidence * 100) + "%</small></div>" +
         '<div class="img-f-d">' + esc(f.description) + "</div>" + (f.location ? '<div class="mini">📍 ' + esc(f.location) + (f.image_index != null ? " · image " + (f.image_index + 1) : "") + (f.measurements ? " · " + esc(f.measurements) : "") + "</div>" : "") +
-        (f.evidence ? '<div class="mini">🔎 ' + esc(f.evidence) + "</div>" : "") + (n ? '<div class="img-note ' + n.action + '">2nd reader ' + esc(n.action) + (n.reason ? ": " + esc(n.reason) : "") + "</div>" : "") +
+        (f.evidence ? '<div class="mini">🔎 ' + esc(f.evidence) + "</div>" : "") +
+        '<div class="img-badges">' + (f.consensus === "both" ? '<span class="ib both">✓✓ Both readers</span>' : f.consensus === "both_revised" ? '<span class="ib both">✓✓ Both readers (revised)</span>' : f.consensus === "second_only" ? '<span class="ib one">2nd reader only</span>' : "") +
+        (f.pixel_support ? '<span class="ib px">◐ Asymmetry map agrees</span>' : "") + (f.box_mm ? '<span class="ib mm">📏 box ≈ ' + f.box_mm[0] + " × " + f.box_mm[1] + " mm</span>" : "") +
+        (f.classification ? '<span class="ib gl">📘 ' + esc(f.classification.system.toUpperCase()) + "</span>" : "") + "</div>" + (n ? '<div class="img-note ' + n.action + '">2nd reader ' + esc(n.action) + (n.reason ? ": " + esc(n.reason) : "") + "</div>" : "") +
         '<div class="img-f-a">' + (f.image_index != null ? '<button type="button" class="btn btn-sm btn-ghost" data-show="' + esc(f.id) + '">Show on image</button>' : "") +
         (signer ? '<button type="button" class="btn btn-sm' + (d === "accepted" ? " btn-primary" : "") + '" data-dec="accepted" data-id="' + esc(f.id) + '">✓ Accept</button><button type="button" class="btn btn-sm' + (d === "rejected" ? " btn-danger" : "") + '" data-dec="rejected" data-id="' + esc(f.id) + '">✕ Reject</button>' : (d ? '<span class="pill ' + (d === "accepted" ? "ok" : "bad") + '">' + esc(d) + "</span>" : "")) + "</div></div>";
     }).join("") : '<div class="mini">No findings reported.</div>') + "</div>";
@@ -216,6 +254,42 @@
     return h;
   }
 
+  /* ---- follow-up guidance from published rules (Fleischner, BI-RADS, Bosniak, TI-RADS, AAA) ---- */
+  function guidancePanel(s) {
+    var g = s.guidance || [];
+    if (!g.length) return "";
+    var signer = can("imaging_sign") && s.status !== "signed";
+    return '<div class="img-gl"><div class="img-ai-h">📘 Follow-up guidance <span class="mini">· rule-based, from published guidelines</span></div>' + g.map(function (x) {
+      var inp = x.inputs || {};
+      var form = "";
+      if (signer && !x.not_applicable) {
+        if (x.key === "fleischner") form = '<div class="img-gl-f"><label>Size <input class="input" data-g="size_mm" value="' + esc(inp.size_mm == null ? "" : inp.size_mm) + '" inputmode="decimal"> mm</label>' +
+          '<label>Type <select class="input" data-g="nodule_type">' + ["solid", "part-solid", "ground-glass"].map(function (t) { return "<option" + (t === inp.type ? " selected" : "") + ">" + t + "</option>"; }).join("") + "</select></label>" +
+          '<label>Number <select class="input" data-g="multiplicity"><option value="single"' + (inp.multiple ? "" : " selected") + '>single</option><option value="multiple"' + (inp.multiple ? " selected" : "") + ">multiple</option></select></label>" +
+          '<label>Risk <select class="input" data-g="risk"><option value="">unknown</option><option value="low"' + (inp.risk === "low" ? " selected" : "") + '>low</option><option value="high"' + (inp.risk === "high" ? " selected" : "") + ">high</option></select></label>";
+        else if (x.key === "ti-rads") form = '<div class="img-gl-f"><label>Level <input class="input" data-g="category" value="' + esc(inp.level || "") + '" placeholder="TR4"></label><label>Size <input class="input" data-g="size_mm" value="' + esc(inp.size_mm == null ? "" : inp.size_mm) + '" inputmode="decimal"> mm</label>';
+        else if (x.key === "aaa") form = '<div class="img-gl-f"><label>Diameter <input class="input" data-g="size_mm" value="' + esc(inp.diameter_mm == null ? "" : inp.diameter_mm) + '" inputmode="decimal"> mm</label>';
+        else form = '<div class="img-gl-f"><label>Category <input class="input" data-g="category" value="' + esc(inp.category || "") + '"></label>';
+        form += '<button type="button" class="btn btn-sm" data-glcalc="' + esc(x.finding_id) + '">Recalculate</button></div>';
+      }
+      return '<div class="img-gl-c' + (x.needs ? " needs" : "") + (x.not_applicable ? " na" : "") + '" data-gl="' + esc(x.finding_id) + '"><div class="mini">' + esc(x.finding) + " · <b>" + esc(x.system) + "</b>" + (x.category_meaning ? " · " + esc(x.category_meaning) : "") + "</div>" +
+        '<div class="img-gl-r">' + esc(x.recommendation) + "</div>" + (x.risk_note && x.needs ? '<div class="mini">' + esc(x.risk_note) + "</div>" : "") +
+        (x.size_source ? '<div class="mini">Size ' + esc(x.size_source) + (x.size_source !== "reported" ? ": check it with the calipers" : "") + ".</div>" : "") +
+        (x.applies_to ? '<div class="mini">Applies to: ' + esc(x.applies_to) + "</div>" : "") + form + "</div>";
+    }).join("") + '<p class="mini">Accepted findings with complete inputs are added to the report under "Follow-up guidance".</p></div>';
+  }
+
+  /* ---- local pixel analysis (no AI) ---- */
+  function pixelPanel(s) {
+    var spots = [];
+    (s.images || []).forEach(function (im) { if (im.asym) spots.push(im); });
+    if (!spots.length) return "";
+    var cur = spots[0].asym;
+    return '<details class="img-sec img-px"><summary class="ops-h">◐ Asymmetry map · ' + esc(cur.level) + " (" + cur.score + ")</summary>" +
+      '<p class="mini">Each region is compared with its mirror image across the midline. On the overlay, warm colours mark the side that is denser (brighter) than its mirror and cool colours the side that is darker; you decide which side is abnormal. The strongest regions are outlined in purple and handed to the second AI reader to double-check. ' + esc(cur.caveat) + "</p>" +
+      spots.map(function (im) { return '<div class="mini">Image ' + (im.idx + 1) + " (" + esc(im.label) + "): " + (im.asym.hotspots.length ? im.asym.hotspots.length + " region" + (im.asym.hotspots.length > 1 ? "s" : "") + ", strongest on the image " + esc(im.asym.hotspots[0].side_of_image) : "no strong asymmetry") + "</div>"; }).join("") + "</details>";
+  }
+
   function reportPanel(s) {
     if (s.status === "signed") {
       return '<div class="img-rep signed"><div class="img-ai-h">✍️ Signed report <span class="mini">· ' + esc(s.signed_by) + " · " + esc(H().when(s.signed_ts)) + '</span></div><pre class="img-pre">' + esc(s.report) + "</pre>" +
@@ -230,6 +304,18 @@
   }
 
   /* ---------------------------------------------------------------- viewer */
+  /* size the image to fit the stage exactly, so the frame (and every box, caliper and overlay laid on it in
+     percentages) has the image's own shape */
+  function fit() {
+    var c = el("img-canvas"), im = el("img-main");
+    if (!c || !im || !im.naturalWidth) return;
+    var k = Math.min(c.clientWidth / im.naturalWidth, c.clientHeight / im.naturalHeight);
+    im.style.maxWidth = im.style.maxHeight = "none";
+    im.style.width = Math.max(1, Math.floor(im.naturalWidth * k)) + "px";
+    im.style.height = Math.max(1, Math.floor(im.naturalHeight * k)) + "px";
+  }
+  window.addEventListener("resize", function () { if (el("img-main")) fit(); });
+
   function apply() {
     var v = S.view, c = el("img-canvas"); if (!c) return;
     c.style.transform = "translate(" + v.x + "px," + v.y + "px) scale(" + v.z + ")";
@@ -242,19 +328,37 @@
     [].forEach.call(document.querySelectorAll(".img-th"), function (t) { t.classList.toggle("on", +t.getAttribute("data-i") === i); });
     var im = (s.images || [])[i];
     el("img-label").textContent = im ? (i + 1) + " / " + s.images.length + " · " + im.label : "";
-    fetchImage(s.id, i).then(function (u) { el("img-main").src = u; }, function () { el("img-label").textContent = "Couldn't load the image."; });
+    fetchImage(s.id, i).then(function (u) { var m = el("img-main"); m.onload = fit; m.src = u; if (m.complete) fit(); }, function () { el("img-label").textContent = "Couldn't load the image."; });
     var bx = el("img-boxes");
-    bx.innerHTML = s.ai && v.boxes ? s.ai.findings.filter(function (f) { return f.image_index === i && f.box; }).map(function (f) {
-      return '<div class="img-box sev-' + f.severity + (v.focus === f.id ? " focus" : "") + '" style="left:' + f.box[0] * 100 + "%;top:" + f.box[1] * 100 + "%;width:" + (f.box[2] - f.box[0]) * 100 + "%;height:" + (f.box[3] - f.box[1]) * 100 + '%"><span>' + esc(f.title) + "</span></div>";
-    }).join("") : "";
+    bx.innerHTML = (s.ai && v.boxes ? s.ai.findings.filter(function (f) { return f.image_index === i && f.box; }).map(function (f) {
+      return '<div class="img-box sev-' + f.severity + (v.focus === f.id ? " focus" : "") + '" style="left:' + f.box[0] * 100 + "%;top:" + f.box[1] * 100 + "%;width:" + (f.box[2] - f.box[0]) * 100 + "%;height:" + (f.box[3] - f.box[1]) * 100 + '%"><span>' + esc(f.title) + (f.box_mm ? " · ≈" + f.box_mm[0] + "×" + f.box_mm[1] + " mm" : "") + "</span></div>";
+    }).join("") : "") + (v.heat && im && im.asym ? im.asym.hotspots.map(function (h, k) {
+      var b = h.box;
+      return '<div class="img-box asym" style="left:' + b[0] * 100 + "%;top:" + b[1] * 100 + "%;width:" + (b[2] - b[0]) * 100 + "%;height:" + (b[3] - b[1]) * 100 + '%"><span>asymmetry ' + (k + 1) + "</span></div>";
+    }).join("") : "");
+    var hm = el("img-heat");
+    H().show(hm, !!(v.heat && im && im.asym));
+    if (v.heat && im && im.asym) fetchHeat(s.id, i).then(function (u) { hm.src = u; }, function () { H().show(hm, false); });
+    drawMeas();
     apply();
   }
   function wire() {
     var stage = el("img-stage"), v = S.view, drag = null;
     stage.onwheel = function (e) { e.preventDefault(); v.z = Math.min(8, Math.max(0.5, v.z * (e.deltaY < 0 ? 1.12 : 0.89))); apply(); };
-    stage.onpointerdown = function (e) { drag = { x: e.clientX - v.x, y: e.clientY - v.y }; stage.setPointerCapture(e.pointerId); };
-    stage.onpointermove = function (e) { if (!drag) return; v.x = e.clientX - drag.x; v.y = e.clientY - drag.y; apply(); };
-    stage.onpointerup = function () { drag = null; };
+    var mline = null;
+    stage.onpointerdown = function (e) {
+      stage.setPointerCapture(e.pointerId);
+      if (v.measure) { var p = frac(e); mline = [p[0], p[1], p[0], p[1]]; (v.meas[v.i] = v.meas[v.i] || []).push(mline); drawMeas(); return; }
+      drag = { x: e.clientX - v.x, y: e.clientY - v.y };
+    };
+    stage.onpointermove = function (e) {
+      if (mline) { var p = frac(e); mline[2] = p[0]; mline[3] = p[1]; drawMeas(); return; }
+      if (!drag) return; v.x = e.clientX - drag.x; v.y = e.clientY - drag.y; apply();
+    };
+    stage.onpointerup = function () {
+      if (mline && Math.abs(mline[2] - mline[0]) + Math.abs(mline[3] - mline[1]) < 0.01) { v.meas[v.i].pop(); drawMeas(); }
+      mline = null; drag = null;
+    };
     el("vb").oninput = function () { v.b = +this.value; apply(); };
     el("vc").oninput = function () { v.c = +this.value; apply(); };
     var ws = el("img-ws");
@@ -265,6 +369,12 @@
       if ((t = e.target.closest("[data-inv]"))) { v.inv = !v.inv; t.classList.toggle("on", v.inv); apply(); return; }
       if ((t = e.target.closest("[data-boxes]"))) { v.boxes = !v.boxes; t.classList.toggle("on", v.boxes); showImage(v.i); return; }
       if ((t = e.target.closest("[data-cmp]"))) { v.cmp = !v.cmp; t.classList.toggle("on", v.cmp); compare(); return; }
+      if ((t = e.target.closest("[data-measure]"))) {
+        if (v.measure && (v.meas[v.i] || []).length && window.confirm("Clear the measurements on this image?")) v.meas[v.i] = [];
+        v.measure = !v.measure; t.classList.toggle("on", v.measure); el("img-stage").classList.toggle("measuring", v.measure); drawMeas(); return;
+      }
+      if ((t = e.target.closest("[data-heat]"))) { v.heat = !v.heat; t.classList.toggle("on", v.heat); showImage(v.i); return; }
+      if ((t = e.target.closest("[data-glcalc]"))) return recalc(t.getAttribute("data-glcalc"));
       if ((t = e.target.closest("[data-i]"))) { showImage(+t.getAttribute("data-i")); return; }
       if ((t = e.target.closest("[data-show]"))) {
         var f = S.study.ai.findings.filter(function (x) { return x.id === t.getAttribute("data-show"); })[0];
@@ -280,10 +390,23 @@
       if (e.target.closest("[data-addendum]")) return api("/hospital/imaging/studies/" + encodeURIComponent(S.study.id) + "/addendum", { method: "POST", body: { text: el("img-add").value } }).then(function (r) { toast(r.message, r.ok ? "" : "err"); if (r.ok) openStudy(S.study.id); });
     };
   }
+  function recalc(fid) {
+    var card = document.querySelector('[data-gl="' + fid + '"]'), vals = {};
+    [].forEach.call(card.querySelectorAll("[data-g]"), function (i) { vals[i.getAttribute("data-g")] = i.value; });
+    api("/hospital/imaging/studies/" + encodeURIComponent(S.study.id) + "/guidance", { method: "POST", body: { finding_id: fid, values: vals } }).then(function (r) {
+      if (!r.ok) { toast(r.message, "err"); return; }
+      S.study.guidance = r.items;
+      var keep = el("img-report") ? el("img-report").value : "";
+      render(); if (el("img-report")) el("img-report").value = keep;
+      toast("Guidance updated.");
+    });
+  }
+
   function compare() {
     var box = el("img-cmp"), s = S.study;
     H().show(box, S.view.cmp);
     el("img-stage").classList.toggle("split", S.view.cmp);
+    fit();
     if (S.view.cmp && s.prior_id) fetchImage(s.prior_id, 0).then(function (u) { el("img-prior").src = u; apply(); }, function () { box.querySelector("span").textContent = "Prior image unavailable"; });
   }
   function decide(fid, d) {

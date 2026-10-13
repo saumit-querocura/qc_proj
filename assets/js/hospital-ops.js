@@ -86,9 +86,16 @@
         '<div><div class="ops-h">Wards</div>' + (r.wards.length ? r.wards.map(function (w) {
           return '<div class="ops-dl"><span class="nm">' + esc(w.name) + '</span><span class="bars"><i class="o' + (w.pct >= 90 ? " hot" : "") + '" style="width:' + w.pct + '%"></i></span><span class="num">' + w.occupied + "/" + w.total + (w.cleaning ? " · " + w.cleaning + " cleaning" : "") + "</span></div>";
         }).join("") : '<div class="mini">No wards yet.</div>') + "</div>" +
-        '<div><div class="ops-h">Arrivals today</div>' + spark(r.arrivals_by_hour) + "</div></div></div>";
+        '<div><div class="ops-h">Arrivals today</div>' + spark(r.arrivals_by_hour) + "</div></div>" + (window.QCClin ? QCClin.watch(r) : "") + "</div>";
       box.innerHTML = h;
-      box.onclick = function (e) { var g = e.target.closest("[data-goto]"); if (g) H().go(g.getAttribute("data-goto")); };
+      box.onclick = function (e) {
+        var v = e.target.closest("[data-open-visit]");
+        if (v) return openVisit(v.getAttribute("data-open-visit"));
+        var g = e.target.closest("[data-goto]");
+        if (!g) return;
+        if (g.getAttribute("data-goto") === "watch") { var w = el("ops-watch"); if (w) w.scrollIntoView({ behavior: "smooth", block: "center" }); return; }
+        H().go(g.getAttribute("data-goto"));
+      };
     });
   }
   function spark(hours) {
@@ -141,9 +148,9 @@
     if (x.status === "in_consult" && can("read")) acts.push(["done", "Finish"]);
     if (x.status !== "waiting" && can("orders")) acts.push(["admit", "Admit"]);
     return '<div class="ops-card' + (x.overdue ? " overdue" : "") + (x.kind === "er" ? " er t" + (x.triage || 3) : "") + '" data-open="' + esc(x.id) + '">' +
-      '<div class="ops-card-t"><span class="tokn">' + (x.token ? "#" + x.token : "") + "</span>" + tri + "<b>" + esc(x.patient_name) + "</b>" + pr + "</div>" +
+      '<div class="ops-card-t"><span class="tokn">' + (x.token ? "#" + x.token : "") + "</span>" + tri + "<b>" + esc(x.patient_name) + "</b>" + pr + (window.QCClin ? QCClin.badge(x.news2) : "") + "</div>" +
       '<div class="ops-card-m">' + (x.dept && !S.dept ? esc(x.dept) + " · " : "") + (x.doctor ? "Dr " + esc(x.doctor.replace(/^dr\.?\s+/i, "")) + " · " : "") +
-      (x.status === "waiting" ? '⏱ <span data-since="' + x.created_ts + '">' + dur(mins(x.created_ts)) + "</span>" + (x.position ? " · " + ordinal(x.position) + " in line" : "") : "since " + clock(x.called_ts || x.started_ts)) +
+      (x.status === "waiting" ? '⏱ <span data-since="' + x.created_ts + '">' + dur(mins(x.created_ts)) + "</span>" + (x.position ? " · " + ordinal(x.position) + " in line" : "") + (x.eta_min != null ? ' · <span title="' + esc(x.eta_basis || "") + '">≈ ' + dur(x.eta_min) + " to go</span>" : "") : "since " + clock(x.called_ts || x.started_ts)) +
       (x.overdue ? ' · <b class="late">past ' + x.target_min + " min target</b>" : "") + "</div>" +
       (x.reason ? '<div class="ops-card-r">' + esc(x.reason) + "</div>" : "") +
       (!x.access_active ? '<div class="ops-card-warn">Shared access has ended</div>' : "") +
@@ -241,6 +248,7 @@
       h += '<div class="ops-steps">' + steps.map(function (s) { return '<div><i></i><b>' + esc(s[0]) + "</b><span>" + clock(s[1]) + "</span></div>"; }).join("") + (x.los_days != null ? '<div class="los"><b>' + x.los_days + " days</b><span>in hospital</span></div>" : "") + "</div>";
       if (acts.length) h += '<div class="ops-v-acts">' + acts.map(function (a) { return '<button type="button" class="btn btn-sm ' + a[2] + '" data-vact="' + a[0] + '">' + a[1] + "</button>"; }).join("") +
         (can("read") && x.access_active ? '<button type="button" class="btn btn-sm btn-ghost" data-chart="' + esc(x.grant_id) + '">Open chart</button>' : "") + "</div>";
+      if (window.QCClin) h += QCClin.section(x);
       // discharge checklist
       if (x.status === "admitted" || x.status === "discharge_planned") {
         var ck = (S.structure && S.structure.checklist) || {};
@@ -255,8 +263,10 @@
       if (x.handover && x.handover.length) h += '<div class="ops-sec"><div class="ops-h">Handover notes</div>' + x.handover.map(handoverCard).join("") + "</div>";
       if (x.earlier && x.earlier.length) h += '<div class="mini" style="margin-top:12px">Came in through: ' + x.earlier.map(function (e) { return esc(e.kind.toUpperCase() + " · " + (e.dept || "") + " · " + new Date(e.created_ts * 1000).toLocaleDateString()); }).join(" → ") + "</div>";
       var b = modal(h);
+      if (window.QCClin) QCClin.after(x);
       b.onclick = function (e) {
         var t;
+        if (window.QCClin && QCClin.click(e, x, function () { openVisit(x.id); })) return;
         if ((t = e.target.closest("[data-vact]"))) {
           var a = t.getAttribute("data-vact");
           if (a === "admit") return admit(x.id);
@@ -338,10 +348,10 @@
         (can("ops") ? '<button class="btn btn-primary btn-sm" type="button" data-direct>+ Admit directly</button>' : "") + "</div></div>" +
         '<div class="bed-legend"><span class="free">Free</span><span class="occupied">Occupied</span><span class="cleaning">Cleaning</span><span class="reserved">Reserved</span><span class="blocked">Blocked</span><span class="gohome">Going home</span></div>';
       if (S.bedView === "list") {
-        h += '<div class="card"><div class="scroll-x"><table class="t"><thead><tr><th>Patient</th><th>Where</th><th>Days</th><th>Doctor</th><th>Open orders</th><th>Status</th></tr></thead><tbody>' +
+        h += '<div class="card"><div class="scroll-x"><table class="t"><thead><tr><th>Patient</th><th>Where</th><th>NEWS2</th><th>Days</th><th>Doctor</th><th>Open orders</th><th>Status</th></tr></thead><tbody>' +
           ((ip.items || []).map(function (p) {
-            return '<tr class="clickrow" data-open="' + esc(p.id) + '"><td><b>' + esc(p.patient_name) + "</b>" + (p.access_active ? "" : ' <span class="tag emg">access ended</span>') + '</td><td>' + esc(p.ward || "") + " · " + esc(p.bed || "") + "</td><td>" + (p.los_days != null ? p.los_days : "") + "</td><td>" + esc(p.doctor || "–") + "</td><td>" + (p.open_orders || "–") + "</td><td>" + esc(STATUS[p.status] || p.status) + "</td></tr>";
-          }).join("") || '<tr><td colspan="6" class="empty">No inpatients.</td></tr>') + "</tbody></table></div></div>";
+            return '<tr class="clickrow" data-open="' + esc(p.id) + '"><td><b>' + esc(p.patient_name) + "</b>" + (p.access_active ? "" : ' <span class="tag emg">access ended</span>') + '</td><td>' + esc(p.ward || "") + " · " + esc(p.bed || "") + "</td><td>" + (window.QCClin && p.news2 ? QCClin.badge(p.news2) : "–") + "</td><td>" + (p.los_days != null ? p.los_days : "") + "</td><td>" + esc(p.doctor || "–") + "</td><td>" + (p.open_orders || "–") + "</td><td>" + esc(STATUS[p.status] || p.status) + "</td></tr>";
+          }).join("") || '<tr><td colspan="7" class="empty">No inpatients.</td></tr>') + "</tbody></table></div></div>";
       } else {
         h += '<div class="wards">' + wards.map(function (w) {
           var t = w.beds.filter(function (b) { return b.status !== "blocked"; }).length, o = w.beds.filter(function (b) { return b.status === "occupied"; }).length;
@@ -350,7 +360,7 @@
               var p = b.encounter_id ? byEnc[b.encounter_id] : null;
               var cls = b.status + (p && p.status === "discharge_planned" ? " gohome" : "") + (p && !p.access_active ? " noaccess" : "");
               return '<button type="button" class="bed ' + cls + '" data-bed="' + esc(b.id) + '" data-enc="' + esc(b.encounter_id || "") + '" title="' + esc(b.label + (p ? " · " + p.patient_name : " · " + b.status) + (b.note ? " · " + b.note : "")) + '"><span class="bl">' + esc(b.label) + "</span>" +
-                (p ? '<span class="bi">' + esc(H().initials(p.patient_name)) + '</span><span class="bd">' + (p.los_days != null ? Math.floor(p.los_days) + "d" : "") + (p.open_orders ? " · " + p.open_orders + "🧪" : "") + "</span>" : b.status === "cleaning" ? '<span class="bi">🧽</span>' : b.status === "reserved" ? '<span class="bi">R</span>' : b.status === "blocked" ? '<span class="bi">⛔</span>' : "") + "</button>";
+                (p ? '<span class="bi">' + esc(H().initials(p.patient_name)) + '</span><span class="bd">' + (p.los_days != null ? Math.floor(p.los_days) + "d" : "") + (p.open_orders ? " · " + p.open_orders + "🧪" : "") + "</span>" + (window.QCClin ? QCClin.badge(p.news2) : "") : b.status === "cleaning" ? '<span class="bi">🧽</span>' : b.status === "reserved" ? '<span class="bi">R</span>' : b.status === "blocked" ? '<span class="bi">⛔</span>' : "") + "</button>";
             }).join("") + "</div></div>";
         }).join("") + "</div>";
       }

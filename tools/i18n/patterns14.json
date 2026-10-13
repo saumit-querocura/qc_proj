@@ -1,0 +1,9 @@
+[
+ ["^Cura's read · last (\\d+) days$", "Cura का विश्लेषण · पिछले $1 दिन"],
+ ["^See all (\\d+) findings →$", "सभी $1 बातें देखें →"],
+ ["^(\\d+) readings?$", "$1 रीडिंग"],
+ ["^Trend · clear$", "रुझान · स्पष्ट"],
+ ["^Trend · possible$", "रुझान · संभावित"],
+ ["^Changed (.+)$", "बदला @1"],
+ ["^Draft reliability: (high|moderate|low)$", "ड्राफ़्ट की विश्वसनीयता: $1"]
+]

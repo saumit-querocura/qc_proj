@@ -11,7 +11,7 @@
  */
 (function () {
   "use strict";
-  var KEY = "qc-lang", HI_V = "03764e06";
+  var KEY = "qc-lang", HI_V = "1081211b";
   var lang = "en";
   try { lang = localStorage.getItem(KEY) || ""; } catch (e) {}
   if (!/^(en|hi)$/.test(lang)) {

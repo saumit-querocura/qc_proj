@@ -363,9 +363,30 @@
   html[data-theme="dark"] .rbar { background: linear-gradient(90deg, #5a2f27 0 13%, #5c4a21 13% 27%, #1d5b55 27% 73%, #5c4a21 73% 87%, #5a2f27 87% 100%); } html[data-theme="dark"] .rbar i { border-color: #18162e; }
   html[data-theme="dark"] .fu { background: rgba(47,143,209,0.14); border-color: rgba(47,143,209,0.35); } html[data-theme="dark"] .fu.overdue { background: rgba(210,79,40,0.16); border-color: rgba(240,130,100,0.4); }
   html[data-theme="dark"] .panel-h .flag { color: #f0a488; } html[data-theme="dark"] .conf-bar, html[data-theme="dark"] .img-ic { background: rgba(255,255,255,0.1); }
+
+  /* ---- Cura's read, section jumps ---- */
+  .hero-read { display: inline-flex; align-items: center; gap: 8px; margin-top: 14px; padding: 8px 14px 8px 10px; border-radius: 999px; background: rgba(124,111,219,0.09); border: 1px solid rgba(124,111,219,0.2); color: #4b3fb0; font-size: 13px; font-weight: 700; line-height: 1.35; max-width: 560px; text-decoration: none; }
+  .hero-read::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: currentColor; flex: 0 0 auto; }
+  .hero-read.lv-caution { background: rgba(210,79,40,0.09); border-color: rgba(210,79,40,0.25); color: #b3401f; } .hero-read.lv-watch { background: rgba(201,138,16,0.1); border-color: rgba(201,138,16,0.28); color: #8a5f08; } .hero-read.lv-good { background: rgba(14,143,131,0.09); border-color: rgba(14,143,131,0.22); color: #0b6f66; }
+  html[data-theme="dark"] .hero-read { color: #c9c2ff; } html[data-theme="dark"] .hero-read.lv-caution { color: #ff9b7d; } html[data-theme="dark"] .hero-read.lv-watch { color: #f0cd8a; } html[data-theme="dark"] .hero-read.lv-good { color: #7ee0d4; }
+  .jump { position: sticky; top: 64px; z-index: 15; display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; padding: 8px 0; margin: -6px 0 10px; background: linear-gradient(#f6f5f1 70%, transparent); }
+  .jump::-webkit-scrollbar { display: none; }
+  .jump a { flex: 0 0 auto; padding: 7px 14px; border-radius: 999px; background: #fff; border: 1px solid rgba(16,14,42,0.08); font-size: 12.5px; font-weight: 700; color: rgba(16,14,42,0.7); white-space: nowrap; }
+  .jump a:hover { color: #0e8f83; border-color: rgba(14,143,131,0.4); }
+  html[data-theme="dark"] .jump { background: linear-gradient(#0d0c1f 70%, transparent); } html[data-theme="dark"] .jump a { background: #18162e; border-color: rgba(255,255,255,0.1); color: #cfccdf; }
+  section.card, div.card { scroll-margin-top: 120px; }
+  .intel-card { background: linear-gradient(180deg, rgba(124,111,219,0.06), transparent 180px), #fff; }
+  html[data-theme="dark"] .intel-card { background: linear-gradient(180deg, rgba(168,155,245,0.09), transparent 180px), #18162e; }
+  .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 380px), 1fr)); gap: 0 22px; }
+  .card-head-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; } .card-head-row h2 { margin-bottom: 6px; }
+  .legend-mini { display: inline-flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 700; color: rgba(16,14,42,0.5); flex-wrap: wrap; }
+  .legend-mini i { display: inline-block; width: 14px; height: 8px; border-radius: 3px; margin-left: 6px; } .lg-band { background: rgba(14,143,131,0.25); } .lg-pop { border-top: 2px dashed rgba(16,14,42,0.35); height: 0 !important; } .lg-anom { width: 9px !important; height: 9px !important; border-radius: 50% !important; border: 2px solid #d24f28; } .lg-fc { border-top: 2px dashed #c98a10; height: 0 !important; }
+  html[data-theme="dark"] .legend-mini { color: #8f8ba3; } html[data-theme="dark"] .lg-pop { border-top-color: rgba(255,255,255,0.35); }
+  #intel-patterns:empty { display: none; } #intel-patterns:not(:empty) + #qc-insight-wrap .qi-fallback { display: none; } #intel-patterns { margin-bottom: 14px; }
 </style>
+<link rel="stylesheet" href="../assets/qc-intel.css?v=2a889959">
 <script src="../assets/qc-csp.js?v=77f89cc2"></script>
-<script src="../assets/qc-i18n.js?v=4a7a7ba8"></script>
+<script src="../assets/qc-i18n.js?v=3b425967"></script>
 <script src="../assets/js/insights-h.js?v=6ed874fe"></script>
 </head>
 <body>
@@ -408,6 +429,7 @@
           </div>
           <h1 class="hero-greeting">Your health, at a glance</h1>
           <p class="hero-sub">A rollup of your vitals trends, symptom checks and the patterns between them — updated every time you log something new.</p>
+          <a class="hero-read" id="qc-hero-read" href="#intel" hidden></a>
           <div class="hero-date" id="qc-today"></div>
           <div class="factor-list" id="qc-factor-list"></div>
         </div>
@@ -429,6 +451,10 @@
       </div>
     </div>
 
+    <nav class="jump" aria-label="Sections">
+      <a href="#intel">🧠 Cura's read</a><a href="#numbers">📈 Your numbers</a><a href="#patterns">🔁 Patterns</a><a href="#conditions">🩺 Conditions</a><a href="#records">📁 Records</a><a href="#plan">✅ Plan</a>
+    </nav>
+
     <div class="day-select" id="qc-day-select">
       <button class="day-btn" data-days="7">7d</button>
       <button class="day-btn active" data-days="30">30d</button>
@@ -442,7 +468,35 @@
       <div id="qc-alerts-wrap"></div>
     </div>
 
-    <div class="card">
+    <section class="card intel-card" id="intel">
+      <div id="intel-read"><div class="empty-note">Cura is reading your numbers…</div></div>
+    </section>
+
+    <section class="card" id="numbers">
+      <div class="card-head-row"><h2>📈 Your numbers, against your normal</h2><span class="legend-mini"><i class="lg-band"></i>your usual <i class="lg-pop"></i>healthy range <i class="lg-anom"></i>unusual <i class="lg-fc"></i>if this continues</span></div>
+      <p class="card-sub">Each chart shades the range that is normal <b>for you</b>, marks readings that are unusual for you, dates any sudden change, and projects clear trends a week ahead. Hover or tap a point for details.</p>
+      <div id="intel-metrics"><div class="empty-note">Loading…</div></div>
+    </section>
+
+    <div class="grid-2">
+      <section class="card">
+        <h2>🧮 Worked out from your readings</h2>
+        <div id="intel-derived"><div class="empty-note">Loading…</div></div>
+      </section>
+      <section class="card">
+        <h2>📅 How much Cura has to go on</h2>
+        <div id="intel-quality"><div class="empty-note">Loading…</div></div>
+      </section>
+    </div>
+
+    <section class="card" id="patterns">
+      <h2>🔁 Patterns &amp; connections</h2>
+      <p class="card-sub">What shows up together in your own data: time of day, signals that move together, readings around your symptom checks. Co-occurrence, not proof of cause.</p>
+      <div id="intel-patterns"></div>
+      <div id="qc-insight-wrap"><div class="empty-note">Loading…</div></div>
+    </section>
+
+    <div class="card" id="conditions">
       <h2>🩺 Ongoing conditions</h2>
       <p class="card-sub">Everything counted as "ongoing" in your health score — from your profile and from recent symptom checks.</p>
       <div id="qc-ongoing-wrap"><div class="empty-note">Loading…</div></div>
@@ -454,17 +508,7 @@
       <div id="rec-body"><div class="empty-note">Loading…</div></div>
     </section>
 
-    <div class="card">
-      <h2>📈 Vitals trends</h2>
-      <p class="card-sub">Visual trend lines for every vital you've logged in this window.</p>
-      <div id="qc-chart-wrap"><div class="empty-note">Loading…</div></div>
-    </div>
-
-    <div class="card">
-      <h2>🔁 Correlations &amp; patterns</h2>
-      <p class="card-sub">Plain-language observations connecting your vitals and symptom checks — not a diagnosis, just what shows up together.</p>
-      <div id="qc-insight-wrap"><div class="empty-note">Loading…</div></div>
-    </div>
+    <div id="qc-chart-wrap" hidden></div>
 
     <div class="card">
       <h2>🩺 Most frequent symptom checks</h2>
@@ -472,6 +516,7 @@
       <div id="qc-freq-wrap"><div class="empty-note">Loading…</div></div>
     </div>
 
+    <div id="plan"></div>
     <div class="card" id="qc-plan-card" style="display:none;">
       <h2>✅ Your action plan</h2>
       <p class="card-sub">Next steps, in order of priority — suggestions, not a treatment plan.</p>
@@ -492,6 +537,8 @@
   </div>
 
 <script src="../assets/qc-app.js?v=22a3a990"></script>
-<script src="../assets/js/insights-3.js?v=7507816c"></script>
+<script src="../assets/qc-charts.js?v=bd2d4284"></script>
+<script src="../assets/qc-intel.js?v=a7622130"></script>
+<script src="../assets/js/insights-3.js?v=55a42acb"></script>
 </body>
 </html>
