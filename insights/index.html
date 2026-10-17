@@ -385,6 +385,7 @@
   #intel-patterns:empty { display: none; } #intel-patterns:not(:empty) + #qc-insight-wrap .qi-fallback { display: none; } #intel-patterns { margin-bottom: 14px; }
 </style>
 <link rel="stylesheet" href="../assets/qc-intel.css?v=2a889959">
+<link rel="stylesheet" href="../assets/qc-calm.css?v=f9e1d320">
 <script src="../assets/qc-csp.js?v=77f89cc2"></script>
 <script src="../assets/qc-i18n.js?v=3b425967"></script>
 <script src="../assets/js/insights-h.js?v=6ed874fe"></script>
@@ -419,18 +420,12 @@
   <div class="shell">
     <div class="qc-ribbon"><a href="../weekly/">📬 Your week in health</a><a href="../privacy/#share">🩺 Share with a doctor</a><a href="../family/">🫂 Family garden</a><a href="../care/">🏥 Care teams</a></div>
     <div class="hero">
-      <div class="hero-orb hero-orb1"></div>
-      <div class="hero-orb hero-orb2"></div>
-      <div class="hero-inner">
+            <div class="hero-inner">
         <div class="hero-text">
-          <div class="hero-eyebrow">
-            <span class="hero-tag">Insights</span>
-            <span class="hero-live"><span class="hero-live-dot"></span>Live</span>
-          </div>
-          <h1 class="hero-greeting">Your health, at a glance</h1>
-          <p class="hero-sub">A rollup of your vitals trends, symptom checks and the patterns between them — updated every time you log something new.</p>
-          <a class="hero-read" id="qc-hero-read" href="#intel" hidden></a>
           <div class="hero-date" id="qc-today"></div>
+          <h1 class="hero-greeting">Your health, <em>read closely</em></h1>
+          <p class="hero-sub">Your readings, symptom checks and records, each judged against your own normal.</p>
+          <a class="hero-read" id="qc-hero-read" href="#intel" hidden></a>
           <div class="factor-list" id="qc-factor-list"></div>
         </div>
 
@@ -452,7 +447,7 @@
     </div>
 
     <nav class="jump" aria-label="Sections">
-      <a href="#intel">🧠 Cura's read</a><a href="#numbers">📈 Your numbers</a><a href="#patterns">🔁 Patterns</a><a href="#conditions">🩺 Conditions</a><a href="#records">📁 Records</a><a href="#plan">✅ Plan</a>
+      <a href="#intel">Cura's read</a><a href="#numbers">Your numbers</a><a href="#patterns">Patterns</a><a href="#conditions">Conditions</a><a href="#records">Records</a><a href="#plan">Plan</a>
     </nav>
 
     <div class="day-select" id="qc-day-select">
@@ -463,7 +458,7 @@
     </div>
 
     <div class="card" id="qc-alerts-card" style="display:none;">
-      <h2>🔔 Needs your attention</h2>
+      <h2>Needs your attention</h2>
       <p class="card-sub">Flagged from your vitals, symptom checks and follow-ups.</p>
       <div id="qc-alerts-wrap"></div>
     </div>
@@ -473,37 +468,37 @@
     </section>
 
     <section class="card" id="numbers">
-      <div class="card-head-row"><h2>📈 Your numbers, against your normal</h2><span class="legend-mini"><i class="lg-band"></i>your usual <i class="lg-pop"></i>healthy range <i class="lg-anom"></i>unusual <i class="lg-fc"></i>if this continues</span></div>
+      <div class="card-head-row"><h2>Your numbers, against your normal</h2><span class="legend-mini"><i class="lg-band"></i>your usual <i class="lg-pop"></i>healthy range <i class="lg-anom"></i>unusual <i class="lg-fc"></i>if this continues</span></div>
       <p class="card-sub">Each chart shades the range that is normal <b>for you</b>, marks readings that are unusual for you, dates any sudden change, and projects clear trends a week ahead. Hover or tap a point for details.</p>
       <div id="intel-metrics"><div class="empty-note">Loading…</div></div>
     </section>
 
     <div class="grid-2">
       <section class="card">
-        <h2>🧮 Worked out from your readings</h2>
+        <h2>Worked out from your readings</h2>
         <div id="intel-derived"><div class="empty-note">Loading…</div></div>
       </section>
       <section class="card">
-        <h2>📅 How much Cura has to go on</h2>
+        <h2>How much Cura has to go on</h2>
         <div id="intel-quality"><div class="empty-note">Loading…</div></div>
       </section>
     </div>
 
     <section class="card" id="patterns">
-      <h2>🔁 Patterns &amp; connections</h2>
+      <h2>Patterns &amp; connections</h2>
       <p class="card-sub">What shows up together in your own data: time of day, signals that move together, readings around your symptom checks. Co-occurrence, not proof of cause.</p>
       <div id="intel-patterns"></div>
       <div id="qc-insight-wrap"><div class="empty-note">Loading…</div></div>
     </section>
 
     <div class="card" id="conditions">
-      <h2>🩺 Ongoing conditions</h2>
+      <h2>Ongoing conditions</h2>
       <p class="card-sub">Everything counted as "ongoing" in your health score — from your profile and from recent symptom checks.</p>
       <div id="qc-ongoing-wrap"><div class="empty-note">Loading…</div></div>
     </div>
 
     <section class="card" id="records">
-      <h2>📁 From your CuraVault records</h2>
+      <h2>From your CuraVault records</h2>
       <p class="card-sub" id="rec-sub">Lab reports, prescriptions and scans — read, checked against reference ranges and visualised. Numbers only come from values you've confirmed.</p>
       <div id="rec-body"><div class="empty-note">Loading…</div></div>
     </section>
@@ -511,34 +506,34 @@
     <div id="qc-chart-wrap" hidden></div>
 
     <div class="card">
-      <h2>🩺 Most frequent symptom checks</h2>
+      <h2>Most frequent symptom checks</h2>
       <p class="card-sub">What's come up most often in your symptom checks during this window.</p>
       <div id="qc-freq-wrap"><div class="empty-note">Loading…</div></div>
     </div>
 
     <div id="plan"></div>
     <div class="card" id="qc-plan-card" style="display:none;">
-      <h2>✅ Your action plan</h2>
+      <h2>Your action plan</h2>
       <p class="card-sub">Next steps, in order of priority — suggestions, not a treatment plan.</p>
       <div id="qc-plan-wrap"></div>
     </div>
 
     <div class="card" id="qc-q-card" style="display:none;">
-      <h2>🗣️ Questions for your next doctor visit</h2>
+      <h2>Questions for your next doctor visit</h2>
       <p class="card-sub">Built from your own data, so you don't forget what to ask.</p>
       <div id="qc-q-wrap"></div>
     </div>
 
     <div class="card" id="qc-gaps-card" style="display:none;">
-      <h2>🧩 Sharpen your picture</h2>
+      <h2>Sharpen your picture</h2>
       <p class="card-sub">A few things that would make these insights more accurate.</p>
       <div id="qc-gaps-wrap"></div>
     </div>
   </div>
 
 <script src="../assets/qc-app.js?v=22a3a990"></script>
-<script src="../assets/qc-charts.js?v=bd2d4284"></script>
-<script src="../assets/qc-intel.js?v=a7622130"></script>
+<script src="../assets/qc-charts.js?v=39ee89ab"></script>
+<script src="../assets/qc-intel.js?v=f0cd80aa"></script>
 <script src="../assets/js/insights-3.js?v=55a42acb"></script>
 </body>
 </html>

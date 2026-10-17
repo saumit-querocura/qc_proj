@@ -50,7 +50,7 @@
   }
 
   function finding(x, i, o) {
-    return '<div class="qi-f sev-' + esc(x.severity) + '"><div class="qi-f-ic">' + (KIND_IC[x.kind] || "💡") + '</div><div class="qi-f-b"><div class="qi-f-t"><b>' + esc(x.title) + "</b>" + conf(x.confidence) + "</div>" +
+    return '<div class="qi-f sev-' + esc(x.severity) + '"><span class="qi-f-dot" aria-hidden="true"></span><div class="qi-f-b"><div class="qi-f-t"><b>' + esc(x.title) + "</b>" + conf(x.confidence) + "</div>" +
       (o.compact ? '<details class="qi-f-more"' + (i === 0 ? " open" : "") + "><summary>" + esc(SEV[x.severity] || "") + "</summary>" : '<div class="qi-f-sev">' + esc(SEV[x.severity] || "") + "</div>") +
       '<div class="qi-f-d">' + esc(x.detail) + "</div>" +
       ((x.evidence || []).length ? '<div class="qi-ev">' + x.evidence.map(function (e) { return "<span>" + esc(e) + "</span>"; }).join("") + "</div>" : "") +
@@ -68,9 +68,9 @@
       return;
     }
     var lv = d.level || "none";
-    var h = '<div class="qi-read qi-' + esc(lv) + '"><div class="qi-read-h"><span class="qi-brain" aria-hidden="true"><i></i><i></i><i></i></span><div class="qi-read-t"><div class="qi-eyebrow">Cura\'s read · last ' + d.days + ' days</div>' +
+    var h = '<div class="qi-read qi-' + esc(lv) + '"><div class="qi-read-h"><div class="qi-read-t"><div class="qi-eyebrow">Cura\'s read · last ' + d.days + ' days</div>' +
       '<div class="qi-headline">' + esc(d.headline) + "</div></div>" +
-      (o.methods !== false ? '<button type="button" class="qi-how" aria-expanded="false">How Cura works this out</button>' : "") + "</div>";
+      (o.methods !== false ? '<button type="button" class="qi-how" aria-expanded="false">How it works</button>' : "") + "</div>";
     if (o.methods !== false) h += '<div class="qi-methods" hidden><p>Cura compares each reading with <b>your own normal</b>, not just textbook ranges. Your usual range is the middle of your past readings (median and spread, so one odd reading can\'t distort it).</p>' +
       "<ul><li><b>Trends</b> use the Theil–Sen slope (the median of every pair of readings, so one outlier can't fake a trend) and the Mann–Kendall test for how likely the pattern is to be chance. A trend is only reported when it is both clear and big enough to matter.</li>" +
       "<li><b>Step changes</b> are reported only when a sudden shift explains your readings much better than a gradual drift.</li>" +
@@ -108,7 +108,7 @@
     var lab = bp ? (hi() ? "रक्तचाप" : "Blood pressure") : m.label;
     var latest = bp ? m.latest.v + "/" + (d.metrics.dia_bp.latest.v) : m.latest.v;
     var usual = bp ? b.lo + "–" + b.hi + " / " + d.metrics.dia_bp.baseline.lo + "–" + d.metrics.dia_bp.baseline.hi : b.lo + "–" + b.hi;
-    var h = '<div class="qi-m" data-k="' + esc(k) + '"><div class="qi-m-h"><span class="qi-m-ic" style="--c:' + COLOR[k] + '">' + ICON[k] + "</span><b>" + esc(lab) + "</b>" + statusChip(m) + "</div>" +
+    var h = '<div class="qi-m" data-k="' + esc(k) + '" style="--c:' + COLOR[k] + '"><div class="qi-m-h"><b>' + esc(lab) + "</b>" + statusChip(m) + "</div>" +
       '<div class="qi-m-v"><span class="big">' + esc(latest) + '</span><span class="u">' + esc(m.unit) + '</span><span class="qi-m-when">' + esc(nice(m.latest.ts, true)) + "</span></div>" +
       '<div class="qi-m-usual">Your usual: <b>' + esc(usual) + " " + esc(m.unit) + "</b> · " + m.n + " reading" + (m.n === 1 ? "" : "s") + (b.learning ? " · still learning" : "") + "</div>" +
       '<div class="qi-chart"></div><div class="qi-stats">' + trendChip(m);

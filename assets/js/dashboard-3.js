@@ -101,61 +101,30 @@ function severityWord(m, sev) {
 
 /* A tile is only ever "Normal" when a real reading backs it up. */
 function emptyCardHtml(m) {
-  const R = 30, C = 2 * Math.PI * R;
-  return '<a class="snap-card empty" href="../vitals/" aria-label="Add a ' + m.label + ' reading">' +
-    '<div class="snap-ring-wrap">' +
-      '<svg width="74" height="74" viewBox="0 0 74 74"><circle class="snap-ring-bg" cx="37" cy="37" r="' + R + '" stroke-dasharray="4 6"/></svg>' +
-      '<div class="snap-ring-inner"><span class="snap-ring-num">' + m.icon + '</span></div>' +
-    '</div>' +
-    '<div class="sc-label">' + m.label + '</div>' +
-    '<div class="sc-status" style="color:rgba(16,14,42,0.5)">No reading yet</div>' +
-    '<span class="sc-add">+ Add</span>' +
-  '</a>';
+  return '<a class="vt empty" href="../vitals/" aria-label="Add a ' + m.label + ' reading">' +
+    '<div class="vt-top"><span class="vt-l">' + m.label + '</span></div>' +
+    '<div class="vt-add">+ Add a reading</div></a>';
 }
 
 const INTEL_KEY = { bp: "sys_bp", spo2: "spo2", pulse: "pulse", temp: "temp", glucose: "glucose", weight: "weight" };
 let qcIntel = null, qcSnap = null;
-function intelExtras(m) {
-  const t = qcIntel && window.QCIntel ? QCIntel.tile(qcIntel, INTEL_KEY[m.key]) : null;
-  if (!t) return "";
-  let h = "";
-  if (t.spark) h += '<div class="sc-spark">' + t.spark + '</div>';
-  if (t.usual) h += '<div class="sc-usual">usual ' + QC.esc(t.usual) + '</div>';
-  if (t.trend) h += '<div class="sc-trend">' + (t.trend.direction === "rising" ? "↗ rising" : "↘ falling") + '</div>';
-  return h;
+function intelTile(m) { return qcIntel && window.QCIntel ? QCIntel.tile(qcIntel, INTEL_KEY[m.key]) : null; }
+
+function tileHtml(m, value, unit, word, tone, extraClass, foot) {
+  const t = intelTile(m);
+  return '<div class="vt ' + (extraClass || "") + '">' +
+    '<div class="vt-top"><span class="vt-l">' + m.label + '</span><span class="vt-s ' + tone + '">' + word + '</span></div>' +
+    '<div class="vt-v"><b>' + QC.esc(value) + '</b>' + (unit ? '<i>' + unit + '</i>' : '') + '</div>' +
+    '<div class="vt-sp">' + (t && t.spark ? t.spark : '') + '</div>' +
+    '<div class="vt-u">' + (foot || (t && t.usual ? 'Usual ' + QC.esc(t.usual) : '&nbsp;')) + '</div></div>';
 }
 
 function ringCardHtml(m, value, unit, sev) {
-  const R = 30, C = 2 * Math.PI * R;
-  let pct;
-  if (m.key === "bp") {
-    pct = sev === "CRITICAL" ? 0.92 : sev === "CAUTION" ? 0.66 : 0.5;
-  } else {
-    const range = RING_RANGES[m.key];
-    pct = range ? clamp01((parseFloat(value) - range[0]) / (range[1] - range[0])) : 0.5;
-    if (pct < 0.12) pct = 0.12;
-  }
-  let color = severityColor(sev);
-  const off = C - pct * C;
+  const t = intelTile(m);
+  let word = severityWord(m, sev), tone = sev === "CRITICAL" ? "bad" : sev === "CAUTION" ? "warn" : "ok";
   // standard ranges say "normal", but the reading is far from this person's own normal: say so
-  const t = qcIntel && window.QCIntel ? QCIntel.tile(qcIntel, INTEL_KEY[m.key]) : null;
-  let word = severityWord(m, sev);
-  if (!sev && t && /^unusual/.test(t.status)) { color = "#c98a10"; word = "Unusual for you"; }
-  return '<div class="snap-card">' +
-    '<div class="snap-ring-wrap">' +
-      '<svg width="74" height="74" viewBox="0 0 74 74">' +
-        '<circle class="snap-ring-bg" cx="37" cy="37" r="' + R + '"/>' +
-        '<circle class="snap-ring-fg" cx="37" cy="37" r="' + R + '" stroke="' + color + '" stroke-dasharray="' + C + '" stroke-dashoffset="' + off + '"/>' +
-      '</svg>' +
-      '<div class="snap-ring-inner">' +
-        '<span class="snap-ring-num">' + value + '</span>' +
-        (unit ? '<span class="snap-ring-unit">' + unit + '</span>' : '') +
-      '</div>' +
-    '</div>' +
-    '<div class="sc-label">' + m.label + '</div>' +
-    '<div class="sc-status" style="color:' + color + '"><span class="sc-status-dot" style="background:' + color + '"></span>' + word + '</div>' +
-    intelExtras(m) +
-  '</div>';
+  if (!sev && t && /^unusual/.test(t.status)) { word = "Unusual for you"; tone = "warn"; }
+  return tileHtml(m, value, unit, word, tone, tone === "ok" ? "" : "attn");
 }
 
 function hasReading(latest, m) {
@@ -183,15 +152,7 @@ function carriedFromHistory(history, m) {
   return null;
 }
 function carriedCardHtml(m, value, unit, ts) {
-  const R = 30, C = 2 * Math.PI * R, range = RING_RANGES[m.key];
-  const pct = m.key === "bp" ? 0.5 : Math.max(0.12, range ? clamp01((parseFloat(value) - range[0]) / (range[1] - range[0])) : 0.5);
-  const grey = "rgba(16,14,42,0.35)";
-  return '<div class="snap-card" title="Last logged ' + agoText(ts) + '">' +
-    '<div class="snap-ring-wrap"><svg width="74" height="74" viewBox="0 0 74 74"><circle class="snap-ring-bg" cx="37" cy="37" r="' + R + '"/>' +
-    '<circle class="snap-ring-fg" cx="37" cy="37" r="' + R + '" stroke="' + grey + '" stroke-dasharray="' + C + '" stroke-dashoffset="' + (C - pct * C) + '"/></svg>' +
-    '<div class="snap-ring-inner"><span class="snap-ring-num">' + value + '</span>' + (unit ? '<span class="snap-ring-unit">' + unit + '</span>' : '') + '</div></div>' +
-    '<div class="sc-label">' + m.label + '</div>' +
-    '<div class="sc-status" style="color:rgba(16,14,42,0.5)">Last logged ' + agoText(ts) + '</div></div>';
+  return tileHtml(m, value, unit, "Last " + agoText(ts), "muted", "old");
 }
 
 function renderSnapshot(latest, flags, history) {
@@ -738,8 +699,8 @@ document.getElementById("qc-checkin-dismiss").addEventListener("click", () => {
   const firstName = name ? name.split(" ")[0] : "";
   const greetWord = setGreetingChrome();
   document.getElementById("qc-greeting").innerHTML = firstName
-    ? (greetWord + ", <span class='name'>" + firstName + "</span> 👋")
-    : (greetWord + " 👋");
+    ? (greetWord + ", <span class='name'>" + QC.esc(firstName) + "</span>")
+    : greetWord;
   document.getElementById("qc-greeting-sub").textContent = "Here's where things stand today.";
   renderProfileCard(profile, user);
   initSectionTabs();

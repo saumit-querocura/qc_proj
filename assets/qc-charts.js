@@ -47,8 +47,8 @@
     var c = o.color || "#0e8f83", c2 = o.color2 || "#7c6fdb";
     var s = '<svg class="qcc-svg" width="' + W + '" height="' + H + '" viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="' + esc(o.label || "chart") + '">';
     // grid and y ticks
-    for (var i = 0; i <= 3; i++) {
-      var v = y0 + (y1 - y0) * (i / 3), yy = Y(v);
+    for (var i = 0; i <= 2; i++) {
+      var v = y0 + (y1 - y0) * (i / 2), yy = Y(v);
       s += '<line x1="' + M.l + '" x2="' + (W - M.r) + '" y1="' + yy.toFixed(1) + '" y2="' + yy.toFixed(1) + '" class="qcc-grid"/>' +
         '<text x="' + (M.l - 6) + '" y="' + (yy + 3.5).toFixed(1) + '" text-anchor="end" class="qcc-tick">' + fmtV(v, o.dec) + "</text>";
     }
@@ -64,7 +64,7 @@
       return '<rect x="' + M.l + '" y="' + top.toFixed(1) + '" width="' + (W - M.l - M.r) + '" height="' + Math.max(2, bot - top).toFixed(1) + '" class="' + cl + '" rx="4"/>';
     }
     s += band(o.band2, "qcc-band2") + band(o.band, "qcc-band");
-    if (o.band) s += '<text x="' + (W - M.r - 4) + '" y="' + (Y(Math.min(o.band.hi, y1)) + 11).toFixed(1) + '" text-anchor="end" class="qcc-bandlab">' + esc(L("your usual")) + "</text>";
+
     // step change
     if (o.step) {
       var st = parse(o.step.ts);
@@ -85,11 +85,11 @@
     }
     var anom = {};
     (o.anomalies || []).forEach(function (a) { anom[parse(a)] = 1; });
-    pts2.forEach(function (p) { s += '<circle cx="' + X(p[0]).toFixed(1) + '" cy="' + Y(p[1]).toFixed(1) + '" r="2.4" style="fill:' + c2 + '" class="qcc-dot2"/>'; });
+    if (pts2.length <= 12) pts2.forEach(function (p) { s += '<circle cx="' + X(p[0]).toFixed(1) + '" cy="' + Y(p[1]).toFixed(1) + '" r="2" style="fill:' + c2 + '" class="qcc-dot2"/>'; });
     pts.forEach(function (p, k) {
       var isA = anom[p[0]];
-      s += '<circle cx="' + X(p[0]).toFixed(1) + '" cy="' + Y(p[1]).toFixed(1) + '" r="' + (k === pts.length - 1 ? 4.2 : 3) + '" style="fill:' + c + '" class="qcc-dot"/>' +
-        (isA ? '<circle cx="' + X(p[0]).toFixed(1) + '" cy="' + Y(p[1]).toFixed(1) + '" r="7.5" class="qcc-anom"/>' : "");
+      if (k === pts.length - 1 || pts.length <= 12) s += '<circle cx="' + X(p[0]).toFixed(1) + '" cy="' + Y(p[1]).toFixed(1) + '" r="' + (k === pts.length - 1 ? 3.6 : 2.4) + '" style="fill:' + c + '" class="qcc-dot"/>';
+      if (isA) s += '<circle cx="' + X(p[0]).toFixed(1) + '" cy="' + Y(p[1]).toFixed(1) + '" r="2.6" style="fill:#d24f28"/><circle cx="' + X(p[0]).toFixed(1) + '" cy="' + Y(p[1]).toFixed(1) + '" r="6.5" class="qcc-anom"/>';
     });
     // x labels
     var xl = [t0, t0 + (t1 - t0) / 2, t1];
