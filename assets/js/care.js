@@ -90,15 +90,24 @@
 
   /* ---- live hospital visit: where you are in the queue, or which bed you are in ---- */
   var VHI = { "Your visit": "आपकी विज़िट", "Your token": "आपका टोकन", "You're next": "अगली बारी आपकी है", "%n ahead of you": "आपसे पहले %n लोग", "Please go in now": "कृपया अभी अंदर जाएँ", "With the doctor": "डॉक्टर के साथ",
-    "Admitted": "भर्ती", "Going home soon": "जल्द घर जाना है", "Finished": "पूरा हुआ", "bed": "बेड", "Updates by itself": "अपने-आप अपडेट होता है", "Room": "कमरा" };
+    "Admitted": "भर्ती", "Going home soon": "जल्द घर जाना है", "Finished": "पूरा हुआ", "bed": "बेड", "Updates by itself": "अपने-आप अपडेट होता है", "Room": "कमरा", "Appointment": "अपॉइंटमेंट" };
   function V(x) { return (window.QCI18n && QCI18n.lang === "hi" && VHI[x]) || x; }
-  var visitTimer = null;
-  function renderVisits(list) {
+  var visitTimer = null, DATA_APPTS = [];
+  function apptHtml(list) {
+    if (!list || !list.length) return "";
+    return list.slice(0, 3).map(function (a) {
+      var d = new Date(a.day + "T00:00:00");
+      return '<div class="visit-card appt"><div class="visit-l"><span class="visit-k">📅 ' + esc(V("Appointment")) + " · " + esc(a.hospital) + "</span><b>" + esc(d.toLocaleDateString([], { weekday: "long", day: "numeric", month: "short" })) + " · " + esc(a.start) + "</b>" +
+        '<span class="visit-s">' + esc([a.doctor, a.department, a.room ? V("Room") + " " + a.room : ""].filter(Boolean).join(" · ")) + "</span>" + (a.kind ? '<span class="visit-u">' + esc(a.kind) + "</span>" : "") + "</div></div>";
+    }).join("");
+  }
+  function renderVisits(list, appts) {
     var box = el("visits"); if (!box) return;
+    if (appts !== undefined) DATA_APPTS = appts;
     var open = (list || []).filter(function (v) { return v.status !== "closed"; });
     clearInterval(visitTimer);
-    if (!open.length) { box.innerHTML = ""; return; }
-    box.innerHTML = open.map(function (v) {
+    if (!open.length) { box.innerHTML = apptHtml(DATA_APPTS); return; }
+    box.innerHTML = apptHtml(DATA_APPTS) + open.map(function (v) {
       var big = "", line = "";
       if (v.status === "waiting") { big = v.token ? "#" + v.token : ""; line = v.ahead === 0 ? V("You're next") : V("%n ahead of you").replace("%n", v.ahead); }
       else if (v.status === "called") { big = v.token ? "#" + v.token : ""; line = V("Please go in now") + (v.room ? " · " + v.room : ""); }
@@ -108,14 +117,14 @@
         '<span class="visit-s">' + esc(line) + (v.room && v.status === "waiting" ? " · " + esc(V("Room")) + " " + esc(v.room) : "") + '</span><span class="visit-u">' + esc(V("Updates by itself")) + "</span></div>" +
         (big ? '<div class="visit-big"><small>' + esc(v.status === "admitted" || v.status === "discharge_planned" ? V("bed") : V("Your token")) + "</small>" + esc(big) + "</div>" : "") + "</div>";
     }).join("");
-    visitTimer = setInterval(function () { if (!document.hidden) api("/care/visits").then(function (r) { if (r && r.ok) renderVisits(r.visits); }); }, 20000);
+    visitTimer = setInterval(function () { if (!document.hidden) api("/care/visits").then(function (r) { if (r && r.ok) renderVisits(r.visits, r.appointments); }); }, 20000);
   }
 
   function load() {
     return api("/care/overview").then(function (d) {
       if (!d.ok) return;
       DATA = d;
-      renderVisits(d.visits);
+      renderVisits(d.visits, d.appointments || []);
       renderWaiting(); renderConnected(); renderRecords();
       el("emergency").checked = !!d.emergency_opt_in;
       if (el("ai-imaging")) el("ai-imaging").checked = d.ai_imaging_allowed !== false;

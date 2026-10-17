@@ -155,10 +155,13 @@
     if (org.status === "pending") banner.innerHTML = '<div class="notice wait">Thanks for applying. Our team is verifying <b>' + esc(org.name) + '</b> (registration ' + esc(org.registration_no || "") + '). You can set up your team and security now. Patient connections switch on as soon as you\'re approved, and we\'ll e-mail you.</div>';
     if (org.status === "rejected" || org.status === "suspended") banner.innerHTML = '<div class="notice bad">This organisation isn\'t active. ' + esc(org.review_note || "Please contact QueroCura support.") + '</div>';
     // The hospital's working tabs (queue, beds, orders, handover, setup) come from hospital-ops.js, in the order a shift uses them.
+    // Management tabs (patients, appointments, pharmacy, billing, duty, reports) come from hospital-hms*.js.
     var OPS = window.QCOps ? window.QCOps.tabs(can) : [];
-    var tabs = [["overview", "Today", true]].concat(OPS.filter(function (t) { return t[3] === "flow"; }))
-      .concat([["patients", "Patients", can("roster")], ["connect", "Connect", can("request")]])
-      .concat(OPS.filter(function (t) { return t[3] === "admin"; }))
+    var HMS = window.QCHms ? window.QCHms.tabs(can) : [];
+    var grp = function (list, g) { return list.filter(function (t) { return t[3] === g; }); };
+    var tabs = [["overview", "Today", true]].concat(HMS.length ? grp(HMS, "front") : [["patients", "Patients", can("roster")]]).concat(grp(OPS, "flow")).concat(grp(HMS, "back"))
+      .concat([["connect", "Connect", can("request")]])
+      .concat(grp(HMS, "admin")).concat(grp(OPS, "admin"))
       .concat([["team", "Team", can("team")], ["activity", "Activity log", can("audit")], ["security", "My security", true]]).filter(function (t) { return t[2]; });
     if (!tabs.some(function (t) { return t[0] === tabNow; })) tabNow = tabs[0][0];
     el("tabs").innerHTML = tabs.map(function (t) { return '<button type="button" role="tab" data-tab="' + t[0] + '" class="' + (t[0] === tabNow ? "on" : "") + '">' + t[1] + '</button>'; }).join("");
@@ -168,6 +171,7 @@
   function switchTab(t) {
     var own = { overview: loadOverview, patients: loadPatients, connect: renderConnect, team: loadTeam, activity: loadActivity, security: renderSecurity };
     var ops = window.QCOps ? window.QCOps.loaders() : {};
+    if (window.QCHms) { delete own.patients; var hm = window.QCHms.loaders(); Object.keys(hm).forEach(function (k) { ops[k] = hm[k]; }); window.QCHms.leave(); }
     [].forEach.call(document.querySelectorAll("#workspace > section.tab"), function (sec) { show(sec, sec.id === "tab-" + t); });
     if (window.QCOps) window.QCOps.leave();
     show(el("tab-board"), t === "overview");

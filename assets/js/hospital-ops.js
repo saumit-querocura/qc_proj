@@ -188,10 +188,12 @@
     Promise.all([loadStructure(), H().loadRoster()]).then(function (res) {
       var roster = (res[1] || []).filter(function (x) { return x.kind === "grant" && x.state === "active"; });
       if (!depts(["clinical", "emergency"]).length) { toast("Add departments in Setup first.", "err"); return; }
-      if (!roster.length) { modal('<h2 id="ops-title">Check in a patient</h2><div class="empty">No connected patients. Connect one first: they show you a code from their QueroCura app.</div><button class="btn btn-primary" type="button" id="ci-connect">Go to Connect →</button>'); el("ci-connect").onclick = function () { closeModal(); H().go("connect"); }; return; }
+      var hms = !!window.QCHms;
+      if (!hms && !roster.length) { modal('<h2 id="ops-title">Check in a patient</h2><div class="empty">No connected patients. Connect one first: they show you a code from their QueroCura app.</div><button class="btn btn-primary" type="button" id="ci-connect">Go to Connect →</button>'); el("ci-connect").onclick = function () { closeModal(); H().go("connect"); }; return; }
       var ds = depts(["clinical", "emergency"]);
       var b = modal('<h2 id="ops-title">Check in a patient</h2><p class="sub">They get a token and appear in the department\'s queue and on the waiting-room screen (number only).</p><form id="ci-form" novalidate>' +
-        '<div class="field"><label for="ci-p">Patient</label><select class="input" id="ci-p">' + roster.map(function (g) { return '<option value="' + esc(g.id) + '"' + (g.id === preGrant ? " selected" : "") + ">" + esc(g.patient_name) + (g.reference ? " · " + esc(g.reference) : "") + "</option>"; }).join("") + "</select></div>" +
+        (hms ? '<div class="field"><label>Patient</label><div id="ci-pk"></div></div>' :
+        '<div class="field"><label for="ci-p">Patient</label><select class="input" id="ci-p">' + roster.map(function (g) { return '<option value="' + esc(g.id) + '"' + (g.id === preGrant ? " selected" : "") + ">" + esc(g.patient_name) + (g.reference ? " · " + esc(g.reference) : "") + "</option>"; }).join("") + "</select></div>") +
         '<div class="field"><label>Visit type</label><div class="seg" id="ci-kind"><button type="button" data-v="opd" class="on">OPD</button><button type="button" data-v="er">🚑 Emergency</button></div></div>' +
         '<div class="grid2"><div class="field"><label for="ci-d">Department</label><select class="input" id="ci-d">' + ds.map(function (d) { return '<option value="' + esc(d.id) + '"' + (d.id === S.dept ? " selected" : "") + ">" + esc(d.name) + (d.room ? " · " + esc(d.room) : "") + "</option>"; }).join("") + "</select></div>" +
         '<div class="field"><label for="ci-doc">Doctor (optional)</label><select class="input" id="ci-doc"><option value="">Whoever is free</option>' + doctors().map(function (t) { return '<option value="' + esc(t.id) + '">' + esc(t.name) + "</option>"; }).join("") + "</select></div></div>" +
@@ -199,7 +201,12 @@
         '<div class="field" id="ci-tri-wrap" hidden><label>Triage</label><div class="tri-pick" id="ci-tri">' + [1, 2, 3, 4, 5].map(function (n) { var t = S.structure.triage[n]; return '<button type="button" class="tri t' + n + (n === 3 ? " on" : "") + '" data-v="' + n + '"><b>' + n + "</b>" + esc(t[0]) + "</button>"; }).join("") + "</div></div>" +
         '<div class="field"><label for="ci-r">Reason for visit' + (can("read") ? "" : " (you won't see it again; clinicians will)") + '</label><input class="input" id="ci-r" maxlength="600" placeholder="e.g. fever for 3 days"></div>' +
         '<button class="btn btn-primary" type="submit">Check in and issue token</button><div class="msg" id="ci-msg" role="status"></div></form>');
-      var kind = "opd", pr = "routine", tri = 3;
+      var kind = "opd", pr = "routine", tri = 3, picked = null;
+      if (hms) {
+        window.QCHms.picker(el("ci-pk"), function (p) { picked = p; });
+        if (preGrant && /^pat_/.test(preGrant)) api("/hospital/patients/" + encodeURIComponent(preGrant)).then(function (r) { if (r.ok) el("ci-pk").pick(r.patient); });
+        else if (preGrant) { var g0 = roster.filter(function (g) { return g.id === preGrant; })[0]; if (g0) el("ci-pk").pick({ id: "", grant_id: g0.id, name: g0.patient_name, mrn: g0.reference || "" }); }
+      }
       function seg(id, cb) { el(id).onclick = function (e) { var t = e.target.closest("[data-v]"); if (!t) return; [].forEach.call(el(id).children, function (c) { c.classList.toggle("on", c === t); }); cb(t.getAttribute("data-v")); }; }
       seg("ci-kind", function (v) {
         kind = v; H().show(el("ci-tri-wrap"), v === "er"); H().show(el("ci-pr-wrap"), v !== "er");
@@ -209,7 +216,9 @@
       el("ci-tri").onclick = function (e) { var t = e.target.closest("[data-v]"); if (!t) return; [].forEach.call(el("ci-tri").children, function (c) { c.classList.toggle("on", c === t); }); tri = +t.getAttribute("data-v"); };
       el("ci-form").onsubmit = function (e) {
         e.preventDefault();
-        var body = { grant_id: el("ci-p").value, kind: kind, dept_id: el("ci-d").value, doctor_id: el("ci-doc").value, priority: kind === "er" ? "emergency" : pr, reason: el("ci-r").value };
+        var body = { kind: kind, dept_id: el("ci-d").value, doctor_id: el("ci-doc").value, priority: kind === "er" ? "emergency" : pr, reason: el("ci-r").value };
+        if (hms) { if (!picked) { H().say(el("ci-msg"), "Choose the patient.", "err"); return; } if (picked.id) body.patient_id = picked.id; else body.grant_id = picked.grant_id; }
+        else body.grant_id = el("ci-p").value;
         if (kind === "er") body.triage = tri;
         api("/hospital/ops/encounters", { method: "POST", body: body }).then(function (r) {
           if (H().guard(r)) return;
@@ -248,6 +257,15 @@
       h += '<div class="ops-steps">' + steps.map(function (s) { return '<div><i></i><b>' + esc(s[0]) + "</b><span>" + clock(s[1]) + "</span></div>"; }).join("") + (x.los_days != null ? '<div class="los"><b>' + x.los_days + " days</b><span>in hospital</span></div>" : "") + "</div>";
       if (acts.length) h += '<div class="ops-v-acts">' + acts.map(function (a) { return '<button type="button" class="btn btn-sm ' + a[2] + '" data-vact="' + a[0] + '">' + a[1] + "</button>"; }).join("") +
         (can("read") && x.access_active ? '<button type="button" class="btn btn-sm btn-ghost" data-chart="' + esc(x.grant_id) + '">Open chart</button>' : "") + "</div>";
+      if (window.QCHms && x.patient_id) {
+        var mg = [];
+        mg.push('<button type="button" class="btn btn-sm btn-ghost" data-hms="record">🗂️ Patient record' + (x.mrn ? " · " + esc(x.mrn) : "") + "</button>");
+        if (can("rx") && open && x.access_active) mg.push('<button type="button" class="btn btn-sm" data-hms="rx">℞ Prescribe</button>');
+        if (can("billing") || can("billing_admin")) mg.push('<button type="button" class="btn btn-sm" data-hms="bill">🧾 Bill</button>');
+        if (can("appointments") || can("rx")) mg.push('<button type="button" class="btn btn-sm" data-hms="followup">📅 Book follow-up</button>');
+        h += '<div class="ops-v-acts hms-acts">' + mg.join("") + "</div>";
+        if (x.prescriptions && x.prescriptions.length) h += '<div class="ops-sec"><div class="ops-h">Prescriptions</div>' + x.prescriptions.map(function (p) { return '<button type="button" class="rec-line" data-hmsrx="' + esc(p.id) + '"><b>' + esc(p.number) + "</b><span>" + esc((p.diagnosis || p.n_items + " medicines") + " · " + p.doctor) + "</span></button>"; }).join("") + "</div>";
+      }
       if (window.QCClin) h += QCClin.section(x);
       // discharge checklist
       if (x.status === "admitted" || x.status === "discharge_planned") {
@@ -267,6 +285,15 @@
       b.onclick = function (e) {
         var t;
         if (window.QCClin && QCClin.click(e, x, function () { openVisit(x.id); })) return;
+        if ((t = e.target.closest("[data-hmsrx]"))) return window.QCHms.openRx(t.getAttribute("data-hmsrx"));
+        if ((t = e.target.closest("[data-hms]"))) {
+          var w = t.getAttribute("data-hms"), Q = window.QCHms;
+          if (w === "record") { closeModal(); return Q.openRecord(x.patient_id); }
+          if (w === "bill") return Q.billForVisit(x.id);
+          var pp = { id: x.patient_id, name: x.patient_name, mrn: x.mrn };
+          if (w === "followup") return Q.book({ patient: pp, kind: "follow_up", source: "followup", doctor: x.doctor_id, layer: 2 });
+          if (w === "rx") return api("/hospital/patients/" + encodeURIComponent(x.patient_id)).then(function (r) { if (r.ok) Q.prescribe({ patient: r.patient, encounter_id: x.id, complaints: x.reason || "", layer: 2, after: function () { openVisit(x.id); } }); });
+        }
         if ((t = e.target.closest("[data-vact]"))) {
           var a = t.getAttribute("data-vact");
           if (a === "admit") return admit(x.id);
@@ -662,6 +689,7 @@
     loaders: function () { return { queue: function () { S.tab = "queue"; loadQueue(); }, beds: function () { S.tab = "beds"; loadBeds(); }, orders: function () { S.tab = "orders"; loadOrders(); }, handover: function () { S.tab = "handover"; loadHandover(); }, imaging: function () { S.tab = "imaging"; if (window.QCImaging) window.QCImaging.load(); }, setup: function () { S.tab = "setup"; loadSetup(); } }; },
     leave: function () { clearInterval(S.timer); clearInterval(S.ticker); S.tab = ""; if (window.QCImaging) window.QCImaging.leave(); },
     board: function (box) { board(box); },
+    openVisit: function (id) { openVisit(id); },
     checkIn: function (grantId) { checkIn(grantId); },
   };
 })();

@@ -13,7 +13,7 @@
 <link rel="preconnect" href="https://app.querocura.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700;800&family=Manrope:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500;1,9..144,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../assets/qc-base.css?v=7b9ea421">
-<link rel="stylesheet" href="../assets/qc-hospital.css?v=b8fd0add">
+<link rel="stylesheet" href="../assets/qc-hospital.css?v=31ea7eae">
 <script src="../assets/qc-csp.js?v=77f89cc2"></script>
 </head>
 <body class="hp">
@@ -70,6 +70,11 @@
         <span class="hp-kicker">One place for the whole hospital</span>
         <h2>From the front desk to discharge</h2>
         <div class="hp-grid">
+          <div class="hp-card"><h3>🗂️ Patient register and records</h3><p>Every patient gets an MRN and one record, whether or not they use the QueroCura app: visits, prescriptions, results, imaging, documents and bills in one place. App users join their record automatically.</p></div>
+          <div class="hp-card"><h3>📅 Appointments and schedules</h3><p>Doctors' weekly sessions and leave decide the free slots. Book, move or squeeze in extras; arrival opens the OPD visit and token. Patients see their appointments in the app.</p></div>
+          <div class="hp-card"><h3>℞ Prescriptions and pharmacy</h3><p>Doctors write and sign clear, printable prescriptions, checked against recorded allergies and duplicates. The pharmacy dispenses from batches by expiry and keeps stock.</p></div>
+          <div class="hp-card"><h3>🧾 Billing</h3><p>Bills fill themselves from the visit: consultation, tests, bed-days and medicines. Payments by cash, UPI or card with receipts, insurance and scheme claims, and a day close.</p></div>
+          <div class="hp-card"><h3>👥 Duty roster and reports</h3><p>Who is on which shift, and where. Footfall, admissions, length of stay, collections and common diagnoses, downloadable as CSV.</p></div>
           <div class="hp-card"><h3>🎟️ OPD queue and tokens</h3><p>Check patients in to a department, call them in, see waits as they grow. A waiting-room TV shows the numbers being served, never names.</p></div>
           <div class="hp-card"><h3>🚑 Emergency triage</h3><p>Five triage levels with time-to-be-seen targets. The sickest are always first, and anyone past their target is flagged.</p></div>
           <div class="hp-card"><h3>🛏️ Live bed board</h3><p>Every ward and bed at a glance: occupied, going home, being cleaned, reserved. Admitting suggests the right free bed.</p></div>
@@ -87,7 +92,7 @@
         <h2>Designed so patients can say yes</h2>
         <div class="hp-grid">
           <div class="hp-card"><h3>The patient decides</h3><p>Each connection has chosen sections, an end date and an off switch. Everything ends by itself, and patients can end it sooner.</p></div>
-          <div class="hp-card"><h3>Only what's needed</h3><p>Roles keep people to their job: doctors read and write, nurses add vitals and notes, front desk connects patients but sees no clinical data.</p></div>
+          <div class="hp-card"><h3>Only what's needed</h3><p>Roles keep people to their job: doctors read, write and prescribe, nurses add vitals and notes, the pharmacy dispenses, billing takes payments, and the front desk registers and books but sees no clinical notes.</p></div>
           <div class="hp-card"><h3>Two-step sign-in</h3><p>Staff sign in with a password and an authenticator app. Sessions end after 20 idle minutes and can be signed out everywhere in one tap.</p></div>
           <div class="hp-card"><h3>A log nobody can edit</h3><p>Every request, view and record is written to a hash-chained audit log. The patient sees it too.</p></div>
           <div class="hp-card"><h3>Emergency, carefully</h3><p>If a patient switched it on, a verified doctor can open a 2-hour, read-only essentials view with a written reason. The patient is told straight away.</p></div>
@@ -195,6 +200,11 @@
         <section id="tab-imaging" class="tab" hidden></section>
         <section id="tab-setup" class="tab" hidden></section>
         <section id="tab-patients" class="tab" hidden></section>
+        <section id="tab-appointments" class="tab" hidden></section>
+        <section id="tab-pharmacy" class="tab" hidden></section>
+        <section id="tab-billing" class="tab" hidden></section>
+        <section id="tab-duty" class="tab" hidden></section>
+        <section id="tab-reports" class="tab" hidden></section>
         <section id="tab-connect" class="tab" hidden></section>
         <section id="tab-team" class="tab" hidden></section>
         <section id="tab-activity" class="tab" hidden></section>
@@ -206,14 +216,19 @@
   <div class="modal-back" id="chart-modal"><div class="modal wide" role="dialog" aria-modal="true" aria-labelledby="chart-title"><button class="modal-x" data-close="chart-modal" type="button" aria-label="Close">✕</button><div id="chart-body"></div></div></div>
   <div class="cmdk-back" id="cmdk" hidden><div class="cmdk" role="dialog" aria-modal="true" aria-label="Jump to a patient or a page"><input class="cmdk-in" id="cmdk-in" placeholder="Search patients, or type a page: overview, connect, team…" autocomplete="off" aria-label="Search"><div class="cmdk-list" id="cmdk-list" role="listbox"></div><div class="cmdk-foot"><kbd>↑</kbd><kbd>↓</kbd> move · <kbd>Enter</kbd> open · <kbd>Esc</kbd> close</div></div></div>
   <div class="modal-back" id="ops-modal"><div class="modal wide" role="dialog" aria-modal="true" aria-labelledby="ops-title"><button class="modal-x" data-close="ops-modal" type="button" aria-label="Close">✕</button><div id="ops-body"></div></div></div>
+  <div class="modal-back" id="hms-modal"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="ops-title"><button class="modal-x" data-close="hms-modal" type="button" aria-label="Close">✕</button><div id="hms-modal-body"></div></div></div>
+  <div class="modal-back" id="hms-modal2"><div class="modal" role="dialog" aria-modal="true"><button class="modal-x" data-close="hms-modal2" type="button" aria-label="Close">✕</button><div id="hms-modal2-body"></div></div></div>
+  <div id="hms-print" aria-hidden="true"></div>
   <div class="modal-back" id="record-modal"><div class="modal" role="dialog" aria-modal="true"><button class="modal-x" data-close="record-modal" type="button" aria-label="Close">✕</button><div id="record-body"></div></div></div>
 
   <footer class="hp-foot"><div class="hp-wrap">© 2026 QueroCura · <a href="../">Home</a> · <a href="../register/">For patients</a> · Patient information is shared only with the patient's consent.</div></footer>
 
   <script src="../assets/qc-page.js?v=c34c97a9"></script>
+  <script src="../assets/js/hospital-hms.js?v=f766f9ca"></script>
+  <script src="../assets/js/hospital-hms-desk.js?v=f74f1925"></script>
   <script src="../assets/js/hospital-clinical.js?v=2b610f5e"></script>
-<script src="../assets/js/hospital-ops.js?v=7554917d"></script>
+<script src="../assets/js/hospital-ops.js?v=8de0fc10"></script>
   <script src="../assets/js/hospital-imaging.js?v=204182ea"></script>
-  <script src="../assets/js/hospital.js?v=babc0756"></script>
+  <script src="../assets/js/hospital.js?v=3f1aa895"></script>
 </body>
 </html>
