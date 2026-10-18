@@ -29,6 +29,9 @@
 
   .invite-banner { border-radius: 20px; padding: 14px 18px; margin-bottom: 18px; background: linear-gradient(135deg, #fcf1c9, #fcdbe4); color: #100e2a; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; font-weight: 700; font-size: 14px; }
   .invite-banner .who { font-size: 26px; }
+  .invite-banner.link-on { background: linear-gradient(135deg, #d8f0ec, #e6dffa); }
+  .invite-banner select.input { padding: 7px 10px; font-size: 13px; }
+  .pot.waiting { opacity: .82; border-style: dashed; }
 
   .garden { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 18px; margin-bottom: 26px; }
   .pot { position: relative; border-radius: 28px; padding: 18px 18px 16px; background: var(--tint, #e6dffa); color: #100e2a; border: 1px solid rgba(16,14,42,.06); overflow: hidden; transition: transform .2s, box-shadow .2s; animation: grow .5s cubic-bezier(.2,.9,.3,1.2) backwards; }
@@ -86,7 +89,7 @@
   @media print { body * { visibility: hidden; } #ecard-print, #ecard-print * { visibility: visible; } #ecard-print { position: absolute; left: 0; top: 0; width: 100%; } }
 </style>
 <script src="../assets/qc-csp.js?v=77f89cc2"></script>
-<script src="../assets/qc-i18n.js?v=fca3e60e"></script>
+<script src="../assets/qc-i18n.js?v=faa7b43e"></script>
 <script src="../assets/js/family-h.js?v=6ed874fe"></script>
 </head>
 <body>
@@ -120,14 +123,15 @@
       <div class="hero-row">
         <div>
           <h1 class="page-title" style="margin-bottom:6px">Everyone you love, in one little garden</h1>
-          <p class="page-sub" style="margin:0">Look after kids, parents and partners from your own account. Each person gets their own space, their own plant, and their own private records.</p>
+          <p class="page-sub" style="margin:0">Link the QueroCura accounts of the people you love. Each person keeps their own account and records, and decides what you can see.</p>
         </div>
-        <button class="btn btn-primary" id="add-top">🌱 Plant someone new</button>
+        <button class="btn btn-primary" id="add-top">🌱 Add a family member</button>
       </div>
       <div class="hero-stats" id="hero-stats"></div>
     </div>
 
     <div id="invites"></div>
+    <div id="links-in"></div>
     <div class="garden" id="garden"><div class="pot" style="--tint:#e6dffa"><span class="skeleton"></span></div></div>
 
     <div class="two">
@@ -155,14 +159,20 @@
   <!-- add / edit -->
   <div class="modal-back" id="m-edit"><div class="modal">
     <button class="modal-x" data-close="m-edit" aria-label="Close">✕</button>
-    <h2 id="edit-title">Plant someone new 🌱</h2>
-    <p class="sub">Just a name is enough to begin. You can add details any time.</p>
+    <h2 id="edit-title">Add a family member 🌱</h2>
+    <p class="sub" id="edit-sub">Family members are linked QueroCura accounts. We send them a request; they accept in their own account and choose whether you can only see their health summary or also help add readings.</p>
+    <div id="link-fields">
+      <div class="field"><label for="e-account">Their QueroCura e-mail or username</label><input class="input" id="e-account" maxlength="254" autocomplete="off" placeholder="e.g. mum@example.com"></div>
+      <div class="field"><label for="e-role">Ask to</label><select class="input" id="e-role"><option value="viewer">See their health summary</option><option value="manager">See and help add readings and records</option></select></div>
+      <p class="hint" style="margin-top:-4px">No account yet? Ask them to <a href="../register/" target="_blank" rel="noopener">sign up for QueroCura</a> first (it's free), then link them here. A parent can create an account for a child using an e-mail address they look after.</p>
+    </div>
     <div class="preview" id="preview"><div class="face" id="pv-face">🐼</div><div><div class="nm" id="pv-name">New friend</div><div class="rel" id="pv-rel">family</div></div></div>
     <div class="sec-title">Pick a buddy</div><div class="animals" id="animals"></div>
     <div class="sec-title">Pick a colour</div><div class="swatches" id="swatches"></div>
-    <div class="sec-title">About them</div>
+    <div class="sec-title" id="about-title">About them</div>
     <div class="field"><label for="e-name">Name or nickname</label><input class="input" id="e-name" maxlength="30" placeholder="e.g. Aarav, Dadi, Mum"></div>
     <div class="field"><label>Who are they to you?</label><div class="pills" id="relations"></div></div>
+    <div id="legacy-fields">
     <div class="grid2">
       <div class="field"><label for="e-bday">Birthday</label><input class="input" id="e-bday" type="date"></div>
       <div class="field"><label for="e-sex">Sex</label><select class="input" id="e-sex"><option value="unknown">Prefer not to say</option><option value="female">Female</option><option value="male">Male</option><option value="other">Other</option></select></div>
@@ -174,6 +184,7 @@
       <div class="field"><label for="e-cphone">Contact phone</label><input class="input" id="e-cphone" maxlength="24" inputmode="tel"></div>
     </div>
     <div class="field"><label for="e-notes">Anything a helper should know</label><textarea class="input" id="e-notes" rows="2" maxlength="300"></textarea></div>
+    </div>
     <div class="row" style="justify-content:space-between"><button class="btn btn-danger btn-sm" id="e-delete" style="display:none">Remove…</button><span style="flex:1"></span><button class="btn" data-close="m-edit">Cancel</button><button class="btn btn-primary" id="e-save">Save</button></div>
     <div class="msg" id="e-msg"></div>
   </div></div>
@@ -219,6 +230,6 @@
 
 <script src="../assets/qc-app.js?v=22a3a990"></script>
 <script src="../assets/qc-page.js?v=c34c97a9"></script>
-<script src="../assets/js/family-1.js?v=dd52ef29"></script>
+<script src="../assets/js/family-1.js?v=472b39e3"></script>
 </body>
 </html>

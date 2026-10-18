@@ -17,7 +17,7 @@
     }).join("");
   }
   function profileOptions(profiles) {
-    return profiles.map(function (p) { return '<option value="' + esc(p.member_id) + '">' + esc(p.member_id === "me" ? "Me (current profile)" : p.nickname) + '</option>'; }).join("");
+    return profiles.map(function (p) { return '<option value="' + esc(p.member_id) + '">' + esc(p.member_id === "me" ? "Me (current profile)" : p.nickname + (p.linked ? " (linked account)" : "")) + '</option>'; }).join("");
   }
 
   function renderWaiting() {
@@ -31,6 +31,7 @@
         '<h3>' + esc(r.org_name) + ' <span class="' + (r.verified ? "org-ok" : "org-no") + '">' + (r.verified ? "✓ verified by QueroCura" : "not verified") + '</span></h3>' +
         '<div class="hint">' + esc(r.org_type || "") + (r.city ? " · " + esc(r.city) : "") + ' · asked by ' + esc(r.staff_name) + ' · ' + esc(when(r.created_ts)) + '</div>' +
         '<div class="why">“' + esc(r.purpose) + '”</div>' +
+        (r.for_name ? '<div class="hint">For their record of <b>' + esc(r.for_name) + '</b>. If that’s someone in your family, choose their profile below.</div>' : "") +
         '<div class="lbl" style="margin-top:10px">They asked to see (untick anything you want to keep private)</div>' +
         '<div class="scopes">' + scopeBoxes(DATA.scopes, r.scopes, "rs-" + r.id) + '</div>' +
         '<div class="grid2">' +

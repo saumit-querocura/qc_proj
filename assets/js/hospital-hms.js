@@ -83,13 +83,16 @@
 
   function loadPatients() {
     var box = el("tab-patients");
+    if (S.mine == null) { var sv = null; try { sv = localStorage.getItem("qc-hms-mine"); } catch (x) {} S.mine = sv ? sv === "1" : (can("patients_own") && !can("patients")); }
     box.innerHTML = '<div class="hms-head"><div><h2>Patients</h2><p class="sub">Everyone your hospital looks after, with or without the QueroCura app. Each has a medical record number (MRN) and one record that every department adds to.</p></div>' +
       (can("patients") ? '<button class="btn btn-primary" type="button" data-reg>+ Register patient</button>' : "") + "</div>" +
-      '<div class="hms-search"><input class="input" id="pt-q" type="search" placeholder="Search by name, MRN, mobile number or its last 4 digits" value="' + esc(S.q) + '" autocomplete="off"></div><div id="pt-list"><div class="empty">Loading…</div></div>';
+      '<div class="hms-search">' + (can("patients_own") ? '<div class="seg" role="tablist"><button type="button" data-mine="0" class="' + (S.mine ? "" : "on") + '">All patients</button><button type="button" data-mine="1" class="' + (S.mine ? "on" : "") + '">My patients</button></div>' : "") +
+      '<input class="input" id="pt-q" type="search" placeholder="Search by name, MRN, mobile number or its last 4 digits" value="' + esc(S.q) + '" autocomplete="off"></div><div id="pt-list"><div class="empty">Loading…</div></div>';
     var t = null;
     el("pt-q").oninput = function () { clearTimeout(t); S.q = this.value; t = setTimeout(list, 200); };
     box.onclick = function (e) {
       var b;
+      if ((b = e.target.closest("[data-mine]"))) { S.mine = b.getAttribute("data-mine") === "1"; try { localStorage.setItem("qc-hms-mine", S.mine ? "1" : "0"); } catch (x) {} [].forEach.call(box.querySelectorAll("[data-mine]"), function (x) { x.classList.toggle("on", x === b); }); return list(); }
       if (e.target.closest("[data-reg]")) return register({ name: S.q && !/\d/.test(S.q) ? S.q : "" }, function (p) { openRecord(p.id); });
       if ((b = e.target.closest("[data-checkin]"))) { e.stopPropagation(); return window.QCOps && window.QCOps.checkIn(b.getAttribute("data-checkin")); }
       if ((b = e.target.closest("[data-book]"))) { e.stopPropagation(); return book({ patient: JSON.parse(b.getAttribute("data-book")) }); }
@@ -98,16 +101,16 @@
     list();
   }
   function list() {
-    api("/hospital/patients?q=" + encodeURIComponent(S.q)).then(function (r) {
+    api("/hospital/patients?q=" + encodeURIComponent(S.q) + (S.mine && can("patients_own") ? "&mine=1" : "")).then(function (r) {
       var box = el("pt-list"); if (!box) return;
       if (H().guard(r)) return;
       if (!r.ok) { box.innerHTML = '<div class="notice bad">' + esc(r.message) + "</div>"; return; }
-      if (!r.items.length) { box.innerHTML = '<div class="card ops-empty"><div class="ops-empty-ic">🗂️</div><h2>' + (S.q ? "No one matches" : "No patients yet") + '</h2><p class="sub">' + (S.q ? "Check the spelling, or search by MRN or mobile number." : "Register your first patient, or connect someone who uses the QueroCura app.") + "</p>" + (can("patients") ? '<button class="btn btn-primary" type="button" data-reg>Register a patient</button>' : "") + "</div>"; return; }
+      if (!r.items.length) { box.innerHTML = '<div class="card ops-empty"><div class="ops-empty-ic">🗂️</div><h2>' + (S.q ? "No one matches" : S.mine ? "No patients under your care yet" : "No patients yet") + '</h2><p class="sub">' + (S.q ? "Check the spelling, or search by MRN or mobile number." : S.mine ? "Patients you see, book or prescribe for appear here, and anyone whose primary doctor you are." : "Register your first patient, or connect someone who uses the QueroCura app.") + "</p>" + (can("patients") ? '<button class="btn btn-primary" type="button" data-reg>Register a patient</button>' : "") + "</div>"; return; }
       box.innerHTML = '<div class="hms-list">' + r.items.map(function (p) {
         return '<div class="hms-row" data-open="' + esc(p.id) + '" tabindex="0" role="button"><span class="avatar">' + esc(H().initials(p.name)) + '</span><span class="grow"><b>' + esc(p.name) + "</b>" +
           '<small>' + esc(p.mrn) + (M.sexAge(p) ? " · " + esc(M.sexAge(p)) : "") + (p.phone_last4 ? " · ••" + esc(p.phone_last4) : "") + (p.last_visit_ts ? " · last visit " + esc(M.date(p.last_visit_ts)) : "") + "</small></span>" +
           (p.allergies && p.allergies.length ? '<span class="tag emg" title="Allergies">⚠ ' + esc(p.allergies.slice(0, 2).join(", ")) + "</span>" : "") +
-          (p.app_linked ? '<span class="tag app">QueroCura app</span>' : "") +
+          (p.primary ? '<span class="tag teal">★ Your patient</span>' : "") + (p.app_linked ? '<span class="tag app">QueroCura app</span>' : "") +
           (can("ops") ? '<button type="button" class="btn btn-sm" data-checkin="' + esc(p.id) + '">Check in</button>' : "") +
           (can("appointments") ? '<button type="button" class="btn btn-sm btn-ghost" data-book=\'' + esc(JSON.stringify({ id: p.id, name: p.name, mrn: p.mrn, age: p.age, sex: p.sex })) + '\'>Book</button>' : "") + "</div>";
       }).join("") + "</div>";
@@ -188,7 +191,8 @@
     if (!tabs.some(function (t) { return t[0] === S.recTab; })) S.recTab = "overview";
     var h = '<div class="rec-head"><span class="avatar lg">' + esc(H().initials(p.name)) + '</span><div class="grow"><h2 id="ops-title">' + esc(p.name) + '</h2><div class="rec-meta"><span class="mrn">MRN ' + esc(p.mrn) + "</span>" +
       [M.sexAge(p), p.blood_group ? "Blood " + p.blood_group : "", p.phone ? "📞 " + p.phone : "", p.abha ? "ABHA " + p.abha : ""].filter(Boolean).map(function (x) { return "<span>" + esc(x) + "</span>"; }).join("") + "</div>" +
-      (p.app_linked ? '<div class="mini">Connected through the QueroCura app' + (p.app_access_active ? "" : " (sharing has ended)") + "</div>" : "") + "</div></div>";
+      (p.app_linked ? '<div class="mini">Connected through the QueroCura app' + (p.app_access_active ? "" : " (sharing has ended)") + "</div>" : "") +
+      '<div class="mini rec-doc">Primary doctor: <b>' + esc(p.primary_doctor || "not set") + "</b>" + (canAny("patients", "patients_own") ? ' <button type="button" class="link" data-doc>' + (p.primary_doctor ? "Change" : "Set") + "</button>" : "") + "</div></div></div>";
     if (p.allergies !== undefined) {
       h += '<div class="rec-alerts">' + (p.allergies.length ? '<span class="al-lab">Allergies</span>' + p.allergies.map(function (a) { return '<span class="al">' + esc(a) + "</span>"; }).join("") :
         p.nkda ? '<span class="al-ok">No known drug allergies</span>' : '<span class="al-unk">Allergies not recorded</span>') +
@@ -200,7 +204,8 @@
     if (canAny("appointments") || can("rx")) acts.push(['<button class="btn btn-sm" type="button" data-book>Book appointment</button>']);
     if (can("rx")) acts.push(['<button class="btn btn-sm" type="button" data-rx>℞ Prescribe</button>']);
     if (canAny("billing", "billing_admin")) acts.push(['<button class="btn btn-sm" type="button" data-bill>New bill</button>']);
-    if (can("patients")) acts.push(['<button class="btn btn-sm btn-ghost" type="button" data-edit>Edit details</button>']);
+    if (canAny("patients", "patients_own")) acts.push(['<button class="btn btn-sm btn-ghost" type="button" data-edit>Edit details</button>']);
+    if ((!p.app_linked || !p.app_access_active) && canAny("patients", "patients_own")) acts.push(['<button class="btn btn-sm btn-ghost" type="button" data-linkapp>🔗 Link QueroCura account</button>']);
     if (p.app_access_active && can("read")) acts.push(['<button class="btn btn-sm btn-ghost" type="button" data-shared>Shared from their app</button>']);
     h += '<div class="rec-acts">' + acts.join("") + "</div>";
     h += '<div class="rec-tabs" role="tablist">' + tabs.map(function (t) { return '<button type="button" role="tab" data-rtab="' + t[0] + '" class="' + (t[0] === S.recTab ? "on" : "") + '">' + t[1] + "</button>"; }).join("") + '</div><div id="rec-body">' + recTab(r) + "</div>";
@@ -214,6 +219,8 @@
       if (e.target.closest("[data-rx]")) return window.QCHms.prescribe({ patient: p, encounter_id: open && open.id, layer: 2, after: function () { openRecord(p.id, "rx"); } });
       if (e.target.closest("[data-bill]")) return window.QCHms.newBill(p);
       if (e.target.closest("[data-edit]")) return register(p, function () { openRecord(p.id); }, 2);
+      if (e.target.closest("[data-linkapp]")) return linkApp(p);
+      if (e.target.closest("[data-doc]")) return setDoctor(p);
       if (e.target.closest("[data-shared]")) { M.close(); return H().openChart(p.app_grant_id); }
       if ((t = e.target.closest("[data-rxopen]"))) return window.QCHms.openRx(t.getAttribute("data-rxopen"));
       if ((t = e.target.closest("[data-billopen]"))) return window.QCHms.openBill(t.getAttribute("data-billopen"));
@@ -281,7 +288,88 @@
 
   /* ---------------------------------------------------------------- appointments */
   var DOCS = [];
+  /* the front-desk board: every doctor's day side by side */
+  function viewSwitch() {
+    return '<div class="seg" role="tablist"><button type="button" data-view="board" class="' + (S.apView === "board" ? "on" : "") + '">Board</button><button type="button" data-view="list" class="' + (S.apView === "board" ? "" : "on") + '">List</button></div>';
+  }
+  function loadBoard(quiet) {
+    var box = el("tab-appointments");
+    if (!quiet) box.innerHTML = '<div class="empty">Loading the board…</div>';
+    api("/hospital/appointments/board?day=" + S.apDay + (S.apDept ? "&dept=" + encodeURIComponent(S.apDept) : "")).then(function (r) {
+      if (H().guard(r)) return;
+      if (!r.ok) { box.innerHTML = '<div class="notice bad">' + esc(r.message) + "</div>"; return; }
+      var st = r.stats, isToday = S.apDay === M.today(), mayBook = canAny("appointments");
+      var h = '<div class="hms-head"><div><h2>Appointments</h2><p class="sub">All doctors at once. Click a free slot to book it; click a booking to mark arrival, move or cancel it.</p></div><div class="row">' + viewSwitch() +
+        (canAny("schedules") || can("rx") ? '<button class="btn btn-ghost" type="button" data-sched>Doctor schedules</button>' : "") +
+        (mayBook ? '<button class="btn btn-ghost" type="button" data-soon>⚡ Soonest free</button><button class="btn btn-primary" type="button" data-new>+ Book</button>' : "") + "</div></div>" +
+        '<div class="ops-bar"><div class="ap-day"><button type="button" class="btn btn-sm btn-ghost" data-d="-1" aria-label="Previous day">‹</button><input class="input" type="date" id="ap-date" value="' + S.apDay + '"><button type="button" class="btn btn-sm btn-ghost" data-d="1" aria-label="Next day">›</button>' +
+        (isToday ? "" : '<button type="button" class="link" data-d="0">Today</button>') + '<b class="ap-dname">' + esc(M.day(S.apDay)) + "</b></div>" +
+        '<div class="ops-bar-r"><select class="input" id="ap-dept"><option value="">All departments</option>' + r.departments.map(function (d) { return '<option value="' + esc(d.id) + '"' + (d.id === S.apDept ? " selected" : "") + ">" + esc(d.name) + "</option>"; }).join("") + "</select></div></div>" +
+        '<div class="hms-stats"><span><b>' + st.doctors_in + "</b>doctors in</span><span><b>" + st.booked + "</b>booked</span><span><b>" + st.arrived + "</b>arrived</span><span><b>" + st.free + "</b>free slots</span></div>";
+      if (!r.columns.length) h += '<div class="card ops-empty"><div class="ops-empty-ic">🗓️</div><h2>No doctors with sessions</h2><p class="sub">Set doctors\' weekly OPD sessions under Doctor schedules to fill the board.</p></div>';
+      else h += '<div class="bd-wrap"><div class="bd">' + r.columns.map(function (c) {
+        var cells = [];
+        c.slots.forEach(function (sl) {
+          var here = c.items.filter(function (a) { return a.start === sl.start && !a.extra; });
+          here.forEach(function (a) { cells.push(bdAppt(a)); });
+          if (sl.free) cells.push('<button type="button" class="bd-free" data-slot="' + esc(sl.start) + '" data-doc="' + esc(c.id) + '"' + (mayBook ? "" : " disabled") + "><b>" + esc(sl.start) + "</b><span>" + (sl.capacity > 1 ? sl.booked + "/" + sl.capacity : "Free") + "</span></button>");
+          else if (!here.length && sl.past) cells.push('<div class="bd-past">' + esc(sl.start) + "</div>");
+        });
+        c.items.filter(function (a) { return a.extra || !c.slots.some(function (sl) { return sl.start === a.start; }); }).forEach(function (a) { cells.push(bdAppt(a)); });
+        return '<section class="bd-col' + (c.on_leave ? " leave" : "") + '"><header><b>' + esc(c.name) + "</b><small>" + esc(c.specialty || (c.sessions[0] ? c.sessions[0].dept : "")) + "</small>" +
+          '<div class="bd-meta">' + (c.on_leave ? '<span class="pill bad">On leave</span>' : c.sessions.length ? c.sessions.map(function (x) { return esc(x.start + "–" + x.end) + (x.room ? " · " + esc(x.room) : ""); }).join("<br>") : '<span class="mini">No sessions</span>') + "</div>" +
+          (c.sessions.length && !c.on_leave ? '<div class="bd-count"><span>' + c.booked + " booked</span><span>" + c.free + " free</span></div>" : "") + "</header>" +
+          '<div class="bd-cells">' + (cells.join("") || '<div class="mini bd-none">' + (c.on_leave ? "Away today" : "Nothing today") + "</div>") + "</div></section>";
+      }).join("") + "</div></div>";
+      box.innerHTML = h;
+      wireApTab(box, r);
+    });
+    if (!quiet) { clearInterval(S.timer); S.timer = setInterval(function () { if (!document.hidden && !M.isOpen() && !M.isOpen(2) && el("ap-date")) loadAppointments(true); }, 30000); }
+  }
+  function bdAppt(a) {
+    return '<button type="button" class="bd-ap st-' + esc(a.status) + '" data-ap="' + esc(a.id) + '"><b>' + esc(a.start) + "</b><span>" + esc(a.patient_name || "") + "</span><i>" + esc(a.status === "booked" ? (a.kind_label || "") : a.status.replace("_", " ")) + (a.extra ? " · extra" : "") + "</i></button>";
+  }
+  function bdOpen(a) {
+    var b = M.modal('<h2 id="ops-title">' + esc(a.patient_name || "") + '</h2><p class="sub">' + esc(M.day(a.day)) + " " + esc(a.start) + "–" + esc(a.end) + " with " + esc(a.doctor || "") + (a.dept ? " · " + esc(a.dept) : "") + "</p>" + apRow(a));
+    b.onclick = function (e) {
+      var t;
+      if ((t = e.target.closest("[data-apact]"))) { if (t.getAttribute("data-apact") !== "visit") M.close(); return apAct(t.getAttribute("data-id"), t.getAttribute("data-apact")); }
+      if ((t = e.target.closest("[data-pat]"))) return openRecord(t.getAttribute("data-pat"));
+    };
+  }
+  function soonest() {
+    api("/hospital/appointments/first-free" + (S.apDept ? "?dept=" + encodeURIComponent(S.apDept) : "")).then(function (r) {
+      if (!r.ok) return;
+      var b = M.modal('<h2 id="ops-title">Soonest free appointments</h2><p class="sub">The first free slot with each doctor over the next two weeks' + (S.apDept ? " in this department" : "") + ".</p>" +
+        (r.items.length ? '<div class="hms-list">' + r.items.map(function (x) {
+          return '<div class="hms-row"><span class="grow"><b>' + esc(x.doctor) + "</b><small>" + esc(x.specialty || "") + "</small></span><b>" + esc(M.day(x.day)) + " · " + esc(x.start) + '</b><button type="button" class="btn btn-sm btn-primary" data-pick=\'' + esc(JSON.stringify(x)) + "'>Book</button></div>";
+        }).join("") + "</div>" : '<div class="empty">No free slots in the next two weeks.</div>'));
+      b.onclick = function (e) { var t = e.target.closest("[data-pick]"); if (!t) return; var x = JSON.parse(t.getAttribute("data-pick")); M.close(); book({ doctor: x.staff_id, day: x.day, start: x.start }); };
+    });
+  }
+  function wireApTab(box, r) {
+    el("ap-date").onchange = function () { if (this.value) { S.apDay = this.value; loadAppointments(); } };
+    var dsel = el("ap-dept"); if (dsel) dsel.onchange = function () { S.apDept = this.value; loadAppointments(); };
+    box.onclick = function (e) {
+      var t;
+      if ((t = e.target.closest("[data-view]"))) { S.apView = t.getAttribute("data-view"); try { localStorage.setItem("qc-hms-apview", S.apView); } catch (x) {} return loadAppointments(); }
+      if ((t = e.target.closest("[data-d]"))) { var n = +t.getAttribute("data-d"); S.apDay = n === 0 ? M.today() : M.addDays(S.apDay, n); return loadAppointments(); }
+      if (e.target.closest("[data-new]")) return book({ day: S.apDay });
+      if (e.target.closest("[data-soon]")) return soonest();
+      if (e.target.closest("[data-sched]")) return schedules(S.apDoc);
+      if ((t = e.target.closest("[data-slot]"))) return book({ doctor: t.getAttribute("data-doc") || S.apDoc, day: S.apDay, start: t.getAttribute("data-slot") });
+      if ((t = e.target.closest("[data-ap]")) && r && r.columns) {
+        var id = t.getAttribute("data-ap"), a = null;
+        r.columns.forEach(function (c) { c.items.forEach(function (x) { if (x.id === id) a = x; }); });
+        if (a) return bdOpen(a);
+      }
+      if ((t = e.target.closest("[data-apact]"))) { e.stopPropagation(); return apAct(t.getAttribute("data-id"), t.getAttribute("data-apact")); }
+      if ((t = e.target.closest("[data-pat]"))) return openRecord(t.getAttribute("data-pat"));
+    };
+  }
   function loadAppointments(quiet) {
+    if (S.apView == null) { var sv = null; try { sv = localStorage.getItem("qc-hms-apview"); } catch (x) {} S.apView = sv || (canAny("appointments") ? "board" : "list"); }
+    if (S.apView === "board") return loadBoard(quiet);
     var box = el("tab-appointments");
     if (!quiet) box.innerHTML = '<div class="empty">Loading appointments…</div>';
     var q = "/hospital/appointments?day=" + S.apDay + (S.apDoc ? "&doctor=" + encodeURIComponent(S.apDoc) : "");
@@ -291,7 +379,7 @@
       DOCS = r.doctors;
       if (S.apDoc && !DOCS.some(function (d) { return d.id === S.apDoc; })) S.apDoc = "";
       var st = r.stats, isToday = S.apDay === M.today();
-      var h = '<div class="hms-head"><div><h2>Appointments</h2><p class="sub">Book into doctors\' sessions. Marking someone arrived opens their OPD visit and token.</p></div><div class="row">' +
+      var h = '<div class="hms-head"><div><h2>Appointments</h2><p class="sub">Book into doctors\' sessions. Marking someone arrived opens their OPD visit and token.</p></div><div class="row">' + viewSwitch() +
         (canAny("schedules") || can("rx") ? '<button class="btn btn-ghost" type="button" data-sched>Doctor schedules</button>' : "") + (canAny("appointments") ? '<button class="btn btn-primary" type="button" data-new>+ Book</button>' : "") + "</div></div>" +
         '<div class="ops-bar"><div class="ap-day"><button type="button" class="btn btn-sm btn-ghost" data-d="-1" aria-label="Previous day">‹</button><input class="input" type="date" id="ap-date" value="' + S.apDay + '"><button type="button" class="btn btn-sm btn-ghost" data-d="1" aria-label="Next day">›</button>' +
         (isToday ? "" : '<button type="button" class="link" data-d="0">Today</button>') + '<b class="ap-dname">' + esc(M.day(S.apDay)) + "</b></div>" +
@@ -312,6 +400,7 @@
       el("ap-doc").onchange = function () { S.apDoc = this.value; try { localStorage.setItem("qc-hms-doc", S.apDoc); } catch (x) {} loadAppointments(); };
       box.onclick = function (e) {
         var t;
+        if ((t = e.target.closest("[data-view]"))) { S.apView = t.getAttribute("data-view"); try { localStorage.setItem("qc-hms-apview", S.apView); } catch (x) {} return loadAppointments(); }
         if ((t = e.target.closest("[data-d]"))) { var n = +t.getAttribute("data-d"); S.apDay = n === 0 ? M.today() : M.addDays(S.apDay, n); return loadAppointments(); }
         if (e.target.closest("[data-new]")) return book({});
         if (e.target.closest("[data-sched]")) return schedules(S.apDoc);
@@ -456,6 +545,47 @@
     el("sc-doc").onchange = load;
     if (docId) load(); else el("sc-body").innerHTML = '<div class="empty">Add a doctor to your team first.</div>';
     void b;
+  }
+
+  /* ---------------------------------------------------------------- linking the patient's QueroCura account */
+  function linkApp(p) {
+    var sc = [["summary", "Basics, allergies and conditions", true], ["vitals", "Vitals and trends", true], ["medicines", "Current medicines", true], ["labs", "Lab results", false], ["imaging", "Scan reports", false], ["symptoms", "Recent symptom checks", false]];
+    var b = M.modal('<h2 id="ops-title">Link ' + esc(p.name.split(" ")[0]) + "'s QueroCura account</h2>" +
+      '<p class="sub">We send a request to the account. Nothing is shared until they approve, and they choose what you see and for how long. Once approved, what they share appears in this record (MRN ' + esc(p.mrn) + ").</p>" +
+      '<div class="field"><label for="la-e">Their QueroCura e-mail</label><input class="input" id="la-e" type="email" autocomplete="off" placeholder="name@example.com"></div>' +
+      '<p class="mini">For a child, or someone a relative looks after in QueroCura, enter the relative\'s e-mail. They choose the right family profile when they approve.</p>' +
+      '<div class="lbl">Ask to see</div><div class="la-scopes">' + sc.map(function (x) { return '<label class="scope' + (x[2] ? " on" : "") + '"><input type="checkbox" data-sc="' + x[0] + '"' + (x[2] ? " checked" : "") + "><span>" + esc(x[1]) + "</span></label>"; }).join("") + "</div>" +
+      '<div class="grid2"><div class="field"><label for="la-d">For</label><select class="input" id="la-d"><option value="30">30 days</option><option value="90" selected>90 days</option></select></div>' +
+      '<div class="field"><label for="la-w">Add to their record</label><select class="input" id="la-w"><option value="1">Ask to add visits and results</option><option value="0">Read only</option></select></div></div>' +
+      '<button class="btn btn-primary" type="button" data-go>Send request</button><div class="msg" id="la-msg"></div>', false, 2);
+    b.onchange = function (e) { var l = e.target.closest(".scope"); if (l) l.classList.toggle("on", e.target.checked); };
+    b.onclick = function (e) {
+      if (!e.target.closest("[data-go]")) return;
+      var scopes = [].map.call(b.querySelectorAll("[data-sc]:checked"), function (c) { return c.getAttribute("data-sc"); });
+      api("/hospital/patients/" + encodeURIComponent(p.id) + "/invite-app", { method: "POST", body: { email: el("la-e").value.trim(), scopes: scopes, days: +el("la-d").value, want_write: el("la-w").value === "1" } }).then(function (r) {
+        if (H().guard(r)) return;
+        if (!r.ok) return say(el("la-msg"), r.message, "err");
+        toast(r.message); M.close(2);
+      });
+    };
+  }
+  function setDoctor(p) {
+    var me = H().me().staff.id, full = can("patients");
+    var go = function (docs) {
+      var b = M.modal('<h2 id="ops-title">Primary doctor</h2><p class="sub">The doctor who looks after ' + esc(p.name.split(" ")[0]) + ". They see this patient under My patients and can keep their details up to date.</p>" +
+        (full ? '<div class="field"><label for="pd-s">Doctor</label><select class="input" id="pd-s"><option value="">No primary doctor</option>' + docs.map(function (d) { return '<option value="' + esc(d.id) + '"' + (d.id === p.primary_doctor_id ? " selected" : "") + ">" + esc(d.name) + "</option>"; }).join("") + "</select></div>" :
+          '<p>' + (p.primary_doctor_id === me ? "You are this patient's primary doctor." : "Take this patient on as your own?") + "</p>") +
+        '<button class="btn btn-primary" type="button" data-go>' + (full ? "Save" : p.primary_doctor_id === me ? "Stop being their primary doctor" : "Make me their doctor") + '</button><div class="msg" id="pd-msg"></div>', false, 2);
+      b.onclick = function (e) {
+        if (!e.target.closest("[data-go]")) return;
+        var v = full ? el("pd-s").value : (p.primary_doctor_id === me ? "" : me);
+        api("/hospital/patients/" + encodeURIComponent(p.id), { method: "POST", body: { primary_doctor_id: v } }).then(function (r) {
+          if (!r.ok) return say(el("pd-msg"), r.message, "err");
+          toast(r.message); M.close(2); openRecord(p.id);
+        });
+      };
+    };
+    if (full) api("/hospital/appointments?day=" + M.today()).then(function (r) { go((r && r.doctors) || []); }); else go([]);
   }
 
   /* ---------------------------------------------------------------- registration with hospital.js */

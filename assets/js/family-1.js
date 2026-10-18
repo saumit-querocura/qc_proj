@@ -27,11 +27,26 @@
         '<button class="btn btn-sm btn-dark" data-inv="' + i.access_id + '" data-acc="1">Accept</button><button class="btn btn-sm" data-inv="' + i.access_id + '" data-acc="0">Not now</button></div>';
     }).join("");
     el("invites").innerHTML = inv;
+    // people who asked to link this account as family, and who can already see it
+    var lin = (H.linked_to_me || []);
+    el("links-in").innerHTML = lin.map(function (l) {
+      if (l.status === "pending") {
+        return '<div class="invite-banner link-req"><span class="who">' + (ANIMAL[l.avatar] || "🙂") + '</span><span style="flex:1 1 260px"><b>' + esc(l.from_name) + '</b> wants to add you to their family as their ' + esc((RELNICE[l.relation] || l.relation).toLowerCase()) + '. Nothing is shared until you accept.</span>' +
+          '<select class="input" data-lrole="' + l.link_id + '" style="width:auto"><option value="viewer"' + (l.role === "viewer" ? " selected" : "") + '>They can see my health summary</option><option value="manager"' + (l.role === "manager" ? " selected" : "") + '>They can also help add readings</option></select>' +
+          '<button class="btn btn-sm btn-dark" data-lacc="' + l.link_id + '">Accept</button><button class="btn btn-sm" data-ldec="' + l.link_id + '">Decline</button></div>';
+      }
+      return '<div class="invite-banner link-on"><span class="who">🔗</span><span style="flex:1 1 260px"><b>' + esc(l.from_name) + '</b> is linked with you and can ' + (l.role === "manager" ? "see and help add to" : "see") + ' your health records.</span>' +
+        '<button class="btn btn-sm" data-lswap="' + l.link_id + '" data-to="' + (l.role === "manager" ? "viewer" : "manager") + '">' + (l.role === "manager" ? "Make it view only" : "Let them help") + '</button><button class="btn btn-sm" data-lun="' + l.link_id + '">Unlink</button></div>';
+    }).join("");
 
     var acting = H.acting;
     var html = meCard(me, acting);
     members.forEach(function (m, idx) { html += potHtml(m, idx + 1, false); });
-    html += '<button class="add-pot" id="add-pot"><span class="plus">🌱</span>Plant someone new</button>';
+    (H.links_pending || []).forEach(function (l, idx) {
+      html += '<div class="pot waiting" style="--tint:' + tintOf(l.color) + ';animation-delay:' + ((members.length + idx + 1) * .06) + 's"><div class="pot-top"><div class="face">' + (ANIMAL[l.avatar] || "🙂") + '</div><div><div class="nm">' + esc(l.nickname) + '</div><div class="rel">' + esc(RELNICE[l.relation] || l.relation) + ' · waiting for them to accept</div></div><span class="mood">⏳</span></div>' +
+        '<div class="plant"><span class="stage">✉️</span><span class="cap">We sent the request to their QueroCura account. It shows on their Family page.</span></div><div class="actions"><button class="btn" data-lun="' + l.link_id + '">Cancel request</button></div></div>';
+    });
+    html += '<button class="add-pot" id="add-pot"><span class="plus">🌱</span>Add a family member</button>';
     el("garden").innerHTML = html;
 
     // board
@@ -75,10 +90,11 @@
     var actions = '<button class="btn main" data-open="' + id + '">Open ' + esc(m.nickname) + '\'s space</button>';
     if (!viewer) actions += '<button class="btn" data-water="' + id + '">💧 Water (log)</button>';
     actions += '<button class="btn" data-card="' + id + '">🆘 Card</button>';
-    if (!shared) actions += '<button class="btn" data-cheer="' + id + '">💌 Cheer</button><button class="btn" data-circle="' + id + '">🫶 Circle</button><button class="btn" data-edit="' + id + '">✏️ Edit</button>';
+    if (!shared && m.linked) actions += '<button class="btn" data-edit="' + id + '">✏️ Edit</button><button class="btn" data-lun="' + id + '">Unlink</button>';
+    else if (!shared) actions += '<button class="btn" data-cheer="' + id + '">💌 Cheer</button><button class="btn" data-circle="' + id + '">🫶 Circle</button><button class="btn" data-edit="' + id + '">✏️ Edit</button>';
     else actions += '<button class="btn" data-leave="' + (m.access_id || "") + '" style="display:none"></button>';
     return '<div class="pot" style="--tint:' + tint + ';animation-delay:' + (idx * .06) + 's" data-mid="' + id + '">' +
-      '<div class="pot-top"><div class="face" data-bounce>' + emoji + '</div><div><div class="nm">' + esc(m.nickname) + '</div><div class="rel">' + esc(RELNICE[m.relation] || m.relation) + (m.age != null ? ' · ' + m.age + (m.age === 1 ? ' yr' : ' yrs') : '') + (shared ? ' · ' + esc(m.owner_name || "") + "'s family" : "") + (viewer ? ' · view only' : '') + '</div></div><span class="mood" data-mood="' + id + '">·</span></div>' +
+      '<div class="pot-top"><div class="face" data-bounce>' + emoji + '</div><div><div class="nm">' + esc(m.nickname) + (m.linked ? ' <span class="chip" title="Their own QueroCura account">🔗 linked</span>' : "") + '</div><div class="rel">' + esc(RELNICE[m.relation] || m.relation) + (m.age != null ? ' · ' + m.age + (m.age === 1 ? ' yr' : ' yrs') : '') + (shared ? ' · ' + esc(m.owner_name || "") + "'s family" : "") + (viewer ? ' · view only' : '') + '</div></div><span class="mood" data-mood="' + id + '">·</span></div>' +
       '<div class="plant" data-plant="' + id + '"><span class="stage">🌱</span><span class="cap"><span class="skeleton"></span></span></div>' +
       '<div class="scoreline" data-score="' + id + '">' + bday + streak + '</div><div class="badges">' + badges + '</div>' + ideas +
       '<div class="actions">' + actions + '</div></div>';
@@ -121,9 +137,16 @@
     var ci = t.closest("[data-circle]"); if (ci) { openCircle(ci.getAttribute("data-circle")); return; }
     var ed = t.closest("[data-edit]"); if (ed) { openEdit(ed.getAttribute("data-edit")); return; }
     var iv = t.closest("[data-inv]"); if (iv) { respond(iv.getAttribute("data-inv"), iv.getAttribute("data-acc") === "1"); return; }
+    var la = t.closest("[data-lacc]"); if (la) { var id = la.getAttribute("data-lacc"), sel = document.querySelector('[data-lrole="' + id + '"]'); linkPost("/family/links/" + id + "/respond", { accept: true, role: sel ? sel.value : "viewer" }, true); return; }
+    var ld = t.closest("[data-ldec]"); if (ld) { linkPost("/family/links/" + ld.getAttribute("data-ldec") + "/respond", { accept: false }); return; }
+    var ls = t.closest("[data-lswap]"); if (ls) { linkPost("/family/links/" + ls.getAttribute("data-lswap") + "/role", { role: ls.getAttribute("data-to") }); return; }
+    var lu = t.closest("[data-lun]"); if (lu) { if (!window.confirm("Unlink? Nobody's records are deleted; you just stop seeing each other's.")) return; linkPost("/family/links/" + lu.getAttribute("data-lun") + "/unlink", {}); return; }
     var rv = t.closest("[data-revoke]"); if (rv) { api("/family/access/" + rv.getAttribute("data-revoke"), { method: "DELETE" }).then(function (d) { P.toast(d.message || "Done.", d.ok ? "ok" : "err"); load().then(function () { openCircle(CIRCLE_ID); }); }); return; }
   });
 
+  function linkPost(url, body, party) {
+    api(url, { method: "POST", body: body }).then(function (d) { P.toast(d.message || "Done.", d.ok ? "ok" : "err"); if (party && d.ok) P.confetti(["🔗", "💛", "🌸"], 20); if (window.QC && QC.clearCache) QC.clearCache(false); load(); });
+  }
   function respond(id, accept) {
     api("/family/invites/" + id + "/respond", { method: "POST", body: { accept: accept } }).then(function (d) { P.toast(d.message || "Done.", d.ok ? "ok" : "err"); if (accept && d.ok) P.confetti(); load(); });
   }
@@ -149,24 +172,35 @@
   function openEdit(id) {
     EDIT_ID = id; el("e-msg").textContent = "";
     var m = id ? (HUB.members || []).filter(function (x) { return x.member_id === id; })[0] : null;
-    el("edit-title").textContent = m ? "Edit " + m.nickname : "Plant someone new 🌱";
+    el("edit-title").textContent = m ? "Edit " + m.nickname : "Add a family member 🌱";
+    el("link-fields").style.display = m ? "none" : "";
+    el("edit-sub").style.display = m ? "none" : "";
+    el("legacy-fields").style.display = m && !m.linked ? "" : "none";
+    el("about-title").textContent = m ? "About them" : "What you call them";
+    el("e-account").value = "";
     SEL = m ? { avatar: m.avatar, color: m.color, relation: m.relation } : { avatar: "panda", color: Object.keys(TINT)[Math.floor(Math.random() * 8)], relation: "child" };
     el("e-name").value = m ? m.nickname : ""; el("e-bday").value = m ? (m.birthday || "") : ""; el("e-sex").value = m ? (m.sex || "unknown") : "unknown";
     el("e-blood").value = "unknown"; el("e-cname").value = m ? (m.contact_name || "") : ""; el("e-cphone").value = m ? (m.contact_phone || "") : ""; el("e-notes").value = m ? (m.notes || "") : "";
-    el("e-delete").style.display = m ? "" : "none";
+    el("e-delete").style.display = m && !m.linked ? "" : "none";
     buildPickers(); P.openModal("m-edit");
   }
   el("e-save").addEventListener("click", function () {
-    var body = { nickname: el("e-name").value.trim(), relation: SEL.relation, avatar: SEL.avatar, color: SEL.color, birthday: el("e-bday").value, sex: el("e-sex").value,
-      contact_name: el("e-cname").value, contact_phone: el("e-cphone").value, notes: el("e-notes").value };
-    if (el("e-blood").value !== "unknown") body.blood_type = el("e-blood").value;
-    if (!body.nickname) { el("e-msg").className = "msg err"; el("e-msg").textContent = "Give them a name or nickname."; return; }
+    var editing = EDIT_ID ? (HUB.members || []).filter(function (x) { return x.member_id === EDIT_ID; })[0] : null;
+    var body = { nickname: el("e-name").value.trim(), relation: SEL.relation, avatar: SEL.avatar, color: SEL.color };
+    if (editing && !editing.linked) {
+      body.birthday = el("e-bday").value; body.sex = el("e-sex").value; body.contact_name = el("e-cname").value; body.contact_phone = el("e-cphone").value; body.notes = el("e-notes").value;
+      if (el("e-blood").value !== "unknown") body.blood_type = el("e-blood").value;
+    }
+    if (!EDIT_ID) {
+      body.account = el("e-account").value.trim(); body.role = el("e-role").value;
+      if (!body.account) { el("e-msg").className = "msg err"; el("e-msg").textContent = "Enter the e-mail or username of their QueroCura account."; return; }
+    } else if (!body.nickname) { el("e-msg").className = "msg err"; el("e-msg").textContent = "Give them a name or nickname."; return; }
     var btn = el("e-save"); btn.disabled = true;
     api(EDIT_ID ? "/family/members/" + EDIT_ID : "/family/members", { method: EDIT_ID ? "PATCH" : "POST", body: body }).then(function (d) {
       btn.disabled = false;
       if (!d.ok) { el("e-msg").className = "msg err"; el("e-msg").textContent = d.message || "Couldn't save."; return; }
       P.closeModal("m-edit"); P.toast(d.message || "Saved.");
-      if (!EDIT_ID) P.confetti(["🌸", "🌼", "💛", "🦋", "✨"], 34);
+      if (!EDIT_ID) P.confetti(["✉️", "💛", "✨"], 20);
       load();
     });
   });

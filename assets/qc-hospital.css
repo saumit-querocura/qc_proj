@@ -676,3 +676,70 @@ html[data-theme="dark"] .tag.app { color: #c9c2ff; } html[data-theme="dark"] .sh
 .ph-meta { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; font-size: 13px; padding: 6px 0 10px; border-bottom: 1px solid #ddd; margin-bottom: 10px; }
 #hms-print h3 { font-size: 13.5px; margin: 12px 0 4px; } #hms-print p, #hms-print li { font-size: 12.5px; line-height: 1.5; }
 .ph-ck { list-style: none; padding: 0; margin: 0; }
+
+/* ================================================================ front-desk board (appointments across doctors) */
+.hms-head .row .seg { margin-right: 4px; }
+.bd-wrap { overflow-x: auto; padding-bottom: 6px; margin-top: 12px; -webkit-overflow-scrolling: touch; }
+.bd { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(210px, 1fr); gap: 12px; min-width: min-content; align-items: start; }
+.bd-col { background: var(--card); border: 1px solid var(--line); border-radius: 18px; overflow: hidden; }
+.bd-col.leave { opacity: .6; }
+.bd-col header { padding: 12px 14px 10px; border-bottom: 1px solid var(--line); background: color-mix(in srgb, var(--teal) 6%, var(--card)); position: sticky; top: 0; }
+.bd-col header b { display: block; font-size: 14.5px; } .bd-col header small { display: block; font-size: 12px; color: var(--muted); min-height: 15px; }
+.bd-meta { font-size: 11.5px; color: var(--muted); margin-top: 6px; line-height: 1.5; }
+.bd-count { display: flex; gap: 10px; margin-top: 6px; font: 800 11.5px 'Manrope', sans-serif; } .bd-count span:first-child { color: var(--teal); } .bd-count span:last-child { color: var(--muted); }
+.bd-cells { display: grid; gap: 6px; padding: 10px; max-height: 62vh; overflow-y: auto; }
+.bd-free, .bd-ap { display: flex; align-items: center; gap: 8px; width: 100%; text-align: left; border-radius: 11px; padding: 7px 10px; font: inherit; cursor: pointer; border: 1.5px dashed color-mix(in srgb, var(--teal) 45%, var(--line)); background: transparent; color: var(--ink); }
+.bd-free b, .bd-ap b { font: 700 12.5px 'Space Grotesk', sans-serif; flex: none; width: 40px; }
+.bd-free span { font-size: 12px; color: var(--teal); font-weight: 800; }
+.bd-free:hover:not([disabled]) { background: color-mix(in srgb, var(--teal) 10%, transparent); }
+.bd-free[disabled] { cursor: default; opacity: .7; }
+.bd-ap { border-style: solid; border-color: var(--line); background: color-mix(in srgb, #2f8fd1 9%, var(--card)); flex-wrap: wrap; row-gap: 0; }
+.bd-ap span { flex: 1; min-width: 0; font-size: 13px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bd-ap i { flex-basis: 100%; padding-left: 48px; font-style: normal; font-size: 11px; color: var(--muted); text-transform: capitalize; }
+.bd-ap.st-confirmed { background: color-mix(in srgb, #2f8fd1 14%, var(--card)); }
+.bd-ap.st-arrived { background: color-mix(in srgb, var(--warn) 16%, var(--card)); border-color: color-mix(in srgb, var(--warn) 40%, var(--line)); }
+.bd-ap.st-completed { background: color-mix(in srgb, var(--good) 13%, var(--card)); opacity: .8; }
+.bd-ap.st-no_show { opacity: .5; text-decoration: line-through; }
+.bd-past { font: 600 11.5px 'Space Grotesk', sans-serif; color: var(--muted); padding: 4px 10px; opacity: .55; }
+.bd-none { padding: 6px 4px; }
+
+/* ================================================================ payments desk */
+.pd-kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin: 6px 0 14px; }
+.pd-k { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 12px 14px; }
+.pd-k span { display: block; font-size: 12px; color: var(--muted); font-weight: 700; } .pd-k b { display: block; font: 700 20px 'Space Grotesk', sans-serif; margin-top: 2px; } .pd-k small { font-size: 11.5px; color: var(--muted); }
+.pd-k.big { background: linear-gradient(150deg, #0e8f83, #2f8fd1); border: none; color: #fff; } .pd-k.big span, .pd-k.big small { color: rgba(255,255,255,.85); } .pd-k.big b { font-size: 24px; }
+.pd-k.warn b { color: var(--warn); }
+.pd-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; } @media (max-width: 900px) { .pd-grid { grid-template-columns: 1fr; } }
+.pd-row { display: flex; gap: 10px; align-items: center; padding: 9px 0; border-top: 1px dashed var(--line); }
+.pd-row .grow { flex: 1; min-width: 0; text-align: left; color: var(--ink); } .pd-row .grow b { display: block; font-size: 14px; } .pd-row small { display: block; font-size: 12px; color: var(--muted); font-weight: 600; }
+.pd-due { font: 700 15px 'Space Grotesk', sans-serif; white-space: nowrap; }
+.chips .chipbtn, #cp-m .chipbtn { border: 1.5px solid var(--line); background: var(--card); border-radius: 999px; padding: 6px 14px; font: 800 12.5px 'Manrope', sans-serif; cursor: pointer; color: var(--muted); }
+#cp-m { display: flex; flex-wrap: wrap; gap: 6px; } #cp-m .chipbtn.on { background: var(--ink); color: var(--sand); border-color: var(--ink); }
+
+/* ================================================================ roles and permissions */
+.ra-sum { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px; }
+.ra-chip { text-align: left; border: 1px solid var(--line); background: var(--card); color: var(--ink); border-radius: 14px; padding: 10px 12px; cursor: pointer; font: inherit; }
+.ra-chip:hover { border-color: color-mix(in srgb, var(--teal) 50%, var(--line)); } .ra-chip b { display: block; font-size: 13.5px; } .ra-chip span { font-size: 12px; color: var(--muted); }
+.ra-roles { display: grid; gap: 8px; }
+.ra-wrap { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 18px; min-height: 60vh; } @media (max-width: 760px) { .ra-wrap { grid-template-columns: 1fr; } }
+.ra-list { border-right: 1px solid var(--line); padding-right: 14px; display: flex; flex-direction: column; gap: 4px; } @media (max-width: 760px) { .ra-list { border-right: 0; padding-right: 0; } }
+.ra-role { text-align: left; border: 0; background: transparent; color: var(--ink); border-radius: 12px; padding: 8px 10px; cursor: pointer; font: inherit; }
+.ra-role b { display: block; font-size: 13.5px; } .ra-role small { font-size: 11.5px; color: var(--muted); }
+.ra-role:hover { background: color-mix(in srgb, var(--ink) 5%, transparent); } .ra-role.on { background: color-mix(in srgb, var(--teal) 12%, transparent); }
+.ra-head { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; padding-right: 30px; } .ra-head h2 { margin: 0 0 4px; }
+.ra-group { margin-top: 14px; } .ra-group .ops-h { margin-bottom: 6px; }
+.ra-perm { display: flex; gap: 10px; align-items: flex-start; padding: 8px 6px; border-top: 1px dashed var(--line); cursor: pointer; }
+.ra-perm input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.ra-perm .sw { flex: none; position: relative; width: 34px; height: 20px; border-radius: 99px; background: color-mix(in srgb, var(--ink) 15%, transparent); margin-top: 2px; transition: background .2s ease; }
+.ra-perm .sw::after { content: ""; position: absolute; left: 2px; top: 2px; width: 16px; height: 16px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.25); transition: transform .2s ease; }
+.ra-perm input:checked + .sw { background: var(--teal); } .ra-perm input:checked + .sw::after { transform: translateX(14px); }
+.ra-perm input:focus-visible + .sw { outline: 2px solid var(--teal); outline-offset: 2px; }
+.ra-perm.lock { cursor: not-allowed; } .ra-perm.lock .sw { opacity: .55; }
+.ra-perm b { display: block; font-size: 13.5px; } .ra-perm small { display: block; font-size: 12px; color: var(--muted); line-height: 1.4; }
+.ra-perm .tag { font-size: 10.5px; padding: 1px 7px; vertical-align: 1px; }
+.ra-acts { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 16px; position: sticky; bottom: 0; background: var(--card); padding: 10px 0; }
+
+/* linking a QueroCura account, primary doctor */
+.la-scopes { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 6px; margin-bottom: 12px; }
+.rec-doc { margin-top: 2px; }
+.hms-search { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; } .hms-search .input { flex: 1 1 260px; }

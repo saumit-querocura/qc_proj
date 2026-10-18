@@ -1,6 +1,17 @@
 (function () {
   "use strict";
-  var P = QCPage, esc = P.esc, api = P.api;
+  var P = QCPage, esc = P.esc;
+  var MEMO = {}, MEMO_MS = 4000;
+  function api(path, opts) {
+    var m = ((opts && opts.method) || "GET").toUpperCase();
+    if (m !== "GET") { MEMO = {}; return P.api(path, opts); }
+    var hit = MEMO[path], now = Date.now();
+    if (hit && now - hit.t < MEMO_MS) return hit.p.then(function (r) { return JSON.parse(JSON.stringify(r)); });
+    var p = P.api(path, opts).then(function (r) { if (!r || !r.ok) delete MEMO[path]; return r; });
+    MEMO[path] = { t: now, p: p };
+    if (Object.keys(MEMO).length > 120) MEMO = {};
+    return p.then(function (r) { return JSON.parse(JSON.stringify(r)); });
+  }
   function el(id) { return document.getElementById(id); }
   function show(node, on) { if (node) node.hidden = !on; }
   function say(node, text, kind) { node.className = "msg" + (kind ? " " + kind : ""); node.textContent = text || ""; }
@@ -128,7 +139,7 @@
       if (!r.ok) { goPublic(); return; }
       ME = r; PERMS = r.perms || []; IDLE_MS = (r.idle_seconds || 1200) * 1000; lastActive = Date.now();
       show(el("public"), false); show(el("portal"), true); show(el("pub-nav"), false); show(el("app-nav"), true);
-      el("who").textContent = r.staff.name + " · " + r.staff.roles.join(", ");
+      el("who").textContent = r.staff.name + " · " + r.staff.roles.map(function (k) { return (r.role_labels || {})[k] || k; }).join(", ");
       if (location.hash === "#setup") { tabNow = "setup"; try { history.replaceState(null, "", location.pathname); } catch (e) {} }
       render();
     });
@@ -552,20 +563,25 @@
   /* ---------- team ---------- */
   function loadTeam() {
     var box = el("tab-team"); box.innerHTML = '<div class="empty">Loading…</div>';
-    api("/hospital/team").then(function (r) {
+    var A = window.QCAccess;
+    Promise.all([api("/hospital/team"), A ? A.load() : Promise.resolve(null)]).then(function (rs) {
+      var r = rs[0], RB = rs[1];
       if (guard(r)) return;
       var roleDesc = r.roles || {};
+      var lab = function (k) { return A ? A.label(k) : k; };
       var h = '<div class="three"><div class="card" style="grid-column:1/-1"><h2>Your team</h2><p class="sub">Give each person the smallest role that lets them do their job.</p><div class="scroll-x"><table class="t"><thead><tr><th>Person</th><th>Roles</th><th>Status</th><th></th></tr></thead><tbody>' +
         (r.team || []).map(function (t) {
-          return '<tr><td><b>' + esc(t.name) + '</b><br><span class="mini">' + esc(t.email) + '</span></td><td>' + t.roles.map(function (x) { return '<span class="tag teal">' + esc(x) + "</span>"; }).join(" ") + '</td><td>' + esc(t.status) + (t.mfa ? ' <span class="tag">2-step on</span>' : "") + '</td><td><div class="row-actions">' +
-            '<button class="btn btn-sm" data-roles="' + esc(t.id) + '" data-cur="' + esc(t.roles.join(",")) + '" type="button">Change roles</button>' +
+          return '<tr><td><b>' + esc(t.name) + '</b><br><span class="mini">' + esc(t.email) + '</span></td><td>' + t.roles.map(function (x) { return '<span class="tag teal">' + esc(lab(x)) + "</span>"; }).join(" ") + '</td><td>' + esc(t.status) + (t.mfa ? ' <span class="tag">2-step on</span>' : "") + '</td><td><div class="row-actions">' +
+            '<button class="btn btn-sm" data-roles="' + esc(t.id) + '" data-name="' + esc(t.name) + '" data-cur="' + esc(t.roles.join(",")) + '" type="button">Change roles</button>' +
             (t.status === "disabled" ? '<button class="btn btn-sm" data-enable="' + esc(t.id) + '" type="button">Re-enable</button>' : '<button class="btn btn-sm btn-danger" data-disable="' + esc(t.id) + '" type="button">Disable</button>') +
             (t.mfa ? '<button class="btn btn-sm btn-ghost" data-mfareset="' + esc(t.id) + '" type="button">Reset 2-step</button>' : "") + '</div></td></tr>';
         }).join("") + '</tbody></table></div></div>' +
         '<div class="card"><h2>Invite someone</h2><form id="inv-form" novalidate><div class="field"><label for="v-name">Name</label><input class="input" id="v-name" maxlength="120"></div><div class="field"><label for="v-email">Work e-mail</label><input class="input" id="v-email" type="email"></div>' +
-        '<div class="lbl">Roles</div>' + Object.keys(roleDesc).map(function (k) { return '<label class="scope"><input type="checkbox" data-role="' + k + '"' + (k === "nurse" ? " checked" : "") + '><span>' + esc(k) + '<br><span class="mini">' + esc(roleDesc[k]) + '</span></span></label>'; }).join("") +
+        '<div class="lbl">Roles</div>' + (A && RB ? A.roleChecks(["nurse"]) : Object.keys(roleDesc).map(function (k) { return '<label class="scope"><input type="checkbox" data-role="' + k + '"' + (k === "nurse" ? " checked" : "") + '><span>' + esc(k) + '<br><span class="mini">' + esc(roleDesc[k]) + '</span></span></label>'; }).join("")) +
         '<div style="margin-top:12px"><button class="btn btn-primary" type="submit">Send invitation</button></div><div class="msg" id="v-msg" role="status"></div></form></div>' +
         '<div class="card"><h2>Organisation details</h2><form id="org-form" novalidate><div class="field"><label>Phone</label><input class="input" id="o-phone" value="' + esc(ME.org.phone || "") + '"></div><div class="field"><label>City</label><input class="input" id="o-city" value="' + esc(ME.org.city || "") + '"></div><div class="field"><label>State</label><input class="input" id="o-state" value="' + esc(ME.org.state || "") + '"></div><div class="field"><label>Website</label><input class="input" id="o-web" value="' + esc(ME.org.website || "") + '"></div><div class="field"><label>ABDM facility ID</label><input class="input" id="o-abdm" value="' + esc(ME.org.abdm_facility_id || "") + '"></div><button class="btn" type="submit">Save</button><div class="msg" id="o-msg"></div></form></div></div>';
+      if (A && RB && RB.catalog) h = h.replace('<div class="card"><h2>Invite someone</h2>', '<div class="card ra-card" style="grid-column:1/-1"><div class="card-h"><h2>Roles and permissions</h2><button class="btn btn-sm btn-primary" type="button" data-rbac>Edit what roles can do</button></div><p class="sub">Change what a role can do, or make your own roles such as "Senior receptionist". It applies to everyone with that role straight away.</p><div class="ra-sum">' +
+        RB.roles.map(function (x) { return '<button type="button" class="ra-chip" data-rbac="' + esc(x.key) + '"><b>' + esc(x.label) + "</b><span>" + x.perms.length + " permissions · " + x.people + (x.people === 1 ? " person" : " people") + (x.builtin ? (x.changed ? " · changed" : "") : " · custom") + "</span></button>"; }).join("") + '</div></div><div class="card"><h2>Invite someone</h2>');
       box.innerHTML = h;
       box.querySelectorAll(".scope").forEach(function (l) { var i = l.querySelector("input"); l.classList.toggle("on", i && i.checked); });
       box.addEventListener("change", function (e) { var l = e.target.closest && e.target.closest(".scope"); if (l) l.classList.toggle("on", e.target.checked); });
@@ -591,6 +607,8 @@
     if ((t = e.target.closest("[data-disable]"))) { if (!window.confirm("Disable this person? They're signed out straight away.")) return; api("/hospital/team/" + t.getAttribute("data-disable"), { method: "POST", body: { disabled: true } }).then(function (r) { P.toast(r.message, r.ok ? "" : "err"); loadTeam(); }); }
     else if ((t = e.target.closest("[data-enable]"))) api("/hospital/team/" + t.getAttribute("data-enable"), { method: "POST", body: { disabled: false } }).then(function (r) { P.toast(r.message, r.ok ? "" : "err"); loadTeam(); });
     else if ((t = e.target.closest("[data-mfareset]"))) { if (!window.confirm("They'll have to set up their authenticator again. Continue?")) return; api("/hospital/mfa/reset", { method: "POST", body: { staff_id: t.getAttribute("data-mfareset") } }).then(function (r) { P.toast(r.message, r.ok ? "" : "err"); loadTeam(); }); }
+    else if ((t = e.target.closest("[data-rbac]")) && window.QCAccess) window.QCAccess.editor(t.getAttribute("data-rbac") || "");
+    else if ((t = e.target.closest("[data-roles]")) && window.QCAccess) window.QCAccess.rolePicker(t.getAttribute("data-roles"), t.getAttribute("data-name") || "", t.getAttribute("data-cur").split(","), loadTeam);
     else if ((t = e.target.closest("[data-roles]"))) {
       var cur = t.getAttribute("data-cur").split(","), all = Object.keys((OPTS && OPTS.roles) || { admin: 1, doctor: 1, nurse: 1, frontdesk: 1, lab: 1, manager: 1 }), pick = window.prompt("Roles (comma separated): " + all.join(", "), cur.join(", "));
       if (pick === null) return;

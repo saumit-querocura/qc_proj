@@ -264,12 +264,13 @@
   }
 
   /* ================================================================ billing */
-  var BL = { view: "today" };
+  var BL = { view: "desk" };
   function loadBilling() {
     var box = el("tab-billing");
     box.innerHTML = '<div class="empty">Loading bills…</div>';
     var q = BL.view === "today" ? "?day=" + M().today() : BL.view === "unpaid" ? "?status=unpaid" : BL.view === "draft" ? "?status=draft" : "";
     if (BL.view === "day") return dayClose(box);
+    if (BL.view === "desk") return payDesk(box);
     if (BL.view === "prices") return priceList(box);
     api("/hospital/billing" + q).then(function (r) {
       if (H().guard(r)) return;
@@ -284,7 +285,7 @@
   function head() {
     return '<div class="hms-head"><div><h2>Billing</h2><p class="sub">Bills fill themselves from the visit: consultation, tests, bed-days and medicines. Add anything else, take payment, print the receipt.</p></div>' +
       '<button class="btn btn-primary" type="button" data-newbill>+ New bill</button></div><div class="ops-bar"><div class="chips">' +
-      [["today", "Today"], ["draft", "Drafts"], ["unpaid", "Unpaid"], ["all", "All"], ["day", "Day close"]].concat(can("billing_admin") ? [["prices", "Price list"]] : []).map(function (v) { return '<button type="button" class="chipbtn' + (BL.view === v[0] ? " on" : "") + '" data-bv="' + v[0] + '">' + v[1] + "</button>"; }).join("") + "</div></div>";
+      [["desk", "Payments desk"], ["today", "Today"], ["draft", "Drafts"], ["unpaid", "Unpaid"], ["all", "All"], ["day", "Day close"]].concat(can("billing_admin") || can("prices") ? [["prices", "Price list"]] : []).map(function (v) { return '<button type="button" class="chipbtn' + (BL.view === v[0] ? " on" : "") + '" data-bv="' + v[0] + '">' + v[1] + "</button>"; }).join("") + "</div></div>";
   }
   function wire(box) {
     box.onclick = function (e) {
@@ -299,6 +300,53 @@
       if (e.target.closest("[data-starter]")) api("/hospital/billing/prices", { method: "POST", body: { starter: true } }).then(function (r) { M().reply(r, loadBilling); });
       if (e.target.closest("[data-addprice]")) return priceForm({});
       if ((t = e.target.closest("[data-price]"))) return priceForm(JSON.parse(t.getAttribute("data-price")));
+    };
+  }
+  /* the payments desk: who owes money, visits still to bill, today's takings */
+  function payDesk(box) {
+    api("/hospital/billing/desk").then(function (r) {
+      if (H().guard(r)) return;
+      if (!r.ok) { box.innerHTML = head() + '<div class="notice bad">' + esc(r.message || "Couldn't load the desk.") + "</div>"; return; }
+      var t = r.today;
+      var h = head() + '<div class="pd-kpis"><div class="pd-k big"><span>Collected today</span><b>' + M().money(t.collected) + "</b><small>" + t.receipts + " receipt" + (t.receipts === 1 ? "" : "s") + "</small></div>" +
+        t.by_mode.map(function (m) { return '<div class="pd-k"><span>' + esc(m.label) + "</span><b>" + M().money(m.amount) + "</b></div>"; }).join("") +
+        '<div class="pd-k warn"><span>Outstanding</span><b>' + M().money(r.outstanding) + "</b><small>" + r.unpaid.length + " bill" + (r.unpaid.length === 1 ? "" : "s") + "</small></div></div>";
+      h += '<div class="pd-grid"><div class="card"><div class="card-h"><h2>Waiting for payment</h2></div>' + (r.unpaid.length ? r.unpaid.map(function (x) {
+        return '<div class="pd-row"><button type="button" class="link grow" data-bill="' + esc(x.id) + '"><b>' + esc(x.patient_name || "Patient") + "</b><small>" + esc(x.number || "") + " · " + esc(x.mrn || "") + (x.payer && x.payer !== "self" ? " · " + esc(x.payer) : "") + "</small></button>" +
+          '<span class="pd-due">' + M().money(x.due) + '</span><button type="button" class="btn btn-sm btn-primary" data-collect=\'' + esc(JSON.stringify({ id: x.id, due: x.due, name: x.patient_name, number: x.number })) + "'>Collect</button></div>";
+      }).join("") : '<div class="mini">Nobody owes anything. 🎉</div>') + "</div>";
+      h += '<div class="card"><div class="card-h"><h2>Today\'s visits to bill</h2></div>' + (r.unbilled.length ? r.unbilled.map(function (e) {
+        return '<div class="pd-row"><span class="grow"><b>' + esc(e.patient_name || "Patient") + "</b><small>" + esc(e.kind) + (e.doctor ? " · " + esc(e.doctor) : "") + " · " + esc(M().dt(e.created_ts)) + (e.status !== "closed" ? " · in progress" : "") + "</small></span>" +
+          '<button type="button" class="btn btn-sm" data-billvisit="' + esc(e.encounter_id) + '">Make bill</button></div>';
+      }).join("") : '<div class="mini">Every visit today has a bill.</div>') +
+        (r.drafts.length ? '<div class="ops-h" style="margin-top:14px">Drafts</div>' + r.drafts.slice(0, 12).map(function (x) {
+          return '<div class="pd-row"><button type="button" class="link grow" data-bill="' + esc(x.id) + '"><b>' + esc(x.patient_name || "Patient") + "</b><small>" + esc(M().dt(x.created_ts)) + (x.unpriced ? " · " + x.unpriced + " item(s) need a price" : "") + "</small></button><span class=\"pd-due\">" + M().money(x.total) + "</span></div>";
+        }).join("") : "") + "</div></div>";
+      if (r.can_price) h += '<p class="mini">You can change prices under <button type="button" class="link" data-bv="prices">Price list</button>, including a consultation fee for each doctor.</p>';
+      box.innerHTML = h;
+      wire(box);
+      box.addEventListener("click", function (e) {
+        var t;
+        if ((t = e.target.closest("[data-billvisit]"))) return forVisit(t.getAttribute("data-billvisit"));
+        if ((t = e.target.closest("[data-collect]"))) return collect(JSON.parse(t.getAttribute("data-collect")), r.modes);
+      });
+    });
+  }
+  function collect(x, modes) {
+    var mode = "cash";
+    var b = M().modal('<h2 id="ops-title">Collect payment</h2><p class="sub">' + esc(x.name || "") + " · " + esc(x.number || "") + " · due <b>" + M().money(x.due) + "</b></p>" +
+      '<div class="field"><label for="cp-a">Amount (₹)</label><input class="input" id="cp-a" type="number" min="1" step="0.01" value="' + (x.due / 100) + '"></div>' +
+      '<div class="lbl">Paid by</div><div class="chips" id="cp-m">' + Object.keys(modes).map(function (k) { return '<button type="button" class="chipbtn' + (k === mode ? " on" : "") + '" data-mode="' + k + '">' + esc(modes[k]) + "</button>"; }).join("") + "</div>" +
+      '<div class="field" style="margin-top:10px"><label for="cp-r">Reference (UPI or card ref., cheque no.)</label><input class="input" id="cp-r" maxlength="60"></div>' +
+      '<button class="btn btn-primary" type="button" data-pay>Record payment</button><div class="msg" id="cp-msg"></div>', false, 2);
+    b.onclick = function (e) {
+      var t;
+      if ((t = e.target.closest("[data-mode]"))) { mode = t.getAttribute("data-mode"); [].forEach.call(b.querySelectorAll("[data-mode]"), function (c) { c.classList.toggle("on", c === t); }); return; }
+      if (!e.target.closest("[data-pay]")) return;
+      api("/hospital/billing/" + encodeURIComponent(x.id), { method: "POST", body: { action: "pay", amount: el("cp-a").value, mode: mode, reference: el("cp-r").value } }).then(function (r) {
+        if (!r.ok) return H().say(el("cp-msg"), r.message, "err");
+        toast(r.message + (r.receipt ? " Receipt " + r.receipt + "." : "")); M().close(2); loadBilling();
+      });
     };
   }
   function newBill(p) {
