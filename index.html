@@ -565,10 +565,39 @@ html.calm .reveal { opacity: 1; transform: none; }
 html.calm .msg, html.calm .chip { opacity: 1; transform: none; }
 html[data-lang="hi"] .h-xl { letter-spacing: -0.01em; line-height: 1.2; }
 @media print { .nav, .announce, #to-top, #progress, .stage, .marquee { display: none !important; } .reveal { opacity: 1; transform: none; } }
+
+/* ============ your body, in 3D ============ */
+.b3 { position: relative; overflow: hidden; min-height: min(92vh, 860px); display: flex; align-items: center; color: #f6f1e7; isolation: isolate;
+  background: radial-gradient(1100px 620px at 74% 45%, rgba(79,216,198,.15), transparent 60%), radial-gradient(800px 520px at 70% 90%, rgba(255,107,138,.12), transparent 60%),
+  radial-gradient(700px 500px at 8% 0%, rgba(143,134,240,.16), transparent 60%), linear-gradient(170deg, #15133a 0%, #0b0a1f 72%); }
+.b3-stage { position: absolute; inset: 0; z-index: 0; opacity: 0; transition: opacity 1.6s ease; } .b3-stage.on { opacity: 1; }
+.b3-stage canvas { display: block; width: 100% !important; height: 100% !important; }
+.b3-veil { position: absolute; inset: 0; z-index: 0; pointer-events: none; background: linear-gradient(90deg, rgba(11,10,31,.85) 0%, rgba(11,10,31,.4) 42%, transparent 66%), linear-gradient(0deg, #0b0a1f 0%, transparent 18%), linear-gradient(180deg, #0b0a1f 0%, transparent 14%); }
+@media (max-width: 860px) { .b3-veil { background: linear-gradient(0deg, #0b0a1f 6%, rgba(11,10,31,.8) 52%, rgba(11,10,31,.25) 100%); } .b3 { align-items: flex-end; padding-top: 46vh; } }
+.b3-in { position: relative; z-index: 1; width: 100%; padding-top: clamp(60px, 9vw, 110px); padding-bottom: clamp(60px, 9vw, 110px); }
+.b3-copy { max-width: 600px; }
+.b3-eyebrow { display: inline-flex; align-items: center; gap: 10px; font: 800 12px/1 var(--body); letter-spacing: .14em; text-transform: uppercase; color: #e3c88f; margin-bottom: 20px; }
+.b3-eyebrow i { width: 34px; height: 1px; background: linear-gradient(90deg, transparent, #e3c88f); }
+.b3-h { color: #fff; font-size: clamp(34px, 5.4vw, 64px); line-height: 1.04; letter-spacing: -0.035em; margin-bottom: 20px; }
+.b3-h em { font-style: normal; background: linear-gradient(100deg, #8ff0e2 0%, #e3c88f 55%, #ff9ec4 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.b3-lead { color: #cfcbe6; font-size: clamp(16px, 1.6vw, 19px); line-height: 1.7; margin: 0 0 26px; }
+.b3-cap { min-height: 2.6em; margin: 0 0 14px; font: 700 clamp(17px, 1.8vw, 21px)/1.35 var(--display); color: #f3e3bd; text-shadow: 0 2px 22px rgba(0,0,0,.6); }
+.b3-cap.swap { animation: b3cap .6s ease both; } @keyframes b3cap { from { opacity: 0; transform: translateY(8px); filter: blur(4px); } to { opacity: 1; transform: none; filter: none; } }
+.b3-dock { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 30px; }
+.b3-dock button { display: inline-flex; align-items: center; gap: 8px; padding: 9px 14px; border-radius: 999px; border: 1px solid rgba(246,241,231,.16); background: rgba(255,255,255,.05); color: #ecebf6; font: 700 13.5px/1 var(--body); cursor: pointer; backdrop-filter: blur(10px); transition: background .25s ease, border-color .25s ease, transform .25s ease; }
+.b3-dock button:hover { transform: translateY(-2px); border-color: rgba(227,200,143,.5); }
+.b3-dock button.on { background: linear-gradient(135deg, rgba(240,220,174,.28), rgba(201,169,106,.14)); border-color: #e3c88f; box-shadow: 0 0 0 1px rgba(227,200,143,.35), 0 12px 30px -16px rgba(227,200,143,.9); }
+.b3-dock button span { font-size: 16px; }
+.b3-cta { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+.b3-btn { display: inline-flex; align-items: center; gap: 10px; padding: 15px 28px; border-radius: 999px; font: 800 15px/1 var(--body); color: #1a1530; text-decoration: none;
+  background: linear-gradient(135deg, #f0dcae 0%, #e3c88f 45%, #c9a96a 100%); box-shadow: 0 18px 40px -18px rgba(227,200,143,.9), inset 0 1px 0 rgba(255,255,255,.5); transition: transform .25s ease; }
+.b3-btn:hover { transform: translateY(-2px); color: #1a1530; }
+.b3-hint { font: 600 12.5px/1.4 var(--body); color: #8f8bb0; }
+@media (prefers-reduced-motion: reduce) { .b3-cap.swap { animation: none; } }
 </style>
 <script src="assets/js/home-0.js?v=c8ffd1a2"></script>
 <script src="assets/qc-csp.js?v=77f89cc2"></script>
-<script src="assets/qc-i18n.js?v=e873079a"></script>
+<script src="assets/qc-i18n.js?v=8af0d4b9"></script>
 </head>
 <body>
 <div id="progress" aria-hidden="true"></div>
@@ -684,6 +713,29 @@ html[data-lang="hi"] .h-xl { letter-spacing: -0.01em; line-height: 1.2; }
       <div class="float f-brief" data-depth="30">
         <div class="brief-row"><div class="qr" aria-hidden="true"><svg viewBox="0 0 21 21" id="qr-small"></svg></div><div><div class="f-k">Doctor brief</div><div class="f-v">Opened by your doctor</div><div class="f-s f-ok">✓ 2 minutes ago</div></div></div>
       </div>
+    </div>
+  </div>
+</section>
+
+<!-- YOUR BODY, IN 3D -->
+<section class="b3" id="body3d" aria-labelledby="b3-title">
+  <div class="b3-stage" data-qc3d-hero data-set="patient" data-side="right" aria-hidden="true"></div>
+  <div class="b3-veil" aria-hidden="true"></div>
+  <div class="wrap b3-in">
+    <div class="b3-copy">
+      <div class="b3-eyebrow"><i></i>Your body, beautifully understood</div>
+      <h2 class="b3-h" id="b3-title">Everything QueroCura knows about your health, <em>brought to life.</em></h2>
+      <p class="b3-lead">Your heart, your breathing, how you feel, your medicines and your records: QueroCura brings them together, finds the patterns and keeps them yours.</p>
+      <p class="b3-cap" data-shape-cap aria-live="polite">Your heart: blood pressure and pulse, understood over time</p>
+      <div class="b3-dock" data-shapes role="group" aria-label="Choose what to look at">
+        <button type="button" data-shape="0" class="on"><span aria-hidden="true">❤️</span>Heart</button>
+        <button type="button" data-shape="1"><span aria-hidden="true">🫁</span>Lungs</button>
+        <button type="button" data-shape="2"><span aria-hidden="true">🧠</span>Symptoms</button>
+        <button type="button" data-shape="3"><span aria-hidden="true">🧬</span>Your story</button>
+        <button type="button" data-shape="4"><span aria-hidden="true">💊</span>Medicines</button>
+        <button type="button" data-shape="5"><span aria-hidden="true">🌐</span>Sharing</button>
+      </div>
+      <div class="b3-cta"><a href="register/" class="b3-btn">Start free <span aria-hidden="true">→</span></a><span class="b3-hint">Move through it · tap to send a pulse</span></div>
     </div>
   </div>
 </section>
@@ -1053,6 +1105,7 @@ html[data-lang="hi"] .h-xl { letter-spacing: -0.01em; line-height: 1.2; }
 
 <button id="to-top" type="button" aria-label="Back to top">↑</button>
 
+<script type="module" src="assets/js/hospital-hero3d.js?v=21fff83a"></script>
 <script src="assets/js/home-2.js?v=78a62fee"></script>
 <!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "cf10cc866a9f4ffeb50a6ce35a72e773"}'></script><!-- End Cloudflare Web Analytics -->
 </body>

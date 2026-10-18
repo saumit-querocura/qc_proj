@@ -97,7 +97,19 @@ function pointMaterial(THREE, base, px) {
 const debug = (name, api) => { if (/[?&]qc3d=debug/.test(location.search)) (window.__qc3d = window.__qc3d || {})[name] = api; };
 
 /* ================================================================================================ 1. the hero */
-whenVisible(document.getElementById("hero3d"), (THREE, mount) => {
+/* Thousands of points that re-form into the shapes of care.  Each shape has its own life: the heart flashes with
+ * each beat, the lungs glow in and out with each breath, the brain's neurons fire.  The cursor is a gravity well that
+ * pulls nearby points into a spinning vortex; a click sends a shockwave through the shape and throws sparks.
+ * Which shapes, in which order and with which captions comes from the mount's data-set ("hospital" or "patient"). */
+const SETS = {
+  hospital: [["heart", "Every heartbeat"], ["dna", "Every patient's story"], ["cross", "Every department"], ["brain", "Every decision"],
+    ["lungs", "Every breath"], ["capsule", "Every prescription"], ["globe", "One connected hospital"]],
+  patient: [["heart", "Your heart: blood pressure and pulse, understood over time"], ["lungs", "Your breathing and oxygen, in clear trends"],
+    ["brain", "A symptom check that thinks like a doctor"], ["dna", "Your whole health story, in one place"],
+    ["capsule", "Your medicines and reminders, never advice"], ["globe", "Shared with your doctors only when you say yes"]],
+};
+
+function heroScene(THREE, mount) {
   const W = () => mount.clientWidth || 1, H = () => mount.clientHeight || 1;
   const R = renderer(THREE, mount);
   const scene = new THREE.Scene();
@@ -106,91 +118,154 @@ whenVisible(document.getElementById("hero3d"), (THREE, mount) => {
   const world = new THREE.Group();
   scene.add(world);
   const C = (h) => new THREE.Color(h);
-  const GOLD = C("#e3c88f"), TEAL = C("#4fd8c6"), IVORY = C("#f6f1e7"), ROSE = C("#ff6b8a"), CRIMSON = C("#e8395f"), VIOLET = C("#8f86f0"), SKY = C("#6ec3ff");
+  const GOLD = C("#e3c88f"), TEAL = C("#4fd8c6"), IVORY = C("#f6f1e7"), ROSE = C("#ff6b8a"), CRIMSON = C("#e8395f"), VIOLET = C("#8f86f0"), SKY = C("#6ec3ff"), PINK = C("#ff9ec4");
   const N = small ? 3800 : 7000;
   const rnd = Math.random;
+  const gauss = () => { let u = 0; for (let i = 0; i < 4; i++) u += rnd(); return u / 2 - 1; };
 
-  /* ---- the shapes: each gives N positions and N colours ---- */
-  function heart() {
-    const p = new Float32Array(N * 3), c = new Float32Array(N * 3);
-    for (let i = 0; i < N; i++) {
-      const t = rnd() * Math.PI * 2;
-      const x = 16 * Math.pow(Math.sin(t), 3), y = 13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t);
-      const shell = i % 3 !== 0, f = shell ? 0.96 + rnd() * 0.06 : Math.sqrt(rnd());
-      const k = 0.135 * f, depth = Math.sqrt(Math.max(0, 1 - f * f)) * 1.15 + (shell ? 0.05 : 0);
-      p.set([x * k, y * k + 0.25, (rnd() * 2 - 1) * depth], i * 3);
-      const col = CRIMSON.clone().lerp(ROSE, rnd()).lerp(GOLD, shell ? rnd() * 0.25 : 0.05);
-      c.set([col.r, col.g, col.b], i * 3);
-    }
-    return { p, c, beat: 1, spin: 0.35 };
-  }
-  function helix() {
-    const p = new Float32Array(N * 3), c = new Float32Array(N * 3);
-    const turns = 2.2, Hh = 4.5, r = 1.0;
-    for (let i = 0; i < N; i++) {
-      let col;
-      if (i % 4 === 0) {                                       // base pairs: the rungs of the ladder
-        const yy = Math.round(((rnd() - 0.5) * Hh) / (Hh / 34)) * (Hh / 34), aa = (yy / Hh) * turns * Math.PI * 2, u = rnd();
-        p.set([Math.cos(aa) * r * (1 - 2 * u), yy, Math.sin(aa) * r * (1 - 2 * u)], i * 3);
-        col = (u < 0.5 ? GOLD : IVORY).clone();
-      } else {                                                 // the two strands
-        const y = (rnd() - 0.5) * Hh, a = (y / Hh) * turns * Math.PI * 2, s = i % 2 ? 0 : Math.PI;
-        p.set([Math.cos(a + s) * r + (rnd() - 0.5) * 0.06, y, Math.sin(a + s) * r + (rnd() - 0.5) * 0.06], i * 3);
-        col = (s ? TEAL : VIOLET).clone().lerp(SKY, rnd() * 0.3);
+  /* ---- shapes: each gives N positions, N colours and a "life" (1 heartbeat, 2 breath, 3 neurons, 0 none) ---- */
+  const MAKE = {
+    heart() {
+      const p = new Float32Array(N * 3), c = new Float32Array(N * 3);
+      for (let i = 0; i < N; i++) {
+        const t = rnd() * Math.PI * 2;
+        const x = 16 * Math.pow(Math.sin(t), 3), y = 13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t);
+        const shell = i % 3 !== 0, f = shell ? 0.96 + rnd() * 0.06 : Math.sqrt(rnd());
+        const k = 0.135 * f, depth = Math.sqrt(Math.max(0, 1 - f * f)) * 1.15 + (shell ? 0.05 : 0);
+        p.set([x * k, y * k + 0.25, (rnd() * 2 - 1) * depth], i * 3);
+        const col = CRIMSON.clone().lerp(ROSE, rnd()).lerp(GOLD, shell ? rnd() * 0.25 : 0.05);
+        c.set([col.r, col.g, col.b], i * 3);
       }
-      c.set([col.r, col.g, col.b], i * 3);
-    }
-    return { p, c, spin: 1.6 };
-  }
-  function cross() {
-    // the medical cross: a plus shape, points mostly on its front and back faces with a little depth between
-    const p = new Float32Array(N * 3), c = new Float32Array(N * 3), L = 1.75, T = 0.5, Z = 0.32;
-    for (let i = 0; i < N; i++) {
-      let x, y;
-      do {
-        if (rnd() < 0.5) { x = (rnd() * 2 - 1) * T; y = (rnd() * 2 - 1) * L; }
-        else { x = (rnd() * 2 - 1) * L; y = (rnd() * 2 - 1) * T; if (Math.abs(x) < T) continue; }
-        break;
-      } while (true);
-      const edge = i % 7 === 0;                                // outline points make the edges crisp
-      if (edge) { if (Math.abs(x) > T) y = Math.sign(y || 1) * T; else x = Math.sign(x || 1) * T; if (Math.abs(y) > L - 0.02) y = Math.sign(y) * L; }
-      const z = i % 3 ? Math.sign(rnd() - 0.5) * Z : (rnd() * 2 - 1) * Z;
-      p.set([x, y, z], i * 3);
-      const col = (edge ? IVORY : TEAL).clone().lerp(IVORY, rnd() * 0.35);
-      c.set([col.r, col.g, col.b], i * 3);
-    }
-    return { p, c, spin: 0.5 };
-  }
-  function capsule() {
-    const p = new Float32Array(N * 3), c = new Float32Array(N * 3), r = 0.95, half = 1.25, a = -0.75;
-    for (let i = 0; i < N; i++) {
-      const y = (rnd() * 2 - 1) * (half + r), th = rnd() * Math.PI * 2;
-      let rr = r;
-      if (Math.abs(y) > half) { const d = Math.abs(y) - half; rr = Math.sqrt(Math.max(0, r * r - d * d)); }
-      rr *= i % 4 ? 1 : Math.sqrt(rnd());
-      const x = Math.cos(th) * rr, z = Math.sin(th) * rr;
-      p.set([x * Math.cos(a) - y * Math.sin(a), x * Math.sin(a) + y * Math.cos(a), z], i * 3);
-      const col = (y > 0 ? GOLD : IVORY).clone().lerp(y > 0 ? ROSE : TEAL, rnd() * 0.15);
-      c.set([col.r, col.g, col.b], i * 3);
-    }
-    return { p, c, spin: 0.8 };
-  }
-  function globe() {
-    const p = new Float32Array(N * 3), c = new Float32Array(N * 3), Rr = 2.35, ga = Math.PI * (3 - Math.sqrt(5));
-    for (let i = 0; i < N; i++) {
-      const y = 1 - (i / (N - 1)) * 2, r = Math.sqrt(1 - y * y), th = ga * i, j = 1 + (rnd() - 0.5) * 0.04;
-      p.set([Math.cos(th) * r * Rr * j, y * Rr * j, Math.sin(th) * r * Rr * j], i * 3);
-      const col = TEAL.clone().lerp(GOLD, (y + 1) / 2).lerp(IVORY, rnd() * 0.25);
-      c.set([col.r, col.g, col.b], i * 3);
-    }
-    return { p, c, spin: 1 };
-  }
-  const SHAPES = [
-    { label: "Every heartbeat", make: heart }, { label: "Every patient's story", make: helix }, { label: "Every department", make: cross },
-    { label: "Every prescription", make: capsule }, { label: "One connected hospital", make: globe },
-  ].map((s) => Object.assign(s, s.make()));
+      return { p, c, life: 1, sway: 1 };
+    },
+    dna() {
+      const p = new Float32Array(N * 3), c = new Float32Array(N * 3), turns = 2.2, Hh = 4.5, r = 1.0;
+      for (let i = 0; i < N; i++) {
+        let col;
+        if (i % 4 === 0) {
+          const yy = Math.round(((rnd() - 0.5) * Hh) / (Hh / 30)) * (Hh / 30), aa = (yy / Hh) * turns * Math.PI * 2, u = rnd();
+          p.set([Math.cos(aa) * r * (1 - 2 * u), yy, Math.sin(aa) * r * (1 - 2 * u)], i * 3);
+          col = (u < 0.5 ? GOLD : IVORY).clone();
+        } else {
+          const y = (rnd() - 0.5) * Hh, a = (y / Hh) * turns * Math.PI * 2, s = i % 2 ? 0 : Math.PI;
+          p.set([Math.cos(a + s) * r + (rnd() - 0.5) * 0.06, y, Math.sin(a + s) * r + (rnd() - 0.5) * 0.06], i * 3);
+          col = (s ? TEAL : VIOLET).clone().lerp(SKY, rnd() * 0.3);
+        }
+        c.set([col.r, col.g, col.b], i * 3);
+      }
+      return { p, c, life: 3, spin: 1.6 };
+    },
+    cross() {
+      const p = new Float32Array(N * 3), c = new Float32Array(N * 3), L = 1.75, T = 0.5, Z = 0.32;
+      for (let i = 0; i < N; i++) {
+        let x, y;
+        for (;;) {
+          if (rnd() < 0.5) { x = (rnd() * 2 - 1) * T; y = (rnd() * 2 - 1) * L; break; }
+          x = (rnd() * 2 - 1) * L; y = (rnd() * 2 - 1) * T; if (Math.abs(x) >= T) break;
+        }
+        const edge = i % 7 === 0;
+        if (edge) { if (Math.abs(x) > T) y = Math.sign(y || 1) * T; else x = Math.sign(x || 1) * T; }
+        p.set([x, y, i % 3 ? Math.sign(rnd() - 0.5) * Z : (rnd() * 2 - 1) * Z], i * 3);
+        const col = (edge ? IVORY : TEAL).clone().lerp(IVORY, rnd() * 0.35);
+        c.set([col.r, col.g, col.b], i * 3);
+      }
+      return { p, c, life: 0, sway: 1 };
+    },
+    brain() {
+      // two folded hemispheres, the cerebellum behind and below, and the brainstem
+      const p = new Float32Array(N * 3), c = new Float32Array(N * 3);
+      for (let i = 0; i < N; i++) {
+        const part = rnd();
+        let x, y, z, col;
+        if (part < 0.86) {
+          const side = i % 2 ? 1 : -1, th = rnd() * Math.PI * 2, ph = Math.acos(2 * rnd() - 1);
+          let ux = Math.sin(ph) * Math.cos(th), uy = Math.cos(ph), uz = Math.sin(ph) * Math.sin(th);
+          if (ux * side < 0) ux *= 0.35;                       // flatter where the hemispheres meet
+          const fold = 1 + 0.11 * Math.sin(9 * th + 5 * uy) * Math.sin(7 * ph + 3 * uz) + 0.04 * Math.sin(17 * th * ph);
+          const shell = i % 5 ? 1 : 0.6 + 0.4 * rnd();
+          x = side * 0.62 + ux * 0.95 * fold * shell; y = uy * 1.05 * fold * shell + 0.2; z = uz * 1.45 * fold * shell;
+          if (y < -0.55) y = -0.55 + (y + 0.55) * 0.3;
+          col = VIOLET.clone().lerp(PINK, (uy + 1) / 2 * 0.7).lerp(IVORY, rnd() * 0.2);
+        } else if (part < 0.95) {
+          const th = rnd() * Math.PI * 2, ph = Math.acos(2 * rnd() - 1);
+          x = Math.sin(ph) * Math.cos(th) * 0.85; y = -0.75 + Math.cos(ph) * 0.38; z = -0.95 + Math.sin(ph) * Math.sin(th) * 0.55;
+          col = PINK.clone().lerp(VIOLET, rnd() * 0.4);
+        } else {
+          const t = rnd();
+          x = (rnd() - 0.5) * 0.3; y = -0.6 - t * 1.25; z = -0.35 - t * 0.25 + (rnd() - 0.5) * 0.3;
+          col = TEAL.clone().lerp(IVORY, rnd() * 0.4);
+        }
+        p.set([x, y, z], i * 3); c.set([col.r, col.g, col.b], i * 3);
+      }
+      return { p, c, life: 3, sway: 1, face: Math.PI / 2 - 0.35 };
+    },
+    lungs() {
+      // two lobes, the trachea and a branching bronchial tree
+      const p = new Float32Array(N * 3), c = new Float32Array(N * 3);
+      const branches = [];
+      const grow = (x, y, z, dx, dy, dz, len, depth) => {
+        const ex = x + dx * len, ey = y + dy * len, ez = z + dz * len;
+        branches.push([x, y, z, ex, ey, ez, depth]);
+        if (depth < 4) {
+          const spread = 0.55;
+          grow(ex, ey, ez, dx + spread * (rnd() + 0.3) * Math.sign(dx || 1), dy - 0.2, dz + (rnd() - 0.5) * 0.6, len * 0.68, depth + 1);
+          grow(ex, ey, ez, dx * 0.3 - spread * 0.4 * Math.sign(dx || 1), dy - 0.6, dz + (rnd() - 0.5) * 0.6, len * 0.66, depth + 1);
+        }
+      };
+      grow(0, 0.95, 0, -0.55, -0.85, 0, 0.75, 1);
+      grow(0, 0.95, 0, 0.55, -0.85, 0, 0.75, 1);
+      for (let i = 0; i < N; i++) {
+        const part = rnd();
+        let x, y, z, col;
+        if (part < 0.74) {
+          const side = i % 2 ? 1 : -1, th = rnd() * Math.PI * 2, ph = Math.acos(2 * rnd() - 1), shell = i % 4 ? 1 : Math.cbrt(rnd());
+          let ux = Math.sin(ph) * Math.cos(th), uy = Math.cos(ph), uz = Math.sin(ph) * Math.sin(th);
+          if (ux * side < 0) ux *= 0.45;                        // the inner side is flatter, where the heart sits
+          const taper = uy > 0 ? 1 - uy * 0.35 : 1;               // narrower at the top
+          x = side * 1.05 + ux * 0.82 * taper * shell; y = -0.25 + uy * 1.45 * shell; z = uz * 0.72 * taper * shell;
+          col = ROSE.clone().lerp(PINK, rnd() * 0.6).lerp(IVORY, rnd() * 0.15);
+        } else if (part < 0.8) {
+          const t = rnd();
+          x = gauss() * 0.06; y = 0.95 + t * 1.25; z = gauss() * 0.06;
+          col = IVORY.clone().lerp(TEAL, rnd() * 0.4);
+        } else {
+          const b = branches[Math.floor(rnd() * branches.length)], t = rnd(), w = 0.07 / b[6];
+          x = b[0] + (b[3] - b[0]) * t + gauss() * w; y = b[1] + (b[4] - b[1]) * t + gauss() * w; z = b[2] + (b[5] - b[2]) * t + gauss() * w;
+          col = IVORY.clone().lerp(TEAL, b[6] / 5);
+        }
+        p.set([x, y, z], i * 3); c.set([col.r, col.g, col.b], i * 3);
+      }
+      return { p, c, life: 2, sway: 1 };
+    },
+    capsule() {
+      const p = new Float32Array(N * 3), c = new Float32Array(N * 3), r = 0.95, half = 1.25, a = -0.75;
+      for (let i = 0; i < N; i++) {
+        const y = (rnd() * 2 - 1) * (half + r), th = rnd() * Math.PI * 2;
+        let rr = r;
+        if (Math.abs(y) > half) { const d = Math.abs(y) - half; rr = Math.sqrt(Math.max(0, r * r - d * d)); }
+        rr *= i % 4 ? 1 : Math.sqrt(rnd());
+        const x = Math.cos(th) * rr, z = Math.sin(th) * rr;
+        p.set([x * Math.cos(a) - y * Math.sin(a), x * Math.sin(a) + y * Math.cos(a), z], i * 3);
+        const col = (y > 0 ? GOLD : IVORY).clone().lerp(y > 0 ? ROSE : TEAL, rnd() * 0.15);
+        c.set([col.r, col.g, col.b], i * 3);
+      }
+      return { p, c, life: 0, spin: 0.8 };
+    },
+    globe() {
+      const p = new Float32Array(N * 3), c = new Float32Array(N * 3), Rr = 2.35, ga = Math.PI * (3 - Math.sqrt(5));
+      for (let i = 0; i < N; i++) {
+        const y = 1 - (i / (N - 1)) * 2, r = Math.sqrt(1 - y * y), th = ga * i, j = 1 + (rnd() - 0.5) * 0.04;
+        p.set([Math.cos(th) * r * Rr * j, y * Rr * j, Math.sin(th) * r * Rr * j], i * 3);
+        const col = TEAL.clone().lerp(GOLD, (y + 1) / 2).lerp(IVORY, rnd() * 0.25);
+        c.set([col.r, col.g, col.b], i * 3);
+      }
+      return { p, c, life: 3, spin: 1 };
+    },
+  };
+  const set = SETS[mount.dataset.set] || SETS.hospital;
+  const SHAPES = set.map(([key, label]) => Object.assign({ key, label }, MAKE[key]()));
 
-  /* ---- morphing points: A -> B with a per-point delay, a swirl in between, and the heart beating ---- */
+  /* ---- morphing points ---- */
   const g = new THREE.BufferGeometry();
   const posA = new Float32Array(SHAPES[0].p), posB = new Float32Array(SHAPES[0].p), colA = new Float32Array(SHAPES[0].c), colB = new Float32Array(SHAPES[0].c);
   const size = new Float32Array(N), seed = new Float32Array(N), delay = new Float32Array(N);
@@ -198,31 +273,52 @@ whenVisible(document.getElementById("hero3d"), (THREE, mount) => {
   g.setAttribute("position", new THREE.BufferAttribute(posA, 3)); g.setAttribute("aPosB", new THREE.BufferAttribute(posB, 3));
   g.setAttribute("aColor", new THREE.BufferAttribute(colA, 3)); g.setAttribute("aColB", new THREE.BufferAttribute(colB, 3));
   g.setAttribute("aSize", new THREE.BufferAttribute(size, 1)); g.setAttribute("aSeed", new THREE.BufferAttribute(seed, 1)); g.setAttribute("aDelay", new THREE.BufferAttribute(delay, 1));
-  g.boundingSphere = new THREE.Sphere(new THREE.Vector3(), 6);
+  g.boundingSphere = new THREE.Sphere(new THREE.Vector3(), 8);
   const mat = new THREE.ShaderMaterial({
     transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
-    uniforms: { uTime: { value: 0 }, uMorph: { value: 1 }, uPx: { value: R.getPixelRatio() }, uBase: { value: small ? 6.5 : 5.6 }, uBeatA: { value: 1 }, uBeatB: { value: 1 }, uPulse: { value: 0 }, uMouse: { value: new THREE.Vector3(99, 99, 99) }, uRepel: { value: 0 }, uBurst: { value: 0 } },
+    uniforms: {
+      uTime: { value: 0 }, uMorph: { value: 1 }, uPx: { value: R.getPixelRatio() }, uBase: { value: small ? 6.5 : 5.6 },
+      uLifeA: { value: SHAPES[0].life }, uLifeB: { value: SHAPES[0].life }, uPulse: { value: 0 }, uBreath: { value: 0 },
+      uMouse: { value: new THREE.Vector3(99, 99, 99) }, uWell: { value: 0 }, uShockPos: { value: new THREE.Vector3() }, uShock: { value: -1 },
+    },
     vertexShader: `
       attribute vec3 aPosB; attribute vec3 aColor; attribute vec3 aColB; attribute float aSize; attribute float aSeed; attribute float aDelay;
-      uniform float uTime; uniform float uMorph; uniform float uPx; uniform float uBase; uniform float uBeatA; uniform float uBeatB; uniform float uPulse;
-      uniform vec3 uMouse; uniform float uRepel; uniform float uBurst;
+      uniform float uTime; uniform float uMorph; uniform float uPx; uniform float uBase; uniform float uLifeA; uniform float uLifeB;
+      uniform float uPulse; uniform float uBreath; uniform vec3 uMouse; uniform float uWell; uniform vec3 uShockPos; uniform float uShock;
       varying vec3 vColor; varying float vAlpha;
+      float life(float mode, vec3 p) {
+        if (mode < 0.5) return 0.0;
+        if (mode < 1.5) return uPulse * (0.6 + 0.4 * sin(p.y * 2.0 - uTime * 6.0));                     // a beat sweeping through
+        if (mode < 2.5) return uBreath * smoothstep(-1.8, 1.2, p.y + 1.2 * uBreath - 0.6) * 0.9;         // light filling the lungs
+        return pow(max(0.0, sin(uTime * (2.0 + aSeed * 5.0) + aSeed * 90.0)), 24.0) * 2.2;            // neurons firing
+      }
       void main() {
         float m = smoothstep(aDelay, aDelay + 0.65, uMorph);
         vec3 p = mix(position, aPosB, m);
         float mid = sin(3.14159 * m);
         p += vec3(sin(aSeed * 31.0 + uTime * 1.3), cos(aSeed * 17.0 + uTime * 1.1), sin(aSeed * 13.0 - uTime)) * 0.55 * mid;
-        // the cursor parts the points like a hand through water; a click scatters them and they find their way back
-        vec3 dm = p - uMouse; float dd = length(dm);
-        p += normalize(dm + vec3(0.0001)) * smoothstep(1.7, 0.0, dd) * 0.85 * uRepel;
-        p += normalize(p + vec3(0.0001)) * uBurst * (0.5 + aSeed * 2.6);
-        float beat = (uBeatA * (1.0 - m) + uBeatB * m) * uPulse;
-        p *= 1.0 + 0.075 * beat;
+        // gravity well: nearby points are pulled in and spun around the cursor
+        vec3 dm = p - uMouse; float dd = length(dm.xy);
+        float well = smoothstep(1.6, 0.0, dd) * uWell;
+        float ang = well * (2.6 + 1.4 * aSeed) + well * uTime * 0.6;
+        float cs = cos(ang), sn = sin(ang);
+        vec2 r2 = vec2(dm.x * cs - dm.y * sn, dm.x * sn + dm.y * cs) * (1.0 - 0.45 * well);
+        p.xy = uMouse.xy + mix(dm.xy, r2, well);
+        p.z += well * sin(aSeed * 50.0 + uTime * 3.0) * 0.35;
+        // shockwave from a click: a ring of displacement and light running outwards
+        float heat = well * 0.9;
+        if (uShock >= 0.0) {
+          vec3 ds = p - uShockPos; float d = length(ds), front = uShock * 5.5;
+          float ring = exp(-pow(d - front, 2.0) / 0.12) * (1.0 - smoothstep(0.6, 1.2, uShock));
+          p += normalize(ds + vec3(0.0001)) * ring * 0.7;
+          heat += ring * 1.6;
+        }
+        float glow = life(uLifeA, p) * (1.0 - m) + life(uLifeB, p) * m;
         vec4 mv = modelViewMatrix * vec4(p, 1.0);
         float tw = 0.72 + 0.28 * sin(uTime * (0.7 + aSeed * 1.8) + aSeed * 40.0);
-        vAlpha = tw * (0.3 + 0.7 * smoothstep(-11.5, -6.5, mv.z)) * (1.0 + 0.6 * beat);
-        vColor = mix(aColor, aColB, m);
-        gl_PointSize = aSize * uBase * uPx * (6.0 / -mv.z) * (1.0 + 0.4 * mid);
+        vAlpha = tw * (0.3 + 0.7 * smoothstep(-11.5, -6.5, mv.z)) * (1.0 + glow + heat);
+        vColor = mix(mix(aColor, aColB, m), vec3(1.0, 0.93, 0.78), clamp(heat * 0.6 + glow * 0.25, 0.0, 0.85));
+        gl_PointSize = aSize * uBase * uPx * (6.0 / -mv.z) * (1.0 + 0.4 * mid + 0.5 * heat);
         gl_Position = projectionMatrix * mv;
       }`,
     fragmentShader: `
@@ -236,23 +332,39 @@ whenVisible(document.getElementById("hero3d"), (THREE, mount) => {
   });
   world.add(new THREE.Points(g, mat));
 
+  /* sparks thrown by a click */
+  const S = 260, sg = new THREE.BufferGeometry(), sp = new Float32Array(S * 3), sc = new Float32Array(S * 3), sv = new Float32Array(S * 3), sl = new Float32Array(S);
+  sg.setAttribute("position", new THREE.BufferAttribute(sp, 3)); sg.setAttribute("aColor", new THREE.BufferAttribute(sc, 3));
+  sg.setAttribute("aSize", new THREE.BufferAttribute(new Float32Array(S).map(() => 1 + rnd() * 1.6), 1)); sg.setAttribute("aSeed", new THREE.BufferAttribute(new Float32Array(S).map(() => rnd()), 1));
+  const sparkMat = pointMaterial(THREE, 5, R.getPixelRatio());
+  const sparks = new THREE.Points(sg, sparkMat); sparks.frustumCulled = false; world.add(sparks);
+  function throwSparks(at) {
+    for (let i = 0; i < S; i++) {
+      sp[i * 3] = at.x; sp[i * 3 + 1] = at.y; sp[i * 3 + 2] = at.z;
+      const th = rnd() * Math.PI * 2, ph = Math.acos(2 * rnd() - 1), v = 1.5 + rnd() * 4.5;
+      sv[i * 3] = Math.sin(ph) * Math.cos(th) * v; sv[i * 3 + 1] = Math.cos(ph) * v + 1.2; sv[i * 3 + 2] = Math.sin(ph) * Math.sin(th) * v;
+      sl[i] = 0.7 + rnd() * 0.8;
+      const col = [GOLD, TEAL, IVORY, ROSE][i % 4]; sc[i * 3] = col.r; sc[i * 3 + 1] = col.g; sc[i * 3 + 2] = col.b;
+    }
+  }
+
   /* gold orbits and distant dust */
   const ringMat = new THREE.MeshBasicMaterial({ color: GOLD, transparent: true, opacity: 0.32, blending: THREE.AdditiveBlending, depthWrite: false });
   const ring1 = new THREE.Mesh(new THREE.TorusGeometry(3.15, 0.006, 8, 256), ringMat), ring2 = new THREE.Mesh(new THREE.TorusGeometry(3.55, 0.004, 8, 256), ringMat.clone());
   ring1.rotation.set(1.2, 0.2, 0.3); ring2.material.opacity = 0.16; ring2.rotation.set(1.75, -0.4, 0);
   const orbits = new THREE.Group(); orbits.add(ring1, ring2); scene.add(orbits);
-  const D = small ? 350 : 700, dg = new THREE.BufferGeometry(), dp = new Float32Array(D * 3), dc = new Float32Array(D * 3), ds = new Float32Array(D), dsd = new Float32Array(D);
+  const D = small ? 350 : 700, dg = new THREE.BufferGeometry(), dp = new Float32Array(D * 3), dc = new Float32Array(D * 3);
   for (let i = 0; i < D; i++) {
     const r = 7 + rnd() * 10, th = rnd() * Math.PI * 2, ph = Math.acos(2 * rnd() - 1);
     dp.set([r * Math.sin(ph) * Math.cos(th), r * Math.cos(ph) * 0.6, -Math.abs(r * Math.sin(ph) * Math.sin(th))], i * 3);
-    const col = IVORY.clone().lerp(GOLD, rnd() * 0.5); dc.set([col.r, col.g, col.b], i * 3); ds[i] = 0.6 + rnd(); dsd[i] = rnd();
+    const col = IVORY.clone().lerp(GOLD, rnd() * 0.5); dc.set([col.r, col.g, col.b], i * 3);
   }
   dg.setAttribute("position", new THREE.BufferAttribute(dp, 3)); dg.setAttribute("aColor", new THREE.BufferAttribute(dc, 3));
-  dg.setAttribute("aSize", new THREE.BufferAttribute(ds, 1)); dg.setAttribute("aSeed", new THREE.BufferAttribute(dsd, 1));
+  dg.setAttribute("aSize", new THREE.BufferAttribute(new Float32Array(D).map(() => 0.6 + rnd()), 1)); dg.setAttribute("aSeed", new THREE.BufferAttribute(new Float32Array(D).map(() => rnd()), 1));
   const dustMat = pointMaterial(THREE, 4.2, R.getPixelRatio());
   scene.add(new THREE.Points(dg, dustMat));
 
-  /* ---- the ECG: a monitor trace sweeping across the bottom of the hero ---- */
+  /* ---- the ECG ---- */
   const E = 520, eg = new THREE.BufferGeometry(), ep = new Float32Array(E * 3), ec = new Float32Array(E * 3);
   const ecgW = 22, ecgY = -2.75, ecgZ = 0.8;
   for (let i = 0; i < E; i++) ep.set([-ecgW / 2 + (i / (E - 1)) * ecgW, ecgY, ecgZ], i * 3);
@@ -264,74 +376,94 @@ whenVisible(document.getElementById("hero3d"), (THREE, mount) => {
   headG.setAttribute("aSize", new THREE.BufferAttribute(new Float32Array([5]), 1)); headG.setAttribute("aSeed", new THREE.BufferAttribute(new Float32Array([0.5]), 1));
   const headMat = pointMaterial(THREE, 6, R.getPixelRatio());
   const head = new THREE.Points(headG, headMat); head.frustumCulled = false; scene.add(head);
-  const gauss = (x, m, s) => Math.exp(-((x - m) * (x - m)) / (2 * s * s));
-  const ecg = (u) => 0.12 * gauss(u, 0.18, 0.025) - 0.12 * gauss(u, 0.285, 0.008) + 1.0 * gauss(u, 0.305, 0.009) - 0.28 * gauss(u, 0.325, 0.01) + 0.22 * gauss(u, 0.52, 0.045);
+  const gs = (x, m, s) => Math.exp(-((x - m) * (x - m)) / (2 * s * s));
+  const ecg = (u) => 0.12 * gs(u, 0.18, 0.025) - 0.12 * gs(u, 0.285, 0.008) + 1.0 * gs(u, 0.305, 0.009) - 0.28 * gs(u, 0.325, 0.01) + 0.22 * gs(u, 0.52, 0.045);
   const BPM = 72, beatsAcross = 4.5;
 
-  /* ---- the shape dock: buttons and a caption ---- */
-  const dock = document.getElementById("hero-shapes"), cap = document.getElementById("hero-shape-cap");
+  /* ---- dock and caption ---- */
+  const root = mount.closest("section") || document;
+  const dock = root.querySelector("[data-shapes]"), cap = root.querySelector("[data-shape-cap]");
   let cur = 0, next = 0, morph = 1, holdUntil = 4, auto = true;
   function setDock() {
     if (dock) [].forEach.call(dock.querySelectorAll("[data-shape]"), (b) => b.classList.toggle("on", +b.getAttribute("data-shape") === next));
-    if (cap) cap.textContent = SHAPES[next].label;
+    if (cap) { cap.classList.remove("swap"); void cap.offsetWidth; cap.classList.add("swap"); cap.textContent = SHAPES[next].label; }
   }
   function morphTo(k) {
-    if (k === next) return;
-    const from = morph < 1 ? next : cur;                       // mid-morph: start again from where we were heading
+    if (k === next || !SHAPES[k]) return;
+    const from = morph < 1 ? next : cur;
     posA.set(SHAPES[from].p); colA.set(SHAPES[from].c); cur = from;
     next = k; posB.set(SHAPES[k].p); colB.set(SHAPES[k].c);
     ["position", "aPosB", "aColor", "aColB"].forEach((a) => { g.attributes[a].needsUpdate = true; });
-    mat.uniforms.uBeatA.value = SHAPES[cur].beat || 0; mat.uniforms.uBeatB.value = SHAPES[k].beat || 0;
+    mat.uniforms.uLifeA.value = SHAPES[cur].life; mat.uniforms.uLifeB.value = SHAPES[k].life;
     morph = 0; mat.uniforms.uMorph.value = 0; setDock();
   }
   if (dock) dock.addEventListener("click", (e) => { const b = e.target.closest("[data-shape]"); if (!b) return; auto = false; morphTo(+b.getAttribute("data-shape")); clearTimeout(dock._t); dock._t = setTimeout(() => { auto = true; }, 12000); });
   setDock();
 
   function place() {
-    const wide = W() > 860, centred = mount.dataset.side === "centre";
-    world.position.set(wide && !centred ? 2.75 : 0, wide ? (centred ? 0 : 0.25) : 1.25, centred && wide ? -1.2 : 0); orbits.position.copy(world.position);
+    const wide = W() > 860, side = mount.dataset.side || "right";
+    const x = !wide || side === "centre" ? 0 : side === "left" ? -2.75 : 2.75;
+    world.position.set(x, wide ? 0.25 : 1.25, side === "centre" && wide ? -1.2 : 0); orbits.position.copy(world.position);
     world.scale.setScalar(wide ? 1 : 0.72); orbits.scale.copy(world.scale);
     ecgLine.position.y = head.position.y = wide ? 0 : -0.4;
   }
   place();
-  let mx = 0, my = 0, tx = 0, ty = 0, scrollK = 0;
+  let mx = 0, my = 0, tx = 0, ty = 0, scrollK = 0, near = 0, shock = -1;
   const ray = new THREE.Raycaster(), plane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0), hit = new THREE.Vector3(), ndc = new THREE.Vector2();
-  let near = 0, burst = 0;
-  const zone = mount.parentElement || mount;
+  const toLocal = (e) => {
+    const r = mount.getBoundingClientRect();
+    ndc.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
+    ray.setFromCamera(ndc, camera);
+    plane.constant = -world.position.z;
+    if (!ray.ray.intersectPlane(plane, hit)) return null;
+    world.updateMatrixWorld();
+    return world.worldToLocal(hit.clone());
+  };
   window.addEventListener("pointermove", (e) => {
     tx = (e.clientX / window.innerWidth - 0.5) * 0.5; ty = (e.clientY / window.innerHeight - 0.5) * 0.3;
     const r = mount.getBoundingClientRect();
     near = e.clientY >= r.top && e.clientY <= r.bottom ? 1 : 0;
-    ndc.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
-    ray.setFromCamera(ndc, camera);
-    plane.constant = -world.position.z;
-    if (ray.ray.intersectPlane(plane, hit)) { world.updateMatrixWorld(); mat.uniforms.uMouse.value.copy(world.worldToLocal(hit.clone())); }
+    const l = toLocal(e); if (l) mat.uniforms.uMouse.value.copy(l);
   }, { passive: true });
-  zone.addEventListener("click", (e) => { if (e.target.closest("a,button,input,select,textarea,label,.lx-live,.hs-q")) return; burst = 1; });
-  window.addEventListener("scroll", () => { scrollK = Math.min(1, window.scrollY / (H() * 0.9)); }, { passive: true });
+  (mount.parentElement || mount).addEventListener("click", (e) => {
+    if (e.target.closest("a,button,input,select,textarea,label,.hs-q,.stage")) return;
+    const l = toLocal(e); if (!l) return;
+    mat.uniforms.uShockPos.value.copy(l); shock = 0; throwSparks(l);
+  });
+  window.addEventListener("scroll", () => { const r = mount.getBoundingClientRect(); scrollK = Math.min(1, Math.max(0, -r.top / (H() * 0.9))); }, { passive: true });
   window.addEventListener("resize", () => { R.setSize(W(), H()); camera.aspect = W() / H(); camera.updateProjectionMatrix(); place(); });
 
   const t0 = performance.now();
   let last = t0, spinY = 0;
   const frame = loop(mount, (now) => {
     const t = (now - t0) / 1000, dt = Math.min(0.05, Math.max(0, (now - last) / 1000)); last = now;
-    mat.uniforms.uTime.value = dustMat.uniforms.uTime.value = headMat.uniforms.uTime.value = t;
-    const ph = (t * BPM / 60) % 1;                               // lub-dub at 72 a minute, shared by the heart and the ECG
+    mat.uniforms.uTime.value = dustMat.uniforms.uTime.value = headMat.uniforms.uTime.value = sparkMat.uniforms.uTime.value = t;
+    const ph = (t * BPM / 60) % 1;
     mat.uniforms.uPulse.value = Math.exp(-Math.pow((ph - 0.31) / 0.035, 2)) + 0.6 * Math.exp(-Math.pow((ph - 0.52) / 0.05, 2));
-    if (morph < 1) { morph = Math.min(1, morph + dt / 2.4); mat.uniforms.uMorph.value = morph; if (morph >= 1) { cur = next; holdUntil = t + 5.2; } }
+    mat.uniforms.uBreath.value = 0.5 - 0.5 * Math.cos(t * Math.PI * 2 / 4.2);          // about 14 breaths a minute
+    mat.uniforms.uWell.value += ((reduce ? 0 : near) - mat.uniforms.uWell.value) * Math.min(1, dt * 3);
+    if (shock >= 0) { shock += dt * 0.8; if (shock > 1.3) shock = -1; }
+    mat.uniforms.uShock.value = shock;
+    for (let i = 0; i < S; i++) {
+      if (sl[i] <= 0) continue;
+      sl[i] -= dt; sv[i * 3 + 1] -= dt * 4.5;                    // a little gravity
+      sp[i * 3] += sv[i * 3] * dt; sp[i * 3 + 1] += sv[i * 3 + 1] * dt; sp[i * 3 + 2] += sv[i * 3 + 2] * dt;
+      if (sl[i] <= 0) { sp[i * 3] = sp[i * 3 + 1] = sp[i * 3 + 2] = 999; }
+    }
+    sg.attributes.position.needsUpdate = true;
+    if (morph < 1) { morph = Math.min(1, morph + dt / 2.4); mat.uniforms.uMorph.value = morph; if (morph >= 1) { cur = next; holdUntil = t + 5.5; } }
     else if (auto && t > holdUntil && !reduce) morphTo((next + 1) % SHAPES.length);
-    mat.uniforms.uRepel.value += ((reduce ? 0 : near) - mat.uniforms.uRepel.value) * Math.min(1, dt * 4);
-    burst = Math.max(0, burst - dt * 0.9); mat.uniforms.uBurst.value = Math.pow(Math.sin(Math.PI * burst), 2) * 1.6 * (burst > 0 ? 1 : 0);
-    spinY += dt * 0.2 * (SHAPES[next].spin || 0.3);
+    // flat shapes (heart, cross, brain, lungs) sway to face you; round ones spin
+    spinY += dt * 0.2 * (SHAPES[next].spin || 0);
+    const swayTo = SHAPES[next].sway ? (SHAPES[next].face || 0) + Math.sin(t * 0.32) * 0.55 : spinY;
+    if (SHAPES[next].sway) { const k = Math.round((spinY - swayTo) / (Math.PI * 2)); spinY += (swayTo + k * Math.PI * 2 - spinY) * Math.min(1, dt * 1.6); }
     mx += (tx - mx) * 0.04; my += (ty - my) * 0.04;
-    world.rotation.y = spinY + mx; world.rotation.x = 0.1 + my;
+    world.rotation.y = spinY + mx * (1 - mat.uniforms.uWell.value * 0.7); world.rotation.x = 0.1 + my;
     ring1.rotation.z = t * 0.05; ring2.rotation.z = -t * 0.035;
     const speed = ecgW * (BPM / 60) / beatsAcross;
-    const hx = ((t * speed) % ecgW) - ecgW / 2;
-    const headIdx = Math.round(((hx + ecgW / 2) / ecgW) * (E - 1));
+    const headIdx = Math.round(((((t * speed) % ecgW)) / ecgW) * (E - 1));
     for (let i = 0; i < E; i++) {
-      const u = ((i / (E - 1)) * beatsAcross) % 1;
-      ep[i * 3 + 1] = ecgY + ecg(u) * 0.75;
+      ep[i * 3 + 1] = ecgY + ecg(((i / (E - 1)) * beatsAcross) % 1) * 0.75;
       let behind = headIdx - i; if (behind < 0) behind += E;
       const k = behind < 6 ? 0 : Math.pow(Math.max(0, 1 - behind / (E * 0.8)), 2);
       ec[i * 3] = 0.42 * k; ec[i * 3 + 1] = 1.0 * k; ec[i * 3 + 2] = 0.9 * k;
@@ -344,8 +476,9 @@ whenVisible(document.getElementById("hero3d"), (THREE, mount) => {
     R.render(scene, camera);
   });
   mount.classList.add("on");
-  debug("hero", { frame, morphTo, R });
-});
+  return { frame, morphTo, R, well: (x, y) => { mat.uniforms.uMouse.value.set(x, y, 0); near = 1; mat.uniforms.uWell.value = 1; }, shock: (x, y) => { const l = new THREE.Vector3(x || 0, y || 0, 0); mat.uniforms.uShockPos.value.copy(l); shock = 0; throwSparks(l); } };
+}
+document.querySelectorAll("[data-qc3d-hero], #hero3d").forEach((m) => whenVisible(m, (THREE, mount) => debug("hero", heroScene(THREE, mount))));
 
 /* ================================================================================================ 2. the digital twin */
 /* A glass hospital built from a description: floors (name, kind, rooms), whether there is a helipad and an ambulance.
