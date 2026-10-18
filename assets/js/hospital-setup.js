@@ -10,6 +10,39 @@
   var KEY = "qc_setup";
   var Q = [], A = {}, at = 0, trail = [], STAFF = null, liveT = null, liveSeq = 0;
 
+  /* ------------------------------------------------------------ the hospital in 3D */
+  function with3d(fn) { if (window.QC3D) fn(window.QC3D); else window.addEventListener("qc3d-ready", function () { fn(window.QC3D); }, { once: true }); }
+  /* the building the answers describe: reception and OPD on the ground, diagnostics, wards, ICU and theatres above */
+  function planToTwin(p) {
+    var floors = [], deps = p.departments || [], kinds = {};
+    deps.forEach(function (d) { kinds[d.kind] = (kinds[d.kind] || 0) + 1; });
+    var er = deps.some(function (d) { return d.kind === "emergency"; });
+    var clinical = deps.filter(function (d) { return d.kind === "clinical"; }).length;
+    floors.push({ name: p.tier === "diagnostic" ? "Collection" : "Reception · OPD" + (er ? " · ER" : ""), kind: er ? "er" : "opd", rooms: Math.max(2, Math.min(18, clinical * 2 + (er ? 4 : 0))) });
+    var diag = deps.filter(function (d) { return d.kind === "diagnostic"; }).length;
+    if (diag) floors.push({ name: deps.filter(function (d) { return d.kind === "diagnostic"; }).map(function (d) { return d.name.replace("Laboratory", "Lab").replace("Radiology", "Imaging"); }).slice(0, 2).join(" · "), kind: "lab", rooms: Math.min(12, 4 + diag * 3) });
+    var groups = { ward: 0, maternity: 0, daycare: 0, icu: 0 };
+    (p.wards || []).forEach(function (w) {
+      var k = w.kind === "icu" ? "icu" : w.kind === "maternity" ? "maternity" : w.kind === "daycare" ? "daycare" : w.kind === "emergency" ? null : "ward";
+      if (k) groups[k] += w.beds;
+    });
+    var wardFloors = Math.min(4, Math.ceil(groups.ward / 18));
+    for (var i = 0; i < wardFloors; i++) floors.push({ name: wardFloors > 1 ? "Wards " + String.fromCharCode(65 + i) : "Wards", kind: "ward", rooms: Math.max(2, Math.min(18, Math.ceil(groups.ward / wardFloors))) });
+    if (groups.maternity) floors.push({ name: "Maternity", kind: "maternity", rooms: Math.max(2, Math.min(14, groups.maternity)) });
+    if (groups.daycare) floors.push({ name: "Day care", kind: "daycare", rooms: Math.max(2, Math.min(12, groups.daycare)) });
+    if (groups.icu) floors.push({ name: "ICU", kind: "icu", rooms: Math.max(2, Math.min(16, groups.icu)) });
+    if (p.theatres) floors.push({ name: p.theatres === 1 ? "Theatre" : p.theatres + " theatres", kind: "ot", rooms: Math.max(2, Math.min(12, p.theatres * 2)) });
+    return { floors: floors.slice(0, 10), helipad: p.tier === "hospital" || p.tier === "enterprise", ambulance: er };
+  }
+  var LIVE3D = null, LIVE_CFG = { floors: [{ name: "Reception", kind: "opd", rooms: 4 }], helipad: false, ambulance: false };
+  function live3d(cfg) {
+    if (cfg) LIVE_CFG = cfg;
+    if (LIVE3D) { LIVE3D.update(LIVE_CFG); return; }
+    if (live3d.pending) return;
+    live3d.pending = true;
+    with3d(function (Q) { Q.twin(el("hs-twin"), LIVE_CFG, { compact: true }).then(function (api) { LIVE3D = api; api.update(LIVE_CFG); }); });
+  }
+
   function load() { try { return JSON.parse(sessionStorage.getItem(KEY) || "{}") || {}; } catch (e) { return {}; } }
   function keep() { try { sessionStorage.setItem(KEY, JSON.stringify(A)); } catch (e) {} }
   function screen(id) { ["hs-intro", "hs-ask", "hs-plan"].forEach(function (s) { el(s).hidden = s !== id; }); window.scrollTo(0, 0); }
@@ -97,6 +130,15 @@
       keep(); live();
     }
   });
+  /* answer cards lean towards the cursor */
+  if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    el("hs-body").addEventListener("pointermove", function (e) {
+      var c = e.target.closest(".hs-opt"); if (!c) return;
+      var r = c.getBoundingClientRect(), x = (e.clientX - r.left) / r.width - 0.5, y = (e.clientY - r.top) / r.height - 0.5;
+      c.style.transform = "perspective(700px) rotateY(" + (x * 8).toFixed(2) + "deg) rotateX(" + (-y * 8).toFixed(2) + "deg) translateZ(4px)";
+    });
+    el("hs-body").addEventListener("pointerout", function (e) { var c = e.target.closest(".hs-opt"); if (c && !c.contains(e.relatedTarget)) c.style.transform = ""; });
+  }
   el("hs-next").addEventListener("click", next);
   el("hs-back").addEventListener("click", back);
   el("hs-skip").addEventListener("click", function () { var q = Q[at]; if (q.type !== "number") delete A[q.id]; else el("hs-n").value = ""; next(); });
@@ -117,6 +159,7 @@
       api("/hospital/setup/plan", { method: "POST", body: { answers: A } }).then(function (r) {
         if (my !== liveSeq || !r.ok) return;
         var p = r.plan, on = p.modules.filter(function (m) { return m.on; });
+        live3d(planToTwin(p));
         el("hs-live").innerHTML = '<div class="hs-live-tier">' + esc(p.tier_label) + '</div><p class="mini">' + esc(p.summary) + "</p>" +
           '<div class="hs-live-n"><div><b>' + on.length + "</b><span>modules</span></div><div><b>" + p.departments.length + "</b><span>departments</span></div><div><b>" + p.beds + "</b><span>beds</span></div></div>" +
           '<div class="hs-live-mods">' + on.map(function (m) { return "<span>" + esc(m.label) + "</span>"; }).join("") + "</div>";
@@ -144,6 +187,9 @@
       "<div><b>" + p.departments.length + "</b><span>departments</span></div>" + (p.beds ? "<div><b>" + p.beds + "</b><span>beds in " + p.wards.length + " wards</span></div>" : "") +
       (p.theatres ? "<div><b>" + p.theatres + "</b><span>operation theatre" + (p.theatres === 1 ? "" : "s") + "</span></div>" : "") +
       "<div><b>" + esc(p.golive) + "</b><span>to go live</span></div></div>" + actions(admin, true) + "</div>";
+    h += '<section class="hs-sec hs-3d"><div class="hs-3d-copy"><span class="hp-kicker">Your hospital, in 3D</span><h2>Built from your answers.</h2><p class="sub">Each floor is a part of the plan: reception and OPD on the ground, then diagnostics, wards, ICU and theatres. Rooms fill, empty and are cleaned as the day goes on. Drag to look around.</p>' +
+      '<div class="tw-stats"><div><b id="pt-occ">–</b><span>beds occupied</span></div><div><b id="pt-move">–</b><span>people on the move</span></div><div><b id="pt-clean">–</b><span>rooms being cleaned</span></div><div><b id="pt-amb">–</b><span>ambulance</span></div></div>' +
+      '<p class="mini">A simulation of your plan, for illustration.</p></div><div class="lx-twin-stage"><div class="tw-3d" id="plan-twin" role="img" aria-label="A 3D model of your planned hospital"></div><div class="tw-labels" id="plan-twin-labels" aria-hidden="true"></div></div></section>';
     if (p.highlights.length) {
       h += '<section class="hs-sec"><h2>Put first</h2><p class="sub">What you said you most want to fix, and where it’s handled.</p><div class="hs-hl">' + p.highlights.map(function (x, i) {
         return '<div class="hs-hl-i"><i>' + (i + 1) + "</i><div><b>" + esc(x.priority) + '</b><span class="tag">' + esc(x.module_label) + "</span><p>" + esc(x.text) + "</p></div></div>";
@@ -169,6 +215,28 @@
         "Apply with this plan and it comes with your application. Once you're in, one click creates the departments, wards and beds and switches on these modules. We verify every organisation before it can reach a patient.") +
       "</p>" + actions(admin, false) + "</section></div>";
     el("hs-plan").innerHTML = h;
+    var cfg = planToTwin(p);
+    with3d(function (Q) {
+      var s = function (id) { return el(id); };
+      if (window.__planTwin) { try { window.__planTwin.R.dispose(); window.__planTwin.R.forceContextLoss(); } catch (x) {} window.__planTwin = null; }
+      Q.twin(el("plan-twin"), cfg, { labels: el("plan-twin-labels"), stats: { occ: s("pt-occ"), move: s("pt-move"), clean: s("pt-clean"), amb: s("pt-amb") } }).then(function (api) { window.__planTwin = api; });
+    });
+    countUp(el("hs-plan").querySelectorAll(".hs-facts b"));
+    reveal(el("hs-plan").querySelectorAll(".hs-sec"));
+    if (P.confetti && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) P.confetti(["🏥", "✨", "💛", "🩺"], 26);
+  }
+  /* numbers count up; sections rise into view as you scroll */
+  function countUp(nodes) {
+    [].forEach.call(nodes, function (b) {
+      var m = /^(\d+)(.*)$/.exec(b.textContent.trim()); if (!m) return;
+      var end = +m[1], rest = m[2], t0 = performance.now();
+      (function step(now) { var k = Math.min(1, (now - t0) / 1100), e = 1 - Math.pow(1 - k, 3); b.textContent = Math.round(end * e) + rest; if (k < 1) requestAnimationFrame(step); })(t0);
+    });
+  }
+  function reveal(nodes) {
+    if (!("IntersectionObserver" in window)) return;
+    var io = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }); }, { threshold: 0.12 });
+    [].forEach.call(nodes, function (n) { n.classList.add("rv"); io.observe(n); });
   }
 
   function actions(admin, top) {
@@ -194,7 +262,7 @@
   });
 
   /* ------------------------------------------------------------ start */
-  el("hs-start").addEventListener("click", function () { trail = []; at = 0; screen("hs-ask"); ask(); live(); });
+  el("hs-start").addEventListener("click", function () { trail = []; at = 0; screen("hs-ask"); ask(); live(); live3d(); });
   P.init({ requireLogin: false });
   A = load();
   Promise.all([api("/hospital/setup/questions"), api("/hospital/me")]).then(function (rs) {
