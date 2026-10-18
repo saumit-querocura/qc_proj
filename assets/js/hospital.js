@@ -171,6 +171,29 @@
     return false;
   }
 
+  // [icon, plain name, what it is for, group in the More menu]
+  var TAB_INFO = {
+    overview: ["🏠", "My day", "Your list for today, most important first, and what the hospital expects in the next few hours.", ""],
+    patients: ["🗂️", "Patients", "Find or register a patient. Each has one record: visits, prescriptions, results, scans and bills.", "Patients and visits"],
+    appointments: ["📅", "Appointments", "Every doctor's day side by side. Book into a free slot; mark people arrived when they come in.", "Patients and visits"],
+    queue: ["🎟️", "Queue", "Who is waiting, in token order, and who is with a doctor. Emergency patients by triage level.", "Patients and visits"],
+    beds: ["🛏️", "Beds", "Every ward and bed: free, occupied, being cleaned. Admit, move and discharge from here.", "Patients and visits"],
+    orders: ["🧪", "Tests and tasks", "Lab tests, scans, nursing tasks and consults sent between departments, by due time.", "Patients and visits"],
+    handover: ["🤝", "Handover", "Short notes from one shift to the next, acknowledged so nothing is missed.", "Patients and visits"],
+    imaging: ["🩻", "Scans", "Upload scans, review AI-assisted drafts and sign reports.", "Patients and visits"],
+    ot: ["🔪", "Theatres", "Today's operation list and the surgical safety checklist for each case.", "Patients and visits"],
+    connect: ["📲", "Connect app users", "Link patients who use the QueroCura app, with their consent.", "Patients and visits"],
+    pharmacy: ["💊", "Pharmacy", "Prescriptions waiting to be dispensed, and medicine stock.", "Pharmacy and billing"],
+    billing: ["🧾", "Billing", "Who owes what, visits still to bill, and today's takings. Collect payments here.", "Pharmacy and billing"],
+    duty: ["👥", "Duty roster", "Who works which shift, and where.", "Running the hospital"],
+    reports: ["📊", "Reports", "Patients seen, admissions, collections and common diagnoses, for any dates.", "Running the hospital"],
+    setup: ["⚙️", "Setup", "Departments, wards, beds and theatres, your setup plan and which modules are on.", "Running the hospital"],
+    team: ["🔐", "Team and roles", "Invite people and decide what each role can do.", "Running the hospital"],
+    activity: ["📜", "Activity log", "Every sign-in, record viewed and change, in a log nobody can edit.", "Running the hospital"],
+    security: ["🛡️", "My security", "Your password, two-step sign-in and signed-in devices.", "You"],
+  };
+  var GROUPS = ["Patients and visits", "Pharmacy and billing", "Running the hospital", "You"];
+
   function render() {
     var org = ME.org, staff = ME.staff;
     show(el("workspace"), false); show(el("mfa-setup"), false);
@@ -187,7 +210,7 @@
     var OPS = window.QCOps ? window.QCOps.tabs(can) : [];
     var HMS = window.QCHms ? window.QCHms.tabs(can) : [];
     var grp = function (list, g) { return list.filter(function (t) { return t[3] === g; }); };
-    var tabs = [["overview", "Today", true]].concat(HMS.length ? grp(HMS, "front") : [["patients", "Patients", can("roster")]]).concat(grp(OPS, "flow")).concat(grp(HMS, "flow")).concat(grp(HMS, "back"))
+    var tabs = [["overview", "My day", true]].concat(HMS.length ? grp(HMS, "front") : [["patients", "Patients", can("roster")]]).concat(grp(OPS, "flow")).concat(grp(HMS, "flow")).concat(grp(HMS, "back"))
       .concat([["connect", "Connect", can("request")]])
       .concat(grp(HMS, "admin")).concat(grp(OPS, "admin"))
       .concat([["team", "Team", can("team")], ["activity", "Activity log", can("audit")], ["security", "My security", true]]).filter(function (t) { return t[2]; });
@@ -195,19 +218,67 @@
     var MODS = ME.modules;
     if (MODS) tabs = tabs.filter(function (t) { return MODS[t[0]] !== false; });
     if (!tabs.some(function (t) { return t[0] === tabNow; })) tabNow = tabs[0][0];
-    el("tabs").innerHTML = tabs.map(function (t) { return '<button type="button" role="tab" data-tab="' + t[0] + '" class="' + (t[0] === tabNow ? "on" : "") + '">' + t[1] + '</button>'; }).join("");
+    // a short menu: My day and the few screens this person's role uses; everything else under More
+    var keys = ["overview"].concat(ME.nav || []).filter(function (k, i, a) { return a.indexOf(k) === i && tabs.some(function (t) { return t[0] === k; }); });
+    if (keys.length < 3) keys = tabs.slice(0, 6).map(function (t) { return t[0]; });
+    var primary = keys.map(function (k) { return tabs.filter(function (t) { return t[0] === k; })[0]; });
+    var rest = tabs.filter(function (t) { return keys.indexOf(t[0]) < 0; });
+    TABS_ALL = tabs; TABS_REST = rest;
+    if (!tabs.some(function (t) { return t[0] === tabNow; })) tabNow = "overview";
+    drawTabs(primary);
     switchTab(tabNow);
   }
-  el("tabs").addEventListener("click", function (e) { var b = e.target.closest("[data-tab]"); if (b) { tabNow = b.getAttribute("data-tab"); [].forEach.call(el("tabs").children, function (c) { c.classList.toggle("on", c === b); }); switchTab(tabNow); } });
+  var TABS_ALL = [], TABS_REST = [], TABS_PRIMARY = [];
+  function tabName(t) { return (TAB_INFO[t[0]] || [])[1] || t[1]; }
+  function drawTabs(primary) {
+    if (primary) TABS_PRIMARY = primary;
+    var extra = TABS_PRIMARY.some(function (t) { return t[0] === tabNow; }) ? null : TABS_ALL.filter(function (t) { return t[0] === tabNow; })[0];
+    var bar = TABS_PRIMARY.concat(extra ? [extra] : []);
+    el("tabs").innerHTML = bar.map(function (t) {
+      var i = TAB_INFO[t[0]] || [];
+      return '<button type="button" role="tab" data-tab="' + t[0] + '" class="' + (t[0] === tabNow ? "on" : "") + '"><span class="tb-ic" aria-hidden="true">' + (i[0] || "") + "</span>" + esc(tabName(t)) + "</button>";
+    }).join("") + (TABS_REST.length ? '<button type="button" class="tb-more" data-more aria-haspopup="true" aria-expanded="false">More <span aria-hidden="true">▾</span></button><div class="tb-menu" id="tb-menu" hidden></div>' : "");
+  }
+  function openMore(btn) {
+    var m = el("tb-menu"); if (!m) return;
+    if (!m.hidden) { m.hidden = true; btn.setAttribute("aria-expanded", "false"); return; }
+    m.innerHTML = GROUPS.map(function (g) {
+      var items = TABS_REST.filter(function (t) { return ((TAB_INFO[t[0]] || [])[3] || "Running the hospital") === g; });
+      if (!items.length) return "";
+      return '<div class="tbm-g"><div class="tbm-h">' + esc(g) + "</div>" + items.map(function (t) {
+        var i = TAB_INFO[t[0]] || ["", t[1], ""];
+        return '<button type="button" class="tbm-i" data-tab="' + t[0] + '"><span class="tb-ic" aria-hidden="true">' + i[0] + "</span><span><b>" + esc(tabName(t)) + "</b><small>" + esc(i[2]) + "</small></span></button>";
+      }).join("") + "</div>";
+    }).join("");
+    m.hidden = false; btn.setAttribute("aria-expanded", "true");
+  }
+  document.addEventListener("click", function (e) { var m = el("tb-menu"); if (m && !m.hidden && !e.target.closest("#tb-menu,[data-more]")) { m.hidden = true; } });
+  el("tabs").addEventListener("click", function (e) {
+    var mo = e.target.closest("[data-more]"); if (mo) return openMore(mo);
+    var b = e.target.closest("[data-tab]"); if (b) goTab(b.getAttribute("data-tab"));
+  });
+  function goTab(t) { tabNow = t; drawTabs(); switchTab(t); window.scrollTo({ top: 0, behavior: "smooth" }); }
   function switchTab(t) {
     var own = { overview: loadOverview, patients: loadPatients, connect: renderConnect, team: loadTeam, activity: loadActivity, security: renderSecurity };
     var ops = window.QCOps ? window.QCOps.loaders() : {};
     if (window.QCHms) { delete own.patients; var hm = window.QCHms.loaders(); Object.keys(hm).forEach(function (k) { ops[k] = hm[k]; }); window.QCHms.leave(); }
     [].forEach.call(document.querySelectorAll("#workspace > section.tab"), function (sec) { show(sec, sec.id === "tab-" + t); });
     if (window.QCOps) window.QCOps.leave();
-    show(el("tab-board"), t === "overview");
+    show(el("tab-board"), t === "overview" && (can("ops") || can("structure") || can("reports") || can("orders")));
+    about(t);
     (own[t] || ops[t] || loadOverview)();
   }
+
+  /* one plain sentence about what this screen is for (until the person hides it) */
+  function about(t) {
+    var box = el("tab-about"); if (!box) return;
+    var i = TAB_INFO[t], hidden = false;
+    try { hidden = localStorage.getItem("qc-about-" + t) === "1"; } catch (x) {}
+    if (!i || hidden || t === "overview") { box.hidden = true; return; }
+    box.hidden = false;
+    box.innerHTML = '<span class="ab-ic" aria-hidden="true">' + i[0] + '</span><span class="grow"><b>' + esc(i[1]) + ".</b> " + esc(i[2]) + '</span><button type="button" class="ab-x" aria-label="Hide this explanation" data-hide="' + t + '">Got it</button>';
+  }
+  document.addEventListener("click", function (e) { var h = e.target.closest("[data-hide]"); if (!h) return; try { localStorage.setItem("qc-about-" + h.getAttribute("data-hide"), "1"); } catch (x) {} el("tab-about").hidden = true; });
 
   /* ---------- MFA setup (required before any patient data) ---------- */
   function renderMfaSetup() {
@@ -237,18 +308,49 @@
   /* ---------- overview ---------- */
   var SEV_LABEL = { emergency: "Emergency", urgent: "Urgent", warning: "Check" };
   function sevPill(sev) { return sev ? '<span class="sev sev-' + esc(sev) + '">' + esc(SEV_LABEL[sev] || sev) + "</span>" : ""; }
+  var LVL = { urgent: ["Now", "md-urgent"], soon: ["Soon", "md-soon"], todo: ["Today", "md-todo"] };
   function loadOverview() {
-    if (window.QCOps) window.QCOps.board(el("tab-board"));
+    if (window.QCOps && (can("ops") || can("structure") || can("reports") || can("orders"))) window.QCOps.board(el("tab-board"));
     var box = el("tab-overview");
-    box.innerHTML = '<div class="kpis">' + new Array(6).join('<div class="kpi skel"></div>') + "</div>";
+    box.innerHTML = '<div class="md"><div class="md-skel"></div><div class="md-skel"></div><div class="md-skel"></div></div><div id="ov-classic"></div>';
+    api("/hospital/my-day").then(function (d) {
+      if (guard(d)) return;
+      if (!d.ok) return;
+      var h = '<div class="md"><div class="md-hello"><div><h2>' + esc(d.greeting) + '</h2><p class="md-sum' + (d.urgent ? " hot" : "") + '">' + esc(d.summary) + "</p></div>" +
+        '<button type="button" class="btn btn-sm cmdk-hint" data-cmdk>Search <kbd>' + (/Mac|iPhone|iPad/.test(navigator.platform) ? "⌘" : "Ctrl") + "</kbd><kbd>K</kbd></button></div>";
+      h += '<div class="md-grid"><section class="md-next"><h3>Next up</h3>' + (d.tasks.length ? '<ol class="md-list">' + d.tasks.map(function (t) {
+        var l = LVL[t.level] || LVL.todo;
+        return '<li class="md-task ' + l[1] + '"><span class="md-lvl">' + l[0] + '</span><div class="grow"><b>' + esc(t.title) + "</b><small>" + esc(t.why) + '</small></div><button type="button" class="btn btn-sm' + (t.level === "urgent" ? " btn-primary" : "") + '" data-task="' + esc(t.id) + '">' + esc(t.button || "Open") + "</button></li>";
+      }).join("") + "</ol>" + (d.more_tasks ? '<p class="mini md-more">' + d.more_tasks + " more after these. They'll move up as you finish.</p>" : "") :
+        '<div class="md-clear"><span aria-hidden="true">✓</span><b>All clear.</b><small>Nothing needs you right now. New work appears here as it comes in.</small></div>') + "</section>";
+      h += '<section class="md-ahead"><h3>Heads up</h3>' + (d.insights.length ? d.insights.map(function (i, k) {
+        return '<div class="md-in ' + (i.level === "warning" ? "warn" : "") + '"><b>' + esc(i.title) + "</b><p>" + esc(i.text) + '</p><div class="md-in-f"><button type="button" class="link" data-why="' + k + '">Why?</button>' +
+          (i.action && i.action.tab ? '<button type="button" class="link" data-goto="' + esc(i.action.tab) + '">Open →</button>' : "") + '</div><p class="md-why" id="md-why-' + k + '" hidden>' + esc(i.basis || "") + "</p></div>";
+      }).join("") : '<p class="mini">Nothing to flag. Forecasts appear here once there is enough history.</p>') + "</section></div>";
+      if (d.partial) h += '<p class="mini">Some parts of the hospital couldn\'t be checked just now; this list may be incomplete.</p>';
+      h += "</div>";
+      var classic = el("ov-classic"); box.innerHTML = h; box.appendChild(classic);
+      box._tasks = d.tasks;
+    });
+    loadClassic();
+  }
+  function doTask(t) {
+    var a = t.action || {};
+    if (a.open === "visit" && window.QCOps) return window.QCOps.openVisit(a.id);
+    if (a.open === "ot" && window.QCHms && window.QCHms.openCase) return window.QCHms.openCase(a.id);
+    if (a.tab) goTab(a.tab);
+  }
+  function loadClassic() {
+    var box = el("ov-classic");
+    if (!can("request") && !can("roster")) return;
+    box.innerHTML = '<details class="md-classic"><summary>Patients connected through the QueroCura app</summary><div id="ov-classic-in"><div class="kpis">' + new Array(6).join('<div class="kpi skel"></div>') + "</div></div></details>";
+    box = el("ov-classic-in");
     api("/hospital/dashboard").then(function (r) {
       if (guard(r)) return;
       if (!r.ok) { box.innerHTML = '<div class="notice bad">' + esc(r.message || "Couldn't load the overview.") + "</div>"; return; }
       var d = r.data || {}, k = d.kpis || {}, active = ME.org.status === "active";
       var hour = new Date().getHours(), hello = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
-      var h = '<div class="ov-hello"><div><h2>' + hello + ", " + esc((ME.staff.name || "").replace(/^(dr|doctor|mr|mrs|ms|prof)\.?\s+/i, "").split(" ")[0] || "there") + '</h2><p class="sub">' +
-        (active ? "Here's what needs you today at " + esc(ME.org.name) + "." : "Your organisation is being verified. Patient features switch on once it's approved.") + '</p></div>' +
-        '<button type="button" class="btn btn-sm cmdk-hint" data-cmdk>Search <kbd>' + (/Mac|iPhone|iPad/.test(navigator.platform) ? "⌘" : "Ctrl") + "</kbd><kbd>K</kbd></button></div>";
+      var h = ""; void hello;
       if (active) {
         var tiles = [["connected", "Connected patients", "👥", "patients"], ["waiting", "Waiting for patient", "⏳", "patients"], ["expiring", "Access ends in 72 h", "⌛", "patients"],
           ["charts_7d", "Charts opened (7 days)", "📂", "activity"], ["records_7d", "Records added (7 days)", "📝", "activity"], ["emergency_30d", "Emergency access (30 days)", "🚨", "activity"]];
@@ -273,7 +375,9 @@
     });
   }
   el("tab-overview").addEventListener("click", function (e) {
-    var g = e.target.closest("[data-goto]"); if (g) { tabNow = g.getAttribute("data-goto"); render(); return; }
+    var tk = e.target.closest("[data-task]"); if (tk) { var bx = el("tab-overview"), t = (bx._tasks || []).filter(function (x) { return x.id === tk.getAttribute("data-task"); })[0]; if (t) doTask(t); return; }
+    var wy = e.target.closest("[data-why]"); if (wy) { var p = el("md-why-" + wy.getAttribute("data-why")); if (p) p.hidden = !p.hidden; return; }
+    var g = e.target.closest("[data-goto]"); if (g) { goTab(g.getAttribute("data-goto")); return; }
     var c = e.target.closest("[data-chart]"); if (c) { openChart(c.getAttribute("data-chart")); return; }
     if (e.target.closest("[data-cmdk]")) openCmdk();
   });

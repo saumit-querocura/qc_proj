@@ -130,15 +130,6 @@
       keep(); live();
     }
   });
-  /* answer cards lean towards the cursor */
-  if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-    el("hs-body").addEventListener("pointermove", function (e) {
-      var c = e.target.closest(".hs-opt"); if (!c) return;
-      var r = c.getBoundingClientRect(), x = (e.clientX - r.left) / r.width - 0.5, y = (e.clientY - r.top) / r.height - 0.5;
-      c.style.transform = "perspective(700px) rotateY(" + (x * 8).toFixed(2) + "deg) rotateX(" + (-y * 8).toFixed(2) + "deg) translateZ(4px)";
-    });
-    el("hs-body").addEventListener("pointerout", function (e) { var c = e.target.closest(".hs-opt"); if (c && !c.contains(e.relatedTarget)) c.style.transform = ""; });
-  }
   el("hs-next").addEventListener("click", next);
   el("hs-back").addEventListener("click", back);
   el("hs-skip").addEventListener("click", function () { var q = Q[at]; if (q.type !== "number") delete A[q.id]; else el("hs-n").value = ""; next(); });

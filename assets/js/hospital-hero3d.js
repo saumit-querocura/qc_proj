@@ -16,12 +16,7 @@ const small = Math.min(window.innerWidth, window.innerHeight) < 700;
 let threeP = null;
 const three = () => (threeP = threeP || import("../vendor/three/three.module.min.js?v=170"));
 
-/* a soft gold light that follows the pointer across the feature cards */
-document.querySelectorAll(".bx").forEach((b) => b.addEventListener("pointermove", (e) => {
-  const r = b.getBoundingClientRect();
-  b.style.setProperty("--mx", ((e.clientX - r.left) / r.width * 100) + "%");
-  b.style.setProperty("--my", ((e.clientY - r.top) / r.height * 100) + "%");
-}, { passive: true }));
+
 
 /* sections and cards rise into view as you scroll */
 if ("IntersectionObserver" in window && !reduce) {
@@ -98,8 +93,7 @@ const debug = (name, api) => { if (/[?&]qc3d=debug/.test(location.search)) (wind
 
 /* ================================================================================================ 1. the hero */
 /* Thousands of points that re-form into the shapes of care.  Each shape has its own life: the heart flashes with
- * each beat, the lungs glow in and out with each breath, the brain's neurons fire.  The cursor is a gravity well that
- * pulls nearby points into a spinning vortex; a click sends a shockwave through the shape and throws sparks.
+ * each beat, the lungs glow in and out with each breath, the brain's neurons fire.  Nothing follows the cursor.
  * Which shapes, in which order and with which captions comes from the mount's data-set ("hospital" or "patient"). */
 const SETS = {
   hospital: [["heart", "Every heartbeat"], ["dna", "Every patient's story"], ["cross", "Every department"], ["brain", "Every decision"],
@@ -279,12 +273,11 @@ function heroScene(THREE, mount) {
     uniforms: {
       uTime: { value: 0 }, uMorph: { value: 1 }, uPx: { value: R.getPixelRatio() }, uBase: { value: small ? 6.5 : 5.6 },
       uLifeA: { value: SHAPES[0].life }, uLifeB: { value: SHAPES[0].life }, uPulse: { value: 0 }, uBreath: { value: 0 },
-      uMouse: { value: new THREE.Vector3(99, 99, 99) }, uWell: { value: 0 }, uShockPos: { value: new THREE.Vector3() }, uShock: { value: -1 },
     },
     vertexShader: `
       attribute vec3 aPosB; attribute vec3 aColor; attribute vec3 aColB; attribute float aSize; attribute float aSeed; attribute float aDelay;
       uniform float uTime; uniform float uMorph; uniform float uPx; uniform float uBase; uniform float uLifeA; uniform float uLifeB;
-      uniform float uPulse; uniform float uBreath; uniform vec3 uMouse; uniform float uWell; uniform vec3 uShockPos; uniform float uShock;
+      uniform float uPulse; uniform float uBreath;
       varying vec3 vColor; varying float vAlpha;
       float life(float mode, vec3 p) {
         if (mode < 0.5) return 0.0;
@@ -297,28 +290,12 @@ function heroScene(THREE, mount) {
         vec3 p = mix(position, aPosB, m);
         float mid = sin(3.14159 * m);
         p += vec3(sin(aSeed * 31.0 + uTime * 1.3), cos(aSeed * 17.0 + uTime * 1.1), sin(aSeed * 13.0 - uTime)) * 0.55 * mid;
-        // gravity well: nearby points are pulled in and spun around the cursor
-        vec3 dm = p - uMouse; float dd = length(dm.xy);
-        float well = smoothstep(1.6, 0.0, dd) * uWell;
-        float ang = well * (2.6 + 1.4 * aSeed) + well * uTime * 0.6;
-        float cs = cos(ang), sn = sin(ang);
-        vec2 r2 = vec2(dm.x * cs - dm.y * sn, dm.x * sn + dm.y * cs) * (1.0 - 0.45 * well);
-        p.xy = uMouse.xy + mix(dm.xy, r2, well);
-        p.z += well * sin(aSeed * 50.0 + uTime * 3.0) * 0.35;
-        // shockwave from a click: a ring of displacement and light running outwards
-        float heat = well * 0.9;
-        if (uShock >= 0.0) {
-          vec3 ds = p - uShockPos; float d = length(ds), front = uShock * 5.5;
-          float ring = exp(-pow(d - front, 2.0) / 0.12) * (1.0 - smoothstep(0.6, 1.2, uShock));
-          p += normalize(ds + vec3(0.0001)) * ring * 0.7;
-          heat += ring * 1.6;
-        }
         float glow = life(uLifeA, p) * (1.0 - m) + life(uLifeB, p) * m;
         vec4 mv = modelViewMatrix * vec4(p, 1.0);
         float tw = 0.72 + 0.28 * sin(uTime * (0.7 + aSeed * 1.8) + aSeed * 40.0);
-        vAlpha = tw * (0.3 + 0.7 * smoothstep(-11.5, -6.5, mv.z)) * (1.0 + glow + heat);
-        vColor = mix(mix(aColor, aColB, m), vec3(1.0, 0.93, 0.78), clamp(heat * 0.6 + glow * 0.25, 0.0, 0.85));
-        gl_PointSize = aSize * uBase * uPx * (6.0 / -mv.z) * (1.0 + 0.4 * mid + 0.5 * heat);
+        vAlpha = tw * (0.3 + 0.7 * smoothstep(-11.5, -6.5, mv.z)) * (1.0 + glow);
+        vColor = mix(mix(aColor, aColB, m), vec3(1.0, 0.93, 0.78), clamp(glow * 0.25, 0.0, 0.6));
+        gl_PointSize = aSize * uBase * uPx * (6.0 / -mv.z) * (1.0 + 0.4 * mid);
         gl_Position = projectionMatrix * mv;
       }`,
     fragmentShader: `
@@ -331,22 +308,6 @@ function heroScene(THREE, mount) {
       }`,
   });
   world.add(new THREE.Points(g, mat));
-
-  /* sparks thrown by a click */
-  const S = 260, sg = new THREE.BufferGeometry(), sp = new Float32Array(S * 3), sc = new Float32Array(S * 3), sv = new Float32Array(S * 3), sl = new Float32Array(S);
-  sg.setAttribute("position", new THREE.BufferAttribute(sp, 3)); sg.setAttribute("aColor", new THREE.BufferAttribute(sc, 3));
-  sg.setAttribute("aSize", new THREE.BufferAttribute(new Float32Array(S).map(() => 1 + rnd() * 1.6), 1)); sg.setAttribute("aSeed", new THREE.BufferAttribute(new Float32Array(S).map(() => rnd()), 1));
-  const sparkMat = pointMaterial(THREE, 5, R.getPixelRatio());
-  const sparks = new THREE.Points(sg, sparkMat); sparks.frustumCulled = false; world.add(sparks);
-  function throwSparks(at) {
-    for (let i = 0; i < S; i++) {
-      sp[i * 3] = at.x; sp[i * 3 + 1] = at.y; sp[i * 3 + 2] = at.z;
-      const th = rnd() * Math.PI * 2, ph = Math.acos(2 * rnd() - 1), v = 1.5 + rnd() * 4.5;
-      sv[i * 3] = Math.sin(ph) * Math.cos(th) * v; sv[i * 3 + 1] = Math.cos(ph) * v + 1.2; sv[i * 3 + 2] = Math.sin(ph) * Math.sin(th) * v;
-      sl[i] = 0.7 + rnd() * 0.8;
-      const col = [GOLD, TEAL, IVORY, ROSE][i % 4]; sc[i * 3] = col.r; sc[i * 3 + 1] = col.g; sc[i * 3 + 2] = col.b;
-    }
-  }
 
   /* gold orbits and distant dust */
   const ringMat = new THREE.MeshBasicMaterial({ color: GOLD, transparent: true, opacity: 0.32, blending: THREE.AdditiveBlending, depthWrite: false });
@@ -408,28 +369,7 @@ function heroScene(THREE, mount) {
     ecgLine.position.y = head.position.y = wide ? 0 : -0.4;
   }
   place();
-  let mx = 0, my = 0, tx = 0, ty = 0, scrollK = 0, near = 0, shock = -1;
-  const ray = new THREE.Raycaster(), plane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0), hit = new THREE.Vector3(), ndc = new THREE.Vector2();
-  const toLocal = (e) => {
-    const r = mount.getBoundingClientRect();
-    ndc.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
-    ray.setFromCamera(ndc, camera);
-    plane.constant = -world.position.z;
-    if (!ray.ray.intersectPlane(plane, hit)) return null;
-    world.updateMatrixWorld();
-    return world.worldToLocal(hit.clone());
-  };
-  window.addEventListener("pointermove", (e) => {
-    tx = (e.clientX / window.innerWidth - 0.5) * 0.5; ty = (e.clientY / window.innerHeight - 0.5) * 0.3;
-    const r = mount.getBoundingClientRect();
-    near = e.clientY >= r.top && e.clientY <= r.bottom ? 1 : 0;
-    const l = toLocal(e); if (l) mat.uniforms.uMouse.value.copy(l);
-  }, { passive: true });
-  (mount.parentElement || mount).addEventListener("click", (e) => {
-    if (e.target.closest("a,button,input,select,textarea,label,.hs-q,.stage")) return;
-    const l = toLocal(e); if (!l) return;
-    mat.uniforms.uShockPos.value.copy(l); shock = 0; throwSparks(l);
-  });
+  let scrollK = 0;
   window.addEventListener("scroll", () => { const r = mount.getBoundingClientRect(); scrollK = Math.min(1, Math.max(0, -r.top / (H() * 0.9))); }, { passive: true });
   window.addEventListener("resize", () => { R.setSize(W(), H()); camera.aspect = W() / H(); camera.updateProjectionMatrix(); place(); });
 
@@ -437,28 +377,17 @@ function heroScene(THREE, mount) {
   let last = t0, spinY = 0;
   const frame = loop(mount, (now) => {
     const t = (now - t0) / 1000, dt = Math.min(0.05, Math.max(0, (now - last) / 1000)); last = now;
-    mat.uniforms.uTime.value = dustMat.uniforms.uTime.value = headMat.uniforms.uTime.value = sparkMat.uniforms.uTime.value = t;
+    mat.uniforms.uTime.value = dustMat.uniforms.uTime.value = headMat.uniforms.uTime.value = t;
     const ph = (t * BPM / 60) % 1;
     mat.uniforms.uPulse.value = Math.exp(-Math.pow((ph - 0.31) / 0.035, 2)) + 0.6 * Math.exp(-Math.pow((ph - 0.52) / 0.05, 2));
     mat.uniforms.uBreath.value = 0.5 - 0.5 * Math.cos(t * Math.PI * 2 / 4.2);          // about 14 breaths a minute
-    mat.uniforms.uWell.value += ((reduce ? 0 : near) - mat.uniforms.uWell.value) * Math.min(1, dt * 3);
-    if (shock >= 0) { shock += dt * 0.8; if (shock > 1.3) shock = -1; }
-    mat.uniforms.uShock.value = shock;
-    for (let i = 0; i < S; i++) {
-      if (sl[i] <= 0) continue;
-      sl[i] -= dt; sv[i * 3 + 1] -= dt * 4.5;                    // a little gravity
-      sp[i * 3] += sv[i * 3] * dt; sp[i * 3 + 1] += sv[i * 3 + 1] * dt; sp[i * 3 + 2] += sv[i * 3 + 2] * dt;
-      if (sl[i] <= 0) { sp[i * 3] = sp[i * 3 + 1] = sp[i * 3 + 2] = 999; }
-    }
-    sg.attributes.position.needsUpdate = true;
     if (morph < 1) { morph = Math.min(1, morph + dt / 2.4); mat.uniforms.uMorph.value = morph; if (morph >= 1) { cur = next; holdUntil = t + 5.5; } }
     else if (auto && t > holdUntil && !reduce) morphTo((next + 1) % SHAPES.length);
     // flat shapes (heart, cross, brain, lungs) sway to face you; round ones spin
     spinY += dt * 0.2 * (SHAPES[next].spin || 0);
     const swayTo = SHAPES[next].sway ? (SHAPES[next].face || 0) + Math.sin(t * 0.32) * 0.55 : spinY;
     if (SHAPES[next].sway) { const k = Math.round((spinY - swayTo) / (Math.PI * 2)); spinY += (swayTo + k * Math.PI * 2 - spinY) * Math.min(1, dt * 1.6); }
-    mx += (tx - mx) * 0.04; my += (ty - my) * 0.04;
-    world.rotation.y = spinY + mx * (1 - mat.uniforms.uWell.value * 0.7); world.rotation.x = 0.1 + my;
+    world.rotation.y = spinY; world.rotation.x = 0.1;
     ring1.rotation.z = t * 0.05; ring2.rotation.z = -t * 0.035;
     const speed = ecgW * (BPM / 60) / beatsAcross;
     const headIdx = Math.round(((((t * speed) % ecgW)) / ecgW) * (E - 1));
@@ -476,7 +405,7 @@ function heroScene(THREE, mount) {
     R.render(scene, camera);
   });
   mount.classList.add("on");
-  return { frame, morphTo, R, well: (x, y) => { mat.uniforms.uMouse.value.set(x, y, 0); near = 1; mat.uniforms.uWell.value = 1; }, shock: (x, y) => { const l = new THREE.Vector3(x || 0, y || 0, 0); mat.uniforms.uShockPos.value.copy(l); shock = 0; throwSparks(l); } };
+  return { frame, morphTo, R };
 }
 document.querySelectorAll("[data-qc3d-hero], #hero3d").forEach((m) => whenVisible(m, (THREE, mount) => debug("hero", heroScene(THREE, mount))));
 

@@ -55,12 +55,6 @@ function qcAtom(canvasId, factEl) {
   }
 
   window.addEventListener('resize', resize);
-  c.parentElement.addEventListener('mousemove', function (e) {
-    var b = c.parentElement.getBoundingClientRect();
-    mx = (e.clientX - b.left)/b.width - .5;
-    my = (e.clientY - b.top)/b.height - .5;
-  });
-  c.parentElement.addEventListener('mouseleave', function () { mx = 0; my = 0; });
 
   resize();
 

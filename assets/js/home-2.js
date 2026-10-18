@@ -120,28 +120,7 @@
     onSeen(bars, function () { $$("i", bars).forEach(function (i, k) { setTimeout(function () { i.style.setProperty("--h", hs[k]); }, k * 70); }); }, 0.5);
   }
 
-  /* ---------- hero: cursor glow, phone tilt, floating cards ---------- */
-  var hero = $("#hero"), glow = $("#hero-glow"), phone = $("#phone"), floats = $$(".float");
-  var fine = window.matchMedia && window.matchMedia("(pointer: fine)").matches;
-  if (hero && fine && !calm) {
-    var raf = 0, mx = 0, my = 0;
-    hero.addEventListener("mousemove", function (e) {
-      var r = hero.getBoundingClientRect();
-      mx = (e.clientX - r.left) / r.width; my = (e.clientY - r.top) / r.height;
-      if (raf) return;
-      raf = requestAnimationFrame(function () {
-        raf = 0;
-        if (glow) { glow.style.setProperty("--mx", (mx * 100) + "%"); glow.style.setProperty("--my", (my * 100) + "%"); }
-        var dx = mx - 0.5, dy = my - 0.5;
-        if (phone) phone.style.transform = "rotateY(" + (-9 + dx * 14) + "deg) rotateX(" + (4 - dy * 10) + "deg)";
-        floats.forEach(function (f) { var d = +f.getAttribute("data-depth") || 20; f.style.transform = "translate3d(" + (dx * d) + "px," + (dy * d) + "px,0)"; });
-      });
-    });
-    hero.addEventListener("mouseleave", function () {
-      if (phone) phone.style.transform = "";
-      floats.forEach(function (f) { f.style.transform = ""; });
-    });
-  }
+  /* (no cursor effects in the hero: it stays still and calm) */
 
   /* health score ring */
   var arc = $("#ring-arc"), num = $("#score-num");
@@ -279,13 +258,6 @@
   });
   if (steps.length) onSeen($(".how"), function () { show(0); }, 0.3);
 
-  /* ---------- bento cards follow the cursor with a soft light ---------- */
-  if (fine && !calm) $$(".card").forEach(function (c) {
-    c.addEventListener("mousemove", function (e) {
-      var r = c.getBoundingClientRect();
-      c.style.setProperty("--cx", (e.clientX - r.left) + "px"); c.style.setProperty("--cy", (e.clientY - r.top) + "px");
-    });
-  });
 
   /* ---------- the language card switches between English and Hindi ---------- */
   var LINES = [

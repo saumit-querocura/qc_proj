@@ -3798,7 +3798,7 @@ window.QC_HI = {
 "Your story": "आपकी कहानी",
 "Sharing": "साझा करना",
 "Start free": "मुफ़्त शुरू करें",
-"Move through it · tap to send a pulse": "इसमें घुमाएँ · पल्स भेजने के लिए टैप करें",
+"Free to join · in English and हिन्दी": "जुड़ना मुफ़्त · अंग्रेज़ी और हिन्दी में",
 "Event added — we'll remind you": "इवेंट जुड़ गया। हम आपको याद दिलाएँगे",
 "Event updated": "इवेंट अपडेट हो गया",
 "Written imaging report": "लिखित इमेजिंग रिपोर्ट",
