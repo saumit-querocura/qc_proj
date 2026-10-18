@@ -13,7 +13,7 @@
 <link rel="preconnect" href="https://app.querocura.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700;800&family=Manrope:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500;1,9..144,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../assets/qc-base.css?v=7b9ea421">
-<link rel="stylesheet" href="../assets/qc-hospital.css?v=6985063d">
+<link rel="stylesheet" href="../assets/qc-hospital.css?v=5f1872eb">
 <script src="../assets/qc-csp.js?v=77f89cc2"></script>
 </head>
 <body class="hp">
@@ -23,7 +23,7 @@
       <span class="logo-text"><span class="ink">Quero</span><span class="teal">Cura</span> <span class="hp-tag">for Hospitals</span></span>
     </a>
     <nav class="hp-nav" id="pub-nav">
-      <a href="#wait">Smart booking</a><a href="#flow">Features</a><a href="#safety">Safety</a><a href="#faq">FAQ</a>
+      <a href="#wait">Smart booking</a><a href="#twin">Live hospital</a><a href="#flow">Features</a><a href="#safety">Safety</a><a href="#faq">FAQ</a>
       <a class="btn btn-sm btn-primary" href="setup/" id="nav-apply">Get started</a>
       <a class="btn btn-sm" href="#signin" id="nav-signin">Sign in</a>
     </nav>
@@ -56,13 +56,16 @@
             <li><b>Every view logged</b><span>in a log nobody can edit</span></li>
           </ul>
         </div>
-        <aside class="lx-live" aria-label="An example of the live doctors view">
-          <div class="lx-live-h"><span class="lx-dot"></span>Live doctors <small>example</small></div>
-          <div class="lx-doc"><span class="av">AR</span><div><b>Dr Anjali Rao</b><small>General Medicine</small></div><span class="st free">Free now</span></div>
-          <div class="lx-doc"><span class="av">VI</span><div><b>Dr Vikram Iyer</b><small>Paediatrics</small></div><span class="st late">12 min behind</span></div>
-          <div class="lx-doc"><span class="av">SM</span><div><b>Dr Sara Mehta</b><small>Orthopaedics</small></div><span class="st busy">With a patient</span></div>
-          <div class="lx-best"><span>Best slot</span><b>10:40 · Dr Rao</b><small>Seen at 10:40 · ask them to arrive 10:30</small></div>
-        </aside>
+        <div class="lx-shapes" id="hero-shapes" aria-label="Shapes of care">
+          <span class="lx-shape-cap" id="hero-shape-cap" aria-live="polite">Every heartbeat</span>
+          <div class="lx-shape-btns">
+            <button type="button" data-shape="0" class="on" title="Heart">❤️</button>
+            <button type="button" data-shape="1" title="DNA">🧬</button>
+            <button type="button" data-shape="2" title="Medical cross">✚</button>
+            <button type="button" data-shape="3" title="Capsule">💊</button>
+            <button type="button" data-shape="4" title="Connected hospital">🌐</button>
+          </div>
+        </div>
       </div>
       <a class="lx-scroll" href="#wait" aria-label="Scroll to learn more"><span></span></a>
     </section>
@@ -95,6 +98,25 @@
           <div class="tl-now" style="--l:36%"><span>now</span></div>
           <p class="tl-note">Booked slots drift as the day runs. QueroCura shows the real times and points the desk to the slot with the shortest wait.</p>
         </div>
+      </div>
+    </section>
+
+    <section class="lx-sec lx-twin" id="twin">
+      <div class="lx-wrap lx-twin-in">
+        <div class="lx-twin-copy">
+          <span class="lx-kicker">Your hospital, alive</span>
+          <h2>Every bed, ward and patient journey at a glance.</h2>
+          <p class="lx-p">QueroCura keeps a live picture of your hospital: who is arriving, which rooms are filling, emptying or being cleaned, where the ICU stands and when an emergency is on its way. Your team sees it on the bed board and the command centre; here it is in 3D. Drag to turn it.</p>
+          <div class="tw-stats">
+            <div><b id="tw-occ">–</b><span>beds occupied</span></div>
+            <div><b id="tw-move">–</b><span>patients on the move</span></div>
+            <div><b id="tw-clean">–</b><span>rooms being cleaned</span></div>
+            <div><b id="tw-amb">–</b><span>ambulance</span></div>
+          </div>
+          <div class="tw-legend"><span><i style="--c:#4fd8c6"></i>Occupied</span><span><i style="--c:#ffc94d"></i>Being admitted</span><span><i style="--c:#f2a65a"></i>Cleaning</span><span><i style="--c:#ff5c7a"></i>ICU</span><span><i style="--c:#8f86f0"></i>Theatre</span><span><i style="--c:#2b2a52"></i>Free</span></div>
+          <p class="mini tw-note">A simulation for illustration. In QueroCura these come from your real bed board, queue and theatre list.</p>
+        </div>
+        <div class="lx-twin-stage"><div class="tw-3d" id="twin3d" aria-label="A 3D model of a hospital with patients moving between floors" role="img"></div><div class="tw-labels" id="twin-labels" aria-hidden="true"></div></div>
       </div>
     </section>
 
@@ -280,7 +302,7 @@
   <script src="../assets/js/hospital-clinical.js?v=2b610f5e"></script>
 <script src="../assets/js/hospital-ops.js?v=e6f6eae2"></script>
   <script src="../assets/js/hospital-imaging.js?v=204182ea"></script>
-  <script type="module" src="../assets/js/hospital-hero3d.js?v=f43d067c"></script>
+  <script type="module" src="../assets/js/hospital-hero3d.js?v=711258a1"></script>
   <script src="../assets/js/hospital.js?v=d2a90510"></script>
 </body>
 </html>

@@ -921,3 +921,29 @@ html[data-theme="dark"] .sm-live.st-free { color: #6fe3d3; } html[data-theme="da
   body.hp:has(#public:not([hidden])) .hp-top .btn { white-space: nowrap; padding: 8px 12px; font-size: 13px; }
   body.hp:has(#public:not([hidden])) .hp-top .logo-wrap img { width: 30px; height: auto; }
 }
+
+/* ================================================================ hero shape dock and the digital twin */
+.lx-shapes { justify-self: end; align-self: end; display: flex; flex-direction: column; align-items: flex-end; gap: 10px; margin-bottom: 8px; }
+.lx-shape-cap { font: 500 italic 22px 'Fraunces', serif; color: #f3e3bd; text-shadow: 0 2px 20px rgba(0,0,0,.6); transition: opacity .4s ease; }
+.lx-shape-btns { display: flex; gap: 6px; padding: 6px; border-radius: 999px; background: rgba(255,255,255,.06); border: 1px solid rgba(246,241,231,.16); backdrop-filter: blur(14px); }
+.lx-shape-btns button { width: 40px; height: 40px; border-radius: 50%; border: 0; background: transparent; color: #f6f1e7; font-size: 18px; cursor: pointer; transition: background .25s ease, transform .25s ease; }
+.lx-shape-btns button:hover { background: rgba(255,255,255,.1); transform: translateY(-1px); }
+.lx-shape-btns button.on { background: linear-gradient(135deg, rgba(240,220,174,.35), rgba(201,169,106,.25)); box-shadow: inset 0 0 0 1px rgba(227,200,143,.6); }
+@media (max-width: 980px) { .lx-shapes { justify-self: start; align-items: flex-start; margin-top: 18px; } }
+
+.lx-twin { background: radial-gradient(900px 500px at 75% 50%, rgba(79,216,198,.12), transparent 60%), linear-gradient(180deg, #0b0a1f, #13113a 60%, #0b0a1f); color: var(--lx-ivory); }
+html[data-theme="dark"] .lx-twin { background: radial-gradient(900px 500px at 75% 50%, rgba(79,216,198,.12), transparent 60%), linear-gradient(180deg, #0b0a1f, #13113a 60%, #0b0a1f); }
+.lx-twin .lx-kicker { color: var(--lx-gold); } .lx-twin .lx-p { color: var(--lx-mute); }
+.lx-twin-in { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: clamp(24px, 4vw, 56px); align-items: center; }
+@media (max-width: 980px) { .lx-twin-in { grid-template-columns: 1fr; } }
+.lx-twin-stage { position: relative; height: clamp(380px, 52vw, 600px); border-radius: 30px; overflow: hidden; background: radial-gradient(closest-side, rgba(79,216,198,.10), transparent), rgba(255,255,255,.02); border: 1px solid rgba(227,200,143,.18); box-shadow: 0 60px 120px -60px rgba(0,0,0,.9), inset 0 1px 0 rgba(255,255,255,.05); }
+.tw-3d { position: absolute; inset: 0; cursor: grab; touch-action: pan-y; opacity: 0; transition: opacity 1.4s ease; } .tw-3d.on { opacity: 1; } .tw-3d:active { cursor: grabbing; }
+.tw-3d canvas { display: block; width: 100% !important; height: 100% !important; }
+.tw-labels { position: absolute; inset: 0; pointer-events: none; }
+.tw-label { position: absolute; left: 0; top: 0; white-space: nowrap; font: 800 10.5px 'Manrope', sans-serif; letter-spacing: .08em; text-transform: uppercase; color: #f3e3bd; padding: 4px 9px; border-radius: 999px; background: rgba(11,10,31,.65); border: 1px solid rgba(227,200,143,.3); backdrop-filter: blur(6px); transition: opacity .3s ease; }
+.tw-stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin: 24px 0 16px; }
+.tw-stats div { padding: 14px 16px; border-radius: 18px; background: rgba(255,255,255,.04); border: 1px solid rgba(246,241,231,.1); }
+.tw-stats b { display: block; font: 600 26px 'Fraunces', serif; color: #fff; } .tw-stats span { font-size: 12.5px; color: var(--lx-mute); }
+.tw-legend { display: flex; flex-wrap: wrap; gap: 8px 14px; font-size: 12.5px; color: var(--lx-mute); }
+.tw-legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; background: var(--c); margin-right: 6px; vertical-align: -1px; box-shadow: 0 0 10px var(--c); }
+.tw-note { margin-top: 14px; color: var(--lx-mute); opacity: .8; }
