@@ -32,6 +32,11 @@
   .invite-banner.link-on { background: linear-gradient(135deg, #d8f0ec, #e6dffa); }
   .invite-banner select.input { padding: 7px 10px; font-size: 13px; }
   .pot.waiting { opacity: .82; border-style: dashed; }
+  .add-mode { display: flex; gap: 6px; padding: 5px; border-radius: 16px; background: rgba(16,14,42,.06); margin: 4px 0 16px; flex-wrap: wrap; }
+  .add-mode button { flex: 1 1 200px; border: 0; background: transparent; padding: 10px 12px; border-radius: 12px; font: 800 13.5px 'Manrope', sans-serif; color: inherit; cursor: pointer; }
+  .add-mode button.on { background: var(--card, #fff); box-shadow: 0 6px 16px -10px rgba(16,14,42,.4); }
+  html[data-theme="dark"] .add-mode { background: rgba(255,255,255,.06); }
+  .handover .ho-row { display: grid; gap: 4px; margin: 10px 0; } .handover .ho-row span { font-size: 12px; font-weight: 800; opacity: .7; } .handover .ho-row b { font-size: 20px; }
 
   .garden { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 18px; margin-bottom: 26px; }
   .pot { position: relative; border-radius: 28px; padding: 18px 18px 16px; background: var(--tint, #e6dffa); color: #100e2a; border: 1px solid rgba(16,14,42,.06); overflow: hidden; transition: transform .2s, box-shadow .2s; animation: grow .5s cubic-bezier(.2,.9,.3,1.2) backwards; }
@@ -89,7 +94,7 @@
   @media print { body * { visibility: hidden; } #ecard-print, #ecard-print * { visibility: visible; } #ecard-print { position: absolute; left: 0; top: 0; width: 100%; } }
 </style>
 <script src="../assets/qc-csp.js?v=77f89cc2"></script>
-<script src="../assets/qc-i18n.js?v=faa7b43e"></script>
+<script src="../assets/qc-i18n.js?v=e873079a"></script>
 <script src="../assets/js/family-h.js?v=6ed874fe"></script>
 </head>
 <body>
@@ -161,6 +166,20 @@
     <button class="modal-x" data-close="m-edit" aria-label="Close">✕</button>
     <h2 id="edit-title">Add a family member 🌱</h2>
     <p class="sub" id="edit-sub">Family members are linked QueroCura accounts. We send them a request; they accept in their own account and choose whether you can only see their health summary or also help add readings.</p>
+    <div class="add-mode" id="add-mode" role="tablist">
+      <button type="button" class="on" data-mode="link">🔗 Link their account</button>
+      <button type="button" data-mode="child">👶 Create an account for my child</button>
+    </div>
+    <div id="child-fields" style="display:none">
+      <p class="sub" style="margin-top:0">A real QueroCura account for your child, looked after by you. Nobody can sign in to it until you hand it over; then they choose a password and sign in with their username.</p>
+      <div class="grid2">
+        <div class="field"><label for="k-name">Child's full name</label><input class="input" id="k-name" maxlength="60" autocomplete="off"></div>
+        <div class="field"><label for="k-bday">Date of birth</label><input class="input" id="k-bday" type="date"></div>
+        <div class="field"><label for="k-sex">Sex</label><select class="input" id="k-sex"><option value="unknown">Prefer not to say</option><option value="female">Female</option><option value="male">Male</option><option value="other">Other</option></select></div>
+        <div class="field"><label for="k-blood">Blood group</label><select class="input" id="k-blood"><option value="unknown">Not sure</option><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>AB+</option><option>AB-</option><option>O+</option><option>O-</option></select></div>
+      </div>
+      <div class="field"><label for="k-user">Username (for when they sign in themselves)</label><input class="input" id="k-user" maxlength="30" autocomplete="off" placeholder="we'll suggest one"><span class="hint">Lowercase letters, numbers, dots or dashes. You can leave the suggestion.</span></div>
+    </div>
     <div id="link-fields">
       <div class="field"><label for="e-account">Their QueroCura e-mail or username</label><input class="input" id="e-account" maxlength="254" autocomplete="off" placeholder="e.g. mum@example.com"></div>
       <div class="field"><label for="e-role">Ask to</label><select class="input" id="e-role"><option value="viewer">See their health summary</option><option value="manager">See and help add readings and records</option></select></div>
@@ -197,6 +216,13 @@
     <div class="row no-print" style="margin-top:14px"><button class="btn btn-dark" id="ecard-print-btn">🖨️ Print / save as PDF</button></div>
   </div></div>
 
+  <!-- hand a child's account over -->
+  <div class="modal-back" id="m-hand"><div class="modal">
+    <button class="modal-x" data-close="m-hand" aria-label="Close">✕</button>
+    <h2>Their own sign-in 🔑</h2><p class="sub">Your child chooses a password with this link, then signs in with their username. You stay linked and can keep helping.</p>
+    <div id="hand-body"></div>
+  </div></div>
+
   <!-- care circle -->
   <div class="modal-back" id="m-circle"><div class="modal">
     <button class="modal-x" data-close="m-circle" aria-label="Close">✕</button>
@@ -230,6 +256,6 @@
 
 <script src="../assets/qc-app.js?v=22a3a990"></script>
 <script src="../assets/qc-page.js?v=c34c97a9"></script>
-<script src="../assets/js/family-1.js?v=472b39e3"></script>
+<script src="../assets/js/family-1.js?v=60fbe177"></script>
 </body>
 </html>

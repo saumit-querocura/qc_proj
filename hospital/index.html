@@ -13,7 +13,7 @@
 <link rel="preconnect" href="https://app.querocura.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700;800&family=Manrope:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500;1,9..144,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../assets/qc-base.css?v=7b9ea421">
-<link rel="stylesheet" href="../assets/qc-hospital.css?v=361a4971">
+<link rel="stylesheet" href="../assets/qc-hospital.css?v=6985063d">
 <script src="../assets/qc-csp.js?v=77f89cc2"></script>
 </head>
 <body class="hp">
@@ -23,7 +23,7 @@
       <span class="logo-text"><span class="ink">Quero</span><span class="teal">Cura</span> <span class="hp-tag">for Hospitals</span></span>
     </a>
     <nav class="hp-nav" id="pub-nav">
-      <a href="#how">How it works</a><a href="#safety">Safety</a><a href="#faq">FAQ</a>
+      <a href="#wait">Smart booking</a><a href="#flow">Features</a><a href="#safety">Safety</a><a href="#faq">FAQ</a>
       <a class="btn btn-sm btn-primary" href="setup/" id="nav-apply">Get started</a>
       <a class="btn btn-sm" href="#signin" id="nav-signin">Sign in</a>
     </nav>
@@ -36,75 +36,118 @@
   </header>
 
   <!-- ===================== public: landing, apply, sign in ===================== -->
-  <main id="public">
-    <section class="hp-hero">
-      <div class="hp-orb o1"></div><div class="hp-orb o2"></div>
-      <div class="hp-wrap">
-        <span class="hp-eyebrow">Hospital onboarding</span>
-        <h1>Know your patient before they sit down.</h1>
-        <p class="lead">QueroCura for Hospitals connects your clinic, hospital or lab to the people you treat, with their permission, every time. See the vitals, medicines and results they choose to share. Write visits and results back to their record. No more retyping histories, no more lost paper.</p>
-        <div class="hp-cta"><a class="btn btn-primary" href="setup/">Plan your setup in 2 minutes →</a><a class="btn hp-ghost" href="#apply">Apply now</a><a class="btn hp-ghost" href="#signin">I already have an account</a></div>
-        <div class="hp-stats">
-          <div><b>Consent first</b><span>Nothing is visible until the patient says yes</span></div>
-          <div><b>Two-step sign-in</b><span>Authenticator app for every staff member</span></div>
-          <div><b>Every view logged</b><span>A tamper-evident record patients can read</span></div>
+  <main id="public" class="lux">
+    <!-- hero: a 3D constellation of care -->
+    <section class="lx-hero">
+      <div class="lx-3d" id="hero3d" aria-hidden="true"></div>
+      <div class="lx-veil" aria-hidden="true"></div>
+      <div class="lx-wrap lx-hero-in">
+        <div class="lx-copy">
+          <span class="lx-eyebrow"><i></i>QueroCura for hospitals &amp; clinics</span>
+          <h1>Every hour of your hospital, <em>beautifully run.</em></h1>
+          <p class="lx-lead">Patients, appointments, queues, beds, theatres, pharmacy and billing in one calm system. It books each patient for when their doctor will really be free, so your waiting room stays quiet.</p>
+          <div class="lx-cta">
+            <a class="lx-btn gold" href="setup/">Plan my setup <span aria-hidden="true">→</span></a>
+            <a class="lx-btn ghost" href="#signin">Sign in</a>
+          </div>
+          <ul class="lx-proof">
+            <li><b>2 minutes</b><span>to a setup plan sized to your facility</span></li>
+            <li><b>Consent first</b><span>patients choose what you see</span></li>
+            <li><b>Every view logged</b><span>in a log nobody can edit</span></li>
+          </ul>
+        </div>
+        <aside class="lx-live" aria-label="An example of the live doctors view">
+          <div class="lx-live-h"><span class="lx-dot"></span>Live doctors <small>example</small></div>
+          <div class="lx-doc"><span class="av">AR</span><div><b>Dr Anjali Rao</b><small>General Medicine</small></div><span class="st free">Free now</span></div>
+          <div class="lx-doc"><span class="av">VI</span><div><b>Dr Vikram Iyer</b><small>Paediatrics</small></div><span class="st late">12 min behind</span></div>
+          <div class="lx-doc"><span class="av">SM</span><div><b>Dr Sara Mehta</b><small>Orthopaedics</small></div><span class="st busy">With a patient</span></div>
+          <div class="lx-best"><span>Best slot</span><b>10:40 · Dr Rao</b><small>Seen at 10:40 · ask them to arrive 10:30</small></div>
+        </aside>
+      </div>
+      <a class="lx-scroll" href="#wait" aria-label="Scroll to learn more"><span></span></a>
+    </section>
+
+    <!-- what makes it different -->
+    <section class="lx-band">
+      <div class="lx-wrap lx-band-in">
+        <span>Built for India</span><i></i><span>UPI, cash &amp; card</span><i></i><span>PM-JAY, CGHS &amp; insurance payers</span><i></i><span>ABHA ready</span><i></i><span>English &amp; हिन्दी for patients</span>
+      </div>
+    </section>
+
+    <section class="lx-sec" id="wait">
+      <div class="lx-wrap lx-split">
+        <div>
+          <span class="lx-kicker">Waiting rooms, emptied</span>
+          <h2>Book patients for when the doctor is actually free.</h2>
+          <p class="lx-p">A 10:00 appointment means little if the doctor is twenty minutes behind. QueroCura watches each doctor's day as it happens: who is with them, who is waiting, how long their consultations usually take. It predicts when each patient will really be seen.</p>
+          <ul class="lx-ticks">
+            <li><b>Live status of every doctor.</b> Free now, with a patient, or running late, at a glance on the front-desk board.</li>
+            <li><b>The best slot, highlighted.</b> Every free slot shows when the patient will really be seen, and the soonest real start is marked.</li>
+            <li><b>Arrive-by times.</b> The desk tells patients when to come, and the QueroCura app warns them on the day if their doctor is running late.</li>
+            <li><b>Learns each doctor.</b> Predictions use each doctor's own recent consultations, not a fixed slot length.</li>
+          </ul>
+        </div>
+        <div class="lx-timeline" aria-hidden="true">
+          <div class="tl-head"><span>09:00</span><span>10:00</span><span>11:00</span><span>12:00</span></div>
+          <div class="tl-lane"><b>Dr Rao</b><div class="tl-track"><i class="bk" style="--l:4%;--w:16%"></i><i class="bk" style="--l:22%;--w:14%"></i><i class="best" style="--l:40%;--w:12%"><em>Best · 10:40</em></i><i class="bk" style="--l:58%;--w:16%"></i></div></div>
+          <div class="tl-lane"><b>Dr Iyer</b><div class="tl-track"><i class="bk" style="--l:2%;--w:18%"></i><i class="bk drift" style="--l:24%;--w:18%"></i><i class="bk drift" style="--l:46%;--w:16%"></i><i class="late" style="--l:64%;--w:10%"><em>+12 min</em></i></div></div>
+          <div class="tl-lane"><b>Dr Mehta</b><div class="tl-track"><i class="bk" style="--l:8%;--w:22%"></i><i class="bk" style="--l:34%;--w:20%"></i><i class="free" style="--l:58%;--w:14%"></i></div></div>
+          <div class="tl-now" style="--l:36%"><span>now</span></div>
+          <p class="tl-note">Booked slots drift as the day runs. QueroCura shows the real times and points the desk to the slot with the shortest wait.</p>
         </div>
       </div>
     </section>
 
-    <section class="hp-sec" id="how">
-      <div class="hp-wrap">
-        <span class="hp-kicker">How it works</span>
-        <h2>From application to first patient in four steps</h2>
-        <div class="hp-steps">
-          <div class="hp-step"><i>1</i><h3>Apply</h3><p>Tell us who you are and give a registration or licence number. It takes five minutes. You can sign in straight away to finish setting up.</p></div>
-          <div class="hp-step"><i>2</i><h3>We verify you</h3><p>Our team checks every organisation before it can reach any patient. You'll get an e-mail the moment you're approved.</p></div>
-          <div class="hp-step"><i>3</i><h3>Connect with consent</h3><p>The patient reads a one-time code at your front desk, or approves a request you send. They pick what you can see and for how long.</p></div>
-          <div class="hp-step"><i>4</i><h3>Run your day</h3><p>Check patients in to a token queue, triage emergencies, admit to a bed, send tests to the lab, hand over between shifts and discharge with a checklist. Results go back to the patient's own record.</p></div>
-        </div>
-      </div>
-    </section>
-
-    <section class="hp-sec" id="flow">
-      <div class="hp-wrap">
-        <span class="hp-kicker">One place for the whole hospital</span>
+    <section class="lx-sec lx-dark" id="flow">
+      <div class="lx-wrap">
+        <span class="lx-kicker">One place for the whole hospital</span>
         <h2>From the front desk to discharge</h2>
-        <div class="hp-grid">
-          <div class="hp-card"><h3>🗂️ Patient register and records</h3><p>Every patient gets an MRN and one record, whether or not they use the QueroCura app: visits, prescriptions, results, imaging, documents and bills in one place. App users join their record automatically.</p></div>
-          <div class="hp-card"><h3>📅 Appointments and schedules</h3><p>Doctors' weekly sessions and leave decide the free slots. Book, move or squeeze in extras; arrival opens the OPD visit and token. Patients see their appointments in the app.</p></div>
-          <div class="hp-card"><h3>℞ Prescriptions and pharmacy</h3><p>Doctors write and sign clear, printable prescriptions, checked against recorded allergies and duplicates. The pharmacy dispenses from batches by expiry and keeps stock.</p></div>
-          <div class="hp-card"><h3>🧾 Billing</h3><p>Bills fill themselves from the visit: consultation, tests, bed-days and medicines. Payments by cash, UPI or card with receipts, insurance and scheme claims, and a day close.</p></div>
-          <div class="hp-card"><h3>👥 Duty roster and reports</h3><p>Who is on which shift, and where. Footfall, admissions, length of stay, collections and common diagnoses, downloadable as CSV.</p></div>
-          <div class="hp-card"><h3>🎟️ OPD queue and tokens</h3><p>Check patients in to a department, call them in, see waits as they grow. A waiting-room TV shows the numbers being served, never names.</p></div>
-          <div class="hp-card"><h3>🚑 Emergency triage</h3><p>Five triage levels with time-to-be-seen targets. The sickest are always first, and anyone past their target is flagged.</p></div>
-          <div class="hp-card"><h3>🛏️ Live bed board</h3><p>Every ward and bed at a glance: occupied, going home, being cleaned, reserved. Admitting suggests the right free bed.</p></div>
-          <div class="hp-card"><h3>🧪 Orders between departments</h3><p>Tests, scans, nursing tasks and consults go to the right team with a priority and a due time. Results flow back to the patient's record.</p></div>
-          <div class="hp-card"><h3>🤝 Shift handover</h3><p>Short SBAR handovers per ward or patient, acknowledged by the next shift so nothing falls between them.</p></div>
-          <div class="hp-card"><h3>🩻 AI-assisted imaging</h3><p>Upload X-ray, CT, MRI, ultrasound, PET and mammography images. Two independent AI reads draft the findings, with boxes on the image, a differential and its limits. Your clinicians accept or reject each finding and sign the report.</p></div>
-          <div class="hp-card"><h3>🔪 Operation theatres</h3><p>Theatre lists by day with clash checks for theatre, surgeon and anaesthetist, and the WHO surgical safety checklist (sign in, time out, sign out) built into every case. Finished cases go onto the bill.</p></div>
-          <div class="hp-card"><h3>📝 Discharge summaries</h3><p>Dates, ward, investigations with results, operations and the medicines prescribed during the stay are gathered for the doctor, who writes the story and signs. It goes to the patient's record and ticks the discharge checklist.</p></div>
-          <div class="hp-card"><h3>🧭 Fitted to your size</h3><p>A few questions about your beds, doctors, services and pain points become a setup plan: which modules to switch on, departments, wards and beds, who to invite and a go-live checklist.</p></div>
-          <div class="hp-card"><h3>📊 Command centre</h3><p>Occupancy, waits, overdue orders and department load, live, with the few things that need attention right now.</p></div>
+        <div class="lx-bento">
+          <article class="bx tall"><span class="ic">🗂️</span><h3>Patient register &amp; records</h3><p>An MRN and one record per patient: visits, prescriptions, results, scans and bills. App users join with the history they choose to share; a doctor keeps their own "My patients".</p></article>
+          <article class="bx wide"><span class="ic">📅</span><h3>Appointments that respect real time</h3><p>Every doctor's day side by side. Click a free slot to book, mark arrivals, move or cancel. The soonest real slot is always highlighted.</p></article>
+          <article class="bx"><span class="ic">🎟️</span><h3>OPD queue &amp; tokens</h3><p>Fair tokens by department and a waiting-room screen that never shows names.</p></article>
+          <article class="bx"><span class="ic">🚑</span><h3>Emergency triage</h3><p>Five levels with time-to-be-seen targets and early-warning scores.</p></article>
+          <article class="bx"><span class="ic">🛏️</span><h3>Beds &amp; discharge</h3><p>A live bed board, admission to the right bed, and signed discharge summaries.</p></article>
+          <article class="bx"><span class="ic">🔪</span><h3>Operation theatres</h3><p>Theatre lists with clash checks and the WHO surgical safety checklist in every case.</p></article>
+          <article class="bx"><span class="ic">℞</span><h3>Prescriptions &amp; pharmacy</h3><p>Allergy and duplicate checks, printable prescriptions, stock dispensed by expiry.</p></article>
+          <article class="bx wide"><span class="ic">🧾</span><h3>Billing &amp; the payments desk</h3><p>Bills fill themselves from the visit. The desk sees who owes what and what is still to bill, then collects by cash, UPI or card with receipts. Prices are set per doctor and per test.</p></article>
+          <article class="bx"><span class="ic">🩻</span><h3>AI-assisted imaging</h3><p>Two independent AI reads draft findings; your radiologist accepts, rejects and signs.</p></article>
+          <article class="bx"><span class="ic">🔐</span><h3>Roles you design</h3><p>Change what each role can do, or create your own, such as "Senior receptionist".</p></article>
+          <article class="bx"><span class="ic">📊</span><h3>Reports &amp; command centre</h3><p>Footfall, admissions, collections and occupancy, live and as CSV.</p></article>
         </div>
       </div>
     </section>
 
-    <section class="hp-sec alt" id="safety">
-      <div class="hp-wrap">
-        <span class="hp-kicker">Built to be trusted</span>
+    <section class="lx-sec" id="how">
+      <div class="lx-wrap">
+        <span class="lx-kicker">How it works</span>
+        <h2>From first question to first patient</h2>
+        <ol class="lx-steps">
+          <li><i>1</i><h3>Answer a few questions</h3><p>Beds, doctors, services and what you want to fix. You get a plan sized to your facility.</p></li>
+          <li><i>2</i><h3>Apply and get verified</h3><p>Use your registration or licence number. We check every organisation before it can reach a patient.</p></li>
+          <li><i>3</i><h3>Apply the plan</h3><p>One click creates your departments, wards, beds, theatres and price list. Invite your team.</p></li>
+          <li><i>4</i><h3>Open the doors</h3><p>Register, book, check in, treat, bill. Patients connect their QueroCura app with consent.</p></li>
+        </ol>
+        <div class="lx-cta center"><a class="lx-btn gold" href="setup/">Plan my setup <span aria-hidden="true">→</span></a></div>
+      </div>
+    </section>
+
+    <section class="lx-sec lx-ivory" id="safety">
+      <div class="lx-wrap">
+        <span class="lx-kicker">Built to be trusted</span>
         <h2>Designed so patients can say yes</h2>
-        <div class="hp-grid">
-          <div class="hp-card"><h3>The patient decides</h3><p>Each connection has chosen sections, an end date and an off switch. Everything ends by itself, and patients can end it sooner.</p></div>
-          <div class="hp-card"><h3>Only what's needed</h3><p>Roles keep people to their job: doctors read, write and prescribe, nurses add vitals and notes, the pharmacy dispenses, billing takes payments, and the front desk registers and books but sees no clinical notes.</p></div>
-          <div class="hp-card"><h3>Two-step sign-in</h3><p>Staff sign in with a password and an authenticator app. Sessions end after 20 idle minutes and can be signed out everywhere in one tap.</p></div>
-          <div class="hp-card"><h3>A log nobody can edit</h3><p>Every request, view and record is written to a hash-chained audit log. The patient sees it too.</p></div>
-          <div class="hp-card"><h3>Emergency, carefully</h3><p>If a patient switched it on, a verified doctor can open a 2-hour, read-only essentials view with a written reason. The patient is told straight away.</p></div>
-          <div class="hp-card"><h3>Encrypted records</h3><p>Anything you write to a patient's account is encrypted at rest and belongs to them, including the right to delete it.</p></div>
+        <div class="lx-trust">
+          <div><h3>The patient decides</h3><p>Each connection has chosen sections, an end date and an off switch.</p></div>
+          <div><h3>Only what's needed</h3><p>Roles keep people to their job. Front desk and billing never see clinical notes.</p></div>
+          <div><h3>Two-step sign-in</h3><p>Password and authenticator for every staff member; idle sessions end on their own.</p></div>
+          <div><h3>A log nobody can edit</h3><p>Every request, view and change goes into a hash-chained log. Patients see their own part.</p></div>
+          <div><h3>Emergency, carefully</h3><p>A 2-hour, read-only essentials view, only if the patient switched it on. They're told at once.</p></div>
+          <div><h3>Encrypted records</h3><p>Clinical text is encrypted at rest and belongs to the patient, including the right to delete it.</p></div>
         </div>
       </div>
     </section>
 
-    <section class="hp-sec" id="join">
+    <section class="hp-sec lx-join" id="join">
       <div class="hp-wrap hp-two">
         <div class="hp-panel" id="apply">
           <h2>Apply to onboard</h2>
@@ -169,7 +212,7 @@
       </div>
     </section>
 
-    <section class="hp-sec alt" id="faq">
+    <section class="hp-sec lx-faq" id="faq">
       <div class="hp-wrap narrow">
         <span class="hp-kicker">Questions</span>
         <h2>Good things to ask</h2>
@@ -229,7 +272,7 @@
   <footer class="hp-foot"><div class="hp-wrap">© 2026 QueroCura · <a href="../">Home</a> · <a href="../register/">For patients</a> · Patient information is shared only with the patient's consent.</div></footer>
 
   <script src="../assets/qc-page.js?v=c34c97a9"></script>
-  <script src="../assets/js/hospital-hms.js?v=070ec4dc"></script>
+  <script src="../assets/js/hospital-hms.js?v=0a6dff9a"></script>
   <script src="../assets/js/hospital-hms-desk.js?v=29e7ac14"></script>
   <script src="../assets/js/hospital-hms-ot.js?v=0e77cc12"></script>
   <script src="../assets/js/hospital-access.js?v=3c38970a"></script>
@@ -237,6 +280,7 @@
   <script src="../assets/js/hospital-clinical.js?v=2b610f5e"></script>
 <script src="../assets/js/hospital-ops.js?v=e6f6eae2"></script>
   <script src="../assets/js/hospital-imaging.js?v=204182ea"></script>
+  <script type="module" src="../assets/js/hospital-hero3d.js?v=f43d067c"></script>
   <script src="../assets/js/hospital.js?v=d2a90510"></script>
 </body>
 </html>

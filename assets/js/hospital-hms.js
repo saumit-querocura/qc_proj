@@ -301,7 +301,7 @@
       var st = r.stats, isToday = S.apDay === M.today(), mayBook = canAny("appointments");
       var h = '<div class="hms-head"><div><h2>Appointments</h2><p class="sub">All doctors at once. Click a free slot to book it; click a booking to mark arrival, move or cancel it.</p></div><div class="row">' + viewSwitch() +
         (canAny("schedules") || can("rx") ? '<button class="btn btn-ghost" type="button" data-sched>Doctor schedules</button>' : "") +
-        (mayBook ? '<button class="btn btn-ghost" type="button" data-soon>⚡ Soonest free</button><button class="btn btn-primary" type="button" data-new>+ Book</button>' : "") + "</div></div>" +
+        (mayBook ? '<button class="btn btn-gold" type="button" data-smart>✨ Smart booking</button><button class="btn btn-primary" type="button" data-new>+ Book</button>' : "") + "</div></div>" +
         '<div class="ops-bar"><div class="ap-day"><button type="button" class="btn btn-sm btn-ghost" data-d="-1" aria-label="Previous day">‹</button><input class="input" type="date" id="ap-date" value="' + S.apDay + '"><button type="button" class="btn btn-sm btn-ghost" data-d="1" aria-label="Next day">›</button>' +
         (isToday ? "" : '<button type="button" class="link" data-d="0">Today</button>') + '<b class="ap-dname">' + esc(M.day(S.apDay)) + "</b></div>" +
         '<div class="ops-bar-r"><select class="input" id="ap-dept"><option value="">All departments</option>' + r.departments.map(function (d) { return '<option value="' + esc(d.id) + '"' + (d.id === S.apDept ? " selected" : "") + ">" + esc(d.name) + "</option>"; }).join("") + "</select></div></div>" +
@@ -312,11 +312,17 @@
         c.slots.forEach(function (sl) {
           var here = c.items.filter(function (a) { return a.start === sl.start && !a.extra; });
           here.forEach(function (a) { cells.push(bdAppt(a)); });
-          if (sl.free) cells.push('<button type="button" class="bd-free" data-slot="' + esc(sl.start) + '" data-doc="' + esc(c.id) + '"' + (mayBook ? "" : " disabled") + "><b>" + esc(sl.start) + "</b><span>" + (sl.capacity > 1 ? sl.booked + "/" + sl.capacity : "Free") + "</span></button>");
+          if (sl.free) {
+            var wt = sl.expected_wait || 0;
+            cells.push('<button type="button" class="bd-free' + (sl.best ? " best" : wt >= 20 ? " slow" : "") + '" data-slot="' + esc(sl.start) + '" data-doc="' + esc(c.id) + '"' + (mayBook ? "" : " disabled") + "><b>" + esc(sl.start) + "</b><span>" +
+              (sl.best ? "★ Best slot" : wt >= 5 ? "Seen ~" + esc(sl.predicted) : (sl.capacity > 1 ? sl.booked + "/" + sl.capacity : "Free")) + "</span></button>");
+          }
           else if (!here.length && sl.past) cells.push('<div class="bd-past">' + esc(sl.start) + "</div>");
         });
         c.items.filter(function (a) { return a.extra || !c.slots.some(function (sl) { return sl.start === a.start; }); }).forEach(function (a) { cells.push(bdAppt(a)); });
+        var lv = c.live || {};
         return '<section class="bd-col' + (c.on_leave ? " leave" : "") + '"><header><b>' + esc(c.name) + "</b><small>" + esc(c.specialty || (c.sessions[0] ? c.sessions[0].dept : "")) + "</small>" +
+          (lv.label ? '<div class="sm-live st-' + esc(lv.status) + '"><i></i>' + esc(lv.label) + "</div>" : "") +
           '<div class="bd-meta">' + (c.on_leave ? '<span class="pill bad">On leave</span>' : c.sessions.length ? c.sessions.map(function (x) { return esc(x.start + "–" + x.end) + (x.room ? " · " + esc(x.room) : ""); }).join("<br>") : '<span class="mini">No sessions</span>') + "</div>" +
           (c.sessions.length && !c.on_leave ? '<div class="bd-count"><span>' + c.booked + " booked</span><span>" + c.free + " free</span></div>" : "") + "</header>" +
           '<div class="bd-cells">' + (cells.join("") || '<div class="mini bd-none">' + (c.on_leave ? "Away today" : "Nothing today") + "</div>") + "</div></section>";
@@ -327,7 +333,9 @@
     if (!quiet) { clearInterval(S.timer); S.timer = setInterval(function () { if (!document.hidden && !M.isOpen() && !M.isOpen(2) && el("ap-date")) loadAppointments(true); }, 30000); }
   }
   function bdAppt(a) {
-    return '<button type="button" class="bd-ap st-' + esc(a.status) + '" data-ap="' + esc(a.id) + '"><b>' + esc(a.start) + "</b><span>" + esc(a.patient_name || "") + "</span><i>" + esc(a.status === "booked" ? (a.kind_label || "") : a.status.replace("_", " ")) + (a.extra ? " · extra" : "") + "</i></button>";
+    var late = a.expected_wait >= 5 && (a.status === "booked" || a.status === "confirmed");
+    return '<button type="button" class="bd-ap st-' + esc(a.status) + (late ? " drift" : "") + '" data-ap="' + esc(a.id) + '"><b>' + esc(a.start) + "</b><span>" + esc(a.patient_name || "") + "</span><i>" +
+      (late ? "Likely seen ~" + esc(a.predicted) + " (+" + a.expected_wait + " min)" : esc(a.status === "booked" ? (a.kind_label || "") : a.status.replace("_", " "))) + (a.extra ? " · extra" : "") + "</i></button>";
   }
   function bdOpen(a) {
     var b = M.modal('<h2 id="ops-title">' + esc(a.patient_name || "") + '</h2><p class="sub">' + esc(M.day(a.day)) + " " + esc(a.start) + "–" + esc(a.end) + " with " + esc(a.doctor || "") + (a.dept ? " · " + esc(a.dept) : "") + "</p>" + apRow(a));
@@ -336,6 +344,42 @@
       if ((t = e.target.closest("[data-apact]"))) { if (t.getAttribute("data-apact") !== "visit") M.close(); return apAct(t.getAttribute("data-id"), t.getAttribute("data-apact")); }
       if ((t = e.target.closest("[data-pat]"))) return openRecord(t.getAttribute("data-pat"));
     };
+  }
+  /* smart booking: the best times ranked by when the patient will actually be seen */
+  function smart(o) {
+    o = o || {};
+    var patient = o.patient || null;
+    var b = M.modal('<div class="sm-head"><span class="sm-spark">✨</span><div><h2 id="ops-title">Smart booking</h2><p class="sub">Ranked by when the patient will really be seen, from each doctor\'s day as it is going and how long their consultations usually take.</p></div></div>' +
+      '<div class="grid2"><div class="field"><label>Patient (optional)</label><div id="sm-p"></div></div><div class="field"><label for="sm-dept">Department</label><select class="input" id="sm-dept"><option value="">Any</option></select></div></div>' +
+      '<div id="sm-out"><div class="empty">Finding the best times…</div></div>', true);
+    M.picker(el("sm-p"), function (p) { patient = p; run(); });
+    if (patient) el("sm-p").pick(patient);
+    api("/hospital/appointments/board?day=" + M.today()).then(function (r) {
+      if (!r.ok) return;
+      el("sm-dept").innerHTML = '<option value="">Any</option>' + r.departments.map(function (d) { return '<option value="' + esc(d.id) + '"' + (d.id === o.dept ? " selected" : "") + ">" + esc(d.name) + "</option>"; }).join("");
+    });
+    el("sm-dept").onchange = run;
+    function run() {
+      var dept = el("sm-dept").value || o.dept || "";
+      el("sm-out").innerHTML = '<div class="empty">Finding the best times…</div>';
+      api("/hospital/appointments/recommend?days=7" + (dept ? "&dept=" + encodeURIComponent(dept) : "") + (patient && patient.id ? "&patient=" + encodeURIComponent(patient.id) : "")).then(function (r) {
+        if (!r.ok) { el("sm-out").innerHTML = '<div class="notice bad">' + esc(r.message) + "</div>"; return; }
+        var h = "";
+        if (r.now) h += '<div class="sm-now"><span class="sm-dot"></span><div><b>' + esc(r.now.doctor) + " is free right now</b><small>" + esc(r.now.label) + '</small></div>' + (can("ops") ? '<button type="button" class="btn btn-sm btn-primary" data-walkin="' + esc(r.now.staff_id) + '">Check in now</button>' : "") + "</div>";
+        h += r.options.length ? '<div class="sm-list">' + r.options.map(function (x, i) {
+          return '<div class="sm-opt' + (i === 0 ? " top" : "") + '"><span class="sm-why">' + esc(x.why) + '</span><div class="sm-main"><b>' + esc(x.doctor) + "</b><small>" + esc(x.specialty || "") + "</small></div>" +
+            '<div class="sm-when"><b>' + esc(M.day(x.day)) + " · " + esc(x.start) + "</b><small>" + (x.expected_wait >= 5 ? "Likely seen ~" + esc(x.predicted) + " (+" + x.expected_wait + " min)" : "On time") + " · arrive by " + esc(x.arrive_by) + "</small></div>" +
+            '<button type="button" class="btn btn-sm' + (i === 0 ? " btn-gold" : "") + '" data-pick=\'' + esc(JSON.stringify(x)) + "'>Book</button></div>";
+        }).join("") + "</div>" : '<div class="empty">No free slots in the next week' + (dept ? " in this department" : "") + ".</div>";
+        el("sm-out").innerHTML = h;
+      });
+    }
+    b.onclick = function (e) {
+      var t;
+      if ((t = e.target.closest("[data-pick]"))) { var x = JSON.parse(t.getAttribute("data-pick")); M.close(); return book({ doctor: x.staff_id, day: x.day, start: x.start, patient: patient }); }
+      if ((t = e.target.closest("[data-walkin]"))) { M.close(); return window.QCOps && window.QCOps.checkIn(patient && patient.id ? patient.id : ""); }
+    };
+    run();
   }
   function soonest() {
     api("/hospital/appointments/first-free" + (S.apDept ? "?dept=" + encodeURIComponent(S.apDept) : "")).then(function (r) {
@@ -356,6 +400,7 @@
       if ((t = e.target.closest("[data-d]"))) { var n = +t.getAttribute("data-d"); S.apDay = n === 0 ? M.today() : M.addDays(S.apDay, n); return loadAppointments(); }
       if (e.target.closest("[data-new]")) return book({ day: S.apDay });
       if (e.target.closest("[data-soon]")) return soonest();
+      if (e.target.closest("[data-smart]")) return smart({ dept: S.apDept });
       if (e.target.closest("[data-sched]")) return schedules(S.apDoc);
       if ((t = e.target.closest("[data-slot]"))) return book({ doctor: t.getAttribute("data-doc") || S.apDoc, day: S.apDay, start: t.getAttribute("data-slot") });
       if ((t = e.target.closest("[data-ap]")) && r && r.columns) {
@@ -438,7 +483,7 @@
     var b = M.modal('<h2 id="ops-title">' + (o.reschedule ? "Move the appointment" : "Book an appointment") + '</h2><form id="bk-form" novalidate>' +
       (o.reschedule ? "" : '<div class="field"><label>Patient</label><div id="bk-p"></div></div>') +
       '<div class="grid2"><div class="field"><label for="bk-doc">Doctor</label><select class="input" id="bk-doc"><option value="">Choose…</option></select></div><div class="field"><label for="bk-day">Date</label><input class="input" type="date" id="bk-day" min="' + M.today() + '" value="' + esc(o.day || M.today()) + '"></div></div>' +
-      '<div class="field"><label>Time</label><div id="bk-slots" class="slots"><span class="mini">Choose a doctor.</span></div><label class="hp-check" style="margin-top:8px"><input type="checkbox" id="bk-extra"> <span>Add as an extra at</span> <input class="input sm" type="time" id="bk-time" step="300" style="width:auto;display:inline-block;margin-left:6px"></label></div>' +
+      '<div class="field"><label>Time</label><div id="bk-slots" class="bk-slots"><span class="mini">Choose a doctor.</span></div><label class="hp-check" style="margin-top:8px"><input type="checkbox" id="bk-extra"> <span>Add as an extra at</span> <input class="input sm" type="time" id="bk-time" step="300" style="width:auto;display:inline-block;margin-left:6px"></label></div>' +
       (o.reschedule ? "" : '<div class="grid2"><div class="field"><label for="bk-kind">Type</label><select class="input" id="bk-kind"><option value="new">New consultation</option><option value="follow_up"' + (o.kind === "follow_up" ? " selected" : "") + '>Follow-up</option><option value="procedure">Procedure</option><option value="review">Report review</option><option value="tele">Teleconsultation</option></select></div>' +
         '<div class="field"><label for="bk-r">Reason</label><input class="input" id="bk-r" maxlength="300" value="' + esc(o.reason || "") + '"></div></div>') +
       '<button class="btn btn-primary" type="submit">' + (o.reschedule ? "Move it" : "Book") + '</button><div class="msg" id="bk-msg" role="status"></div></form>', false, layer);
@@ -459,8 +504,13 @@
       api("/hospital/appointments/slots?doctor=" + encodeURIComponent(doc) + "&day=" + day).then(function (r) {
         if (!r.ok) { box.innerHTML = '<span class="mini">' + esc(r.message) + "</span>"; return; }
         var free = r.slots.filter(function (s) { return !s.past; });
-        box.innerHTML = free.length ? free.map(function (s) { return '<button type="button" class="slot' + (s.free ? " free" : " full") + (s.start === start ? " on" : "") + '" data-s="' + s.start + '"' + (s.free ? "" : " disabled") + ">" + s.start + "</button>"; }).join("") :
-          '<span class="mini">' + esc(r.note || "No free slots that day.") + "</span>";
+        var live = r.live ? '<div class="sm-live st-' + esc(r.live.status) + '"><i></i>' + esc(r.live.label) + (r.live.consult_learned ? " · about " + r.live.consult_min + " min per patient" : "") + "</div>" : "";
+        box.innerHTML = live + (free.length ? '<div class="slots">' + free.map(function (s) {
+          var w = s.expected_wait || 0, cls = s.free ? (s.best ? " free best" : w >= 20 ? " free slow" : " free") : " full";
+          return '<button type="button" class="slot' + cls + (s.start === start ? " on" : "") + '" data-s="' + s.start + '"' + (s.free ? "" : " disabled") + ' title="' + (s.predicted && w ? "Likely seen around " + s.predicted : "On time") + '">' + s.start +
+            (s.free && s.predicted && w >= 5 ? "<small>~" + esc(s.predicted) + "</small>" : s.best ? "<small>best</small>" : "") + "</button>";
+        }).join("") + "</div>" + (free.some(function (s) { return s.expected_wait >= 5; }) ? '<p class="mini sm-note">Times under a slot are when the patient is likely to be seen, from how the doctor\'s day is going. ★ marks the soonest real start.</p>' : "") :
+          '<span class="mini">' + esc(r.note || "No free slots that day.") + "</span>");
         if (r.next_free) box.innerHTML += ' <button type="button" class="link" data-next="' + r.next_free.day + "|" + r.next_free.start + '">Next free: ' + esc(M.day(r.next_free.day)) + " " + esc(r.next_free.start) + "</button>";
       });
     }
@@ -591,7 +641,7 @@
   /* ---------------------------------------------------------------- registration with hospital.js */
   var EXTRA = {};
   window.QCHms = {
-    M: M, register: register, openRecord: openRecord, book: book, picker: M.picker,
+    M: M, register: register, openRecord: openRecord, book: book, picker: M.picker, smart: smart,
     add: function (key, label, test, group, loader) { EXTRA[key] = { label: label, test: test, group: group, loader: loader }; },
     tabs: function (canFn) {
       var c = function () { for (var i = 0; i < arguments.length; i++) if (canFn(arguments[i])) return true; return false; };

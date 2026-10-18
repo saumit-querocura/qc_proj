@@ -1,5 +1,6 @@
 (function () {
   var P = QCPage, esc = P.esc, api = P.api;
+  var MODE = "link";
   var HUB = null, EDIT_ID = null, SEL = { avatar: "panda", color: "mint", relation: "child" }, CIRCLE_ID = null, CHEER_ID = null, CHEER_EMOJI = "💛", RM_ID = null;
   var ANIMAL = QC.animals, TINT = QC.tints;
   var RELNICE = { child: "Child", parent: "Parent", grandparent: "Grandparent", partner: "Partner", sibling: "Sibling", relative: "Relative", friend: "Friend", other: "Someone special" };
@@ -31,7 +32,7 @@
     var lin = (H.linked_to_me || []);
     el("links-in").innerHTML = lin.map(function (l) {
       if (l.status === "pending") {
-        return '<div class="invite-banner link-req"><span class="who">' + (ANIMAL[l.avatar] || "🙂") + '</span><span style="flex:1 1 260px"><b>' + esc(l.from_name) + '</b> wants to add you to their family as their ' + esc((RELNICE[l.relation] || l.relation).toLowerCase()) + '. Nothing is shared until you accept.</span>' +
+        return '<div class="invite-banner link-req"><span class="who">' + (ANIMAL[l.avatar] || "🙂") + '</span><span style="flex:1 1 260px"><b>' + esc(l.from_name) + '</b> wants to add ' + (l.on_behalf_of ? "<b>" + esc(l.on_behalf_of) + "</b> (whose account you look after)" : "you") + " to their family as their " + esc((RELNICE[l.relation] || l.relation).toLowerCase()) + '. Nothing is shared until you accept.</span>' +
           '<select class="input" data-lrole="' + l.link_id + '" style="width:auto"><option value="viewer"' + (l.role === "viewer" ? " selected" : "") + '>They can see my health summary</option><option value="manager"' + (l.role === "manager" ? " selected" : "") + '>They can also help add readings</option></select>' +
           '<button class="btn btn-sm btn-dark" data-lacc="' + l.link_id + '">Accept</button><button class="btn btn-sm" data-ldec="' + l.link_id + '">Decline</button></div>';
       }
@@ -90,11 +91,12 @@
     var actions = '<button class="btn main" data-open="' + id + '">Open ' + esc(m.nickname) + '\'s space</button>';
     if (!viewer) actions += '<button class="btn" data-water="' + id + '">💧 Water (log)</button>';
     actions += '<button class="btn" data-card="' + id + '">🆘 Card</button>';
-    if (!shared && m.linked) actions += '<button class="btn" data-edit="' + id + '">✏️ Edit</button><button class="btn" data-lun="' + id + '">Unlink</button>';
+    if (!shared && m.linked && m.guardian) actions += '<button class="btn" data-edit="' + id + '">✏️ Edit</button>' + (m.own_sign_in ? "" : '<button class="btn" data-handover="' + id + '">🔑 Give them their own sign-in</button>');
+    else if (!shared && m.linked) actions += '<button class="btn" data-edit="' + id + '">✏️ Edit</button><button class="btn" data-lun="' + id + '">Unlink</button>';
     else if (!shared) actions += '<button class="btn" data-cheer="' + id + '">💌 Cheer</button><button class="btn" data-circle="' + id + '">🫶 Circle</button><button class="btn" data-edit="' + id + '">✏️ Edit</button>';
     else actions += '<button class="btn" data-leave="' + (m.access_id || "") + '" style="display:none"></button>';
     return '<div class="pot" style="--tint:' + tint + ';animation-delay:' + (idx * .06) + 's" data-mid="' + id + '">' +
-      '<div class="pot-top"><div class="face" data-bounce>' + emoji + '</div><div><div class="nm">' + esc(m.nickname) + (m.linked ? ' <span class="chip" title="Their own QueroCura account">🔗 linked</span>' : "") + '</div><div class="rel">' + esc(RELNICE[m.relation] || m.relation) + (m.age != null ? ' · ' + m.age + (m.age === 1 ? ' yr' : ' yrs') : '') + (shared ? ' · ' + esc(m.owner_name || "") + "'s family" : "") + (viewer ? ' · view only' : '') + '</div></div><span class="mood" data-mood="' + id + '">·</span></div>' +
+      '<div class="pot-top"><div class="face" data-bounce>' + emoji + '</div><div><div class="nm">' + esc(m.nickname) + (m.linked ? (m.guardian ? ' <span class="chip" title="A child account you look after">👶 ' + esc(m.own_sign_in ? "their own account" : "you look after it") + "</span>" : ' <span class="chip" title="Their own QueroCura account">🔗 linked</span>') : "") + '</div><div class="rel">' + esc(RELNICE[m.relation] || m.relation) + (m.age != null ? ' · ' + m.age + (m.age === 1 ? ' yr' : ' yrs') : '') + (shared ? ' · ' + esc(m.owner_name || "") + "'s family" : "") + (viewer ? ' · view only' : '') + '</div></div><span class="mood" data-mood="' + id + '">·</span></div>' +
       '<div class="plant" data-plant="' + id + '"><span class="stage">🌱</span><span class="cap"><span class="skeleton"></span></span></div>' +
       '<div class="scoreline" data-score="' + id + '">' + bday + streak + '</div><div class="badges">' + badges + '</div>' + ideas +
       '<div class="actions">' + actions + '</div></div>';
@@ -137,6 +139,7 @@
     var ci = t.closest("[data-circle]"); if (ci) { openCircle(ci.getAttribute("data-circle")); return; }
     var ed = t.closest("[data-edit]"); if (ed) { openEdit(ed.getAttribute("data-edit")); return; }
     var iv = t.closest("[data-inv]"); if (iv) { respond(iv.getAttribute("data-inv"), iv.getAttribute("data-acc") === "1"); return; }
+    var ho = t.closest("[data-handover]"); if (ho) { handover(ho.getAttribute("data-handover")); return; }
     var la = t.closest("[data-lacc]"); if (la) { var id = la.getAttribute("data-lacc"), sel = document.querySelector('[data-lrole="' + id + '"]'); linkPost("/family/links/" + id + "/respond", { accept: true, role: sel ? sel.value : "viewer" }, true); return; }
     var ld = t.closest("[data-ldec]"); if (ld) { linkPost("/family/links/" + ld.getAttribute("data-ldec") + "/respond", { accept: false }); return; }
     var ls = t.closest("[data-lswap]"); if (ls) { linkPost("/family/links/" + ls.getAttribute("data-lswap") + "/role", { role: ls.getAttribute("data-to") }); return; }
@@ -173,6 +176,8 @@
     EDIT_ID = id; el("e-msg").textContent = "";
     var m = id ? (HUB.members || []).filter(function (x) { return x.member_id === id; })[0] : null;
     el("edit-title").textContent = m ? "Edit " + m.nickname : "Add a family member 🌱";
+    MODE = "link"; setMode();
+    el("add-mode").style.display = m ? "none" : "";
     el("link-fields").style.display = m ? "none" : "";
     el("edit-sub").style.display = m ? "none" : "";
     el("legacy-fields").style.display = m && !m.linked ? "" : "none";
@@ -181,10 +186,28 @@
     SEL = m ? { avatar: m.avatar, color: m.color, relation: m.relation } : { avatar: "panda", color: Object.keys(TINT)[Math.floor(Math.random() * 8)], relation: "child" };
     el("e-name").value = m ? m.nickname : ""; el("e-bday").value = m ? (m.birthday || "") : ""; el("e-sex").value = m ? (m.sex || "unknown") : "unknown";
     el("e-blood").value = "unknown"; el("e-cname").value = m ? (m.contact_name || "") : ""; el("e-cphone").value = m ? (m.contact_phone || "") : ""; el("e-notes").value = m ? (m.notes || "") : "";
-    el("e-delete").style.display = m && !m.linked ? "" : "none";
+    el("e-delete").style.display = m && (!m.linked || (m.guardian && !m.own_sign_in)) ? "" : "none";
     buildPickers(); P.openModal("m-edit");
   }
+  function setMode() {
+    if (EDIT_ID) { el("child-fields").style.display = "none"; return; }
+    [].forEach.call(el("add-mode").querySelectorAll("[data-mode]"), function (b) { b.classList.toggle("on", b.getAttribute("data-mode") === MODE); });
+    el("child-fields").style.display = MODE === "child" ? "" : "none";
+    el("link-fields").style.display = MODE === "link" ? "" : "none";
+    el("edit-sub").style.display = MODE === "link" ? "" : "none";
+    el("edit-title").textContent = MODE === "child" ? "An account for your child 👶" : "Add a family member 🌱";
+    if (MODE === "child") { SEL.relation = "child"; SEL.avatar = SEL.avatar || "panda"; buildPickers(); }
+  }
+  el("add-mode").addEventListener("click", function (e) { var b = e.target.closest("[data-mode]"); if (!b) return; MODE = b.getAttribute("data-mode"); el("e-msg").textContent = ""; setMode(); });
+  var kt = null;
+  el("k-name").addEventListener("input", function () {
+    var v = this.value.trim(); if (!el("e-name").value || el("e-name").dataset.auto) { el("e-name").value = v.split(" ")[0]; el("e-name").dataset.auto = "1"; preview(); }
+    clearTimeout(kt); if (!v || el("k-user").dataset.touched) return;
+    kt = setTimeout(function () { api("/family/children/username?name=" + encodeURIComponent(v)).then(function (d) { if (d.ok && !el("k-user").dataset.touched) el("k-user").value = d.username; }); }, 300);
+  });
+  el("k-user").addEventListener("input", function () { this.dataset.touched = "1"; });
   el("e-save").addEventListener("click", function () {
+    if (!EDIT_ID && MODE === "child") return saveChild();
     var editing = EDIT_ID ? (HUB.members || []).filter(function (x) { return x.member_id === EDIT_ID; })[0] : null;
     var body = { nickname: el("e-name").value.trim(), relation: SEL.relation, avatar: SEL.avatar, color: SEL.color };
     if (editing && !editing.linked) {
@@ -204,10 +227,34 @@
       load();
     });
   });
+  function saveChild() {
+    var body = { name: el("k-name").value.trim(), birthday: el("k-bday").value, sex: el("k-sex").value, blood_type: el("k-blood").value, username: el("k-user").value.trim(),
+      nickname: el("e-name").value.trim(), avatar: SEL.avatar, color: SEL.color };
+    if (!body.name) { el("e-msg").className = "msg err"; el("e-msg").textContent = "Enter your child's name."; return; }
+    if (!body.birthday) { el("e-msg").className = "msg err"; el("e-msg").textContent = "Add their date of birth."; return; }
+    var btn = el("e-save"); btn.disabled = true;
+    api("/family/children", { method: "POST", body: body }).then(function (d) {
+      btn.disabled = false;
+      if (!d.ok) { el("e-msg").className = "msg err"; el("e-msg").textContent = d.message || "Couldn't create the account."; return; }
+      P.closeModal("m-edit"); P.toast(d.message); P.confetti(["🍼", "🌸", "💛", "✨"], 34); load();
+    });
+  }
+  function handover(id) {
+    var m = (HUB.members || []).filter(function (x) { return x.member_id === id; })[0];
+    if (!m || !window.confirm("Create a sign-in link for " + m.nickname + "? They'll choose a password and sign in with their username. You stay linked and can still help.")) return;
+    api("/family/children/" + id + "/handover", { method: "POST" }).then(function (d) {
+      if (!d.ok) { P.toast(d.message || "Couldn't make the link.", "err"); return; }
+      el("hand-body").innerHTML = '<div class="handover"><p>' + esc(d.message) + '</p><div class="ho-row"><span>Username</span><b>' + esc(d.username) + '</b></div><div class="ho-row"><span>Set-password link</span><input class="input" readonly value="' + esc(d.link) + '" id="ho-link"></div>' +
+        '<button class="btn btn-primary btn-sm" type="button" id="ho-copy">Copy link</button><p class="hint">Share it only with ' + esc(m.nickname) + '. After they sign in, the account is theirs; only they can delete it.</p></div>';
+      el("ho-copy").onclick = function () { var i = el("ho-link"); i.select(); try { navigator.clipboard.writeText(i.value); } catch (x) { document.execCommand("copy"); } P.toast("Copied."); };
+      P.openModal("m-hand");
+    });
+  }
   el("e-delete").addEventListener("click", function () { RM_ID = EDIT_ID; var m = (HUB.members || []).filter(function (x) { return x.member_id === RM_ID; })[0]; el("rm-title").textContent = "Remove " + (m ? m.nickname : "profile"); el("rm-name").value = ""; el("rm-pass").value = ""; el("rm-msg").textContent = ""; P.closeModal("m-edit"); P.openModal("m-remove"); });
   el("rm-go").addEventListener("click", function () {
     var btn = el("rm-go"); btn.disabled = true;
-    api("/family/members/" + RM_ID, { method: "DELETE", body: { confirm: el("rm-name").value, password: el("rm-pass").value } }).then(function (d) {
+    var rmLink = String(RM_ID).indexOf("lnk_") === 0;
+    api(rmLink ? "/family/children/" + RM_ID + "/delete" : "/family/members/" + RM_ID, { method: rmLink ? "POST" : "DELETE", body: { confirm: el("rm-name").value, password: el("rm-pass").value } }).then(function (d) {
       btn.disabled = false;
       if (!d.ok) { el("rm-msg").className = "msg err"; el("rm-msg").textContent = d.message || "Couldn't remove."; return; }
       P.closeModal("m-remove"); P.toast(d.message || "Removed."); QC.clearCache(false); load();

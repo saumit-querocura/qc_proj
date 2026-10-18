@@ -90,7 +90,7 @@
   }
 
   /* ---- live hospital visit: where you are in the queue, or which bed you are in ---- */
-  var VHI = { "Your visit": "आपकी विज़िट", "Your token": "आपका टोकन", "You're next": "अगली बारी आपकी है", "%n ahead of you": "आपसे पहले %n लोग", "Please go in now": "कृपया अभी अंदर जाएँ", "With the doctor": "डॉक्टर के साथ",
+  var VHI = { "Your doctor is running about": "आपके डॉक्टर लगभग", "min late. Expected around": "मिनट देर से चल रहे हैं। अनुमानित समय", "Your visit": "आपकी विज़िट", "Your token": "आपका टोकन", "You're next": "अगली बारी आपकी है", "%n ahead of you": "आपसे पहले %n लोग", "Please go in now": "कृपया अभी अंदर जाएँ", "With the doctor": "डॉक्टर के साथ",
     "Admitted": "भर्ती", "Going home soon": "जल्द घर जाना है", "Finished": "पूरा हुआ", "bed": "बेड", "Updates by itself": "अपने-आप अपडेट होता है", "Room": "कमरा", "Appointment": "अपॉइंटमेंट" };
   function V(x) { return (window.QCI18n && QCI18n.lang === "hi" && VHI[x]) || x; }
   var visitTimer = null, DATA_APPTS = [];
@@ -99,7 +99,8 @@
     return list.slice(0, 3).map(function (a) {
       var d = new Date(a.day + "T00:00:00");
       return '<div class="visit-card appt"><div class="visit-l"><span class="visit-k">📅 ' + esc(V("Appointment")) + " · " + esc(a.hospital) + "</span><b>" + esc(d.toLocaleDateString([], { weekday: "long", day: "numeric", month: "short" })) + " · " + esc(a.start) + "</b>" +
-        '<span class="visit-s">' + esc([a.doctor, a.department, a.room ? V("Room") + " " + a.room : ""].filter(Boolean).join(" · ")) + "</span>" + (a.kind ? '<span class="visit-u">' + esc(a.kind) + "</span>" : "") + "</div></div>";
+        '<span class="visit-s">' + esc([a.doctor, a.department, a.room ? V("Room") + " " + a.room : ""].filter(Boolean).join(" · ")) + "</span>" + (a.kind ? '<span class="visit-u">' + esc(a.kind) + "</span>" : "") +
+        (a.expected ? '<span class="visit-late">⏱ ' + esc(V("Your doctor is running about")) + " " + a.running_late + " " + esc(V("min late. Expected around")) + " " + esc(a.expected) + "</span>" : "") + "</div></div>";
     }).join("");
   }
   function renderVisits(list, appts) {
