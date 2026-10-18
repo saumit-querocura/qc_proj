@@ -20,6 +20,20 @@
     return api("/hospital/options").then(function (d) {
       if (!d.ok) return; OPTS = d;
       el("a-type").innerHTML = d.org_types.map(function (t) { return "<option>" + esc(t) + "</option>"; }).join("");
+      showSetupPlan();
+    });
+  }
+  // Answers from the setup questions (hospital/setup/) travel with the application.
+  function setupAnswers() { try { var a = JSON.parse(sessionStorage.getItem("qc_setup") || "null"); return a && a.facility ? a : null; } catch (e) { return null; } }
+  function showSetupPlan() {
+    var a = setupAnswers(), box = el("apply-plan");
+    if (!box) return;
+    if (!a) { box.innerHTML = '<a class="apply-plan none" href="setup/"><b>New here?</b> Answer a few questions first and we’ll plan your setup: modules, departments, wards and beds. <span>Plan my setup →</span></a>'; return; }
+    api("/hospital/setup/plan", { method: "POST", body: { answers: a } }).then(function (r) {
+      if (!r.ok) return;
+      var p = r.plan;
+      if (OPTS && OPTS.org_types.indexOf(p.org_type) >= 0) el("a-type").value = p.org_type;
+      box.innerHTML = '<div class="apply-plan"><span class="ap-ic">✓</span><div><b>Your plan comes with this application</b><span>' + esc(p.summary) + '</span></div><a href="setup/">Review</a></div>';
     });
   }
 
@@ -32,6 +46,7 @@
       admin_name: el("a-name").value.trim(), email: el("a-email").value.trim(), password: el("a-pw").value, is_clinician: el("a-clin").checked,
       accept_terms: el("a-terms").checked, website_url: el("a-site").value
     };
+    if (setupAnswers()) body.setup = setupAnswers();
     if (body.org_name.length < 3 || body.admin_name.length < 2) return say(msg, "Please add the organisation's name and your name.", "err");
     if (body.registration_no.length < 3) return say(msg, "A registration or licence number is needed so we can verify you.", "err");
     if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(body.email)) return say(msg, "Please enter a valid work e-mail.", "err");
@@ -43,6 +58,7 @@
       btn.disabled = false;
       if (!r.ok) return say(msg, r.message || "Something went wrong. Please try again.", "err");
       say(msg, r.message, "ok"); P.confetti(["🏥", "✨", "💚", "🩺"], 22);
+      try { sessionStorage.removeItem("qc_setup"); } catch (x) {}
       el("s-email").value = body.email; el("s-pw").focus();
       el("signin").scrollIntoView({ behavior: "smooth" });
     });
@@ -113,6 +129,7 @@
       ME = r; PERMS = r.perms || []; IDLE_MS = (r.idle_seconds || 1200) * 1000; lastActive = Date.now();
       show(el("public"), false); show(el("portal"), true); show(el("pub-nav"), false); show(el("app-nav"), true);
       el("who").textContent = r.staff.name + " · " + r.staff.roles.join(", ");
+      if (location.hash === "#setup") { tabNow = "setup"; try { history.replaceState(null, "", location.pathname); } catch (e) {} }
       render();
     });
   }
@@ -159,10 +176,13 @@
     var OPS = window.QCOps ? window.QCOps.tabs(can) : [];
     var HMS = window.QCHms ? window.QCHms.tabs(can) : [];
     var grp = function (list, g) { return list.filter(function (t) { return t[3] === g; }); };
-    var tabs = [["overview", "Today", true]].concat(HMS.length ? grp(HMS, "front") : [["patients", "Patients", can("roster")]]).concat(grp(OPS, "flow")).concat(grp(HMS, "back"))
+    var tabs = [["overview", "Today", true]].concat(HMS.length ? grp(HMS, "front") : [["patients", "Patients", can("roster")]]).concat(grp(OPS, "flow")).concat(grp(HMS, "flow")).concat(grp(HMS, "back"))
       .concat([["connect", "Connect", can("request")]])
       .concat(grp(HMS, "admin")).concat(grp(OPS, "admin"))
       .concat([["team", "Team", can("team")], ["activity", "Activity log", can("audit")], ["security", "My security", true]]).filter(function (t) { return t[2]; });
+    // modules the organisation switched off in Setup stay out of the menu (Setup can switch them back on)
+    var MODS = ME.modules;
+    if (MODS) tabs = tabs.filter(function (t) { return MODS[t[0]] !== false; });
     if (!tabs.some(function (t) { return t[0] === tabNow; })) tabNow = tabs[0][0];
     el("tabs").innerHTML = tabs.map(function (t) { return '<button type="button" role="tab" data-tab="' + t[0] + '" class="' + (t[0] === tabNow ? "on" : "") + '">' + t[1] + '</button>'; }).join("");
     switchTab(tabNow);

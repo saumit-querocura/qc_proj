@@ -263,6 +263,7 @@
         if (can("rx") && open && x.access_active) mg.push('<button type="button" class="btn btn-sm" data-hms="rx">℞ Prescribe</button>');
         if (can("billing") || can("billing_admin")) mg.push('<button type="button" class="btn btn-sm" data-hms="bill">🧾 Bill</button>');
         if (can("appointments") || can("rx")) mg.push('<button type="button" class="btn btn-sm" data-hms="followup">📅 Book follow-up</button>');
+        if ((x.kind === "ipd" || x.kind === "daycare") && (can("orders") || can("read")) && window.QCHms.discharge) mg.push('<button type="button" class="btn btn-sm" data-dsum>📝 Discharge summary</button>');
         h += '<div class="ops-v-acts hms-acts">' + mg.join("") + "</div>";
         if (x.prescriptions && x.prescriptions.length) h += '<div class="ops-sec"><div class="ops-h">Prescriptions</div>' + x.prescriptions.map(function (p) { return '<button type="button" class="rec-line" data-hmsrx="' + esc(p.id) + '"><b>' + esc(p.number) + "</b><span>" + esc((p.diagnosis || p.n_items + " medicines") + " · " + p.doctor) + "</span></button>"; }).join("") + "</div>";
       }
@@ -307,6 +308,7 @@
         if ((t = e.target.closest("[data-chart]"))) { closeModal(); H().openChart(t.getAttribute("data-chart")); return; }
         if (e.target.closest("[data-neworder]")) return newOrder(x);
         if (e.target.closest("[data-newstudy]")) return window.QCImaging.newStudy({ grant_id: x.grant_id, encounter_id: x.id, indication: x.reason || "" });
+        if (e.target.closest("[data-dsum]") && window.QCHms && window.QCHms.discharge) return window.QCHms.discharge(x.id, { layer: 2, after: function () { openVisit(x.id); } });
         if (e.target.closest("[data-dsum]")) { closeModal(); H().openRecord(x.grant_id, x.patient_name); setTimeout(function () { var k = document.querySelector('[data-kind="discharge"]'); if (k) k.click(); }, 50); return; }
         if ((t = e.target.closest("[data-oact]"))) return orderStep(t.getAttribute("data-id"), t.getAttribute("data-oact"));
       };
@@ -587,7 +589,7 @@
     loadStructure(true).then(function (st) {
       if (!st) return;
       var team = st.team || [];
-      var h = "";
+      var h = window.QCPlan ? '<div id="plan-card"></div>' : "";
       if (!st.departments.length) {
         h += '<div class="card ops-start"><h2>Start from a template</h2><p class="sub">Creates typical departments, wards and numbered beds. Rename, remove or add anything afterwards.</p><div class="ops-choices">' +
           [["hospital", "🏥", "Multi-speciality hospital", "8 departments · 6 wards · 46 beds"], ["nursing_home", "🏨", "Nursing home", "3 departments · 3 wards · 17 beds"], ["clinic", "🩺", "Clinic", "3 departments · day care · 4 beds"]].map(function (t) {
@@ -609,8 +611,10 @@
       h += '<div class="card"><h2>Who does what</h2><p class="sub">Roles decide what each person can see and do. Change them in <b>Team</b>.</p><div class="roles-tbl">' +
         [["Admin", "Team, departments, wards, screens, the activity log"], ["Doctor", "Charts, orders, admit, discharge, handover"], ["Nurse", "Charts, vitals and notes, nursing tasks, handover"], ["Front desk", "Connect and check in patients, the queue and beds. No clinical data"], ["Lab / radiology", "Test orders for their department, results. No charts"], ["Operations manager", "Command centre, beds, queues, setup. No clinical data"]].map(function (r) { return "<div><b>" + r[0] + "</b><span>" + r[1] + "</span></div>"; }).join("") + "</div></div></div>";
       box.innerHTML = h;
+      if (window.QCPlan) window.QCPlan.render(el("plan-card"), st, loadSetup);
       box.onclick = function (e) {
         var t;
+        if (e.target.closest("#plan-card")) return;
         if ((t = e.target.closest("[data-starter]"))) { if (!window.confirm("Create the " + t.querySelector("b").textContent + " template?")) return; api("/hospital/ops/starter", { method: "POST", body: { template: t.getAttribute("data-starter") } }).then(function (r) { reply(r, function () { loadSetup(); }); }); return; }
         if (e.target.closest("[data-newdept]")) return editDept(null, st);
         if ((t = e.target.closest("[data-editdept]"))) return editDept(st.departments.filter(function (d) { return d.id === t.getAttribute("data-editdept"); })[0], st);

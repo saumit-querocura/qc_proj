@@ -13,7 +13,7 @@
 <link rel="preconnect" href="https://app.querocura.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700;800&family=Manrope:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500;1,9..144,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../assets/qc-base.css?v=7b9ea421">
-<link rel="stylesheet" href="../assets/qc-hospital.css?v=31ea7eae">
+<link rel="stylesheet" href="../assets/qc-hospital.css?v=b957ccaf">
 <script src="../assets/qc-csp.js?v=77f89cc2"></script>
 </head>
 <body class="hp">
@@ -24,7 +24,7 @@
     </a>
     <nav class="hp-nav" id="pub-nav">
       <a href="#how">How it works</a><a href="#safety">Safety</a><a href="#faq">FAQ</a>
-      <a class="btn btn-sm btn-primary" href="#apply" id="nav-apply">Apply</a>
+      <a class="btn btn-sm btn-primary" href="setup/" id="nav-apply">Get started</a>
       <a class="btn btn-sm" href="#signin" id="nav-signin">Sign in</a>
     </nav>
     <div class="hp-nav" id="app-nav" hidden>
@@ -43,7 +43,7 @@
         <span class="hp-eyebrow">Hospital onboarding</span>
         <h1>Know your patient before they sit down.</h1>
         <p class="lead">QueroCura for Hospitals connects your clinic, hospital or lab to the people you treat, with their permission, every time. See the vitals, medicines and results they choose to share. Write visits and results back to their record. No more retyping histories, no more lost paper.</p>
-        <div class="hp-cta"><a class="btn btn-primary" href="#apply">Apply to onboard your hospital</a><a class="btn hp-ghost" href="#signin">I already have an account</a></div>
+        <div class="hp-cta"><a class="btn btn-primary" href="setup/">Plan your setup in 2 minutes →</a><a class="btn hp-ghost" href="#apply">Apply now</a><a class="btn hp-ghost" href="#signin">I already have an account</a></div>
         <div class="hp-stats">
           <div><b>Consent first</b><span>Nothing is visible until the patient says yes</span></div>
           <div><b>Two-step sign-in</b><span>Authenticator app for every staff member</span></div>
@@ -81,6 +81,9 @@
           <div class="hp-card"><h3>🧪 Orders between departments</h3><p>Tests, scans, nursing tasks and consults go to the right team with a priority and a due time. Results flow back to the patient's record.</p></div>
           <div class="hp-card"><h3>🤝 Shift handover</h3><p>Short SBAR handovers per ward or patient, acknowledged by the next shift so nothing falls between them.</p></div>
           <div class="hp-card"><h3>🩻 AI-assisted imaging</h3><p>Upload X-ray, CT, MRI, ultrasound, PET and mammography images. Two independent AI reads draft the findings, with boxes on the image, a differential and its limits. Your clinicians accept or reject each finding and sign the report.</p></div>
+          <div class="hp-card"><h3>🔪 Operation theatres</h3><p>Theatre lists by day with clash checks for theatre, surgeon and anaesthetist, and the WHO surgical safety checklist (sign in, time out, sign out) built into every case. Finished cases go onto the bill.</p></div>
+          <div class="hp-card"><h3>📝 Discharge summaries</h3><p>Dates, ward, investigations with results, operations and the medicines prescribed during the stay are gathered for the doctor, who writes the story and signs. It goes to the patient's record and ticks the discharge checklist.</p></div>
+          <div class="hp-card"><h3>🧭 Fitted to your size</h3><p>A few questions about your beds, doctors, services and pain points become a setup plan: which modules to switch on, departments, wards and beds, who to invite and a go-live checklist.</p></div>
           <div class="hp-card"><h3>📊 Command centre</h3><p>Occupancy, waits, overdue orders and department load, live, with the few things that need attention right now.</p></div>
         </div>
       </div>
@@ -106,6 +109,7 @@
         <div class="hp-panel" id="apply">
           <h2>Apply to onboard</h2>
           <p class="sub">We review every application. Use a work e-mail you can receive mail at.</p>
+          <div id="apply-plan"></div>
           <form id="apply-form" novalidate autocomplete="on">
             <div class="grid2">
               <div class="field"><label for="a-org">Organisation name *</label><input class="input" id="a-org" maxlength="160" required></div>
@@ -205,6 +209,7 @@
         <section id="tab-billing" class="tab" hidden></section>
         <section id="tab-duty" class="tab" hidden></section>
         <section id="tab-reports" class="tab" hidden></section>
+        <section id="tab-ot" class="tab" hidden></section>
         <section id="tab-connect" class="tab" hidden></section>
         <section id="tab-team" class="tab" hidden></section>
         <section id="tab-activity" class="tab" hidden></section>
@@ -226,9 +231,11 @@
   <script src="../assets/qc-page.js?v=c34c97a9"></script>
   <script src="../assets/js/hospital-hms.js?v=f766f9ca"></script>
   <script src="../assets/js/hospital-hms-desk.js?v=f74f1925"></script>
+  <script src="../assets/js/hospital-hms-ot.js?v=0e77cc12"></script>
+  <script src="../assets/js/hospital-plan.js?v=ab93276c"></script>
   <script src="../assets/js/hospital-clinical.js?v=2b610f5e"></script>
-<script src="../assets/js/hospital-ops.js?v=8de0fc10"></script>
+<script src="../assets/js/hospital-ops.js?v=e6f6eae2"></script>
   <script src="../assets/js/hospital-imaging.js?v=204182ea"></script>
-  <script src="../assets/js/hospital.js?v=3f1aa895"></script>
+  <script src="../assets/js/hospital.js?v=daf86f68"></script>
 </body>
 </html>

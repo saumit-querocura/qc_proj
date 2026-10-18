@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://app.querocura.com; connect-src 'self' https://app.querocura.com; object-src 'none'; base-uri 'self'; form-action 'self'">
+<title>Plan your hospital setup · QueroCura</title>
+<meta name="description" content="Answer a few questions about your hospital or clinic and get a QueroCura setup plan: modules, departments, wards and beds, your team and a go-live checklist.">
+<meta name="referrer" content="no-referrer">
+<link rel="icon" type="image/x-icon" href="../../icons/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700;800&family=Manrope:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500;1,9..144,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/qc-base.css?v=7b9ea421">
+<link rel="stylesheet" href="../../assets/qc-hospital.css?v=b957ccaf">
+<script src="../../assets/qc-csp.js?v=77f89cc2"></script>
+</head>
+<body class="hp hs">
+  <header class="hp-top">
+    <a class="logo-wrap" href="../../">
+      <img src="../../assets/d4f7acc01b9438e998c9e7b9676584b0.png" alt="QueroCura">
+      <span class="logo-text"><span class="ink">Quero</span><span class="teal">Cura</span> <span class="hp-tag">for Hospitals</span></span>
+    </a>
+    <nav class="hp-nav">
+      <a href="../#flow">What's included</a>
+      <a class="btn btn-sm" href="../#signin" id="hs-signin">Sign in</a>
+    </nav>
+    <button class="theme-toggle" data-theme-toggle aria-label="Toggle dark mode"><span id="theme-toggle-icon"></span></button>
+  </header>
+
+  <main class="hs-main">
+    <!-- intro -->
+    <section class="hs-screen" id="hs-intro">
+      <div class="hs-intro">
+        <span class="hp-eyebrow">Hospital &amp; clinic portal</span>
+        <h1>Let's fit QueroCura to <em>your</em> hospital.</h1>
+        <p class="lead">A few quick questions about your size, your services and what you'd most like to fix. We'll plan which modules to switch on, your departments, wards and beds, who to invite, and a go-live checklist.</p>
+        <div class="hs-meta"><span>⏱ About 2 minutes</span><span>🔒 Nothing is saved until you apply</span><span>✏️ Change anything later</span></div>
+        <div class="hp-cta"><button class="btn btn-primary" type="button" id="hs-start">Start the questions <span aria-hidden="true">→</span></button><a class="btn hp-ghost" href="../#signin">I already have an account</a></div>
+        <div class="hs-kinds" aria-hidden="true"><span>🩺 Clinics</span><span>🏢 Polyclinics</span><span>🏨 Nursing homes</span><span>🏥 Hospitals</span><span>🏛️ Multi-speciality</span><span>🔬 Labs &amp; imaging</span></div>
+      </div>
+    </section>
+
+    <!-- one question at a time -->
+    <section class="hs-screen" id="hs-ask" hidden>
+      <div class="hs-ask">
+        <div class="hs-q">
+          <div class="hs-progress" aria-hidden="true"><i id="hs-bar"></i></div>
+          <div class="hs-step" id="hs-step"></div>
+          <h2 id="hs-title" tabindex="-1"></h2>
+          <p class="hs-help" id="hs-help"></p>
+          <div id="hs-body"></div>
+          <div class="hs-nav">
+            <button class="btn btn-ghost" type="button" id="hs-back">← Back</button>
+            <button class="btn btn-ghost" type="button" id="hs-skip">Skip</button>
+            <button class="btn btn-primary" type="button" id="hs-next">Continue →</button>
+          </div>
+        </div>
+        <aside class="hs-live" aria-live="polite">
+          <div class="hs-live-h">Taking shape</div>
+          <div id="hs-live"><p class="mini">Your plan builds here as you answer.</p></div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- the plan -->
+    <section class="hs-screen" id="hs-plan" hidden></section>
+  </main>
+
+  <footer class="hp-foot"><div class="hp-wrap">© 2026 QueroCura · <a href="../../">Home</a> · <a href="../">For hospitals</a> · Patient information is shared only with the patient's consent.</div></footer>
+
+  <script src="../../assets/qc-page.js?v=c34c97a9"></script>
+  <script src="../../assets/js/hospital-setup.js?v=627d45f7"></script>
+</body>
+</html>
