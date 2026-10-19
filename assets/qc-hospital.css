@@ -1044,3 +1044,56 @@ body.hs .hs-end .hp-ghost { color: #ecebf6; border-color: rgba(246,241,231,.25);
 .md-skel { height: 64px; border-radius: 16px; margin-bottom: 8px; background: linear-gradient(90deg, rgba(127,127,160,.08), rgba(127,127,160,.16), rgba(127,127,160,.08)); background-size: 200% 100%; animation: mdsk 1.2s infinite; }
 @keyframes mdsk { to { background-position: -200% 0; } }
 .md-classic { margin-top: 14px; } .md-classic summary { font-size: 14px; }
+
+/* ---------- the thinking behind My day: rest of today + how the hospital is connected ---------- */
+.md-tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.md-tool { display: inline-flex; align-items: center; gap: 6px; border-radius: 999px; background: linear-gradient(135deg, rgba(20,195,178,.12), rgba(43,111,232,.12)); border: 1px solid rgba(43,111,232,.22); }
+.md-tool:hover { border-color: rgba(43,111,232,.5); }
+.md-do { margin-left: auto; }
+.mind-modal { max-width: 860px; }
+.mind-skel { height: 260px; border-radius: 18px; background: linear-gradient(90deg, rgba(127,127,127,.08), rgba(127,127,127,.16), rgba(127,127,127,.08)); background-size: 200% 100%; animation: mindsk 1.2s linear infinite; }
+@keyframes mindsk { to { background-position: -200% 0; } }
+.mind-kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin: 14px 0 16px; }
+.mind-kpis > div { padding: 12px 14px; border-radius: 16px; background: linear-gradient(160deg, rgba(20,195,178,.10), rgba(43,111,232,.08)); border: 1px solid rgba(43,111,232,.14); }
+.mind-kpis b { display: block; font: 800 22px/1.1 var(--display, inherit); letter-spacing: -.02em; }
+.mind-kpis span { font-size: 12.5px; opacity: .72; }
+.mind-chart-wrap, .mind-flow-wrap { border-radius: 18px; padding: 10px 6px; background: radial-gradient(600px 220px at 30% 0%, rgba(20,195,178,.08), transparent 70%), rgba(127,127,127,.04); border: 1px solid rgba(127,127,127,.14); overflow-x: auto; }
+.mind-chart, .mind-flow { display: block; width: 100%; min-width: 560px; height: auto; }
+.mc-grid { stroke: currentColor; opacity: .09; }
+.mc-t { font: 600 11px/1 var(--body, inherit); fill: currentColor; opacity: .55; }
+.mc-now { stroke: #e2483d; stroke-width: 1.5; stroke-dasharray: 3 3; } .mc-now-t { fill: #e2483d; opacity: 1; }
+.mc-name { font: 800 13px/1 var(--body, inherit); fill: currentColor; }
+.mc-sub { font: 600 10.5px/1 var(--body, inherit); fill: currentColor; opacity: .55; }
+.mc-bar { transform-box: fill-box; transform-origin: left center; animation: mcgrow .9s cubic-bezier(.2,.8,.2,1) both; filter: drop-shadow(0 6px 10px rgba(43,111,232,.25)); }
+@keyframes mcgrow { from { transform: scaleX(0); } to { transform: none; } }
+.mc-wh { stroke: #2b6fe8; stroke-width: 2; opacity: .55; }
+.mc-end { stroke: currentColor; stroke-width: 1.5; stroke-dasharray: 4 3; opacity: .5; } .mc-end.over { stroke: #e2483d; opacity: .9; }
+.mc-w { font: 800 13px/1 var(--body, inherit); fill: currentColor; } .mc-w.hot { fill: #d2452f; }
+.mind-legend { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; margin: 8px 0 4px; }
+.mind-legend i { display: inline-block; width: 18px; height: 8px; border-radius: 6px; margin-right: 5px; vertical-align: middle; }
+.mind-legend .lg-bar { background: linear-gradient(90deg, #14c3b2, #2b6fe8); } .mind-legend .lg-wh { height: 2px; background: #2b6fe8; opacity: .6; } .mind-legend .lg-end { height: 0; border-top: 2px dashed currentColor; opacity: .5; border-radius: 0; }
+.mind-sug { display: flex; gap: 14px; align-items: flex-start; padding: 14px 16px; border-radius: 16px; border: 1px solid rgba(127,127,127,.16); margin-bottom: 10px; }
+.mind-sug.warn { border-color: rgba(224,165,44,.5); background: rgba(224,165,44,.07); }
+.mind-sug p { margin: 4px 0; } .mind-sug small { opacity: .65; }
+.mind-score { display: flex; align-items: center; gap: 14px; margin: 14px 0; padding: 12px 16px; border-radius: 16px; border: 1px solid rgba(127,127,127,.16); }
+.mind-score b { font: 800 30px/1 var(--display, inherit); width: 62px; height: 62px; border-radius: 50%; display: grid; place-items: center; color: #fff; flex: 0 0 auto; }
+.mind-score.good b { background: conic-gradient(#12b5a5, #2b6fe8, #12b5a5); } .mind-score.ok b { background: conic-gradient(#e0a52c, #f0c060, #e0a52c); } .mind-score.bad b { background: conic-gradient(#e2483d, #f07a5a, #e2483d); }
+.mind-score span { flex: 1; font-weight: 700; }
+.mf-base { fill: none; stroke: currentColor; stroke-width: 6; opacity: .07; stroke-linecap: round; }
+.mf-flow { fill: none; stroke-width: 3; stroke-linecap: round; stroke-dasharray: 2 14; animation: mfflow 1.6s linear infinite; opacity: .95; }
+@keyframes mfflow { to { stroke-dashoffset: -32; } }
+.mf-halo { opacity: .14; animation: mfhalo 3s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+.mf-warning .mf-halo, .mf-urgent .mf-halo { animation-duration: 1.2s; opacity: .25; }
+@keyframes mfhalo { 50% { transform: scale(1.14); opacity: .05; } }
+.mf-disc { fill: var(--paper, #fff); stroke-width: 3; }
+.mf-ic { font-size: 20px; } .mf-n { font: 800 13px/1 var(--body, inherit); fill: currentColor; }
+.mf-name { font: 800 12.5px/1 var(--body, inherit); fill: currentColor; }
+.mf-name, .mf-unit { paint-order: stroke; stroke: var(--paper, #fff); stroke-width: 4px; stroke-linejoin: round; } .mf-unit { font: 600 10.5px/1 var(--body, inherit); fill: currentColor; opacity: .55; }
+.mf-badge { font: 800 10px/1 var(--body, inherit); fill: #fff; }
+.mind-find { display: flex; gap: 12px; align-items: flex-start; padding: 12px 0; border-bottom: 1px solid rgba(127,127,127,.14); }
+.mind-find p { margin: 3px 0; } .mind-find small { opacity: .65; }
+.mf-dot { width: 10px; height: 10px; border-radius: 50%; margin-top: 6px; flex: 0 0 auto; box-shadow: 0 0 0 4px rgba(127,127,127,.1); }
+.mind-ev { list-style: none; padding: 0; margin: 0; display: grid; gap: 6px; }
+.mind-ev li { padding: 8px 12px; border-radius: 12px; background: rgba(127,127,127,.06); font-size: 13.5px; }
+@media (max-width: 640px) { .mind-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } .md-do { margin-left: 0; } }
+@media (prefers-reduced-motion: reduce) { .mc-bar, .mf-flow, .mf-halo, .mind-skel { animation: none; } }

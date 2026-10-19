@@ -317,7 +317,9 @@
       if (guard(d)) return;
       if (!d.ok) return;
       var h = '<div class="md"><div class="md-hello"><div><h2>' + esc(d.greeting) + '</h2><p class="md-sum' + (d.urgent ? " hot" : "") + '">' + esc(d.summary) + "</p></div>" +
-        '<button type="button" class="btn btn-sm cmdk-hint" data-cmdk>Search <kbd>' + (/Mac|iPhone|iPad/.test(navigator.platform) ? "⌘" : "Ctrl") + "</kbd><kbd>K</kbd></button></div>";
+        '<div class="md-tools">' + (window.QCMind && (can("appointments") || can("ops") || can("schedules") || can("reports")) ? '<button type="button" class="btn btn-sm md-tool" data-ins-open="simulation"><span aria-hidden="true">🔮</span> Rest of today</button>' : "") +
+        (window.QCMind && (can("structure") || can("reports")) ? '<button type="button" class="btn btn-sm md-tool" data-ins-open="integrity"><span aria-hidden="true">🧭</span> How it’s connected</button>' : "") +
+        '<button type="button" class="btn btn-sm cmdk-hint" data-cmdk>Search <kbd>' + (/Mac|iPhone|iPad/.test(navigator.platform) ? "⌘" : "Ctrl") + "</kbd><kbd>K</kbd></button></div></div>";
       h += '<div class="md-grid"><section class="md-next"><h3>Next up</h3>' + (d.tasks.length ? '<ol class="md-list">' + d.tasks.map(function (t) {
         var l = LVL[t.level] || LVL.todo;
         return '<li class="md-task ' + l[1] + '"><span class="md-lvl">' + l[0] + '</span><div class="grow"><b>' + esc(t.title) + "</b><small>" + esc(t.why) + '</small></div><button type="button" class="btn btn-sm' + (t.level === "urgent" ? " btn-primary" : "") + '" data-task="' + esc(t.id) + '">' + esc(t.button || "Open") + "</button></li>";
@@ -325,12 +327,14 @@
         '<div class="md-clear"><span aria-hidden="true">✓</span><b>All clear.</b><small>Nothing needs you right now. New work appears here as it comes in.</small></div>') + "</section>";
       h += '<section class="md-ahead"><h3>Heads up</h3>' + (d.insights.length ? d.insights.map(function (i, k) {
         return '<div class="md-in ' + (i.level === "warning" ? "warn" : "") + '"><b>' + esc(i.title) + "</b><p>" + esc(i.text) + '</p><div class="md-in-f"><button type="button" class="link" data-why="' + k + '">Why?</button>' +
-          (i.action && i.action.tab ? '<button type="button" class="link" data-goto="' + esc(i.action.tab) + '">Open →</button>' : "") + '</div><p class="md-why" id="md-why-' + k + '" hidden>' + esc(i.basis || "") + "</p></div>";
+          (i.action && i.action.tab ? '<button type="button" class="link" data-goto="' + esc(i.action.tab) + '">Open →</button>' : "") +
+          (i.action && i.action.open && window.QCMind ? '<button type="button" class="link" data-ins-open="' + esc(i.action.open) + '">See it →</button>' : "") +
+          (i.do && window.QCMind ? '<button type="button" class="btn btn-sm btn-primary md-do" data-ins-do="' + k + '">' + esc(i.do.label) + "</button>" : "") + '</div><p class="md-why" id="md-why-' + k + '" hidden>' + esc(i.basis || "") + "</p></div>";
       }).join("") : '<p class="mini">Nothing to flag. Forecasts appear here once there is enough history.</p>') + "</section></div>";
       if (d.partial) h += '<p class="mini">Some parts of the hospital couldn\'t be checked just now; this list may be incomplete.</p>';
       h += "</div>";
       var classic = el("ov-classic"); box.innerHTML = h; box.appendChild(classic);
-      box._tasks = d.tasks;
+      box._tasks = d.tasks; box._ins = d.insights;
     });
     loadClassic();
   }
@@ -376,6 +380,8 @@
   }
   el("tab-overview").addEventListener("click", function (e) {
     var tk = e.target.closest("[data-task]"); if (tk) { var bx = el("tab-overview"), t = (bx._tasks || []).filter(function (x) { return x.id === tk.getAttribute("data-task"); })[0]; if (t) doTask(t); return; }
+    var io = e.target.closest("[data-ins-open]"); if (io && window.QCMind) { var w = io.getAttribute("data-ins-open"); if (window.QCMind[w]) window.QCMind[w](); return; }
+    var idn = e.target.closest("[data-ins-do]"); if (idn && window.QCMind) { var ins = (el("tab-overview")._ins || [])[+idn.getAttribute("data-ins-do")]; if (ins && ins.do) window.QCMind.rebalance(ins.do.body, idn).then(function (r) { if (r.ok) loadOverview(); }); return; }
     var wy = e.target.closest("[data-why]"); if (wy) { var p = el("md-why-" + wy.getAttribute("data-why")); if (p) p.hidden = !p.hidden; return; }
     var g = e.target.closest("[data-goto]"); if (g) { goTab(g.getAttribute("data-goto")); return; }
     var c = e.target.closest("[data-chart]"); if (c) { openChart(c.getAttribute("data-chart")); return; }

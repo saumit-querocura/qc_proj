@@ -649,3 +649,196 @@ window.QC3D = {
   },
 };
 window.dispatchEvent(new Event("qc3d-ready"));
+
+/* ================================================================================================ 3. the logo */
+/* The QueroCura mark as a solid object: every stroke of the logo (the heart, the pulse line, the network, the speech
+ * bubble's tail, the connector and the smile) is traced from the artwork and drawn as a glossy tube inside a glass
+ * heart, lit by a soft studio.  It turns slowly, lingering when it faces you; a pulse of light runs along the ECG line
+ * and the network's nodes fire one after another.  One part at a time glows to match the list beside it.  You can
+ * drag it round (no cursor effects). */
+const LOGO = {
+  // traced from the 512px artwork; the heart is split into three strokes so the bubble's tail can light up on its own
+  heartLow: [[430, 312], [398, 348], [352, 384], [300, 404], [250, 409]],
+  tail: [[250, 409], [214, 401], [150, 428], [128, 438], [136, 420], [157, 352], [150, 331]],
+  heartUp: [[150, 331], [116, 288], [96, 236], [93, 182], [114, 136], [158, 105], [208, 98], [252, 113], [287, 148], [314, 120], [348, 104], [392, 110], [425, 141], [442, 190], [444, 238]],
+  ecg: [[92, 262], [182, 262], [212, 190], [248, 330], [273, 262], [346, 262], [348, 212]],
+  hub: [348, 208],
+  nodes: [[299, 173], [346, 152], [397, 186], [395, 234], [301, 213]],
+  links: [[1, 2], [2, 3]],
+  probe: [[378, 272], [426, 272]], ball: [442, 272],
+  smile: [[222, 352], [256, 371], [290, 378], [322, 369], [348, 349]],
+};
+
+function studioEnv(THREE, R) {
+  const pm = new THREE.PMREMGenerator(R);
+  const s = new THREE.Scene();
+  s.add(new THREE.Mesh(new THREE.BoxGeometry(24, 24, 24), new THREE.MeshBasicMaterial({ color: 0x141a2c, side: THREE.BackSide })));
+  const panel = (c, k, w, h, x, y, z) => {
+    const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ color: new THREE.Color(c).multiplyScalar(k), side: THREE.DoubleSide }));
+    m.position.set(x, y, z); m.lookAt(0, 0, 0); s.add(m);
+  };
+  panel(0xffffff, 5, 9, 3, 0, 7, 6);       // key softbox above
+  panel(0x8ffff0, 3, 3, 9, -9, 0, 3);      // teal strip, left
+  panel(0x86b8ff, 3, 3, 9, 9, 1, -2);      // blue strip, right
+  panel(0xffe0b8, 1.6, 12, 2.4, 0, -7, -4); // warm bounce from below
+  panel(0xffffff, 1.2, 6, 6, 0, 0, -11);   // rim
+  const tex = pm.fromScene(s, 0.035).texture;
+  pm.dispose();
+  return tex;
+}
+
+function softDisc(THREE, inner, outer) {
+  const c = document.createElement("canvas"); c.width = c.height = 128;
+  const g = c.getContext("2d"), gr = g.createRadialGradient(64, 64, 0, 64, 64, 64);
+  gr.addColorStop(0, inner); gr.addColorStop(1, outer);
+  g.fillStyle = gr; g.fillRect(0, 0, 128, 128);
+  return new THREE.CanvasTexture(c);
+}
+
+function logoScene(THREE, mount) {
+  const W = () => mount.clientWidth || 1, H = () => mount.clientHeight || 1;
+  const R = renderer(THREE, mount);
+  R.toneMapping = THREE.NeutralToneMapping; R.toneMappingExposure = 1.12;
+  const scene = new THREE.Scene();
+  scene.environment = studioEnv(THREE, R);
+  const camera = new THREE.PerspectiveCamera(32, W() / H(), 0.1, 100);
+  camera.position.set(0, 0.15, 9.2);
+  scene.add(new THREE.AmbientLight(0xffffff, 0.25));
+  const key = new THREE.DirectionalLight(0xffffff, 1.6); key.position.set(3, 5, 6); scene.add(key);
+  const rim = new THREE.DirectionalLight(0x8fd8ff, 1.2); rim.position.set(-5, 2, -6); scene.add(rim);
+
+  const V = (p, z) => new THREE.Vector3((p[0] - 268) / 100, -(p[1] - 270) / 100, z || 0);
+  const TEAL = new THREE.Color(0x0fd0bd), BLUE = new THREE.Color(0x1462f0), ORANGE = new THREE.Color(0xff7a45);
+  const tint = (geo, fixed) => {      // the logo's teal-to-blue sweep, top left to bottom right
+    const pos = geo.attributes.position, col = new Float32Array(pos.count * 3), c = new THREE.Color();
+    for (let i = 0; i < pos.count; i++) {
+      if (fixed) c.copy(fixed);
+      else { const t = Math.min(1, Math.max(0, ((pos.getX(i) + 1.8) / 3.6) * 0.5 + ((1.7 - pos.getY(i)) / 3.4) * 0.5)); c.copy(TEAL).lerp(BLUE, t); }
+      col[i * 3] = c.r; col[i * 3 + 1] = c.g; col[i * 3 + 2] = c.b;
+    }
+    geo.setAttribute("color", new THREE.BufferAttribute(col, 3));
+    return geo;
+  };
+  const glossy = () => new THREE.MeshPhysicalMaterial({ vertexColors: true, metalness: 0.05, roughness: 0.22, clearcoat: 1, clearcoatRoughness: 0.05, envMapIntensity: 0.8, emissive: 0x13b9cc, emissiveIntensity: 0.06 });
+  const logo = new THREE.Group(), parts = [];
+  const part = () => { const g = new THREE.Group(), m = glossy(); g.userData.mat = m; logo.add(g); parts.push(g); return g; };
+  const seg = small ? 160 : 260;
+  const tube = (g, curve, r, n, fixed) => g.add(new THREE.Mesh(tint(new THREE.TubeGeometry(curve, n || seg, r, 18, false), fixed), g.userData.mat));
+  const ball = (g, p, r, fixed) => { const v = V(p), geo = new THREE.SphereGeometry(r, 28, 20); geo.translate(v.x, v.y, 0); tint(geo, fixed); geo.translate(-v.x, -v.y, 0); const m = new THREE.Mesh(geo, g.userData.mat); m.position.copy(v); g.add(m); return m; };
+  const spline = (pts) => new THREE.CatmullRomCurve3(pts.map((p) => V(p)), false, "centripetal");
+  const poly = (pts) => { const c = new THREE.CurvePath(); for (let i = 1; i < pts.length; i++) c.add(new THREE.LineCurve3(V(pts[i - 1]), V(pts[i]))); return c; };
+  const SW = 0.105;
+
+  // 0 the heart (two strokes either side of the bubble's tail) and its glass body
+  const heart = part();
+  tube(heart, spline(LOGO.heartUp), SW); tube(heart, spline(LOGO.heartLow), SW, 90);
+  [LOGO.heartUp[LOGO.heartUp.length - 1], LOGO.heartLow[0]].forEach((p) => ball(heart, p, SW));
+  const outline = spline([...LOGO.heartLow, ...LOGO.tail.slice(1), ...LOGO.heartUp.slice(1)]).getPoints(220);
+  const shape = new THREE.Shape(outline.map((v) => new THREE.Vector2(v.x, v.y)));
+  const glassGeo = new THREE.ExtrudeGeometry(shape, { depth: 0.22, bevelEnabled: true, bevelThickness: 0.08, bevelSize: 0.06, bevelSegments: 4, curveSegments: 24 });
+  glassGeo.translate(0, 0, -0.11);
+  const glass = new THREE.Mesh(glassGeo, new THREE.MeshPhysicalMaterial({ color: 0x7fdcf0, metalness: 0, roughness: 0.04, clearcoat: 1, transparent: true, opacity: 0.16, envMapIntensity: 1.6, depthWrite: false, side: THREE.DoubleSide }));
+  glass.renderOrder = 2; logo.add(glass);
+  // 1 the pulse
+  const ecgCurve = poly(LOGO.ecg), pulse = part();
+  tube(pulse, ecgCurve, SW * 0.8, 420);
+  LOGO.ecg.forEach((p) => ball(pulse, p, SW * 0.8));
+  // 2 the network
+  const net = part(), nodeBalls = [];
+  LOGO.nodes.forEach((p) => { tube(net, poly([LOGO.hub, p]), 0.048, 8); nodeBalls.push(ball(net, p, 0.115)); });
+  LOGO.links.forEach(([a, b]) => tube(net, poly([LOGO.nodes[a], LOGO.nodes[b]]), 0.048, 8));
+  nodeBalls.push(ball(net, LOGO.hub, 0.16));
+  // 3 the speech bubble's tail
+  const bubble = part();
+  tube(bubble, spline(LOGO.tail), SW, 120);
+  // 4 the connector
+  const probe = part();
+  tube(probe, poly(LOGO.probe), SW * 0.8, 8); ball(probe, LOGO.probe[0], SW * 0.8); ball(probe, LOGO.ball, 0.15);
+  // 5 the smile
+  const smile = part();
+  tube(smile, spline(LOGO.smile), 0.12, 90, ORANGE);
+  LOGO.smile.filter((_, i, a) => i === 0 || i === a.length - 1).forEach((p) => ball(smile, p, 0.12, ORANGE));
+  smile.userData.mat.emissive.set(0xff5a1a);
+
+  // a light that travels along the pulse line, with a fading tail
+  const TRAIL = 26, tg = new THREE.BufferGeometry(), tp = new Float32Array(TRAIL * 3), ts = new Float32Array(TRAIL), tc = new Float32Array(TRAIL * 3), tseed = new Float32Array(TRAIL);
+  for (let i = 0; i < TRAIL; i++) { const k = 1 - i / TRAIL; ts[i] = 0.5 + 2.6 * k * k; tc.set([0.55 * k + 0.2, 1.0 * k + 0.1, 0.95 * k + 0.1], i * 3); }
+  tg.setAttribute("position", new THREE.BufferAttribute(tp, 3)); tg.setAttribute("aSize", new THREE.BufferAttribute(ts, 1));
+  tg.setAttribute("aColor", new THREE.BufferAttribute(tc, 3)); tg.setAttribute("aSeed", new THREE.BufferAttribute(tseed, 1));
+  const px = R.getPixelRatio(), trailMat = pointMaterial(THREE, 13, px); trailMat.depthTest = false;
+  const trail = new THREE.Points(tg, trailMat); trail.renderOrder = 5; logo.add(trail);
+
+  const stage = new THREE.Group(); stage.add(logo); scene.add(stage);
+  stage.scale.setScalar(Math.min(1, (W() / H()) * 0.95));
+
+  // a slow orbit of light around it, and a soft shadow on the floor
+  const ON = small ? 500 : 1100, og = new THREE.BufferGeometry(), op = new Float32Array(ON * 3), os = new Float32Array(ON), oc = new Float32Array(ON * 3), oseed = new Float32Array(ON);
+  for (let i = 0; i < ON; i++) {
+    const a = Math.random() * Math.PI * 2, r = 2.7 + Math.pow(Math.random(), 2) * 1.6 * (Math.random() < 0.5 ? -0.4 : 1);
+    op.set([Math.cos(a) * r, (Math.random() - 0.5) * 0.25, Math.sin(a) * r], i * 3);
+    os[i] = 0.4 + Math.random() * 1.3; oseed[i] = Math.random();
+    const c = new THREE.Color().copy(TEAL).lerp(BLUE, Math.random()); if (Math.random() < 0.12) c.set(0xffc58f);
+    oc.set([c.r, c.g, c.b], i * 3);
+  }
+  og.setAttribute("position", new THREE.BufferAttribute(op, 3)); og.setAttribute("aSize", new THREE.BufferAttribute(os, 1));
+  og.setAttribute("aColor", new THREE.BufferAttribute(oc, 3)); og.setAttribute("aSeed", new THREE.BufferAttribute(oseed, 1));
+  const orbitMat = pointMaterial(THREE, 9, px), orbit = new THREE.Points(og, orbitMat);
+  orbit.rotation.set(0.38, 0, -0.18); stage.add(orbit);
+  const shadow = new THREE.Mesh(new THREE.PlaneGeometry(4.6, 1.3), new THREE.MeshBasicMaterial({ map: softDisc(THREE, "rgba(12,40,80,.55)", "rgba(12,40,80,0)"), transparent: true, depthWrite: false }));
+  shadow.rotation.x = -Math.PI / 2; shadow.position.y = -2.25; stage.add(shadow);
+
+  // which part glows: follows the list beside the scene, or steps through on its own
+  const btns = [...document.querySelectorAll("[data-logo-part]")];
+  let active = 0, pausedUntil = 0, nextAt = 3.4;
+  const pick = (i, byHand) => {
+    active = i; btns.forEach((b, j) => { b.classList.toggle("on", j === i); b.setAttribute("aria-pressed", j === i ? "true" : "false"); });
+    if (byHand) pausedUntil = clock + 14;
+  };
+  btns.forEach((b, i) => b.addEventListener("click", () => { pick(i, true); nextAt = clock + 4; }));
+
+  // drag to turn; it eases back to its own slow spin
+  let drag = null, userY = 0, vel = 0;
+  const el = R.domElement; el.style.touchAction = "pan-y"; el.style.cursor = "grab";
+  el.addEventListener("pointerdown", (e) => { drag = e.clientX; vel = 0; el.setPointerCapture(e.pointerId); el.style.cursor = "grabbing"; });
+  el.addEventListener("pointermove", (e) => { if (drag === null) return; const d = (e.clientX - drag) * 0.012; drag = e.clientX; userY += d; vel = d; });
+  const up = () => { drag = null; el.style.cursor = "grab"; };
+  el.addEventListener("pointerup", up); el.addEventListener("pointercancel", up);
+
+  const resize = () => { R.setSize(W(), H()); camera.aspect = W() / H(); camera.updateProjectionMatrix(); stage.scale.setScalar(Math.min(1, (W() / H()) * 0.95)); };
+  window.addEventListener("resize", resize);
+
+  let clock = 0, last = 0;
+  const CYCLE = 11;
+  const frame = loop(mount, (now) => {
+    const t = now / 1000, dt = Math.min(0.05, last ? t - last : 0.016); last = t; clock = t;
+    // a turn that lingers when the logo faces you
+    const p = (t / CYCLE) % 1, turns = Math.floor(t / CYCLE) + p - Math.sin(p * Math.PI * 2) / (Math.PI * 2);
+    if (drag === null) { userY += vel; vel *= 0.94; }
+    logo.rotation.y = turns * Math.PI * 2 + userY;
+    logo.rotation.x = Math.sin(t * 0.5) * 0.05;
+    logo.position.y = Math.sin(t * 0.9) * 0.08;
+    shadow.material.opacity = 0.85 - logo.position.y * 1.5; shadow.scale.setScalar(1 - logo.position.y * 0.4);
+    orbit.rotation.y = t * 0.08;
+    orbitMat.uniforms.uTime.value = trailMat.uniforms.uTime.value = t;
+    // the pulse runs left to right about once a beat-and-a-half
+    const head = (t * 0.42) % 1.25;
+    for (let i = 0; i < TRAIL; i++) {
+      const u = head - i * 0.012;
+      const v = u >= 0 && u <= 1 ? ecgCurve.getPointAt(u) : null;
+      if (v) tp.set([v.x, v.y, 0], i * 3); else tp.set([0, 0, 99], i * 3);
+    }
+    tg.attributes.position.needsUpdate = true;
+    // the network thinks: nodes fire in turn
+    nodeBalls.forEach((b, i) => { const f = Math.max(0, Math.sin(t * 2.2 - i * 0.9)); b.scale.setScalar(1 + 0.18 * Math.pow(f, 6)); });
+    if (t > nextAt && t > pausedUntil && !reduce) { pick((active + 1) % parts.length); nextAt = t + 3.4; }
+    parts.forEach((g, i) => {
+      const m = g.userData.mat, want = i === active ? 0.7 + 0.2 * Math.sin(t * 4) : 0.06;
+      m.emissiveIntensity += (want - m.emissiveIntensity) * Math.min(1, dt * 5);
+    });
+    R.render(scene, camera);
+  });
+  pick(0);
+  mount.classList.add("on");
+  return { frame, pick, R };
+}
+document.querySelectorAll("[data-qc3d-logo]").forEach((m) => whenVisible(m, (THREE, mount) => debug("logo", logoScene(THREE, mount))));

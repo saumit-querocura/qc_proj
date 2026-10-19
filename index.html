@@ -566,6 +566,30 @@ html.calm .msg, html.calm .chip { opacity: 1; transform: none; }
 html[data-lang="hi"] .h-xl { letter-spacing: -0.01em; line-height: 1.2; }
 @media print { .nav, .announce, #to-top, #progress, .stage, .marquee { display: none !important; } .reveal { opacity: 1; transform: none; } }
 
+/* ============ the mark, in 3D ============ */
+.qm { position: relative; overflow: hidden; isolation: isolate; padding: clamp(64px, 9vw, 120px) 0;
+  background: radial-gradient(900px 560px at 30% 50%, rgba(31,209,196,.16), transparent 62%), radial-gradient(700px 500px at 18% 85%, rgba(29,111,227,.12), transparent 60%), linear-gradient(180deg, var(--sand) 0%, var(--sand-2) 100%); }
+.qm-in { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); gap: clamp(28px, 5vw, 70px); align-items: center; }
+.qm-stage { position: relative; aspect-ratio: 1 / 1; max-height: 640px; width: 100%; }
+.qm-3d { position: absolute; inset: 0; opacity: 0; transition: opacity 1.4s ease; z-index: 1; } .qm-3d.on { opacity: 1; }
+.qm-3d canvas { display: block; width: 100% !important; height: 100% !important; }
+.qm-fallback { position: absolute; left: 50%; top: 50%; width: 46%; transform: translate(-50%, -50%); filter: drop-shadow(0 30px 40px rgba(29,111,227,.25)); transition: opacity .8s ease; }
+.qm-3d.on + .qm-fallback { opacity: 0; }
+.qm-eyebrow { display: inline-flex; align-items: center; gap: 10px; font: 800 12px/1 var(--body); letter-spacing: .14em; text-transform: uppercase; color: var(--teal); margin-bottom: 18px; }
+.qm-eyebrow i { width: 34px; height: 1px; background: linear-gradient(90deg, transparent, var(--teal)); }
+.qm h2 { font-size: clamp(32px, 4.6vw, 56px); line-height: 1.05; letter-spacing: -0.035em; margin-bottom: 16px; }
+.qm h2 em { font-style: normal; background: linear-gradient(100deg, #1fb9b0, #1d6fe3 70%, #ff7a45); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.qm-lead { color: var(--ink-3); font-size: clamp(16px, 1.5vw, 18.5px); line-height: 1.65; margin: 0 0 24px; }
+.qm-parts { list-style: none; margin: 0 0 18px; padding: 0; display: grid; gap: 8px; }
+.qm-parts button { width: 100%; text-align: left; display: grid; grid-template-columns: 34px 1fr; gap: 2px 12px; align-items: center; padding: 12px 14px; border-radius: 16px; border: 1px solid var(--line); background: color-mix(in srgb, var(--paper) 70%, transparent); color: var(--ink); cursor: pointer; font: inherit; backdrop-filter: blur(8px); transition: border-color .3s ease, box-shadow .3s ease, background .3s ease, transform .3s ease; }
+.qm-parts button i { grid-row: span 2; width: 34px; height: 34px; border-radius: 11px; display: grid; place-items: center; font-style: normal; font-size: 17px; background: var(--teal-soft); }
+.qm-parts button b { font: 800 15px/1.2 var(--body); }
+.qm-parts button span { font: 600 13.5px/1.4 var(--body); color: var(--ink-3); }
+.qm-parts button.on { border-color: rgba(31,185,176,.55); background: var(--paper); box-shadow: 0 16px 34px -22px rgba(29,111,227,.6), 0 0 0 1px rgba(31,185,176,.25); transform: translateX(4px); }
+.qm-hint { font: 600 12.5px/1.4 var(--body); color: var(--ink-4); margin: 0; }
+@media (max-width: 900px) { .qm-in { grid-template-columns: 1fr; } .qm-stage { max-width: 520px; margin: 0 auto; } }
+@media (prefers-reduced-motion: reduce) { .qm-parts button.on { transform: none; } }
+
 /* ============ your body, in 3D ============ */
 .b3 { position: relative; overflow: hidden; min-height: min(92vh, 860px); display: flex; align-items: center; color: #f6f1e7; isolation: isolate;
   background: radial-gradient(1100px 620px at 74% 45%, rgba(79,216,198,.15), transparent 60%), radial-gradient(800px 520px at 70% 90%, rgba(255,107,138,.12), transparent 60%),
@@ -597,7 +621,7 @@ html[data-lang="hi"] .h-xl { letter-spacing: -0.01em; line-height: 1.2; }
 </style>
 <script src="assets/js/home-0.js?v=c8ffd1a2"></script>
 <script src="assets/qc-csp.js?v=77f89cc2"></script>
-<script src="assets/qc-i18n.js?v=cc805c75"></script>
+<script src="assets/qc-i18n.js?v=3408ef50"></script>
 </head>
 <body>
 <div id="progress" aria-hidden="true"></div>
@@ -713,6 +737,30 @@ html[data-lang="hi"] .h-xl { letter-spacing: -0.01em; line-height: 1.2; }
       <div class="float f-brief" data-depth="30">
         <div class="brief-row"><div class="qr" aria-hidden="true"><svg viewBox="0 0 21 21" id="qr-small"></svg></div><div><div class="f-k">Doctor brief</div><div class="f-v">Opened by your doctor</div><div class="f-s f-ok">✓ 2 minutes ago</div></div></div>
       </div>
+    </div>
+  </div>
+</section>
+
+<!-- THE MARK, IN 3D -->
+<section class="qm" id="mark" aria-labelledby="qm-title">
+  <div class="wrap qm-in">
+    <div class="qm-stage">
+      <div class="qm-3d" data-qc3d-logo role="img" aria-label="The QueroCura logo as a 3D model, turning slowly"></div>
+      <img class="qm-fallback" src="assets/d4f7acc01b9438e998c9e7b9676584b0.png" alt="" loading="lazy">
+    </div>
+    <div class="qm-copy">
+      <div class="qm-eyebrow"><i></i>The QueroCura mark</div>
+      <h2 id="qm-title">Six promises, <em>one heart.</em></h2>
+      <p class="qm-lead">Every line in our logo stands for something we do for you. Tap one to see it light up.</p>
+      <ol class="qm-parts">
+        <li><button type="button" data-logo-part aria-pressed="true"><i aria-hidden="true">❤️</i><b>The heart</b><span>Care comes first, in everything we build.</span></button></li>
+        <li><button type="button" data-logo-part aria-pressed="false"><i aria-hidden="true">📈</i><b>The pulse</b><span>Your readings, understood over time, not one number at a time.</span></button></li>
+        <li><button type="button" data-logo-part aria-pressed="false"><i aria-hidden="true">🕸️</i><b>The network</b><span>Thinking that connects your symptoms, records and doctors.</span></button></li>
+        <li><button type="button" data-logo-part aria-pressed="false"><i aria-hidden="true">💬</i><b>The speech bubble</b><span>Tell us how you feel in your own words. We listen.</span></button></li>
+        <li><button type="button" data-logo-part aria-pressed="false"><i aria-hidden="true">🔌</i><b>The connector</b><span>Links you to your hospital, your family and your care team.</span></button></li>
+        <li><button type="button" data-logo-part aria-pressed="false"><i aria-hidden="true">🙂</i><b>The smile</b><span>Feeling better is the whole point.</span></button></li>
+      </ol>
+      <p class="qm-hint">Drag the logo to turn it.</p>
     </div>
   </div>
 </section>
@@ -1105,7 +1153,7 @@ html[data-lang="hi"] .h-xl { letter-spacing: -0.01em; line-height: 1.2; }
 
 <button id="to-top" type="button" aria-label="Back to top">↑</button>
 
-<script type="module" src="assets/js/hospital-hero3d.js?v=46a316ef"></script>
+<script type="module" src="assets/js/hospital-hero3d.js?v=e0582f96"></script>
 <script src="assets/js/home-2.js?v=127595bb"></script>
 <!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "cf10cc866a9f4ffeb50a6ce35a72e773"}'></script><!-- End Cloudflare Web Analytics -->
 </body>
