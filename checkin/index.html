@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://app.querocura.com; connect-src 'self' https://app.querocura.com; object-src 'none'; base-uri 'self'; form-action 'self'">
+<title>Check in · QueroCura</title>
+<meta name="robots" content="noindex">
+<meta name="referrer" content="no-referrer">
+<link rel="icon" type="image/x-icon" href="../icons/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/qc-base.css?v=7b9ea421">
+<style>
+  [hidden] { display: none !important; }
+  .shell { max-width: 560px; }
+  .ci-card { border-radius: 28px; padding: 28px 24px; text-align: center; background: var(--paper); border: 1px solid var(--line); box-shadow: 0 30px 60px -40px rgba(16,14,42,.45); }
+  .ci-card h1 { font-size: clamp(24px, 6vw, 32px); margin: 6px 0 4px; } .ci-ic { font-size: 44px; }
+  .ci-here { display: block; width: 100%; margin: 18px 0 8px; padding: 20px; border-radius: 22px; border: 0; cursor: pointer; font: 800 22px 'Space Grotesk', sans-serif; color: #fff;
+    background: linear-gradient(135deg, #0e8f83, #2f8fd1); box-shadow: 0 20px 40px -20px rgba(14,143,131,.9); }
+  .ci-here:disabled { opacity: .6; }
+  .ci-live { border-radius: 26px; padding: 26px 22px; color: #fff; text-align: center; background: linear-gradient(135deg, #0e8f83, #2f8fd1 60%, #7c6fdb); box-shadow: 0 24px 50px -30px rgba(14,143,131,.8); }
+  .ci-live.called { background: linear-gradient(135deg, #d24f28, #e8a23a); animation: ciPulse 1.6s ease-in-out infinite; } @keyframes ciPulse { 50% { transform: scale(1.02); } }
+  .ci-live small { display: block; font-weight: 800; opacity: .85; text-transform: uppercase; letter-spacing: .06em; font-size: 12px; }
+  .ci-tok { font: 800 72px/1 'Space Grotesk', sans-serif; margin: 8px 0; } .ci-line { font: 700 19px 'Space Grotesk', sans-serif; } .ci-u { opacity: .75; font-size: 12.5px; font-weight: 700; margin-top: 10px; }
+  details.ci-more { text-align: left; margin-top: 10px; } details.ci-more summary { cursor: pointer; font-weight: 800; }
+  .grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  @media (prefers-reduced-motion: reduce) { .ci-live.called { animation: none; } }
+</style>
+</head>
+<body>
+  <div class="topbar">
+    <a class="logo-wrap" href="../"><img src="../assets/d4f7acc01b9438e998c9e7b9676584b0.png" alt="QueroCura"><span class="logo-text"><span class="ink">Quero</span><span class="teal">Cura</span></span></a>
+    <div class="topbar-right"><button class="theme-toggle" data-theme-toggle aria-label="Toggle dark mode"><span id="theme-toggle-icon"></span></button></div>
+  </div>
+  <main class="shell" id="ci"><div class="ci-card"><div class="empty">Loading…</div></div></main>
+  <script src="../assets/qc-page.js?v=c34c97a9"></script>
+  <script src="../assets/js/checkin.js?v=3462fb14"></script>
+</body>
+</html>

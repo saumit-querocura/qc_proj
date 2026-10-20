@@ -1174,3 +1174,11 @@ html[data-theme="dark"] .dr-path, html[data-theme="dark"] .dr-card, html[data-th
 .join-req { display: flex; gap: 12px; align-items: flex-start; padding: 12px 0; border-top: 1px solid rgba(127,127,127,.14); } .join-req small { display: block; opacity: .75; } .jr-reg { font-weight: 700; opacity: 1 !important; }
 @media (max-width: 760px) { .pi-grid, .ss-steps { grid-template-columns: 1fr; } }
 @media (prefers-reduced-motion: reduce) { .pi-bar { animation: none; } }
+
+/* online booking settings */
+.bs-link { margin: 12px 0; padding: 12px 14px; border-radius: 14px; background: rgba(14,143,131,.07); } .bs-link > span { font-weight: 800; font-size: 13px; } .bs-link .row { display: flex; gap: 8px; margin: 6px 0 4px; } .bs-link small { opacity: .7; word-break: break-all; }
+.bs-docs { display: flex; flex-wrap: wrap; gap: 4px 18px; margin: 4px 0 12px; }
+.bs-qr { display: flex; gap: 18px; align-items: center; flex-wrap: wrap; } .bs-qr img { border-radius: 14px; background: #fff; padding: 8px; border: 1px solid rgba(127,127,127,.2); }
+.rx-quick { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 10px; }
+.rxq { border: 1px solid rgba(43,111,232,.25); background: rgba(43,111,232,.07); color: inherit; border-radius: 999px; padding: 6px 12px; font: 700 12.5px/1 var(--body, inherit); cursor: pointer; }
+.rxq:hover { border-color: rgba(43,111,232,.55); } .rxq-last { background: rgba(14,143,131,.1); border-color: rgba(14,143,131,.35); } .rxq-save { background: transparent; border-style: dashed; }

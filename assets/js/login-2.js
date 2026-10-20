@@ -176,6 +176,11 @@ form.addEventListener("submit", async (e) => {
     // who never finished the profile wizard back to it first.
     btnLabel.textContent = "Just a sec…";
     let goTo = "../dashboard/";
+    // back to the page that sent them here (only our own pages: a path on this site, never another site)
+    try {
+      const nx = new URLSearchParams(location.search).get("next") || "";
+      if (/^\/(?![\/\\])[A-Za-z0-9\-_\/.?=&%]*$/.test(nx) && nx.indexOf("..") < 0 && !/^\/login/.test(nx)) goTo = nx;
+    } catch (e) {}
     try {
       const profRes = await fetch(API_BASE.replace("/auth", "") + "/profile", { credentials: "include" });
       const profData = await profRes.json();

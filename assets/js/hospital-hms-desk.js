@@ -32,7 +32,7 @@
         (!prof.reg_no ? '<div class="notice wait rx-prof">Printed prescriptions show your medical registration number. <button type="button" class="link" data-prof>Add it now</button></div>' : "") +
         '<form id="rx-form" novalidate><div class="grid2"><div class="field"><label for="rx-c">Complaints</label><input class="input" id="rx-c" maxlength="300" value="' + esc(o.complaints || "") + '"></div><div class="field"><label for="rx-dx">Diagnosis</label><input class="input" id="rx-dx" maxlength="300"></div></div>' +
         '<div class="field"><label for="rx-f">Examination findings</label><input class="input" id="rx-f" maxlength="400"></div>' +
-        '<div class="ops-h">Medicines</div><datalist id="rx-dl">' + form.map(function (f) { return '<option value="' + esc(f.name) + '">' + esc((f.strength || "") + " " + (f.form || "") + (f.stock != null ? " · " + f.stock + " in stock" : "")) + "</option>"; }).join("") + '</datalist><div id="rx-lines"></div>' +
+        '<div class="ops-h">Medicines</div><div class="rx-quick" id="rx-quick" aria-label="Quick fill"></div><datalist id="rx-dl">' + form.map(function (f) { return '<option value="' + esc(f.name) + '">' + esc((f.strength || "") + " " + (f.form || "") + (f.stock != null ? " · " + f.stock + " in stock" : "")) + "</option>"; }).join("") + '</datalist><div id="rx-lines"></div>' +
         '<button type="button" class="btn btn-sm" data-addline>+ Add medicine</button><div id="rx-warn"></div>' +
         '<div class="grid2"><div class="field"><label for="rx-inv">Investigations advised</label><input class="input" id="rx-inv" maxlength="300"></div><div class="field"><label for="rx-fu">Follow-up on</label><input class="input" type="date" id="rx-fu" min="' + M().today() + '"></div></div>' +
         '<div class="field"><label for="rx-adv">Advice</label><textarea class="input" id="rx-adv" rows="2" maxlength="1200"></textarea></div>' +
@@ -65,6 +65,38 @@
         });
       }
       draw();
+      /* quick fill: repeat the patient's last prescription, or one of my favourites; then the same checks run */
+      var FAVS = [], LAST = null;
+      function fill(src, favId) {
+        lines = (src.items || []).map(function (x) { var l = blank(); Object.keys(l).forEach(function (k) { if (x[k] != null && x[k] !== "") l[k] = String(x[k]); }); return l; });
+        if (!lines.length) lines.push(blank());
+        draw();
+        [["rx-dx", src.diagnosis], ["rx-inv", src.investigations], ["rx-adv", src.advice]].forEach(function (f) { if (f[1] && !el(f[0]).value) el(f[0]).value = f[1]; });
+        if (favId) api("/hospital/rx/favourites", { method: "POST", body: { used: favId } });
+        check(); toast("Filled in. Check each line before signing.");
+      }
+      function quick() {
+        var q = el("rx-quick"); if (!q) return;
+        q.innerHTML = (LAST && LAST.items.length ? '<button type="button" class="rxq rxq-last" data-rxlast title="From ' + esc(LAST.number) + '">↻ Repeat last (' + LAST.items.length + ")</button>" : "") +
+          FAVS.slice(0, 8).map(function (f, i) { return '<button type="button" class="rxq" data-rxfav="' + i + '">★ ' + esc(f.name) + "</button>"; }).join("") +
+          '<button type="button" class="rxq rxq-save" data-rxsave>☆ Save as favourite</button>';
+      }
+      Promise.all([api("/hospital/rx/favourites"), api("/hospital/rx/last/" + p.id)]).then(function (rs) { FAVS = (rs[0] && rs[0].items) || []; LAST = rs[1] && rs[1].item; quick(); });
+      el("rx-quick").onclick = function (e) {
+        var x;
+        if (e.target.closest("[data-rxlast]")) return fill(LAST);
+        if ((x = e.target.closest("[data-rxfav]"))) { var f = FAVS[+x.getAttribute("data-rxfav")]; return fill(f, f.id); }
+        if (e.target.closest("[data-rxsave]")) {
+          var items = collect();
+          if (!items.length) return toast("Add the medicines first.", "err");
+          var name = window.prompt("Name this favourite (e.g. “Viral fever, adult”)", el("rx-dx").value || "");
+          if (!name) return;
+          api("/hospital/rx/favourites", { method: "POST", body: { name: name, items: items, diagnosis: el("rx-dx").value, investigations: el("rx-inv").value, advice: el("rx-adv").value } }).then(function (r) {
+            toast(r.message || (r.ok ? "Saved." : "Couldn't save."), r.ok ? "" : "err");
+            if (r.ok) api("/hospital/rx/favourites").then(function (x2) { FAVS = (x2 && x2.items) || []; quick(); });
+          });
+        }
+      };
       var warns = [], t = null;
       function check() {
         var items = collect();

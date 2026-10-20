@@ -85,6 +85,7 @@
     var s = e.target.closest("[data-pi-scope]"); if (s) { scope = s.getAttribute("data-pi-scope"); loadInsights(); return; }
     var w = e.target.closest("[data-pi-why]"); if (w) { var p = el("pi-why-" + w.getAttribute("data-pi-why")); if (p) p.hidden = !p.hidden; return; }
     if (e.target.closest("[data-doc-hours]")) { myHours(); return; }
+    if (e.target.closest("[data-doc-booking]")) { booking(); return; }
     var gt = e.target.closest("#tab-insights [data-goto], #doc-body [data-goto]"); if (gt) { H().P.closeModal("doc-modal"); H().go(gt.getAttribute("data-goto")); return; }
     var j = e.target.closest("[data-join-decide]"); if (j) { decide(j); return; }
     if (e.target.closest("[data-join-renew]")) { renew(); return; }
@@ -207,7 +208,47 @@
     api("/hospital/team/join/code", { method: "POST", body: {} }).then(function (r) { toast(r.message || "Done.", r.ok ? "" : "err"); H().go("team"); });
   }
 
+  /* ---------------------------------------------------------------- online booking and self check-in (admin) */
+  function booking() {
+    var body = modal('<h2 id="doc-title">Online booking &amp; check-in</h2><div class="mind-skel" style="height:200px"></div>');
+    api("/hospital/booking").then(function (r) {
+      if (H().guard(r)) return;
+      if (!r.ok) { body.innerHTML = '<h2>Online booking</h2><div class="notice bad">' + esc(r.message || "Couldn't load.") + "</div>"; return; }
+      var site = location.origin, link = site + "/book/?c=" + r.slug, cin = site + "/checkin/?k=" + (r.checkin_key || "");
+      var verified = (me().org || {}).status === "active";
+      body.innerHTML = '<h2 id="doc-title">Online booking &amp; check-in</h2><p class="sub">Patients book real free slots from the QueroCura app, see when they’re likely to be seen, get told if you’re running late, and check themselves in by QR.</p>' +
+        (verified ? "" : '<div class="notice wait">This switches on once your organisation is verified.</div>') +
+        '<form id="bk-set" novalidate><label class="hp-check"><input type="checkbox" id="bs-on"' + (r.enabled ? " checked" : "") + (verified ? "" : " disabled") + '> <span><b>Take bookings online</b></span></label>' +
+        '<div class="bs-link"><span>Your booking link</span><div class="row"><input class="input" id="bs-slug" value="' + esc(r.slug) + '" maxlength="40" aria-label="Link name"><button type="button" class="btn btn-sm" data-copy="' + esc(link) + '">Copy link</button></div><small>' + esc(link) + "</small></div>" +
+        '<div class="lbl">Doctors who take online bookings</div><div class="bs-docs">' + r.doctors.map(function (d) { return '<label class="hp-check"><input type="checkbox" data-bdoc="' + esc(d.id) + '"' + (d.online ? " checked" : "") + "> <span>" + esc(d.name) + "</span></label>"; }).join("") + "</div>" +
+        '<div class="hrs-row"><label for="bs-days">Book up to</label><select class="input" id="bs-days">' + [3, 7, 14, 21, 30, 60].map(function (n) { return '<option value="' + n + '"' + (n === r.days_ahead ? " selected" : "") + ">" + n + " days ahead</option>"; }).join("") + "</select></div>" +
+        '<label class="hp-check"><input type="checkbox" id="bs-walk"' + (r.walkins ? " checked" : "") + '> <span>Let walk-ins join the queue from their phone</span></label>' +
+        '<div class="field"><label for="bs-note">A note patients see</label><input class="input" id="bs-note" maxlength="300" value="' + esc(r.note) + '" placeholder="e.g. Please bring your old reports"></div>' +
+        '<button class="btn btn-primary" type="submit">Save</button><div class="msg" id="bs-msg" role="status"></div></form>' +
+        (r.checkin_key ? '<hr class="hp-hr"><h3>Check-in poster</h3><p class="sub">Print it for reception. Patients scan it, tap “I’m here” and see their place in the queue.</p><div class="bs-qr"><img id="bs-qr" alt="Check-in QR code" width="180" height="180"><div><button type="button" class="btn btn-sm btn-primary" id="bs-print">Print poster</button> <button type="button" class="btn btn-sm btn-ghost" id="bs-new">Make a new code</button><p class="mini">A new code stops the old poster working.</p></div></div>' : "");
+      fetch(H().P.API + "/hospital/booking/qr.svg?for=checkin", { credentials: "include" }).then(function (x) { return x.ok ? x.blob() : null; }).then(function (b) { var i = el("bs-qr"); if (b && i) i.src = URL.createObjectURL(b); }).catch(function () {});
+      el("bk-set").onsubmit = function (e) {
+        e.preventDefault();
+        var docs = [].map.call(body.querySelectorAll("[data-bdoc]:checked"), function (c) { return c.getAttribute("data-bdoc"); });
+        api("/hospital/booking", { method: "POST", body: { enabled: el("bs-on").checked, slug: el("bs-slug").value.trim(), doctors: docs, days_ahead: +el("bs-days").value, walkins: el("bs-walk").checked, note: el("bs-note").value } }).then(function (x) {
+          H().say(el("bs-msg"), x.message || (x.ok ? "Saved." : "Couldn't save."), x.ok ? "ok" : "err"); if (x.ok) toast("Saved.");
+        });
+      };
+      body.onclick = function (e) {
+        var c = e.target.closest("[data-copy]"); if (c && navigator.clipboard) { navigator.clipboard.writeText(c.getAttribute("data-copy")).then(function () { toast("Link copied."); }); return; }
+        if (e.target.id === "bs-new") { if (!window.confirm("Make a new check-in code? Reprint the poster afterwards.")) return; api("/hospital/booking", { method: "POST", body: { new_checkin_code: true } }).then(function () { booking(); }); return; }
+        if (e.target.id === "bs-print") {
+          var src = el("bs-qr").src, w = window.open("", "_blank", "noopener=no,width=620,height=820");
+          if (!w) return toast("Allow pop-ups to print the poster.", "err");
+          w.document.write('<!doctype html><title>Check in</title><body style="font-family:Arial,sans-serif;text-align:center;padding:40px"><h1 style="font-size:40px;margin:0">' + esc((me().org || {}).name || "") + '</h1><p style="font-size:24px">Arrived? Check in with your phone</p><img src="' + src + '" style="width:340px;height:340px"><p style="font-size:20px">1. Scan with your camera &nbsp; 2. Tap “I’m here” &nbsp; 3. Take a seat</p><p style="color:#666">Your place in the queue shows on your phone. No phone? Please see the desk.</p><p style="color:#0e8f83;font-weight:bold">QueroCura</p></body>');
+          w.document.close(); setTimeout(function () { w.print(); }, 500);
+        }
+      };
+    });
+  }
+
   window.QCDoc = {
+    booking: booking,
     tabs: function (canFn) { return [["insights", "Insights", canFn("rx") || canFn("reports") || canFn("team"), "flow"]]; },
     loaders: function () { return { insights: loadInsights }; },
     myHours: myHours, starter: starter, teamExtras: teamExtras,
