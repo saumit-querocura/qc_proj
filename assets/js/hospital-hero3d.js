@@ -101,6 +101,8 @@ const SETS = {
   patient: [["heart", "Your heart: blood pressure and pulse, understood over time"], ["lungs", "Your breathing and oxygen, in clear trends"],
     ["brain", "A symptom check that thinks like a doctor"], ["dna", "Your whole health story, in one place"],
     ["capsule", "Your medicines and reminders, never advice"], ["globe", "Shared with your doctors only when you say yes"]],
+  doctor: [["heart", "Your patients' readings, as trends"], ["brain", "Insights that plan your day"], ["dna", "Every patient's story in one record"],
+    ["capsule", "Prescriptions with safety checks"], ["cross", "Your clinic, your hours"], ["globe", "Connected to your patients' app"]],
 };
 
 function heroScene(THREE, mount) {

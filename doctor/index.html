@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://app.querocura.com; connect-src 'self' https://app.querocura.com; object-src 'none'; base-uri 'self'; form-action 'self'">
+<title>QueroCura for Doctors</title>
+<meta name="description" content="For doctors practising on their own or with a clinic: your hours and bookings, today's patients, prescriptions with safety checks, records, billing and practice insights, in one calm place.">
+<meta name="referrer" content="no-referrer">
+<link rel="icon" type="image/x-icon" href="../icons/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700;800&family=Manrope:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500;1,9..144,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/qc-base.css?v=7b9ea421">
+<link rel="stylesheet" href="../assets/qc-hospital.css?v=f49e244f">
+<script src="../assets/qc-csp.js?v=77f89cc2"></script>
+</head>
+<body class="hp dr">
+  <header class="hp-top">
+    <a class="logo-wrap" href="../">
+      <img src="../assets/d4f7acc01b9438e998c9e7b9676584b0.png" alt="QueroCura">
+      <span class="logo-text"><span class="ink">Quero</span><span class="teal">Cura</span> <span class="hp-tag">for Doctors</span></span>
+    </a>
+    <nav class="hp-nav">
+      <a href="#tools">What you get</a><a href="../hospital/">For hospitals</a><a href="#faq">FAQ</a>
+      <a class="btn btn-sm btn-primary" href="#start" data-dr-go="solo">Get started</a>
+      <a class="btn btn-sm" href="#start" data-dr-go="signin">Sign in</a>
+    </nav>
+    <button class="theme-toggle" data-theme-toggle aria-label="Toggle dark mode"><span id="theme-toggle-icon"></span></button>
+  </header>
+
+  <main class="lux">
+    <section class="lx-hero">
+      <div class="lx-3d" id="hero3d" data-set="doctor" aria-hidden="true"></div>
+      <div class="lx-veil" aria-hidden="true"></div>
+      <div class="lx-wrap lx-hero-in">
+        <div class="lx-copy">
+          <span class="lx-eyebrow"><i></i>QueroCura for doctors</span>
+          <h1>Your practice, <em>beautifully run.</em></h1>
+          <p class="lx-lead">Whether you practise on your own or with a clinic: your hours and bookings, today's patients, prescriptions with safety checks, records, bills and insights about your practice, all in one calm place.</p>
+          <div class="lx-cta">
+            <a class="lx-btn gold" href="#start" data-dr-go="solo">I practise on my own <span aria-hidden="true">→</span></a>
+            <a class="lx-btn ghost" href="#start" data-dr-go="join">I work at a clinic</a>
+          </div>
+          <ul class="lx-proof">
+            <li><b>1 minute</b><span>to set your weekly hours</span></li>
+            <li><b>Verified</b><span>against your medical council registration</span></li>
+            <li><b>Never advice</b><span>QueroCura doesn't tell patients which medicine to take</span></li>
+          </ul>
+        </div>
+        <div class="lx-shapes" data-shapes aria-label="Shapes of care">
+          <span class="lx-shape-cap" data-shape-cap aria-live="polite">Your patients' readings, as trends</span>
+          <div class="lx-shape-btns">
+            <button type="button" data-shape="0" class="on" title="Heart">❤️</button>
+            <button type="button" data-shape="1" title="Brain">🧠</button>
+            <button type="button" data-shape="2" title="DNA">🧬</button>
+            <button type="button" data-shape="3" title="Capsule">💊</button>
+            <button type="button" data-shape="4" title="Clinic">✚</button>
+            <button type="button" data-shape="5" title="Connected">🌐</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- which is you -->
+    <section class="lx-sec dr-paths" id="paths">
+      <div class="lx-wrap">
+        <h2>Which is <em>you?</em></h2>
+        <div class="dr-path-grid">
+          <button type="button" class="dr-path" data-dr-go="solo"><span class="dp-ic" aria-hidden="true">🩺</span><b>I practise on my own</b><span>Your own verified practice: just you, with everything one doctor needs. Add a receptionist later if you like.</span><i>Start my practice →</i></button>
+          <button type="button" class="dr-path" data-dr-go="join"><span class="dp-ic" aria-hidden="true">🏥</span><b>I work at a clinic or hospital on QueroCura</b><span>Join with your clinic's code. Their administrator approves you, then you see your own patients and lists.</span><i>Join my clinic →</i></button>
+          <a class="dr-path" href="../hospital/setup/"><span class="dp-ic" aria-hidden="true">🏢</span><b>My clinic isn't on QueroCura yet</b><span>Set it up for the whole team: doctors, reception, beds, pharmacy and billing, sized to your clinic.</span><i>Set up my clinic →</i></a>
+        </div>
+      </div>
+    </section>
+
+    <!-- the forms -->
+    <section class="lx-sec dr-start" id="start">
+      <div class="lx-wrap">
+        <div class="dr-card">
+          <div class="dr-tabs" role="tablist">
+            <button type="button" role="tab" data-dr-tab="solo" class="on">On my own</button>
+            <button type="button" role="tab" data-dr-tab="join">Join my clinic</button>
+            <button type="button" role="tab" data-dr-tab="signin">Sign in</button>
+          </div>
+
+          <form id="dr-solo" class="dr-form" novalidate autocomplete="on">
+            <h3>Start your practice</h3>
+            <p class="sub">We check your registration with your council before patients can connect. You can sign in and set up straight away.</p>
+            <div class="grid2">
+              <div class="field"><label for="ds-name">Your full name *</label><input class="input" id="ds-name" maxlength="120" autocomplete="name" placeholder="Dr Kavya Rao" required></div>
+              <div class="field"><label for="ds-email">E-mail *</label><input class="input" id="ds-email" type="email" maxlength="254" autocomplete="email" required></div>
+              <div class="field"><label for="ds-council">Medical council *</label><select class="input" id="ds-council" data-councils required></select></div>
+              <div class="field"><label for="ds-reg">Registration number *</label><input class="input" id="ds-reg" maxlength="40" required placeholder="As on your certificate"></div>
+              <div class="field"><label for="ds-qual">Qualification</label><input class="input" id="ds-qual" maxlength="80" placeholder="MBBS, MD"></div>
+              <div class="field"><label for="ds-spec">Speciality</label><input class="input" id="ds-spec" maxlength="80" placeholder="Family medicine"></div>
+              <div class="field"><label for="ds-practice">Practice name</label><input class="input" id="ds-practice" maxlength="160" placeholder="Leave empty for “Dr … 's clinic”"></div>
+              <div class="field"><label for="ds-phone">Clinic phone</label><input class="input" id="ds-phone" type="tel" maxlength="30"></div>
+              <div class="field"><label for="ds-city">City</label><input class="input" id="ds-city" maxlength="80"></div>
+              <div class="field"><label for="ds-state">State</label><input class="input" id="ds-state" maxlength="80"></div>
+              <div class="field"><label for="ds-pw">Password *</label><input class="input" id="ds-pw" type="password" minlength="8" autocomplete="new-password" required><span class="hint">8+ characters. Not your name or a common password.</span></div>
+              <div class="field"><label for="ds-pw2">Repeat password *</label><input class="input" id="ds-pw2" type="password" autocomplete="new-password" required></div>
+            </div>
+            <div class="hp-hidden" aria-hidden="true"><label for="ds-site">Leave this empty</label><input id="ds-site" tabindex="-1" autocomplete="off"></div>
+            <label class="hp-check"><input type="checkbox" id="ds-declare"> <span>I'm a registered medical practitioner and the registration above is mine. *</span></label>
+            <label class="hp-check"><input type="checkbox" id="ds-terms"> <span>I'll use patients' information only for care they have agreed to. *</span></label>
+            <button class="btn btn-primary" type="submit">Create my practice</button>
+            <div class="msg" id="ds-msg" role="status"></div>
+          </form>
+
+          <form id="dr-join" class="dr-form" novalidate autocomplete="on" hidden>
+            <h3>Join your clinic or hospital</h3>
+            <p class="sub">Ask your clinic's administrator for its 8-character code. It's on their Team page.</p>
+            <div class="field"><label for="dj-code">Clinic code *</label><input class="input dj-code" id="dj-code" maxlength="9" autocomplete="off" spellcheck="false" placeholder="ABCD 2345" required></div>
+            <div class="dj-org" id="dj-org" hidden></div>
+            <div class="grid2">
+              <div class="field"><label for="dj-name">Your full name *</label><input class="input" id="dj-name" maxlength="120" autocomplete="name" required></div>
+              <div class="field"><label for="dj-email">E-mail *</label><input class="input" id="dj-email" type="email" maxlength="254" autocomplete="email" required></div>
+              <div class="field"><label for="dj-council">Medical council *</label><select class="input" id="dj-council" data-councils required></select></div>
+              <div class="field"><label for="dj-reg">Registration number *</label><input class="input" id="dj-reg" maxlength="40" required></div>
+              <div class="field"><label for="dj-qual">Qualification</label><input class="input" id="dj-qual" maxlength="80" placeholder="MBBS, MS"></div>
+              <div class="field"><label for="dj-spec">Speciality</label><input class="input" id="dj-spec" maxlength="80"></div>
+              <div class="field"><label for="dj-pw">Password *</label><input class="input" id="dj-pw" type="password" minlength="8" autocomplete="new-password" required></div>
+              <div class="field"><label for="dj-pw2">Repeat password *</label><input class="input" id="dj-pw2" type="password" autocomplete="new-password" required></div>
+            </div>
+            <div class="field"><label for="dj-note">A note for the administrator</label><input class="input" id="dj-note" maxlength="300" placeholder="e.g. Paediatric OPD on weekday mornings"></div>
+            <div class="hp-hidden" aria-hidden="true"><label for="dj-site">Leave this empty</label><input id="dj-site" tabindex="-1" autocomplete="off"></div>
+            <label class="hp-check"><input type="checkbox" id="dj-declare"> <span>I'm a registered medical practitioner and the registration above is mine. *</span></label>
+            <label class="hp-check"><input type="checkbox" id="dj-terms"> <span>I'll use patients' information only for care they have agreed to. *</span></label>
+            <button class="btn btn-primary" type="submit">Send my request</button>
+            <div class="msg" id="dj-msg" role="status"></div>
+          </form>
+
+          <form id="dr-signin" class="dr-form narrow" novalidate hidden>
+            <h3>Sign in</h3>
+            <p class="sub">The same sign-in as the hospital portal.</p>
+            <div class="field"><label for="dn-email">E-mail</label><input class="input" id="dn-email" type="email" autocomplete="username" required></div>
+            <div class="field"><label for="dn-pw">Password</label><input class="input" id="dn-pw" type="password" autocomplete="current-password" required></div>
+            <div class="field" id="dn-code-wrap" hidden><label for="dn-code">6-digit code from your authenticator (or a recovery code)</label><input class="input" id="dn-code" inputmode="numeric" autocomplete="one-time-code" maxlength="20"></div>
+            <button class="btn btn-primary" type="submit">Sign in</button>
+            <div class="msg" id="dn-msg" role="status"></div>
+            <p class="hint"><a href="../hospital/#forgot">Forgot your password?</a></p>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- what you get -->
+    <section class="lx-sec dr-tools" id="tools">
+      <div class="lx-wrap">
+        <h2>Everything a doctor needs, <em>nothing you don't.</em></h2>
+        <div class="dr-grid">
+          <div class="dr-tool"><span aria-hidden="true">🗓️</span><b>Your hours in a minute</b><p>Pick your days, a morning and an evening session and how long each appointment is. Add days off. Patients book into real free slots.</p></div>
+          <div class="dr-tool"><span aria-hidden="true">🏠</span><b>My day</b><p>The next patient, who is late, who's waiting too long and anything urgent, in order. It plays out the rest of your day to say when you'll finish.</p></div>
+          <div class="dr-tool"><span aria-hidden="true">📈</span><b>Practice insights</b><p>Your busiest days and hours, how long consultations really take against your slot length, no-shows, common reasons for visits and who's overdue a follow-up.</p></div>
+          <div class="dr-tool"><span aria-hidden="true">✍️</span><b>Prescriptions with safety checks</b><p>Allergy and duplicate checks as you write, printed with your registration, sent to the patient's QueroCura app.</p></div>
+          <div class="dr-tool"><span aria-hidden="true">🗂️</span><b>One record per patient</b><p>Visits, prescriptions, results and bills together. If the patient uses QueroCura, their readings and symptom checks come too, when they say yes.</p></div>
+          <div class="dr-tool"><span aria-hidden="true">🧾</span><b>Bills and payments</b><p>Bills fill themselves from the visit. Take cash, UPI or card and close the day in a few taps.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="lx-sec lx-faq" id="faq">
+      <div class="lx-wrap narrow">
+        <h2>Questions</h2>
+        <details><summary>How do you verify me?</summary><p>We check your registration number with the council you choose. Until then you can sign in, set your hours and fees and add patients; connecting patients' QueroCura apps switches on once you're verified.</p></details>
+        <details><summary>I work at two places. Can I use both?</summary><p>Yes. Your own practice and each clinic you join are separate accounts with separate patient lists, so records never mix. Use a different e-mail address for each one.</p></details>
+        <details><summary>Can my clinic see my patients?</summary><p>Inside a clinic, records belong to that clinic's patients and follow its roles. In your own practice, only you and anyone you invite can see them.</p></details>
+        <details><summary>Does QueroCura give medical advice?</summary><p>No. It organises your practice and shows patterns with the reason for each. Clinical decisions stay yours, and patients are never told which medicine to take.</p></details>
+      </div>
+    </section>
+  </main>
+
+  <footer class="hp-foot"><div class="hp-wrap">© 2026 QueroCura · <a href="../">Home</a> · <a href="../hospital/">For hospitals</a> · <a href="../privacy/">Privacy</a></div></footer>
+
+  <script src="../assets/qc-page.js?v=c34c97a9"></script>
+  <script type="module" src="../assets/js/hospital-hero3d.js?v=8843b893"></script>
+  <script src="../assets/js/doctor.js?v=b48ee154"></script>
+</body>
+</html>

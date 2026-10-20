@@ -503,6 +503,8 @@ html[data-theme="dark"] .nav-hosp { color: #e9e7f5; background: rgba(140,128,240
 .hosp-door small { color: #c8c6de; font: 500 13px/1.45 var(--body); }
 .hosp-door .hd-go { margin-left: auto; flex: none; width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; background: #fff; color: #1d1856; font-weight: 800; transition: transform .25s ease; }
 .hosp-door:hover .hd-go { transform: translateX(3px); }
+.doc-door { margin-top: 10px; background: linear-gradient(150deg, #0b3b3a, #0e6f72); } .doc-door .hd-go { color: #0b3b3a; }
+.m-doc { background: #0e6f72; }
 .hosp { border-radius: 36px; background: linear-gradient(150deg, #100e2a, #1d1856); color: #e9e7f5; padding: clamp(32px, 6vw, 72px); position: relative; overflow: hidden; }
 .hosp::before { content: ""; position: absolute; width: 520px; height: 520px; right: -160px; top: -200px; border-radius: 50%; background: radial-gradient(circle, rgba(14,143,131,.45), transparent 70%); filter: blur(20px); }
 .hosp > * { position: relative; }
@@ -621,7 +623,7 @@ html[data-lang="hi"] .h-xl { letter-spacing: -0.01em; line-height: 1.2; }
 </style>
 <script src="assets/js/home-0.js?v=c8ffd1a2"></script>
 <script src="assets/qc-csp.js?v=77f89cc2"></script>
-<script src="assets/qc-i18n.js?v=3408ef50"></script>
+<script src="assets/qc-i18n.js?v=55eaa1ee"></script>
 </head>
 <body>
 <div id="progress" aria-hidden="true"></div>
@@ -677,6 +679,7 @@ html[data-lang="hi"] .h-xl { letter-spacing: -0.01em; line-height: 1.2; }
   <a href="register/" class="btn btn-primary" id="m-cta">Get started free</a>
   <a href="login/" class="btn btn-ghost" id="m-signin">Sign in</a>
   <a href="hospital/setup/" class="btn m-hosp"><span aria-hidden="true">🏥</span> Hospital or clinic portal</a>
+  <a href="doctor/" class="btn m-hosp m-doc"><span aria-hidden="true">🩺</span> For doctors</a>
 </div>
 
 <main id="main">
@@ -698,6 +701,11 @@ html[data-lang="hi"] .h-xl { letter-spacing: -0.01em; line-height: 1.2; }
       <a href="hospital/setup/" class="hosp-door" id="hosp-door">
         <span class="hd-ic" aria-hidden="true">🏥</span>
         <span class="hd-t"><b>Run a hospital or clinic?</b><small>Open the QueroCura hospital portal. A few quick questions about your size and services, and we'll plan your setup.</small></span>
+        <span class="hd-go" aria-hidden="true">→</span>
+      </a>
+      <a href="doctor/" class="hosp-door doc-door" id="doc-door">
+        <span class="hd-ic" aria-hidden="true">🩺</span>
+        <span class="hd-t"><b>Are you a doctor?</b><small>Practising on your own or with a clinic: your hours, today's patients, prescriptions, bills and practice insights.</small></span>
         <span class="hd-go" aria-hidden="true">→</span>
       </a>
       <div class="trust-row">
@@ -1153,7 +1161,7 @@ html[data-lang="hi"] .h-xl { letter-spacing: -0.01em; line-height: 1.2; }
 
 <button id="to-top" type="button" aria-label="Back to top">↑</button>
 
-<script type="module" src="assets/js/hospital-hero3d.js?v=e0582f96"></script>
+<script type="module" src="assets/js/hospital-hero3d.js?v=8843b893"></script>
 <script src="assets/js/home-2.js?v=127595bb"></script>
 <!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "cf10cc866a9f4ffeb50a6ce35a72e773"}'></script><!-- End Cloudflare Web Analytics -->
 </body>

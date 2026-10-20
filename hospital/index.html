@@ -13,7 +13,7 @@
 <link rel="preconnect" href="https://app.querocura.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700;800&family=Manrope:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500;1,9..144,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../assets/qc-base.css?v=7b9ea421">
-<link rel="stylesheet" href="../assets/qc-hospital.css?v=d5b1fd56">
+<link rel="stylesheet" href="../assets/qc-hospital.css?v=f49e244f">
 <script src="../assets/qc-csp.js?v=77f89cc2"></script>
 </head>
 <body class="hp">
@@ -231,6 +231,7 @@
             <button class="btn btn-primary" type="submit">Save new password</button>
             <div class="msg" id="reset-msg" role="status"></div>
           </form>
+          <p class="hint" style="margin-top:16px">A doctor practising on your own, or joining your clinic? <a href="../doctor/">Start here</a>.</p>
           <p class="hint" style="margin-top:16px">Are you a patient? <a href="../login/">Sign in to QueroCura</a> and open <b>Care teams</b>.</p>
         </div>
       </div>
@@ -278,6 +279,7 @@
         <section id="tab-duty" class="tab" hidden></section>
         <section id="tab-reports" class="tab" hidden></section>
         <section id="tab-ot" class="tab" hidden></section>
+        <section id="tab-insights" class="tab" hidden></section>
         <section id="tab-connect" class="tab" hidden></section>
         <section id="tab-team" class="tab" hidden></section>
         <section id="tab-activity" class="tab" hidden></section>
@@ -291,6 +293,7 @@
   <div class="modal-back" id="ops-modal"><div class="modal wide" role="dialog" aria-modal="true" aria-labelledby="ops-title"><button class="modal-x" data-close="ops-modal" type="button" aria-label="Close">✕</button><div id="ops-body"></div></div></div>
   <div class="modal-back" id="hms-modal"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="ops-title"><button class="modal-x" data-close="hms-modal" type="button" aria-label="Close">✕</button><div id="hms-modal-body"></div></div></div>
   <div class="modal-back" id="hms-modal2"><div class="modal" role="dialog" aria-modal="true"><button class="modal-x" data-close="hms-modal2" type="button" aria-label="Close">✕</button><div id="hms-modal2-body"></div></div></div>
+  <div class="modal-back" id="doc-modal"><div class="modal wide doc-modal" role="dialog" aria-modal="true" aria-labelledby="doc-title"><button class="modal-x" data-close="doc-modal" type="button" aria-label="Close">✕</button><div id="doc-body"></div></div></div>
   <div class="modal-back" id="mind-modal"><div class="modal wide mind-modal" role="dialog" aria-modal="true" aria-labelledby="ops-title"><button class="modal-x" data-close="mind-modal" type="button" aria-label="Close">✕</button><div id="mind-body"></div></div></div>
   <div id="hms-print" aria-hidden="true"></div>
   <div class="modal-back" id="record-modal"><div class="modal" role="dialog" aria-modal="true"><button class="modal-x" data-close="record-modal" type="button" aria-label="Close">✕</button><div id="record-body"></div></div></div>
@@ -303,11 +306,12 @@
   <script src="../assets/js/hospital-hms-ot.js?v=0e77cc12"></script>
   <script src="../assets/js/hospital-access.js?v=3c38970a"></script>
   <script src="../assets/js/hospital-mind.js?v=29f5752c"></script>
+  <script src="../assets/js/hospital-doctor.js?v=fea68179"></script>
   <script src="../assets/js/hospital-plan.js?v=ab93276c"></script>
   <script src="../assets/js/hospital-clinical.js?v=2b610f5e"></script>
 <script src="../assets/js/hospital-ops.js?v=e6f6eae2"></script>
   <script src="../assets/js/hospital-imaging.js?v=204182ea"></script>
-  <script type="module" src="../assets/js/hospital-hero3d.js?v=e0582f96"></script>
-  <script src="../assets/js/hospital.js?v=4d4ba3ae"></script>
+  <script type="module" src="../assets/js/hospital-hero3d.js?v=8843b893"></script>
+  <script src="../assets/js/hospital.js?v=219315f8"></script>
 </body>
 </html>

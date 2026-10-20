@@ -181,6 +181,7 @@
     orders: ["🧪", "Tests and tasks", "Lab tests, scans, nursing tasks and consults sent between departments, by due time.", "Patients and visits"],
     handover: ["🤝", "Handover", "Short notes from one shift to the next, acknowledged so nothing is missed.", "Patients and visits"],
     imaging: ["🩻", "Scans", "Upload scans, review AI-assisted drafts and sign reports.", "Patients and visits"],
+    insights: ["📈", "Insights", "How your practice is doing: busy days and hours, real consultation times, no-shows, common reasons for visits and who is due a follow-up.", "Patients and visits"],
     ot: ["🔪", "Theatres", "Today's operation list and the surgical safety checklist for each case.", "Patients and visits"],
     connect: ["📲", "Connect app users", "Link patients who use the QueroCura app, with their consent.", "Patients and visits"],
     pharmacy: ["💊", "Pharmacy", "Prescriptions waiting to be dispensed, and medicine stock.", "Pharmacy and billing"],
@@ -201,6 +202,7 @@
     if (ME.mfa_setup_needed) { renderMfaSetup(); return; }
     show(el("workspace"), true);
     el("org-name").textContent = org.name;
+    var tag = document.querySelector(".hp-top .hp-tag"); if (tag) tag.textContent = org.practice === "solo" ? "for Doctors" : "for Hospitals";
     el("org-meta").textContent = [org.org_type, org.city, org.state].filter(Boolean).join(" · ") + (org.registration_no ? " · Reg. " + org.registration_no : "");
     el("org-status").innerHTML = org.status === "active" ? '<span class="pill ok">✓ Verified by QueroCura</span>' : org.status === "pending" ? '<span class="pill wait">⏳ Verification pending</span>' : '<span class="pill bad">' + esc(org.status) + '</span>';
     if (org.status === "pending") banner.innerHTML = '<div class="notice wait">Thanks for applying. Our team is verifying <b>' + esc(org.name) + '</b> (registration ' + esc(org.registration_no || "") + '). You can set up your team and security now. Patient connections switch on as soon as you\'re approved, and we\'ll e-mail you.</div>';
@@ -209,8 +211,9 @@
     // Management tabs (patients, appointments, pharmacy, billing, duty, reports) come from hospital-hms*.js.
     var OPS = window.QCOps ? window.QCOps.tabs(can) : [];
     var HMS = window.QCHms ? window.QCHms.tabs(can) : [];
+    var DOC = window.QCDoc ? window.QCDoc.tabs(can) : [];
     var grp = function (list, g) { return list.filter(function (t) { return t[3] === g; }); };
-    var tabs = [["overview", "My day", true]].concat(HMS.length ? grp(HMS, "front") : [["patients", "Patients", can("roster")]]).concat(grp(OPS, "flow")).concat(grp(HMS, "flow")).concat(grp(HMS, "back"))
+    var tabs = [["overview", "My day", true]].concat(HMS.length ? grp(HMS, "front") : [["patients", "Patients", can("roster")]]).concat(grp(OPS, "flow")).concat(grp(HMS, "flow")).concat(DOC).concat(grp(HMS, "back"))
       .concat([["connect", "Connect", can("request")]])
       .concat(grp(HMS, "admin")).concat(grp(OPS, "admin"))
       .concat([["team", "Team", can("team")], ["activity", "Activity log", can("audit")], ["security", "My security", true]]).filter(function (t) { return t[2]; });
@@ -262,9 +265,10 @@
     var own = { overview: loadOverview, patients: loadPatients, connect: renderConnect, team: loadTeam, activity: loadActivity, security: renderSecurity };
     var ops = window.QCOps ? window.QCOps.loaders() : {};
     if (window.QCHms) { delete own.patients; var hm = window.QCHms.loaders(); Object.keys(hm).forEach(function (k) { ops[k] = hm[k]; }); window.QCHms.leave(); }
+    if (window.QCDoc) { var dl = window.QCDoc.loaders(); Object.keys(dl).forEach(function (k) { ops[k] = dl[k]; }); }
     [].forEach.call(document.querySelectorAll("#workspace > section.tab"), function (sec) { show(sec, sec.id === "tab-" + t); });
     if (window.QCOps) window.QCOps.leave();
-    show(el("tab-board"), t === "overview" && (can("ops") || can("structure") || can("reports") || can("orders")));
+    show(el("tab-board"), t === "overview" && ME.org.practice !== "solo" && (can("ops") || can("structure") || can("reports") || can("orders")));
     about(t);
     (own[t] || ops[t] || loadOverview)();
   }
@@ -310,15 +314,15 @@
   function sevPill(sev) { return sev ? '<span class="sev sev-' + esc(sev) + '">' + esc(SEV_LABEL[sev] || sev) + "</span>" : ""; }
   var LVL = { urgent: ["Now", "md-urgent"], soon: ["Soon", "md-soon"], todo: ["Today", "md-todo"] };
   function loadOverview() {
-    if (window.QCOps && (can("ops") || can("structure") || can("reports") || can("orders"))) window.QCOps.board(el("tab-board"));
+    if (window.QCOps && ME.org.practice !== "solo" && (can("ops") || can("structure") || can("reports") || can("orders"))) window.QCOps.board(el("tab-board"));
     var box = el("tab-overview");
     box.innerHTML = '<div class="md"><div class="md-skel"></div><div class="md-skel"></div><div class="md-skel"></div></div><div id="ov-classic"></div>';
     api("/hospital/my-day").then(function (d) {
       if (guard(d)) return;
       if (!d.ok) return;
       var h = '<div class="md"><div class="md-hello"><div><h2>' + esc(d.greeting) + '</h2><p class="md-sum' + (d.urgent ? " hot" : "") + '">' + esc(d.summary) + "</p></div>" +
-        '<div class="md-tools">' + (window.QCMind && (can("appointments") || can("ops") || can("schedules") || can("reports")) ? '<button type="button" class="btn btn-sm md-tool" data-ins-open="simulation"><span aria-hidden="true">🔮</span> Rest of today</button>' : "") +
-        (window.QCMind && (can("structure") || can("reports")) ? '<button type="button" class="btn btn-sm md-tool" data-ins-open="integrity"><span aria-hidden="true">🧭</span> How it’s connected</button>' : "") +
+        '<div class="md-tools">' + (window.QCDoc && can("rx") ? '<button type="button" class="btn btn-sm md-tool" data-doc-hours><span aria-hidden="true">🗓️</span> My hours</button>' : "") + (window.QCMind && (can("appointments") || can("ops") || can("schedules") || can("reports")) ? '<button type="button" class="btn btn-sm md-tool" data-ins-open="simulation"><span aria-hidden="true">🔮</span> Rest of today</button>' : "") +
+        (window.QCMind && (can("structure") || can("reports")) && (ME.org || {}).practice !== "solo" ? '<button type="button" class="btn btn-sm md-tool" data-ins-open="integrity"><span aria-hidden="true">🧭</span> How it’s connected</button>' : "") +
         '<button type="button" class="btn btn-sm cmdk-hint" data-cmdk>Search <kbd>' + (/Mac|iPhone|iPad/.test(navigator.platform) ? "⌘" : "Ctrl") + "</kbd><kbd>K</kbd></button></div></div>";
       h += '<div class="md-grid"><section class="md-next"><h3>Next up</h3>' + (d.tasks.length ? '<ol class="md-list">' + d.tasks.map(function (t) {
         var l = LVL[t.level] || LVL.todo;
@@ -335,6 +339,7 @@
       h += "</div>";
       var classic = el("ov-classic"); box.innerHTML = h; box.appendChild(classic);
       box._tasks = d.tasks; box._ins = d.insights;
+      if (window.QCDoc) window.QCDoc.starter(box);
     });
     loadClassic();
   }
@@ -693,6 +698,7 @@
       if (A && RB && RB.catalog) h = h.replace('<div class="card"><h2>Invite someone</h2>', '<div class="card ra-card" style="grid-column:1/-1"><div class="card-h"><h2>Roles and permissions</h2><button class="btn btn-sm btn-primary" type="button" data-rbac>Edit what roles can do</button></div><p class="sub">Change what a role can do, or make your own roles such as "Senior receptionist". It applies to everyone with that role straight away.</p><div class="ra-sum">' +
         RB.roles.map(function (x) { return '<button type="button" class="ra-chip" data-rbac="' + esc(x.key) + '"><b>' + esc(x.label) + "</b><span>" + x.perms.length + " permissions · " + x.people + (x.people === 1 ? " person" : " people") + (x.builtin ? (x.changed ? " · changed" : "") : " · custom") + "</span></button>"; }).join("") + '</div></div><div class="card"><h2>Invite someone</h2>');
       box.innerHTML = h;
+      if (window.QCDoc) window.QCDoc.teamExtras(box);
       box.querySelectorAll(".scope").forEach(function (l) { var i = l.querySelector("input"); l.classList.toggle("on", i && i.checked); });
       box.addEventListener("change", function (e) { var l = e.target.closest && e.target.closest(".scope"); if (l) l.classList.toggle("on", e.target.checked); });
       el("inv-form").addEventListener("submit", function (e) {

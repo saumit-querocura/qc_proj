@@ -41,6 +41,11 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://querocura.com/doctor/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://querocura.com/hospital/setup/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
