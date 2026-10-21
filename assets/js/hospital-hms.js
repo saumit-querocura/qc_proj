@@ -205,6 +205,7 @@
     if (can("rx")) acts.push(['<button class="btn btn-sm" type="button" data-rx>℞ Prescribe</button>']);
     if (canAny("billing", "billing_admin")) acts.push(['<button class="btn btn-sm" type="button" data-bill>New bill</button>']);
     if (canAny("patients", "patients_own")) acts.push(['<button class="btn btn-sm btn-ghost" type="button" data-edit>Edit details</button>']);
+    if (can("read")) acts.push(['<button class="btn btn-sm btn-ghost" type="button" data-fhir title="Every visit, prescription and discharge summary as FHIR R4 (NRCeS / ABDM profiles)">⬇ Export record (FHIR)</button>']);
     if (can("patients") && window.QCAbha) acts.push(['<button class="btn btn-sm btn-ghost" type="button" data-abha>🪪 ' + (p.abha_verified ? "ABHA" : "Verify or create ABHA") + "</button>"]);
     if ((!p.app_linked || !p.app_access_active) && canAny("patients", "patients_own")) acts.push(['<button class="btn btn-sm btn-ghost" type="button" data-linkapp>🔗 Link QueroCura account</button>']);
     if (p.app_access_active && can("read")) acts.push(['<button class="btn btn-sm btn-ghost" type="button" data-shared>Shared from their app</button>']);
@@ -221,6 +222,12 @@
       if (e.target.closest("[data-bill]")) return window.QCHms.newBill(p);
       if (e.target.closest("[data-edit]")) return register(p, function () { openRecord(p.id); }, 2);
       if (e.target.closest("[data-linkapp]")) return linkApp(p);
+      if (e.target.closest("[data-fhir]")) {
+        return fetch(H().P.API + "/hospital/fhir/patient/" + encodeURIComponent(p.id) + "?download=1", { credentials: "include" }).then(function (x) {
+          if (!x.ok) return x.json().then(function (j) { H().P.toast((j && j.message) || "Couldn’t export.", "err"); });
+          return x.blob().then(function (bl) { var a = document.createElement("a"); a.href = URL.createObjectURL(bl); a.download = "record-" + p.mrn + ".fhir.json"; document.body.appendChild(a); a.click(); a.remove(); H().P.toast("Exported " + p.name + "’s record."); });
+        });
+      }
       if (e.target.closest("[data-abha]")) return window.QCAbha.open(p, function () { openRecord(p.id); });
       if (e.target.closest("[data-doc]")) return setDoctor(p);
       if (e.target.closest("[data-shared]")) { M.close(); return H().openChart(p.app_grant_id); }
