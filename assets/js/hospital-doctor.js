@@ -179,7 +179,32 @@
   }
 
   /* ---------------------------------------------------------------- doctors joining a clinic (Team page) */
+  function exportCard(box) {
+    if (!box || !can("org")) return;
+    var card = document.createElement("div");
+    card.className = "card ex-card";
+    card.innerHTML = '<h2>Your data</h2><p class="sub">Download everything your organisation holds on QueroCura: every table as JSON and CSV, each patient’s record as FHIR, and a checksummed manifest. Passwords and sign-in secrets are never included.</p>' +
+      '<form id="ex-f" novalidate><div class="field"><label for="ex-pw">Your password, to confirm</label><input class="input" id="ex-pw" type="password" autocomplete="current-password"></div>' +
+      '<label class="hp-check"><input type="checkbox" id="ex-fhir" checked> <span>Include FHIR records for each patient (slower)</span></label>' +
+      '<button class="btn" type="submit">Download all data</button><div class="msg" id="ex-msg" role="status"></div><p class="mini">The file contains every patient’s information. Keep it encrypted and delete copies you don’t need.</p></form>';
+    var three = box.querySelector(".three"); (three || box).appendChild(card);
+    el("ex-f").onsubmit = function (e) {
+      e.preventDefault();
+      var msg = el("ex-msg"), btn = e.target.querySelector("button");
+      btn.disabled = true; H().say(msg, "Preparing your export…");
+      fetch(H().P.API + "/hospital/export", { method: "POST", credentials: "include", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ password: el("ex-pw").value, fhir: el("ex-fhir").checked }) }).then(function (x) {
+        el("ex-pw").value = ""; btn.disabled = false;
+        if (!x.ok) return x.json().then(function (j) { H().say(msg, (j && j.message) || "Couldn’t export.", "err"); });
+        return x.blob().then(function (b) {
+          var a = document.createElement("a"); a.href = URL.createObjectURL(b); a.download = "querocura-export.zip"; document.body.appendChild(a); a.click(); a.remove();
+          H().say(msg, "Downloaded. Store it safely.", "ok");
+        });
+      });
+    };
+  }
+
   function teamExtras(box) {
+    exportCard(box);
     if (!box || !can("team") || solo()) return;
     api("/hospital/team/join").then(function (r) {
       if (!r.ok) return;
