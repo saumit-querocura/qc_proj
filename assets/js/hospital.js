@@ -185,6 +185,7 @@
     ot: ["🔪", "Theatres", "Today's operation list and the surgical safety checklist for each case.", "Patients and visits"],
     connect: ["📲", "Connect app users", "Link patients who use the QueroCura app, with their consent.", "Patients and visits"],
     pharmacy: ["💊", "Pharmacy", "Prescriptions waiting to be dispensed, and medicine stock.", "Pharmacy and billing"],
+    claims: ["🛡️", "Claims", "Insurance, TPA and government-scheme claims from pre-auth to settlement, and what’s waiting on whom.", "Pharmacy and billing"],
     billing: ["🧾", "Billing", "Who owes what, visits still to bill, and today's takings. Collect payments here.", "Pharmacy and billing"],
     duty: ["👥", "Duty roster", "Who works which shift, and where.", "Running the hospital"],
     reports: ["📊", "Reports", "Patients seen, admissions, collections and common diagnoses, for any dates.", "Running the hospital"],
@@ -211,7 +212,7 @@
     // Management tabs (patients, appointments, pharmacy, billing, duty, reports) come from hospital-hms*.js.
     var OPS = window.QCOps ? window.QCOps.tabs(can) : [];
     var HMS = window.QCHms ? window.QCHms.tabs(can) : [];
-    var DOC = window.QCDoc ? window.QCDoc.tabs(can) : [];
+    var DOC = (window.QCDoc ? window.QCDoc.tabs(can) : []).concat(window.QCClaims ? window.QCClaims.tabs(can) : []);
     var grp = function (list, g) { return list.filter(function (t) { return t[3] === g; }); };
     var tabs = [["overview", "My day", true]].concat(HMS.length ? grp(HMS, "front") : [["patients", "Patients", can("roster")]]).concat(grp(OPS, "flow")).concat(grp(HMS, "flow")).concat(DOC).concat(grp(HMS, "back"))
       .concat([["connect", "Connect", can("request")]])
@@ -265,7 +266,7 @@
     var own = { overview: loadOverview, patients: loadPatients, connect: renderConnect, team: loadTeam, activity: loadActivity, security: renderSecurity };
     var ops = window.QCOps ? window.QCOps.loaders() : {};
     if (window.QCHms) { delete own.patients; var hm = window.QCHms.loaders(); Object.keys(hm).forEach(function (k) { ops[k] = hm[k]; }); window.QCHms.leave(); }
-    if (window.QCDoc) { var dl = window.QCDoc.loaders(); Object.keys(dl).forEach(function (k) { ops[k] = dl[k]; }); }
+    [window.QCDoc, window.QCClaims].forEach(function (mod) { if (mod) { var dl = mod.loaders(); Object.keys(dl).forEach(function (k) { ops[k] = dl[k]; }); } });
     [].forEach.call(document.querySelectorAll("#workspace > section.tab"), function (sec) { show(sec, sec.id === "tab-" + t); });
     if (window.QCOps) window.QCOps.leave();
     show(el("tab-board"), t === "overview" && ME.org.practice !== "solo" && (can("ops") || can("structure") || can("reports") || can("orders")));
