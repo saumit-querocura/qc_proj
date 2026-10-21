@@ -1217,3 +1217,18 @@ html[data-theme="dark"] .dr-path, html[data-theme="dark"] .dr-card, html[data-th
 .cl-f { padding: 14px; border-radius: 14px; border: 1px solid rgba(43,111,232,.25); background: rgba(43,111,232,.04); margin-bottom: 12px; }
 .cl-docs { display: grid; gap: 4px; }
 .cl-tl { list-style: none; padding: 0; margin: 0 0 10px; display: grid; gap: 8px; } .cl-tl li { padding: 8px 12px; border-left: 3px solid #2b6fe8; background: rgba(127,127,127,.05); border-radius: 0 10px 10px 0; } .cl-tl b { display: block; } .cl-tl p { margin: 2px 0 0; font-size: 13.5px; }
+
+/* lab results */
+.lab-t { width: 100%; border-collapse: collapse; } .lab-t th { text-align: left; font-size: 12px; opacity: .7; padding: 6px 8px; } .lab-t td { padding: 6px 8px; border-top: 1px solid rgba(127,127,127,.12); vertical-align: middle; }
+.lab-in { width: 110px; display: inline-block; } .lab-in.crit { border-color: #e2483d; box-shadow: 0 0 0 3px rgba(226,72,61,.15); }
+.lab-rin { width: 80px; }
+.lab-f { display: inline-block; padding: 3px 8px; border-radius: 999px; font: 800 11px/1 var(--body, inherit); }
+.lab-f.lo { background: rgba(43,111,232,.12); color: #1d4fb8; } .lab-f.hi { background: rgba(224,165,44,.16); color: #8a5f0a; } .lab-f.crit { background: #e2483d; color: #fff; }
+.lab-crit { margin: 8px 0; padding: 10px 14px; border-radius: 12px; background: rgba(226,72,61,.1); color: #b3372d; font-weight: 800; }
+.lab-prio { color: #d2452f; } .lab-delta { margin: 8px 0; padding: 8px 12px; border-radius: 10px; background: rgba(224,165,44,.12); }
+.lab-g { margin: 8px 0; } .lab-g summary { cursor: pointer; font-weight: 800; padding: 6px 0; }
+.lab-trends { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; margin-bottom: 16px; }
+.lab-tr { padding: 10px 12px; border-radius: 14px; border: 1px solid rgba(127,127,127,.16); } .lab-tr-h { display: flex; justify-content: space-between; gap: 8px; font-size: 13px; }
+.lab-spark { width: 100%; height: 70px; display: block; margin-top: 6px; }
+.lab-band { fill: rgba(18,181,165,.12); } .lab-line { fill: none; stroke: #2b6fe8; stroke-width: 2; }
+.lab-pt { fill: #2b6fe8; } .lab-pt.lo { fill: #1d4fb8; } .lab-pt.hi { fill: #e0a52c; } .lab-pt.crit { fill: #e2483d; }

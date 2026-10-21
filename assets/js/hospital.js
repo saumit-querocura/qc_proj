@@ -348,6 +348,7 @@
     var a = t.action || {};
     if (a.open === "visit" && window.QCOps) return window.QCOps.openVisit(a.id);
     if (a.open === "ot" && window.QCHms && window.QCHms.openCase) return window.QCHms.openCase(a.id);
+    if (a.open === "lab_alert" && window.QCLab) return window.QCLab.ack(a.id, loadOverview);
     if (a.tab) goTab(a.tab);
   }
   function loadClassic() {

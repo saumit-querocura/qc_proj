@@ -482,6 +482,9 @@
   var ORDERS = {};
   function orderStep(id, act) {
     if (act === "images") { var o = ORDERS[id] || {}; closeModal(); window.QCImaging.newStudy({ grant_id: o.grant_id, order_id: id, encounter_id: o.encounter_id, indication: o.item || "", modality: /ct/i.test(o.item || "") ? "ct" : /mri/i.test(o.item || "") ? "mri" : /ultra|usg|sono/i.test(o.item || "") ? "us" : /x-?ray/i.test(o.item || "") ? "xray" : "" }); return; }
+    if (act === "done" && (ORDERS[id] || {}).kind === "lab" && window.QCLab && !orderStep._free) {
+      return window.QCLab.enter(id, refresh, function () { orderStep._free = true; orderStep(id, "done"); orderStep._free = false; });
+    }
     if (act === "done") {
       var b = modal('<h2 id="ops-title">Complete the order</h2><div class="field"><label for="od-r">Result, report or note</label><textarea class="input" id="od-r" rows="6" maxlength="4000" placeholder="e.g. Hb 11.2 g/dL, WBC 4,200, platelets 92,000"></textarea><div class="mini">Lab and imaging results are added to the patient\'s own record when they allowed records to be added.</div></div><button class="btn btn-primary" type="button" id="od-go">Complete</button><div class="msg" id="od-msg"></div>');
       el("od-r").focus();
@@ -525,12 +528,13 @@
         items.forEach(function (o) { var k = S.orderStatus === "open" ? o.kind : "all"; (groups[k] = groups[k] || []).push(o); });
         var h = '<div class="ops-bar"><div class="chips">' + [["mine", can("orders") ? "Ordered by me / mine" : "Assigned to me"], ["dept", "My department"], ["all", "Everything"]].map(function (s) { return '<button type="button" class="chipbtn' + (S.orderScope === s[0] ? " on" : "") + '" data-scope="' + s[0] + '">' + s[1] + "</button>"; }).join("") +
           '<span class="sep"></span>' + [["open", "Open"], ["done", "Finished (3 days)"]].map(function (s) { return '<button type="button" class="chipbtn' + (S.orderStatus === s[0] ? " on" : "") + '" data-status="' + s[0] + '">' + s[1] + "</button>"; }).join("") + "</div>" +
-          '<div class="ops-bar-r"><span class="ops-stat"><b>' + items.length + "</b> " + (S.orderStatus === "open" ? "open" : "finished") + "</span>" + (over ? '<span class="ops-stat warn"><b>' + over + "</b> overdue</span>" : "") + "</div></div>";
+          '<div class="ops-bar-r"><span class="ops-stat"><b>' + items.length + "</b> " + (S.orderStatus === "open" ? "open" : "finished") + "</span>" + (over ? '<span class="ops-stat warn"><b>' + over + "</b> overdue</span>" : "") + (window.QCLab && (can("structure") || can("org")) ? '<button type="button" class="btn btn-sm btn-ghost" data-labset>🧪 Lab settings</button>' : "") + "</div></div>";
         if (!r.can_view_items) h += '<div class="notice wait">Your role sees that orders exist, not what they are.</div>';
         h += items.length ? Object.keys(groups).map(function (k) { return (k !== "all" ? '<div class="ops-h" style="margin:16px 0 8px">' + (KIND_IC[k] || "") + " " + esc((S.structure.order_kinds || {})[k] || k) + " · " + groups[k].length + "</div>" : "") + '<div class="ords">' + groups[k].map(orderRow).join("") + "</div>"; }).join("") :
           '<div class="card ops-empty"><div class="ops-empty-ic">✅</div><h2>' + (S.orderStatus === "open" ? "All clear" : "Nothing finished recently") + '</h2><p class="sub">' + (S.orderStatus === "open" ? "No open orders here. New ones appear automatically." : "") + "</p></div>";
         box.innerHTML = h;
         box.onclick = function (e) {
+          if (e.target.closest("[data-labset]")) return window.QCLab.settings();
           var t;
           if ((t = e.target.closest("[data-scope]"))) { S.orderScope = t.getAttribute("data-scope"); loadOrders(); return; }
           if ((t = e.target.closest("[data-status]"))) { S.orderStatus = t.getAttribute("data-status"); loadOrders(); return; }
