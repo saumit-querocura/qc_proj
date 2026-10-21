@@ -321,7 +321,7 @@
       if (guard(d)) return;
       if (!d.ok) return;
       var h = '<div class="md"><div class="md-hello"><div><h2>' + esc(d.greeting) + '</h2><p class="md-sum' + (d.urgent ? " hot" : "") + '">' + esc(d.summary) + "</p></div>" +
-        '<div class="md-tools">' + (window.QCDoc && can("org") ? '<button type="button" class="btn btn-sm md-tool" data-doc-booking><span aria-hidden="true">📲</span> Online booking</button>' : "") + (window.QCDoc && can("rx") ? '<button type="button" class="btn btn-sm md-tool" data-doc-hours><span aria-hidden="true">🗓️</span> My hours</button>' : "") + (window.QCMind && (can("appointments") || can("ops") || can("schedules") || can("reports")) ? '<button type="button" class="btn btn-sm md-tool" data-ins-open="simulation"><span aria-hidden="true">🔮</span> Rest of today</button>' : "") +
+        '<div class="md-tools">' + (window.QCAbha && can("org") ? '<button type="button" class="btn btn-sm md-tool" data-abdm-set><span aria-hidden="true">🪪</span> ABDM</button>' : "") + (window.QCDoc && can("org") ? '<button type="button" class="btn btn-sm md-tool" data-doc-booking><span aria-hidden="true">📲</span> Online booking</button>' : "") + (window.QCDoc && can("rx") ? '<button type="button" class="btn btn-sm md-tool" data-doc-hours><span aria-hidden="true">🗓️</span> My hours</button>' : "") + (window.QCMind && (can("appointments") || can("ops") || can("schedules") || can("reports")) ? '<button type="button" class="btn btn-sm md-tool" data-ins-open="simulation"><span aria-hidden="true">🔮</span> Rest of today</button>' : "") +
         (window.QCMind && (can("structure") || can("reports")) && (ME.org || {}).practice !== "solo" ? '<button type="button" class="btn btn-sm md-tool" data-ins-open="integrity"><span aria-hidden="true">🧭</span> How it’s connected</button>' : "") +
         '<button type="button" class="btn btn-sm cmdk-hint" data-cmdk>Search <kbd>' + (/Mac|iPhone|iPad/.test(navigator.platform) ? "⌘" : "Ctrl") + "</kbd><kbd>K</kbd></button></div></div>";
       h += '<div class="md-grid"><section class="md-next"><h3>Next up</h3>' + (d.tasks.length ? '<ol class="md-list">' + d.tasks.map(function (t) {
@@ -385,6 +385,7 @@
   }
   el("tab-overview").addEventListener("click", function (e) {
     var tk = e.target.closest("[data-task]"); if (tk) { var bx = el("tab-overview"), t = (bx._tasks || []).filter(function (x) { return x.id === tk.getAttribute("data-task"); })[0]; if (t) doTask(t); return; }
+    if (e.target.closest("[data-abdm-set]") && window.QCAbha) { window.QCAbha.settings(); return; }
     var io = e.target.closest("[data-ins-open]"); if (io && window.QCMind) { var w = io.getAttribute("data-ins-open"); if (window.QCMind[w]) window.QCMind[w](); return; }
     var idn = e.target.closest("[data-ins-do]"); if (idn && window.QCMind) { var ins = (el("tab-overview")._ins || [])[+idn.getAttribute("data-ins-do")]; if (ins && ins.do) window.QCMind.rebalance(ins.do.body, idn).then(function (r) { if (r.ok) loadOverview(); }); return; }
     var wy = e.target.closest("[data-why]"); if (wy) { var p = el("md-why-" + wy.getAttribute("data-why")); if (p) p.hidden = !p.hidden; return; }

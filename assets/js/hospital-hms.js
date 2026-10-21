@@ -190,7 +190,7 @@
     if (r.bills) tabs.push(["bills", "Bills (" + r.bills.length + ")"]);
     if (!tabs.some(function (t) { return t[0] === S.recTab; })) S.recTab = "overview";
     var h = '<div class="rec-head"><span class="avatar lg">' + esc(H().initials(p.name)) + '</span><div class="grow"><h2 id="ops-title">' + esc(p.name) + '</h2><div class="rec-meta"><span class="mrn">MRN ' + esc(p.mrn) + "</span>" +
-      [M.sexAge(p), p.blood_group ? "Blood " + p.blood_group : "", p.phone ? "📞 " + p.phone : "", p.abha ? "ABHA " + p.abha : ""].filter(Boolean).map(function (x) { return "<span>" + esc(x) + "</span>"; }).join("") + "</div>" +
+      [M.sexAge(p), p.blood_group ? "Blood " + p.blood_group : "", p.phone ? "📞 " + p.phone : "", !p.abha_verified && p.abha ? "ABHA " + p.abha : ""].filter(Boolean).map(function (x) { return "<span>" + esc(x) + "</span>"; }).join("") + (p.abha_verified ? '<span class="abha-ok" title="Verified with ABDM">✓ ABHA ' + esc(p.abha_address || p.abha || "") + "</span>" : "") + "</div>" +
       (p.app_linked ? '<div class="mini">Connected through the QueroCura app' + (p.app_access_active ? "" : " (sharing has ended)") + "</div>" : "") +
       '<div class="mini rec-doc">Primary doctor: <b>' + esc(p.primary_doctor || "not set") + "</b>" + (canAny("patients", "patients_own") ? ' <button type="button" class="link" data-doc>' + (p.primary_doctor ? "Change" : "Set") + "</button>" : "") + "</div></div></div>";
     if (p.allergies !== undefined) {
@@ -205,6 +205,7 @@
     if (can("rx")) acts.push(['<button class="btn btn-sm" type="button" data-rx>℞ Prescribe</button>']);
     if (canAny("billing", "billing_admin")) acts.push(['<button class="btn btn-sm" type="button" data-bill>New bill</button>']);
     if (canAny("patients", "patients_own")) acts.push(['<button class="btn btn-sm btn-ghost" type="button" data-edit>Edit details</button>']);
+    if (can("patients") && window.QCAbha) acts.push(['<button class="btn btn-sm btn-ghost" type="button" data-abha>🪪 ' + (p.abha_verified ? "ABHA" : "Verify or create ABHA") + "</button>"]);
     if ((!p.app_linked || !p.app_access_active) && canAny("patients", "patients_own")) acts.push(['<button class="btn btn-sm btn-ghost" type="button" data-linkapp>🔗 Link QueroCura account</button>']);
     if (p.app_access_active && can("read")) acts.push(['<button class="btn btn-sm btn-ghost" type="button" data-shared>Shared from their app</button>']);
     h += '<div class="rec-acts">' + acts.join("") + "</div>";
@@ -220,6 +221,7 @@
       if (e.target.closest("[data-bill]")) return window.QCHms.newBill(p);
       if (e.target.closest("[data-edit]")) return register(p, function () { openRecord(p.id); }, 2);
       if (e.target.closest("[data-linkapp]")) return linkApp(p);
+      if (e.target.closest("[data-abha]")) return window.QCAbha.open(p, function () { openRecord(p.id); });
       if (e.target.closest("[data-doc]")) return setDoctor(p);
       if (e.target.closest("[data-shared]")) { M.close(); return H().openChart(p.app_grant_id); }
       if ((t = e.target.closest("[data-rxopen]"))) return window.QCHms.openRx(t.getAttribute("data-rxopen"));
