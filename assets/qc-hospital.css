@@ -1232,3 +1232,10 @@ html[data-theme="dark"] .dr-path, html[data-theme="dark"] .dr-card, html[data-th
 .lab-spark { width: 100%; height: 70px; display: block; margin-top: 6px; }
 .lab-band { fill: rgba(18,181,165,.12); } .lab-line { fill: none; stroke: #2b6fe8; stroke-width: 2; }
 .lab-pt { fill: #2b6fe8; } .lab-pt.lo { fill: #1d4fb8; } .lab-pt.hi { fill: #e0a52c; } .lab-pt.crit { fill: #e2483d; }
+
+/* GST invoice (print) */
+.gst-inv { font-size: 12.5px; } .gst-inv h2 { margin: 0 0 4px; } .gst-inv p { margin: 2px 0; }
+.gi-top { display: flex; justify-content: space-between; gap: 20px; border-bottom: 2px solid #222; padding-bottom: 10px; margin-bottom: 10px; } .gi-meta { text-align: right; } .gi-meta h3 { margin: 0 0 6px; text-transform: uppercase; letter-spacing: .04em; }
+.gi-t { width: 100%; border-collapse: collapse; margin: 10px 0; } .gi-t th, .gi-t td { border: 1px solid #999; padding: 4px 6px; text-align: right; } .gi-t th:nth-child(2), .gi-t td:nth-child(2) { text-align: left; }
+.gi-sum { margin-left: auto; border-collapse: collapse; min-width: 260px; } .gi-sum td { padding: 3px 8px; text-align: right; } .gi-sum .gi-tot td { font-weight: 800; border-top: 2px solid #222; }
+.gi-words { font-weight: 700; margin-top: 10px; } .gi-sign { text-align: right; margin-top: 30px; }
