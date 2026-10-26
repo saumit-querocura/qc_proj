@@ -127,6 +127,7 @@
     var h = '<div class="ops-bar"><div class="chips">' + '<button type="button" class="chipbtn' + (!S.dept ? " on" : "") + '" data-dept="">All departments</button>' +
       ds.map(function (d) { return '<button type="button" class="chipbtn' + (S.dept === d.id ? " on" : "") + (d.kind === "emergency" ? " er" : "") + '" data-dept="' + esc(d.id) + '">' + (d.kind === "emergency" ? "🚑 " : "") + esc(d.name) + "</button>"; }).join("") + "</div>" +
       '<div class="ops-bar-r"><span class="ops-stat"><b>' + r.open.filter(function (x) { return x.status === "waiting"; }).length + "</b> waiting</span><span class=\"ops-stat\"><b>" + dur(r.avg_wait_min) + "</b> avg wait</span><span class=\"ops-stat\"><b>" + r.seen_today + "</b> seen today</span>" +
+      (can("ops") && r.open.some(function (x) { return x.status === "waiting" && x.kind === "opd" && !x.doctor; }) ? '<button class="btn btn-sm" type="button" data-share title="Give each waiting walk-in without a doctor to the doctor in their department with the fewest patients">⚖️ Share out fairly</button>' : "") +
       (can("ops") ? '<button class="btn btn-primary btn-sm" type="button" data-checkin>+ Check in a patient</button>' : "") + "</div></div>";
     if (dSel && dSel.kind === "emergency") h += '<div class="ops-triage-key">' + [1, 2, 3, 4, 5].map(function (n) { var t = S.structure.triage[n]; return '<span class="tri t' + n + '">' + n + " · " + esc(t[0]) + " · " + (t[2] ? "see within " + t[2] + " min" : "immediately") + "</span>"; }).join("") + "</div>";
     h += '<div class="ops-kanban">' + cols.map(function (c) {
@@ -162,6 +163,11 @@
       var t;
       if ((t = e.target.closest("[data-dept]"))) { S.dept = t.getAttribute("data-dept"); S.deptChosen = true; try { localStorage.setItem("qc-hp-dept", S.dept); } catch (x) {} loadQueue(); return; }
       if (e.target.closest("[data-checkin]")) { checkIn(); return; }
+      if ((t = e.target.closest("[data-share]"))) {
+        t.disabled = true;
+        api("/hospital/ops/auto-assign", { method: "POST", body: { dept_id: S.dept || "" } }).then(function (r) { t.disabled = false; toast(r.message || (r.ok ? "Done." : "Couldn’t share them out."), r.ok ? "" : "err"); if (r.ok) loadQueue(true); });
+        return;
+      }
       if ((t = e.target.closest("[data-act]"))) { e.stopPropagation(); step(t.getAttribute("data-id"), t.getAttribute("data-act")); return; }
       if ((t = e.target.closest("[data-open]"))) openVisit(t.getAttribute("data-open"));
     };

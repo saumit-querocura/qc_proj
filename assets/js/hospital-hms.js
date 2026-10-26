@@ -42,13 +42,18 @@
     document.body.classList.add("hms-printing");
     setTimeout(function () { window.print(); setTimeout(function () { document.body.classList.remove("hms-printing"); box.innerHTML = ""; }, 400); }, 60);
   };
+  /* the facility's own letterhead (Customise) on every printed document, or a plain one built from its details */
   M.letterhead = function (org) {
-    return '<div class="ph-head"><div><b>' + esc(org.name || "") + "</b><span>" + esc([org.city, org.state].filter(Boolean).join(", ")) + (org.phone ? " · " + esc(org.phone) : "") +
-      (org.registration_no ? " · Reg. " + esc(org.registration_no) : "") + '</span></div><div class="ph-logo">QueroCura</div></div>';
+    var c = (window.QCCustom && window.QCCustom.data()) || {}, b = c.branding || {}, lines = b.letterhead || [];
+    var logo = b.logo ? '<img class="ph-img" alt="" src="' + H().P.API + "/hospital/public/logo/" + encodeURIComponent(org.id) + "?t=" + (b.logo_ts || 0) + '">' : "";
+    var text = lines.length ? "<b>" + esc(lines[0]) + "</b>" + lines.slice(1).map(function (l) { return "<span>" + esc(l) + "</span>"; }).join("") :
+      "<b>" + esc(org.name || "") + "</b><span>" + esc([org.city, org.state].filter(Boolean).join(", ")) + (org.phone ? " · " + esc(org.phone) : "") + (org.registration_no ? " · Reg. " + esc(org.registration_no) : "") + "</span>";
+    return '<div class="ph-head" style="--ph:' + esc(b.accent || "#0e8f83") + '">' + logo + '<div class="grow">' + text + '</div><div class="ph-logo">' + (logo ? "" : "QueroCura") + "</div></div>" +
+      (b.footer ? '<div class="ph-foot">' + esc(b.footer) + "</div>" : "");
   };
   /* find a registered patient as you type; onPick(patient) */
   M.picker = function (box, onPick, placeholder) {
-    box.innerHTML = '<div class="pk"><input class="input" type="search" autocomplete="off" placeholder="' + esc(placeholder || "Search name, MRN or phone…") + '"><div class="pk-list" hidden></div><div class="pk-chosen" hidden></div></div>';
+    box.innerHTML = '<div class="pk"><input class="input" type="search" autocomplete="off" placeholder="' + esc(placeholder || "Search name, " + H().term("mrn", "MRN") + " or phone…") + '"><div class="pk-list" hidden></div><div class="pk-chosen" hidden></div></div>';
     var inp = box.querySelector("input"), list = box.querySelector(".pk-list"), chosen = box.querySelector(".pk-chosen"), t = null, seq = 0;
     function run() {
       var q = inp.value.trim(), my = ++seq;
@@ -84,10 +89,10 @@
   function loadPatients() {
     var box = el("tab-patients");
     if (S.mine == null) { var sv = null; try { sv = localStorage.getItem("qc-hms-mine"); } catch (x) {} S.mine = sv ? sv === "1" : (can("patients_own") && !can("patients")); }
-    box.innerHTML = '<div class="hms-head"><div><h2>Patients</h2><p class="sub">Everyone your hospital looks after, with or without the QueroCura app. Each has a medical record number (MRN) and one record that every department adds to.</p></div>' +
+    box.innerHTML = '<div class="hms-head"><div><h2>' + esc(H().term("patients", "Patients")) + '</h2><p class="sub">Everyone your hospital looks after, with or without the QueroCura app. Each has a record number (' + esc(H().term("mrn", "MRN")) + ') and one record that every department adds to.</p></div>' +
       (can("patients") ? '<button class="btn btn-primary" type="button" data-reg>+ Register patient</button>' : "") + "</div>" +
       '<div class="hms-search">' + (can("patients_own") ? '<div class="seg" role="tablist"><button type="button" data-mine="0" class="' + (S.mine ? "" : "on") + '">All patients</button><button type="button" data-mine="1" class="' + (S.mine ? "on" : "") + '">My patients</button></div>' : "") +
-      '<input class="input" id="pt-q" type="search" placeholder="Search by name, MRN, mobile number or its last 4 digits" value="' + esc(S.q) + '" autocomplete="off"></div><div id="pt-list"><div class="empty">Loading…</div></div>';
+      '<input class="input" id="pt-q" type="search" placeholder="Search by name, ' + esc(H().term("mrn", "MRN")) + ', mobile number or its last 4 digits" value="' + esc(S.q) + '" autocomplete="off"></div><div id="pt-list"><div class="empty">Loading…</div></div>';
     var t = null;
     el("pt-q").oninput = function () { clearTimeout(t); S.q = this.value; t = setTimeout(list, 200); };
     box.onclick = function (e) {
@@ -117,6 +122,15 @@
     });
   }
 
+  /* the facility's own registration questions, answered */
+  function customLine(p) {
+    var fs = (window.QCCustom && window.QCCustom.data() && window.QCCustom.data().fields) || [], v = p.custom || {};
+    var bits = fs.filter(function (f) { return v[f.key] !== undefined && v[f.key] !== "" && v[f.key] !== null; }).map(function (f) {
+      return "<span><small>" + esc(f.label) + "</small> " + esc(f.type === "yesno" ? (v[f.key] ? "Yes" : "No") : String(v[f.key])) + "</span>";
+    });
+    return bits.length ? '<div class="mini rec-custom">' + bits.join("") + "</div>" : "";
+  }
+
   /* register (or edit) a patient; done(patient) */
   function register(pre, done, layer) {
     pre = pre || {};
@@ -134,6 +148,7 @@
       '<div class="field"><label for="rg-er">Relation</label><input class="input" id="rg-er" maxlength="40" value="' + esc((pre.emergency || {}).relation || "") + '"></div>' +
       '<div class="field"><label for="rg-ep">Their mobile</label><input class="input" id="rg-ep" inputmode="tel" maxlength="16" value="' + esc((pre.emergency || {}).phone || "") + '"></div></div>' +
       (!edit ? '<div class="field"><label for="rg-al">Allergies (comma-separated)</label><input class="input" id="rg-al" maxlength="300" placeholder="e.g. Penicillin, Peanuts"><label class="hp-check" style="margin-top:6px"><input type="checkbox" id="rg-nkda"> <span>No known drug allergies</span></label></div>' : "") +
+      (window.QCCustom ? window.QCCustom.fieldsForm(pre.custom) : "") +
       '<div id="rg-dups"></div><button class="btn btn-primary" type="submit">' + (edit ? "Save" : "Register") + '</button><div class="msg" id="rg-msg" role="status"></div></form>', false, layer);
     var sex = pre.sex || "";
     el("rg-sex").onclick = function (e) { var t = e.target.closest("[data-v]"); if (!t) return; sex = t.getAttribute("data-v"); [].forEach.call(el("rg-sex").children, function (c) { c.classList.toggle("on", c === t); }); };
@@ -143,6 +158,7 @@
       if (el("rg-dob").value) d.dob = el("rg-dob").value; else if (el("rg-age").value) d.age = el("rg-age").value;
       if (!edit) { d.allergies = el("rg-al").value; d.nkda = el("rg-nkda").checked; }
       if (confirm) d.confirm_new = true;
+      if (window.QCCustom && document.querySelector("#rg-form [data-cf]")) d.custom = window.QCCustom.readFields(el("rg-form"));
       return d;
     }
     function send(confirm) {
@@ -189,9 +205,10 @@
     if (r.appointments) tabs.push(["appts", "Appointments (" + r.appointments.length + ")"]);
     if (r.bills) tabs.push(["bills", "Bills (" + r.bills.length + ")"]);
     if (!tabs.some(function (t) { return t[0] === S.recTab; })) S.recTab = "overview";
-    var h = '<div class="rec-head"><span class="avatar lg">' + esc(H().initials(p.name)) + '</span><div class="grow"><h2 id="ops-title">' + esc(p.name) + '</h2><div class="rec-meta"><span class="mrn">MRN ' + esc(p.mrn) + "</span>" +
+    var h = '<div class="rec-head"><span class="avatar lg">' + esc(H().initials(p.name)) + '</span><div class="grow"><h2 id="ops-title">' + esc(p.name) + '</h2><div class="rec-meta"><span class="mrn">' + esc(H().term("mrn", "MRN")) + " " + esc(p.mrn) + "</span>" +
       [M.sexAge(p), p.blood_group ? "Blood " + p.blood_group : "", p.phone ? "📞 " + p.phone : "", !p.abha_verified && p.abha ? "ABHA " + p.abha : ""].filter(Boolean).map(function (x) { return "<span>" + esc(x) + "</span>"; }).join("") + (p.abha_verified ? '<span class="abha-ok" title="Verified with ABDM">✓ ABHA ' + esc(p.abha_address || p.abha || "") + "</span>" : "") + "</div>" +
       (p.app_linked ? '<div class="mini">Connected through the QueroCura app' + (p.app_access_active ? "" : " (sharing has ended)") + "</div>" : "") +
+      customLine(p) +
       '<div class="mini rec-doc">Primary doctor: <b>' + esc(p.primary_doctor || "not set") + "</b>" + (canAny("patients", "patients_own") ? ' <button type="button" class="link" data-doc>' + (p.primary_doctor ? "Change" : "Set") + "</button>" : "") + "</div></div></div>";
     if (p.allergies !== undefined) {
       h += '<div class="rec-alerts">' + (p.allergies.length ? '<span class="al-lab">Allergies</span>' + p.allergies.map(function (a) { return '<span class="al">' + esc(a) + "</span>"; }).join("") :

@@ -142,6 +142,13 @@
       show(el("public"), false); show(el("portal"), true); show(el("pub-nav"), false); show(el("app-nav"), true);
       el("who").textContent = r.staff.name + " · " + r.staff.roles.map(function (k) { return (r.role_labels || {})[k] || k; }).join(", ");
       if (location.hash === "#setup") { tabNow = "setup"; try { history.replaceState(null, "", location.pathname); } catch (e) {} }
+      else if (!enterPortal.done && r.custom && r.custom.prefs && r.custom.prefs.home) {
+        var home = { "my-day": "overview", board: "overview" }[r.custom.prefs.home] || r.custom.prefs.home;
+        tabNow = home;
+      }
+      enterPortal.done = true;
+      if (window.QCCustom) window.QCCustom.apply(r.custom);
+      relabel(r.custom);
       render();
     });
   }
@@ -211,6 +218,14 @@
     security: ["🛡️", "My security", "Your password, two-step sign-in and signed-in devices.", "You"],
   };
   var GROUPS = ["Patients and visits", "Pharmacy and billing", "Running the hospital", "You"];
+  TAB_INFO.customise = ["🎨", "Customise", "Your colour, logo and letterhead, your own words, registration questions, targets, and your own layout.", "Running the hospital"];
+  /* the facility's own words on the screens people use most */
+  function relabel(custom) {
+    var t = (custom && custom.terms) || {};
+    if (t.patients) TAB_INFO.patients[1] = t.patients;
+    if (t.queue) TAB_INFO.queue[1] = t.queue;
+    if (t.ward && t.bed) TAB_INFO.beds[1] = t.bed + "s";
+  }
 
   function render() {
     var org = ME.org, staff = ME.staff;
@@ -229,17 +244,19 @@
     var OPS = window.QCOps ? window.QCOps.tabs(can) : [];
     var HMS = window.QCHms ? window.QCHms.tabs(can) : [];
     var DOC = (window.QCDoc ? window.QCDoc.tabs(can) : []).concat(window.QCClaims ? window.QCClaims.tabs(can) : []);
+    var CUS = window.QCCustom ? window.QCCustom.tabs(can) : [];
     var grp = function (list, g) { return list.filter(function (t) { return t[3] === g; }); };
     var tabs = [["overview", "My day", true]].concat(HMS.length ? grp(HMS, "front") : [["patients", "Patients", can("roster")]]).concat(grp(OPS, "flow")).concat(grp(HMS, "flow")).concat(DOC).concat(grp(HMS, "back"))
       .concat([["connect", "Connect", can("request")]])
       .concat(grp(HMS, "admin")).concat(grp(OPS, "admin"))
-      .concat([["team", "Team", can("team")], ["activity", "Activity log", can("audit")], ["security", "My security", true]]).filter(function (t) { return t[2]; });
+      .concat(CUS).concat([["team", "Team", can("team")], ["activity", "Activity log", can("audit")], ["security", "My security", true]]).filter(function (t) { return t[2]; });
     // modules the organisation switched off in Setup stay out of the menu (Setup can switch them back on)
     var MODS = ME.modules;
     if (MODS) tabs = tabs.filter(function (t) { return MODS[t[0]] !== false; });
     if (!tabs.some(function (t) { return t[0] === tabNow; })) tabNow = tabs[0][0];
     // a short menu: My day and the few screens this person's role uses; everything else under More
-    var keys = ["overview"].concat(ME.nav || []).filter(function (k, i, a) { return a.indexOf(k) === i && tabs.some(function (t) { return t[0] === k; }); });
+    var pins = ((ME.custom || {}).prefs || {}).pinned || [];
+    var keys = ["overview"].concat(ME.nav || []).concat(pins).filter(function (k, i, a) { return a.indexOf(k) === i && tabs.some(function (t) { return t[0] === k; }); });
     if (keys.length < 3) keys = tabs.slice(0, 6).map(function (t) { return t[0]; });
     var primary = keys.map(function (k) { return tabs.filter(function (t) { return t[0] === k; })[0]; });
     var rest = tabs.filter(function (t) { return keys.indexOf(t[0]) < 0; });
@@ -282,7 +299,7 @@
     var own = { overview: loadOverview, patients: loadPatients, connect: renderConnect, team: loadTeam, activity: loadActivity, security: renderSecurity };
     var ops = window.QCOps ? window.QCOps.loaders() : {};
     if (window.QCHms) { delete own.patients; var hm = window.QCHms.loaders(); Object.keys(hm).forEach(function (k) { ops[k] = hm[k]; }); window.QCHms.leave(); }
-    [window.QCDoc, window.QCClaims].forEach(function (mod) { if (mod) { var dl = mod.loaders(); Object.keys(dl).forEach(function (k) { ops[k] = dl[k]; }); } });
+    [window.QCDoc, window.QCClaims, window.QCCustom].forEach(function (mod) { if (mod) { var dl = mod.loaders(); Object.keys(dl).forEach(function (k) { ops[k] = dl[k]; }); } });
     [].forEach.call(document.querySelectorAll("#workspace > section.tab"), function (sec) { show(sec, sec.id === "tab-" + t); });
     if (window.QCOps) window.QCOps.leave();
     show(el("tab-board"), t === "overview" && ME.org.practice !== "solo" && (can("ops") || can("structure") || can("reports") || can("orders")));
@@ -781,6 +798,8 @@
     me: function () { return ME; }, opts: function () { return OPTS; }, roster: function () { return ROSTER; },
     loadRoster: function () { return api("/hospital/roster").then(function (r) { if (r && r.ok) ROSTER = r.items; return ROSTER; }); },
     openChart: openChart, openRecord: openRecord, go: function (t) { tabNow = t; render(); },
+    term: function (k, d) { return window.QCCustom ? window.QCCustom.term(k, d) : (d || k); },
+    refreshMe: function () { return api("/hospital/me").then(function (r) { if (r.ok) { ME = r; if (window.QCCustom) window.QCCustom.apply(r.custom); relabel(r.custom); render(); } }); },
   };
 
   /* ---------- boot ---------- */
