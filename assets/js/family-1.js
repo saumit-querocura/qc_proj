@@ -33,11 +33,11 @@
     el("links-in").innerHTML = lin.map(function (l) {
       if (l.status === "pending") {
         return '<div class="invite-banner link-req"><span class="who">' + (ANIMAL[l.avatar] || "🙂") + '</span><span style="flex:1 1 260px"><b>' + esc(l.from_name) + '</b> wants to add ' + (l.on_behalf_of ? "<b>" + esc(l.on_behalf_of) + "</b> (whose account you look after)" : "you") + " to their family as their " + esc((RELNICE[l.relation] || l.relation).toLowerCase()) + '. Nothing is shared until you accept.</span>' +
-          '<select class="input" data-lrole="' + l.link_id + '" style="width:auto"><option value="viewer"' + (l.role === "viewer" ? " selected" : "") + '>They can see my health summary</option><option value="manager"' + (l.role === "manager" ? " selected" : "") + '>They can also help add readings</option></select>' +
-          '<button class="btn btn-sm btn-dark" data-lacc="' + l.link_id + '">Accept</button><button class="btn btn-sm" data-ldec="' + l.link_id + '">Decline</button></div>';
+          '<button class="btn btn-sm btn-dark" data-lacc="' + l.link_id + '">Choose what to share</button><button class="btn btn-sm" data-ldec="' + l.link_id + '">Decline</button></div>';
       }
-      return '<div class="invite-banner link-on"><span class="who">🔗</span><span style="flex:1 1 260px"><b>' + esc(l.from_name) + '</b> is linked with you and can ' + (l.role === "manager" ? "see and help add to" : "see") + ' your health records.</span>' +
-        '<button class="btn btn-sm" data-lswap="' + l.link_id + '" data-to="' + (l.role === "manager" ? "viewer" : "manager") + '">' + (l.role === "manager" ? "Make it view only" : "Let them help") + '</button><button class="btn btn-sm" data-lun="' + l.link_id + '">Unlink</button></div>';
+      var areas = Object.keys(l.perms || {}).filter(function (k) { return l.perms[k] && k !== "add" && k !== "edit_profile"; }).length;
+      return '<div class="invite-banner link-on"><span class="who">🔗</span><span style="flex:1 1 260px"><b>' + esc(l.from_name) + '</b> is linked with ' + (l.on_behalf_of ? "<b>" + esc(l.on_behalf_of) + "</b>" : "you") + ' and can see ' + areas + ' area' + (areas === 1 ? "" : "s") + (l.perms && l.perms.add ? ", and help add things" : "") + '.</span>' +
+        '<button class="btn btn-sm" data-fsettings="1">Change what they see</button><button class="btn btn-sm" data-lun="' + l.link_id + '">Unlink</button></div>';
     }).join("");
 
     var acting = H.acting;
@@ -78,7 +78,7 @@
 
   function potHtml(m, idx, shared) {
     var tint = tintOf(m.color), emoji = ANIMAL[m.avatar] || "🙂", id = m.member_id;
-    var viewer = m.role === "viewer";
+    var pm = m.perms || {}, viewer = m.perms ? !pm.add : m.role === "viewer";
     var badges = (m.badges || []).map(function (b) { return '<span class="badge">' + esc(b.emoji) + ' ' + esc(b.label) + '</span>'; }).join("");
     var ideas = "";
     if (!shared && m.care_ideas) {
@@ -89,11 +89,11 @@
     var bday = (!shared && m.birthday_info && m.birthday_info.in_days <= 14) ? '<span class="pill">🎂 ' + (m.birthday_info.in_days === 0 ? "birthday today!" : "birthday in " + m.birthday_info.in_days + "d") + '</span>' : "";
     var streak = (!shared && m.streak) ? '<span class="pill">🔥 ' + m.streak + '-day streak</span>' : "";
     var actions = '<button class="btn main" data-open="' + id + '">Open ' + esc(m.nickname) + '\'s space</button>';
-    if (!viewer) actions += '<button class="btn" data-water="' + id + '">💧 Water (log)</button>';
-    actions += '<button class="btn" data-card="' + id + '">🆘 Card</button>';
+    if (!viewer && (!m.perms || pm.vitals)) actions += '<button class="btn" data-water="' + id + '">💧 Water (log)</button>';
+    if (!m.perms || pm.emergency) actions += '<button class="btn" data-card="' + id + '">🆘 Card</button>';
     if (!shared && m.linked && m.guardian) actions += '<button class="btn" data-edit="' + id + '">✏️ Edit</button>' + (m.own_sign_in ? "" : '<button class="btn" data-handover="' + id + '">🔑 Give them their own sign-in</button>');
     else if (!shared && m.linked) actions += '<button class="btn" data-edit="' + id + '">✏️ Edit</button><button class="btn" data-lun="' + id + '">Unlink</button>';
-    else if (!shared) actions += '<button class="btn" data-cheer="' + id + '">💌 Cheer</button><button class="btn" data-circle="' + id + '">🫶 Circle</button><button class="btn" data-edit="' + id + '">✏️ Edit</button>';
+    else if (!shared) actions += '<button class="btn" data-cheer="' + id + '">💌 Cheer</button><button class="btn" data-fsettings="1">🔑 Give them their own account</button><button class="btn" data-edit="' + id + '">✏️ Edit</button>';
     else actions += '<button class="btn" data-leave="' + (m.access_id || "") + '" style="display:none"></button>';
     return '<div class="pot" style="--tint:' + tint + ';animation-delay:' + (idx * .06) + 's" data-mid="' + id + '">' +
       '<div class="pot-top"><div class="face" data-bounce>' + emoji + '</div><div><div class="nm">' + esc(m.nickname) + (m.linked ? (m.guardian ? ' <span class="chip" title="A child account you look after">👶 ' + esc(m.own_sign_in ? "their own account" : "you look after it") + "</span>" : ' <span class="chip" title="Their own QueroCura account">🔗 linked</span>') : "") + '</div><div class="rel">' + esc(RELNICE[m.relation] || m.relation) + (m.age != null ? ' · ' + m.age + (m.age === 1 ? ' yr' : ' yrs') : '') + (shared ? ' · ' + esc(m.owner_name || "") + "'s family" : "") + (viewer ? ' · view only' : '') + '</div></div><span class="mood" data-mood="' + id + '">·</span></div>' +
@@ -140,7 +140,8 @@
     var ed = t.closest("[data-edit]"); if (ed) { openEdit(ed.getAttribute("data-edit")); return; }
     var iv = t.closest("[data-inv]"); if (iv) { respond(iv.getAttribute("data-inv"), iv.getAttribute("data-acc") === "1"); return; }
     var ho = t.closest("[data-handover]"); if (ho) { handover(ho.getAttribute("data-handover")); return; }
-    var la = t.closest("[data-lacc]"); if (la) { var id = la.getAttribute("data-lacc"), sel = document.querySelector('[data-lrole="' + id + '"]'); linkPost("/family/links/" + id + "/respond", { accept: true, role: sel ? sel.value : "viewer" }, true); return; }
+    var la = t.closest("[data-lacc]"); if (la) { var id = la.getAttribute("data-lacc"), req = (HUB.linked_to_me || []).filter(function (x) { return x.link_id === id; })[0]; if (req) QCFamily2.choosePerms(req); return; }
+    if (t.closest("[data-fsettings]")) { QCFamily2.open(); return; }
     var ld = t.closest("[data-ldec]"); if (ld) { linkPost("/family/links/" + ld.getAttribute("data-ldec") + "/respond", { accept: false }); return; }
     var ls = t.closest("[data-lswap]"); if (ls) { linkPost("/family/links/" + ls.getAttribute("data-lswap") + "/role", { role: ls.getAttribute("data-to") }); return; }
     var lu = t.closest("[data-lun]"); if (lu) { if (!window.confirm("Unlink? Nobody's records are deleted; you just stop seeing each other's.")) return; linkPost("/family/links/" + lu.getAttribute("data-lun") + "/unlink", {}); return; }
@@ -215,7 +216,8 @@
       if (el("e-blood").value !== "unknown") body.blood_type = el("e-blood").value;
     }
     if (!EDIT_ID) {
-      body.account = el("e-account").value.trim(); body.role = el("e-role").value;
+      body.account = el("e-account").value.trim(); body.perms = {};
+      [].forEach.call(document.querySelectorAll("#e-scopes [data-ask]"), function (b) { body.perms[b.getAttribute("data-ask")] = b.classList.contains("sel"); });
       if (!body.account) { el("e-msg").className = "msg err"; el("e-msg").textContent = "Enter the e-mail or username of their QueroCura account."; return; }
     } else if (!body.nickname) { el("e-msg").className = "msg err"; el("e-msg").textContent = "Give them a name or nickname."; return; }
     var btn = el("e-save"); btn.disabled = true;
@@ -307,5 +309,7 @@
     });
   });
 
-  P.init().then(function (me) { if (me && me.logged_in) load(); });
+  el("e-scopes").addEventListener("click", function (e) { var b = e.target.closest("[data-ask]"); if (b) { b.classList.toggle("sel"); b.setAttribute("aria-pressed", b.classList.contains("sel")); } });
+  document.addEventListener("qc-family-changed", function () { load(); });
+  P.init().then(function (me) { if (me && me.logged_in) { load(); QCFamily2.startUpdates(); } });
 })();

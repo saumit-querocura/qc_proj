@@ -119,10 +119,11 @@
       var body;
       if (!st.supported) body = '<p class="qcp-sub">This browser can\'t show notifications. Reminders still appear inside QueroCura, under the bell.</p>';
       else if (!st.serverEnabled) body = '<p class="qcp-sub">Push notifications are being set up. They\'ll be available here soon. Reminders still appear inside QueroCura, under the bell.</p>';
-      else body = '<p class="qcp-sub">Get a gentle nudge on this device for appointments and symptom check-ins, even when QueroCura is closed. Messages are kept vague by default so nothing private shows on your lock screen.</p>' +
+      else body = '<p class="qcp-sub">Get a gentle nudge on this device for medicines, appointments and check-ins, even when QueroCura is closed. Tap Taken right on a medicine reminder. Messages are kept vague by default so nothing private shows on your lock screen.</p>' +
         (st.needsInstall ? '<div class="qcp-note">📲 On iPhone, add QueroCura to your Home Screen first (Share, then Add to Home Screen), then open it from there to turn notifications on.</div>' : '') +
         (st.permission === "denied" ? '<div class="qcp-note">Notifications are blocked for this site. Allow them in your browser\'s site settings, then come back here.</div>' : '') +
         (on ? '<div class="qcp-opts">' +
+          '<label class="qcp-opt"><input type="checkbox" data-p="meds"' + (p.meds !== false ? " checked" : "") + '><span>Medicine reminders<small>At each dose time, with a Taken button right on the notification.</small></span></label>' +
           '<label class="qcp-opt"><input type="checkbox" data-p="calendar"' + (p.calendar ? " checked" : "") + '><span>Appointment reminders<small>At the reminder times you set on each calendar event.</small></span></label>' +
           '<label class="qcp-opt"><input type="checkbox" data-p="checkin"' + (p.checkin ? " checked" : "") + '><span>Symptom check-ins<small>"How are you feeling?" a day or two after a symptom check. Never at night.</small></span></label>' +
           '<label class="qcp-opt"><input type="checkbox" data-p="details"' + (p.details ? " checked" : "") + '><span>Show details in notifications<small>Include appointment titles and condition names. Visible on your lock screen.</small></span></label></div>' +
@@ -159,7 +160,7 @@
       injectCss();
       var box = document.createElement("div");
       box.className = "qcp-toast"; box.id = "qcp-prompt"; box.setAttribute("role", "dialog"); box.setAttribute("aria-label", "Turn on reminders");
-      box.innerHTML = '<b>🔔 Never miss a reminder</b>Get a nudge for appointments and check-ins on this device. You can turn it off any time in your profile.' +
+      box.innerHTML = '<b>🔔 Never miss a dose</b>Medicine reminders with a Taken button, plus appointments and check-ins, on this device. You can turn it off any time in your profile.' +
         '<div class="qcp-actions"><button type="button" class="qcp-btn go" id="qcp-yes">Turn on</button><button type="button" class="qcp-btn" id="qcp-no">Not now</button></div>';
       document.body.appendChild(box);
       function close() { box.remove(); }

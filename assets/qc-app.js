@@ -350,7 +350,7 @@
       panel.style.top = Math.min(r.bottom + 10, window.innerHeight - 160) + "px";
       panel.style.maxHeight = Math.max(200, window.innerHeight - r.bottom - 30) + "px";
     }
-    function open(v) { if (v) place(); panel.hidden = !v; bell.setAttribute("aria-expanded", v ? "true" : "false"); }
+    function open(v) { if (v) place(); panel.hidden = !v; bell.setAttribute("aria-expanded", v ? "true" : "false"); if (v) setTimeout(markFamilySeen, 2500); }
     window.addEventListener("resize", function () { if (!panel.hidden) place(); });
     window.addEventListener("scroll", function () { if (!panel.hidden) place(); }, { passive: true });
     bell.addEventListener("click", function (e) { e.stopPropagation(); open(panel.hidden); });
@@ -358,7 +358,16 @@
     document.addEventListener("keydown", function (e) { if (e.key === "Escape") open(false); });
     panel.addEventListener("click", function (e) {
       var x = e.target.closest("[data-dismiss]");
-      if (x) { dismiss(x.getAttribute("data-dismiss"), 24); renderAlerts(QC.alertState.items); }
+      if (x) {
+        var gone = x.getAttribute("data-dismiss"), it = QC.alertState.items.filter(function (i) { return i.id === gone; })[0];
+        if (it && it.notice_id) postJSON("/family/notices/seen", { ids: [it.notice_id] });
+        dismiss(gone, 24); renderAlerts(QC.alertState.items);
+      }
+      var da = e.target.closest("[data-dose-act]");
+      if (da) {
+        var item = QC.alertState.items.filter(function (i) { return i.id === da.getAttribute("data-item"); })[0];
+        if (item) { da.disabled = true; doseAct(item, da.getAttribute("data-dose-act")); }
+      }
     });
     var nb = $("#qc-notify-btn");
     function syncNotifyBtn() {
@@ -394,6 +403,7 @@
         '<div class="qc-alert-top"><span class="qc-alert-tag">' + s.i + " " + esc(s.l) + '</span><button type="button" class="qc-alert-x" data-dismiss="' + esc(a.id) + '" aria-label="Dismiss for today" title="Dismiss for today">✕</button></div>' +
         '<div class="qc-alert-title">' + esc(a.title) + '</div>' +
         (a.message ? '<div class="qc-alert-msg">' + esc(a.message) + '</div>' : '') +
+        (a.actions ? '<div class="qc-alert-acts">' + a.actions.map(function (x, i) { return '<button type="button" class="' + (i ? "" : "go") + '" data-dose-act="' + esc(x[0]) + '" data-item="' + esc(a.id) + '">' + esc(x[1]) + "</button>"; }).join("") + "</div>" : "") +
         (a.href ? '<a class="qc-alert-cta" href="' + esc(a.href) + '">' + esc(a.cta || "Open") + ' →</a>' : '') +
         '</div></div>';
     }).join("");
@@ -416,8 +426,9 @@
       }
       var rem = reminderAlerts(upcoming);
       items = items.concat(rem.items);
-      QC.alertState.items = items;
-      renderAlerts(items);
+      baseItems = items;
+      combine();
+      QC.refreshCare();
       maybeNativeNotify(items);
       var urgent = items.filter(function (a) { return (a.severity === "urgent" || a.severity === "emergency") && !dismissed()[a.id]; })[0];
       if (urgent && urgent.id !== lastToastedUrgent && opts.toast !== false) {
@@ -427,6 +438,96 @@
       return items;
     });
   };
+
+
+  /* ---------- medicines and family updates in the bell ----------
+   * Due doses show in the bell with Taken / Snooze / Skip, and a small card slides up on whatever page is open when a
+   * dose comes due.  Updates about family members ("Aarav took the 8:00 AM medicine") show here too.  A push that
+   * arrives while a page is open refreshes this at once (the service worker tells the page); otherwise it checks every
+   * minute while the page is visible. */
+  var baseItems = [], careItems = [], careBusy = null, CARD_KEY = "qc-dose-cards";
+  SEV.family = { c: "#7c6fdb", l: "Family", i: "🫶", r: 2 };
+  SEV.dose = { c: "#0e8f83", l: "Medicine", i: "💊", r: 1 };
+  function clock(iso) { var d = new Date(iso); return isNaN(d) ? "" : d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }); }
+  function combine() { QC.alertState.items = careItems.concat(baseItems); renderAlerts(QC.alertState.items); }
+  function doseAct(item, action) {
+    var p = item.token ? postJSON("/push/dose", { token: item.token, action: action }) : postJSON("/curavault/reminders/" + encodeURIComponent(item.event_id) + "/action", { action: action, snooze_minutes: 15 });
+    return p.then(function (d) {
+      if (d && d.ok) {
+        QC.toast(action === "taken" ? "Marked as taken ✓" + (item.token ? "" : " Nice one.") : action === "snooze" ? "Snoozed for 15 minutes ⏰" : "Marked as skipped.", "ok");
+        if (action === "taken" && !item.token) undoOffer(item);
+      } else QC.toast((d && (d.message || d.error || d.err)) || "Couldn't mark that dose. Try again.", "err");
+      return QC.refreshCare();
+    });
+  }
+  function undoOffer(item) {
+    var t = document.getElementById("toast-host") || document.querySelector(".qc-toast-host");
+    var b = document.createElement("button");
+    b.type = "button"; b.className = "qc-undo"; b.textContent = "Undo";
+    b.onclick = function () { b.remove(); postJSON("/curavault/reminders/" + encodeURIComponent(item.event_id) + "/action", { action: "undo" }).then(function () { QC.toast("Undone. It's waiting again.", ""); QC.refreshCare(); }); };
+    document.body.appendChild(b); setTimeout(function () { b.remove(); }, 8000);
+  }
+  function shownCards() { try { return JSON.parse(sessionStorage.getItem(CARD_KEY) || "{}"); } catch (e) { return {}; } }
+  function doseCard(item) {
+    var seen = shownCards(), k = item.event_id + "|" + item.status;
+    if (seen[k] || $("#qc-dose-card")) return;
+    seen[k] = Date.now(); try { sessionStorage.setItem(CARD_KEY, JSON.stringify(seen)); } catch (e) {}
+    var c = document.createElement("div");
+    c.id = "qc-dose-card"; c.className = "qc-dose-card"; c.setAttribute("role", "alertdialog"); c.setAttribute("aria-label", "Medicine reminder");
+    c.innerHTML = '<div class="qdc-ic" aria-hidden="true">💊</div><div class="qdc-main"><div class="qdc-k">' + esc(item.who ? item.who + "’s medicine" : "Time for your medicine") + '</div><div class="qdc-t">' + esc(item.name) + '</div><div class="qdc-m">' + esc(item.message) + '</div>' +
+      '<div class="qdc-a"><button type="button" class="qdc-go" data-a="taken">✓ Taken</button><button type="button" data-a="snooze">Snooze 15 min</button>' + (item.token ? "" : '<button type="button" data-a="skipped">Skip</button>') + '</div></div><button type="button" class="qdc-x" aria-label="Close">✕</button>';
+    document.body.appendChild(c);
+    c.addEventListener("click", function (e) {
+      var b = e.target.closest("button"); if (!b) return;
+      if (b.classList.contains("qdc-x")) { c.remove(); return; }
+      var a = b.getAttribute("data-a"); if (!a) return;
+      c.querySelectorAll("button").forEach(function (x) { x.disabled = true; });
+      if (a === "taken") c.classList.add("done");
+      doseAct(item, a).then(function () { setTimeout(function () { c.remove(); }, a === "taken" ? 900 : 0); });
+    });
+    try { c.querySelector(".qdc-go").focus({ preventScroll: true }); } catch (e) {}
+  }
+  QC.refreshCare = function () {
+    if (!$("#qc-bell")) return Promise.resolve([]);
+    if (careBusy) return careBusy;
+    careBusy = Promise.all([getJSON("/curavault/medications/doses"), getJSON("/family/notices?limit=15")]).then(function (r) {
+      var doses = (r[0] && r[0].ok && (r[0].items || r[0].announcements)) || [], notes = (r[1] && r[1].ok && r[1].items) || [], out = [];
+      doses.forEach(function (d) {
+        if (["pending", "snoozed"].indexOf(d.status) < 0 || ["due", "overdue"].indexOf(d.state) < 0) return;
+        var item = { id: "dose-" + d.event_id + "-" + d.status, severity: "dose", kind: "dose", event_id: d.event_id, status: d.status, name: (d.name + " " + (d.strength || "")).trim(),
+          title: (d.name + " " + (d.strength || "")).trim(), message: (d.state === "overdue" ? "Earlier today, " : "Due ") + clock(d.scheduled_for_utc) + (d.meal_relation ? " · " + d.meal_relation : ""),
+          actions: [["taken", "✓ Taken"], ["snooze", "Snooze"], ["skipped", "Skip"]] };
+        out.push(item);
+        if (d.state === "due" && d.minutes_until <= 2) doseCard(item);
+      });
+      var recent = Date.now() - 48 * 3600 * 1000;
+      notes.forEach(function (n) {
+        var when = new Date(n.ts).getTime();
+        if (n.seen && when < recent) return;
+        var item = { id: "fam-" + n.id, notice_id: n.id, severity: n.seen ? "info" : (n.kind === "dose_missed" ? "caution" : "family"), kind: "family",
+          title: (QC.animals[n.avatar] || "🫶") + " " + n.title, message: n.body, href: "../family/", cta: "Family" };
+        if (n.kind === "dose_due" && n.token && !n.seen) {
+          item.token = n.token; item.event_id = n.event_id; item.actions = [["taken", "✓ Given"], ["snooze", "Snooze"]];
+          item.name = n.body.split(" · ")[0]; item.who = n.title.replace(/'s medicine.*$/, "");
+          doseCard({ token: n.token, event_id: n.event_id, status: "fam" + n.id, name: n.body, message: "", who: item.who });
+        }
+        out.push(item);
+      });
+      careItems = out; combine(); careBusy = null; return out;
+    }, function () { careBusy = null; return []; });
+    return careBusy;
+  };
+  function markFamilySeen() {
+    var ids = careItems.filter(function (i) { return i.kind === "family" && i.severity !== "info"; }).map(function (i) { return i.notice_id; });
+    if (ids.length) postJSON("/family/notices/seen", { ids: ids }).then(function () { setTimeout(QC.refreshCare, 1500); });
+  }
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.addEventListener("message", function (e) {
+      var t = e.data && e.data.type;
+      if (t === "qc-push" || t === "qc-dose-done") QC.refreshCare();
+    });
+    navigator.serviceWorker.ready.then(function (reg) { if (reg.active) reg.active.postMessage({ type: "qc-flush-doses" }); }).catch(function () {});
+  }
 
   /* ---------- family: whose health are we looking at? ----------
    * One account can look after children, parents and partners ("family garden"). While a profile is selected the
@@ -465,7 +566,7 @@
     b.id = "qc-acting-banner"; b.className = "qc-acting-banner"; b.setAttribute("role", "status");
     b.style.setProperty("--tint", QC.family.tint(a.color));
     b.innerHTML = '<span class="qa-face">' + QC.family.emoji(a.avatar) + '</span><span class="qa-text">You\u2019re looking after <b>' + esc(a.nickname) + '</b>' +
-      (a.role === "viewer" ? ' <span class="qa-view">\ud83d\udc40 view only</span>' : '') + ' \u2014 everything you see and add here is theirs.</span>' +
+      (a.role === "viewer" ? ' <span class="qa-view">\ud83d\udc40 view only</span>' : '') + ' \u2014 you see only what they chose to share, and anything you add is theirs.</span>' +
       '<button type="button" class="qa-back" id="qc-acting-back">Back to my profile</button>';
     if (bar && bar.parentNode) bar.parentNode.insertBefore(b, bar.nextSibling); else document.body.insertBefore(b, document.body.firstChild);
     $("#qc-acting-back").addEventListener("click", function () {
@@ -520,6 +621,17 @@
 
   /* ---------- styles for the shared pieces ---------- */
   var css = '' +
+'.qc-alert-acts{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 2px}.qc-alert-acts button{border:1.5px solid rgba(16,14,42,.16);background:transparent;color:inherit;border-radius:999px;padding:5px 12px;font:800 12px "Manrope",sans-serif;cursor:pointer}' +
+    '.qc-alert-acts button.go{background:#0e8f83;border-color:#0e8f83;color:#fff}.qc-alert-acts button:disabled{opacity:.5;cursor:progress}' +
+    '.qc-dose-card{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:160;width:min(420px,calc(100vw - 24px));display:flex;gap:12px;align-items:flex-start;padding:14px 16px;border-radius:22px;background:#fff;color:#100e2a;border:1.5px solid rgba(14,143,131,.35);box-shadow:0 28px 60px -20px rgba(16,14,42,.45);font:500 13px/1.45 "Manrope",sans-serif;animation:qdcIn .45s cubic-bezier(.2,.8,.2,1)}' +
+    '@keyframes qdcIn{from{opacity:0;transform:translate(-50%,24px)}}.qdc-ic{font-size:28px;line-height:1;animation:qdcWig 2.6s ease-in-out infinite}@keyframes qdcWig{8%{transform:rotate(-12deg)}16%{transform:rotate(10deg)}24%{transform:none}}' +
+    '.qdc-main{flex:1;min-width:0}.qdc-k{font:800 11px "Manrope",sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#0e8f83}.qdc-t{font:700 16px "Space Grotesk",sans-serif;margin-top:1px}.qdc-m{opacity:.7}' +
+    '.qdc-a{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.qdc-a button{border:1.5px solid rgba(16,14,42,.16);background:transparent;color:inherit;border-radius:999px;padding:8px 14px;font:800 12.5px "Manrope",sans-serif;cursor:pointer}' +
+    '.qdc-a .qdc-go{background:#0e8f83;border-color:#0e8f83;color:#fff;padding:8px 18px}.qdc-a button:focus-visible{outline:2px solid #0e8f83;outline-offset:2px}.qdc-x{border:0;background:none;cursor:pointer;opacity:.5;font-size:14px;color:inherit}' +
+    '.qc-dose-card.done{border-color:#2f8f5e}.qc-dose-card.done .qdc-ic{animation:none}.qc-dose-card.done .qdc-ic::after{content:"";}' +
+    '.qc-undo{position:fixed;left:50%;bottom:76px;transform:translateX(-50%);z-index:170;border:0;border-radius:999px;padding:9px 18px;background:#100e2a;color:#fff;font:800 12.5px "Manrope",sans-serif;cursor:pointer;box-shadow:0 10px 26px -10px rgba(0,0,0,.5)}' +
+    'html[data-theme="dark"] .qc-dose-card{background:#18162e;color:#f2f0f8;border-color:rgba(126,224,212,.35)}html[data-theme="dark"] .qc-alert-acts button,html[data-theme="dark"] .qdc-a button{border-color:rgba(255,255,255,.22)}' +
+    '@media (prefers-reduced-motion:reduce){.qc-dose-card,.qdc-ic{animation:none}}' +
     '.qc-bell-wrap{position:relative;flex:0 0 auto}' +
     '.qc-bell{position:relative;display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:10px;border:1.5px solid rgba(16,14,42,.14);background:#fff;color:#100e2a;cursor:pointer;padding:0;transition:transform .2s,background .2s}' +
     '.qc-bell:hover{transform:translateY(-2px)}' +
@@ -619,6 +731,7 @@
     QC.idle(function () { QC.refreshAlerts({}); }, 1800);
     setInterval(function () { QC.refreshAlerts({ toast: false }); }, 5 * 60 * 1000);
     document.addEventListener("visibilitychange", function () { if (!document.hidden) QC.refreshAlerts({ toast: false }); });
+    setInterval(function () { if (!document.hidden) QC.refreshCare(); }, 60 * 1000);
   };
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", QC.boot);
   else QC.boot();

@@ -92,6 +92,29 @@
   .ecard .foot { margin-top: 14px; font-size: 11.5px; color: #6b6885; }
   .circle-row { display: flex; align-items: center; gap: 8px; padding: 6px 0; font-size: 13.5px; border-bottom: 1px dashed var(--line); }
   @media print { body * { visibility: hidden; } #ecard-print, #ecard-print * { visibility: visible; } #ecard-print { position: absolute; left: 0; top: 0; width: 100%; } }
+
+  /* family settings + updates */
+  .modal.wide { max-width: 760px; }
+  .fs-sec { margin-top: 18px; } .fs-sec h3 { margin: 0 0 2px; font: 700 16px 'Space Grotesk', sans-serif; }
+  .fs-person { border-radius: 20px; padding: 14px; margin-top: 10px; background: color-mix(in srgb, var(--tint, #e6dffa) 45%, var(--card)); border: 1px solid var(--line); }
+  .fs-top { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; } .fs-face { font-size: 28px; } .fs-who { flex: 1 1 160px; } .fs-who small { display: block; color: var(--muted); font-weight: 600; }
+  .fs-scopes { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 6px; margin-top: 10px; }
+  .fs-scope { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 14px; background: var(--card); } .fs-scope.do { outline: 1px dashed rgba(124,111,219,.45); }
+  .fs-ic { font-size: 18px; } .fs-sl { flex: 1; min-width: 0; font-size: 13.5px; } .fs-sl small { display: block; color: var(--muted); font-size: 11.5px; line-height: 1.35; }
+  .fs-sw { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; font-weight: 700; position: relative; }
+  .fs-sw input { position: absolute; opacity: 0; width: 44px; height: 26px; margin: 0; cursor: pointer; z-index: 1; }
+  .fs-sw i { width: 44px; height: 26px; border-radius: 999px; background: rgba(16,14,42,.2); position: relative; flex: 0 0 auto; transition: background .2s; }
+  .fs-sw i::after { content: ""; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,.3); transition: transform .2s; }
+  .fs-sw input:checked + i { background: #0e8f83; } .fs-sw input:checked + i::after { transform: translateX(18px); } .fs-sw input:focus-visible + i { outline: 2px solid #0e8f83; outline-offset: 2px; }
+  .fs-sw.dis { opacity: .5; cursor: not-allowed; } html[data-theme="dark"] .fs-sw i { background: rgba(255,255,255,.2); }
+  .fs-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; } .fs-chip { padding: 4px 10px; border-radius: 999px; background: var(--card); font-size: 12px; font-weight: 700; } .fs-chip.off { opacity: .6; }
+  .fs-follow { display: grid; gap: 8px; margin-top: 12px; padding-top: 10px; border-top: 1px dashed var(--line); } .fs-lbl { font-size: 11px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+  .upd-card { margin-bottom: 18px; } .upd-head { display: flex; align-items: center; gap: 10px; } .upd-head h2 { margin: 0; } .upd-count { font-size: 12px; font-weight: 800; color: #fff; background: #7c6fdb; border-radius: 999px; padding: 2px 9px; } .upd-count:empty { display: none; }
+  .upd { display: flex; gap: 12px; padding: 10px 0; border-bottom: 1px dashed var(--line); font-size: 13.5px; } .upd:last-child { border-bottom: 0; }
+  .upd.new { animation: updIn .5s ease; } .upd.new b::after { content: " •"; color: #7c6fdb; } @keyframes updIn { from { opacity: 0; transform: translateY(-6px); } }
+  .upd-ic { font-size: 22px; line-height: 1.2; } .upd-main { flex: 1; } .upd-main small { color: var(--muted); font-weight: 600; } .upd-acts { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+  #e-scopes .rp.sel { background: rgba(14,143,131,.14); border-color: #0e8f83; color: var(--teal); }
+  @media (prefers-reduced-motion: reduce) { .upd.new { animation: none; } .fs-sw i, .fs-sw i::after { transition: none; } }
 </style>
 <script src="../assets/qc-csp.js?v=77f89cc2"></script>
 <script src="../assets/qc-i18n.js?v=55eaa1ee"></script>
@@ -130,7 +153,7 @@
           <h1 class="page-title" style="margin-bottom:6px">Everyone you love, in one little garden</h1>
           <p class="page-sub" style="margin:0">Link the QueroCura accounts of the people you love. Each person keeps their own account and records, and decides what you can see.</p>
         </div>
-        <button class="btn btn-primary" id="add-top">🌱 Add a family member</button>
+        <div class="row" style="gap:8px"><button class="btn" id="fam-settings-btn" type="button">⚙️ Family settings</button><button class="btn btn-primary" id="add-top">🌱 Add a family member</button></div>
       </div>
       <div class="hero-stats" id="hero-stats"></div>
     </div>
@@ -138,6 +161,12 @@
     <div id="invites"></div>
     <div id="links-in"></div>
     <div class="garden" id="garden"><div class="pot" style="--tint:#e6dffa"><span class="skeleton"></span></div></div>
+
+    <div class="card upd-card">
+      <div class="upd-head"><h2>🔔 Family updates</h2><span class="upd-count" id="upd-count" aria-live="polite"></span></div>
+      <p class="sub">Medicines taken, doses that look missed, and reminders for the people you look after, as they happen.</p>
+      <div id="upd-list"><div class="empty">Loading…</div></div>
+    </div>
 
     <div class="two">
       <div class="card">
@@ -158,14 +187,30 @@
       <div class="garden" id="shared"></div>
     </div>
 
-    <p class="hint" style="text-align:center;margin-top:24px">Private by design: each profile's records are separate, only you (and anyone you invite) can open them, and you can delete a profile and everything in it at any time.</p>
+    <p class="hint" style="text-align:center;margin-top:24px">Private by design: everyone has their own account and records, each person chooses exactly what each family member can see, and either side can unlink at any time.</p>
   </div>
+
+  <!-- family settings -->
+  <div class="modal-back" id="m-settings"><div class="modal wide">
+    <button class="modal-x" data-close="m-settings" aria-label="Close">✕</button>
+    <h2>⚙️ Family settings</h2>
+    <p class="sub">Everyone you’re connected with, and exactly what each person can see and do.</p>
+    <div id="fs-body"></div>
+  </div></div>
+
+  <!-- choose what to share when accepting -->
+  <div class="modal-back" id="m-perms"><div class="modal">
+    <button class="modal-x" data-close="m-perms" aria-label="Close">✕</button>
+    <h2 id="pc-title">Choose what to share</h2>
+    <div id="pc-body"></div>
+    <div class="row" style="justify-content:flex-end;margin-top:12px"><button class="btn" data-close="m-perms" type="button">Not now</button><button class="btn btn-primary" id="pc-accept" type="button">Accept and share</button></div>
+  </div></div>
 
   <!-- add / edit -->
   <div class="modal-back" id="m-edit"><div class="modal">
     <button class="modal-x" data-close="m-edit" aria-label="Close">✕</button>
     <h2 id="edit-title">Add a family member 🌱</h2>
-    <p class="sub" id="edit-sub">Family members are linked QueroCura accounts. We send them a request; they accept in their own account and choose whether you can only see their health summary or also help add readings.</p>
+    <p class="sub" id="edit-sub">Family members are their own QueroCura accounts. We send them a request; they accept in their own account and choose, area by area, what you can see.</p>
     <div class="add-mode" id="add-mode" role="tablist">
       <button type="button" class="on" data-mode="link">🔗 Link their account</button>
       <button type="button" data-mode="child">👶 Create an account for my child</button>
@@ -182,7 +227,13 @@
     </div>
     <div id="link-fields">
       <div class="field"><label for="e-account">Their QueroCura e-mail or username</label><input class="input" id="e-account" maxlength="254" autocomplete="off" placeholder="e.g. mum@example.com"></div>
-      <div class="field"><label for="e-role">Ask to</label><select class="input" id="e-role"><option value="viewer">See their health summary</option><option value="manager">See and help add readings and records</option></select></div>
+      <div class="field"><label>Ask to see</label><div class="pills" id="e-scopes" role="group" aria-label="Areas to ask for">
+        <button type="button" class="rp sel" data-ask="summary" aria-pressed="true">🌿 Health summary</button><button type="button" class="rp sel" data-ask="medicines" aria-pressed="true">💊 Medicines</button>
+        <button type="button" class="rp sel" data-ask="vitals" aria-pressed="true">❤️ Vitals</button><button type="button" class="rp" data-ask="records" aria-pressed="false">📁 Records</button>
+        <button type="button" class="rp" data-ask="symptoms" aria-pressed="false">🔍 Symptom checks</button><button type="button" class="rp sel" data-ask="appointments" aria-pressed="true">📅 Appointments</button>
+        <button type="button" class="rp sel" data-ask="emergency" aria-pressed="true">🆘 Emergency card</button><button type="button" class="rp" data-ask="add" aria-pressed="false">✍️ Add things for them</button>
+        <button type="button" class="rp" data-ask="edit_profile" aria-pressed="false">🪪 Edit their profile</button></div>
+        <small class="hint">They decide in the end: they can switch any of these off before accepting, or later.</small></div>
       <p class="hint" style="margin-top:-4px">No account yet? Ask them to <a href="../register/" target="_blank" rel="noopener">sign up for QueroCura</a> first (it's free), then link them here. A parent can create an account for a child using an e-mail address they look after.</p>
     </div>
     <div class="preview" id="preview"><div class="face" id="pv-face">🐼</div><div><div class="nm" id="pv-name">New friend</div><div class="rel" id="pv-rel">family</div></div></div>
@@ -254,8 +305,9 @@
     <button class="btn btn-danger" id="rm-go">Delete forever</button><div class="msg" id="rm-msg"></div>
   </div></div>
 
-<script src="../assets/qc-app.js?v=22a3a990"></script>
+<script src="../assets/qc-app.js?v=f264e7e4"></script>
 <script src="../assets/qc-page.js?v=c34c97a9"></script>
-<script src="../assets/js/family-1.js?v=60fbe177"></script>
+<script src="../assets/js/family-2.js?v=b1ada215"></script>
+  <script src="../assets/js/family-1.js?v=421c8a6b"></script>
 </body>
 </html>

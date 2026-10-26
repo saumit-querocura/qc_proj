@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://app.querocura.com; connect-src 'self' https://app.querocura.com; object-src 'none'; base-uri 'self'; form-action 'self' https://app.querocura.com">
 <script src="../assets/qc-early.js?v=1f9411e7" async></script>
-<title>Visit prep — QueroCura</title>
+<title>Prepare for your visit — QueroCura</title>
 <meta name="robots" content="noindex">
 <meta name="referrer" content="no-referrer">
 <link rel="icon" type="image/x-icon" href="../icons/favicon.ico">
@@ -15,31 +15,95 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../assets/qc-base.css?v=7b9ea421">
 <style>
-  .shell { max-width: 820px; }
-  .hero { border: 1.5px solid rgba(14,143,131,.35); background: linear-gradient(135deg, rgba(14,143,131,.08), rgba(124,111,219,.08)); border-radius: 22px; padding: 20px; margin-bottom: 14px; }
-  .hero h2 { margin: 0 0 4px; font-size: 21px; } .hero .when { font-weight: 800; color: #0e8f83; }
-  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
-  .chip { padding: 5px 12px; border-radius: 999px; font-size: 12.5px; font-weight: 700; background: rgba(127,127,160,.15); }
-  .chip.warn { background: rgba(210,140,40,.18); color: #b86f10; }
-  table.rd { width: 100%; border-collapse: collapse; font-size: 13.5px; } table.rd th { text-align: left; font-size: 11.5px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); padding: 6px 8px; }
-  table.rd td { padding: 9px 8px; border-top: 1px dashed var(--line); } table.rd td.num { font-weight: 800; white-space: nowrap; }
-  .flag { color: #b86f10; font-weight: 800; font-size: 12px; }
-  .qg { margin-bottom: 14px; } .qg h3 { margin: 0 0 6px; font-size: 15px; }
-  .qg ol { margin: 0; padding-left: 22px; font-size: 14px; line-height: 1.65; } .qg li { margin-bottom: 5px; }
-  .space { display: inline-block; width: 100%; border-bottom: 1px solid var(--line); height: 20px; }
-  .ck { list-style: none; padding: 0; margin: 0; font-size: 14px; } .ck li { padding: 5px 0; display: flex; gap: 10px; } .ck li::before { content: "±0"; font-size: 16px; }
-  .note { font-size: 12.5px; color: var(--muted); margin-top: 10px; }
+  .shell { max-width: 860px; position: relative; }
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  /* calm backdrop: two soft colour clouds drifting slowly */
+  body::before, body::after { content: ""; position: fixed; z-index: -1; width: 46vmax; height: 46vmax; border-radius: 50%; filter: blur(70px); opacity: .32; pointer-events: none; animation: drift 26s ease-in-out infinite alternate; }
+  body::before { background: #9fe3d8; top: -14vmax; left: -12vmax; }
+  body::after { background: #d9cff8; bottom: -16vmax; right: -14vmax; animation-delay: -9s; }
+  html[data-theme="dark"] body::before, html[data-theme="dark"] body::after { opacity: .14; }
+  @keyframes drift { to { transform: translate(6vmax, 4vmax) scale(1.08); } }
+
+  .hero-v { display: flex; gap: 14px; align-items: center; padding: 16px 18px; border-radius: 22px; background: color-mix(in srgb, var(--card) 78%, transparent); border: 1.5px solid rgba(14,143,131,.28); margin-bottom: 14px; backdrop-filter: blur(6px); }
+  .hv-ic { width: 46px; height: 46px; border-radius: 15px; display: grid; place-items: center; font-size: 22px; background: rgba(14,143,131,.12); flex: 0 0 auto; }
+  .hv-t { font: 700 17px 'Space Grotesk', sans-serif; } .hv-w { font-weight: 700; color: var(--teal); font-size: 13.5px; margin-top: 2px; } .hv-s { font-size: 12.5px; color: var(--muted); margin-top: 2px; }
+  .tabs { display: flex; gap: 6px; padding: 5px; border-radius: 999px; background: rgba(127,127,160,.12); margin: 0 0 16px; width: max-content; max-width: 100%; overflow-x: auto; }
+  .tabs button { border: 0; background: transparent; padding: 9px 16px; border-radius: 999px; font: 700 13.5px 'Manrope', sans-serif; color: var(--muted); cursor: pointer; white-space: nowrap; }
+  .tabs button.on { background: var(--card); color: var(--ink); box-shadow: 0 4px 14px -6px rgba(16,14,42,.25); }
+
+  /* the journey */
+  .vp-progress { margin: 18px 4px 14px; }
+  .vp-track { position: relative; height: 8px; border-radius: 999px; background: rgba(127,127,160,.16); }
+  .vp-fill { height: 100%; border-radius: inherit; background: linear-gradient(90deg, #7ad9cb, #0e8f83); transition: width .6s cubic-bezier(.2,.8,.2,1); }
+  .vp-plant { position: absolute; top: -19px; font-size: 24px; transform: translateX(-50%); transition: left .6s cubic-bezier(.2,.8,.2,1); filter: drop-shadow(0 3px 4px rgba(0,0,0,.12)); }
+  .vp-dots { display: flex; justify-content: space-between; margin-top: 8px; } .vp-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(127,127,160,.3); } .vp-dot.past { background: #0e8f83; } .vp-dot.now { background: #0e8f83; box-shadow: 0 0 0 4px rgba(14,143,131,.2); }
+  .vp-card { background: var(--card); border-radius: 28px; padding: clamp(18px, 4vw, 30px); border: 1px solid var(--line); box-shadow: 0 30px 60px -40px rgba(16,14,42,.35); animation: inR .45s cubic-bezier(.2,.8,.2,1); }
+  .vp-card.from-left { animation-name: inL; }
+  @keyframes inR { from { opacity: 0; transform: translateX(26px); } } @keyframes inL { from { opacity: 0; transform: translateX(-26px); } }
+  .vp-head { display: flex; gap: 14px; align-items: flex-start; margin-bottom: 16px; }
+  .vp-emoji { font-size: 30px; width: 54px; height: 54px; border-radius: 18px; display: grid; place-items: center; background: linear-gradient(135deg, rgba(14,143,131,.14), rgba(124,111,219,.14)); flex: 0 0 auto; }
+  .vp-count { font-size: 11.5px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+  .vp-head h2 { margin: 2px 0 4px; font: 700 clamp(19px, 3.2vw, 23px)/1.25 'Space Grotesk', sans-serif; outline: none; } .vp-hint { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.5; }
+  .vp-lbl { font-size: 11.5px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); margin: 16px 0 8px; }
+  .vp-pills { display: flex; flex-wrap: wrap; gap: 8px; }
+  .vp-pill { display: inline-flex; align-items: center; gap: 7px; border: 1.5px solid var(--line); background: transparent; color: inherit; border-radius: 999px; padding: 9px 15px; font: 700 13.5px 'Manrope', sans-serif; cursor: pointer; transition: border-color .15s, background .15s, transform .15s; }
+  .vp-pill:hover { border-color: rgba(14,143,131,.55); transform: translateY(-1px); } .vp-pill .pe { font-size: 16px; }
+  .vp-pill.on { background: rgba(14,143,131,.12); border-color: #0e8f83; color: var(--teal); }
+  .vp-pill:focus-visible, .vp-q:focus-within, .tabs button:focus-visible { outline: 2px solid #0e8f83; outline-offset: 2px; }
+  .vp-pill.pop { animation: pop .3s ease; } @keyframes pop { 50% { transform: scale(1.08); } }
+  .vp-text { width: 100%; resize: vertical; font: 500 14.5px/1.5 'Manrope', sans-serif; border-radius: 16px; box-sizing: border-box; }
+  .vp-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; } .vp-row .vp-lbl { margin: 14px 0 0; width: 100%; } .vp-row.center { justify-content: center; margin-top: 16px; }
+  .vp-date { width: auto; border-radius: 14px; }
+  .vp-meter { text-align: center; padding: 6px 0 4px; }
+  .vp-face { font-size: 64px; line-height: 1; display: inline-block; } .vp-face.wob { animation: wob .35s ease; } @keyframes wob { 30% { transform: rotate(-8deg) scale(1.08); } 70% { transform: rotate(6deg); } }
+  .vp-sevn { margin: 8px 0 12px; font-size: 15px; color: var(--muted); } .vp-sevn b { font: 700 26px 'Space Grotesk', sans-serif; color: var(--ink); }
+  .vp-meter input[type=range] { width: 100%; max-width: 520px; accent-color: #0e8f83; height: 28px; }
+  .vp-scale { display: flex; justify-content: space-between; max-width: 520px; margin: 0 auto; font-size: 12px; color: var(--muted); }
+  .vp-meds { display: grid; gap: 10px; } .vp-med { border: 1px dashed var(--line); border-radius: 18px; padding: 12px 14px; }
+  .vp-medn { margin-bottom: 8px; font-size: 14.5px; } .vp-medn small { display: block; color: var(--muted); font-size: 12.5px; margin-top: 2px; }
+  .vp-med .vp-pill { padding: 6px 12px; font-size: 12.5px; }
+  .vp-empty { padding: 14px; border-radius: 16px; background: rgba(127,127,160,.1); font-size: 14px; line-height: 1.5; }
+  .vp-qs { display: grid; gap: 8px; } .vp-q { display: flex; gap: 10px; align-items: flex-start; padding: 11px 14px; border: 1.5px solid var(--line); border-radius: 16px; cursor: pointer; font-size: 14px; line-height: 1.45; }
+  .vp-q input { margin-top: 3px; width: 17px; height: 17px; accent-color: #0e8f83; flex: 0 0 auto; } .vp-q.on { border-color: #0e8f83; background: rgba(14,143,131,.07); }
+  .vp-own { display: grid; gap: 6px; } .vp-ownq { display: flex; gap: 10px; align-items: center; padding: 9px 12px; border-radius: 14px; background: rgba(124,111,219,.1); font-size: 14px; } .vp-ownq span { flex: 1; }
+  .vp-x { border: 0; background: transparent; cursor: pointer; color: var(--muted); font-size: 14px; padding: 4px; } .vp-addq { display: flex; gap: 8px; margin-top: 8px; } .vp-addq .input { flex: 1; border-radius: 14px; min-width: 0; }
+  .vp-nav { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 14px; }
+  .vp-saved { font-size: 12.5px; color: var(--muted); } .vp-next { min-width: 130px; }
+  .vp-skip { display: block; margin: 10px auto 0; border: 0; background: none; color: var(--muted); font: 600 13px 'Manrope', sans-serif; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+  .vp-hello { text-align: center; padding: 8px 4px; } .vp-hello h2 { font: 700 clamp(21px, 3.6vw, 27px)/1.25 'Space Grotesk', sans-serif; margin: 6px 0; }
+  .vp-hello p { max-width: 540px; margin: 8px auto; color: var(--muted); line-height: 1.6; font-size: 14.5px; } .vp-hello p.vp-when { font-weight: 800; color: var(--teal); }
+  .vp-sun { font-size: 52px; animation: breathe 5s ease-in-out infinite; display: inline-block; } .vp-sun.big { font-size: 66px; } @keyframes breathe { 50% { transform: scale(1.08) translateY(-3px); } }
+  .vp-known { margin: 16px auto 4px; max-width: 600px; padding: 14px; border-radius: 20px; background: linear-gradient(135deg, rgba(14,143,131,.08), rgba(124,111,219,.08)); }
+  .vp-known .vp-lbl { margin-top: 0; }
+  .vp-chips { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; } .vp-chip { display: inline-flex; gap: 6px; align-items: center; padding: 5px 11px; border-radius: 999px; background: var(--card); font-size: 12.5px; font-weight: 700; }
+  .vp-hello p.vp-soft { font-size: 13px; }
+  .toolbar { display: flex; gap: 8px; flex-wrap: wrap; margin: 0 0 14px; }
+
+  /* the doctor's page */
+  .paper { background: #fff; color: #16142e; border-radius: 18px; padding: clamp(18px, 4vw, 34px); box-shadow: 0 30px 60px -38px rgba(16,14,42,.45); border-top: 5px solid #0e8f83; }
+  .paper header { margin-bottom: 8px; } .ph-t { font: 700 21px 'Space Grotesk', sans-serif; } .ph-who { font-weight: 800; margin-top: 2px; } .ph-meta { color: #5d5a75; font-size: 12.5px; margin-top: 2px; }
+  .paper section { margin-top: 14px; } .paper h3 { margin: 0 0 4px; font-size: 13.5px; color: #0e8f83; font-family: 'Manrope', sans-serif; font-weight: 800; }
+  .paper p { margin: 3px 0; font-size: 14px; line-height: 1.55; } .paper ol { margin: 4px 0; padding-left: 20px; font-size: 14px; line-height: 1.6; }
+  .paper table { width: 100%; border-collapse: collapse; font-size: 13.5px; margin: 4px 0; } .paper th { text-align: left; color: #5d5a75; font-size: 11.5px; text-transform: uppercase; letter-spacing: .04em; padding: 5px 6px; border-bottom: 1px solid #d9d6e6; }
+  .paper td { padding: 6px; border-bottom: 1px solid #ecebf3; vertical-align: top; } .paper .mut { color: #5d5a75; font-size: 12.5px; }
+  .ph-red { color: #c0392b; font-weight: 700; } .ph-flag { color: #b86f10; font-weight: 800; font-size: 11px; text-transform: uppercase; }
+  .ph-nudge { margin: 10px 0; padding: 12px 14px; border-radius: 14px; background: #eef9f7; font-size: 14px; } .linkish { border: 0; background: none; color: #0e8f83; font: inherit; font-weight: 800; cursor: pointer; text-decoration: underline; padding: 0; }
+  .paper footer { margin-top: 16px; padding-top: 10px; border-top: 1px dashed #d9d6e6; color: #5d5a75; font-size: 12px; }
+  .table-scroll { overflow-x: auto; }
+
+  /* bring & share */
+  .ck { list-style: none; padding: 0; margin: 0; font-size: 14px; } .ck li { padding: 6px 0; display: flex; gap: 10px; } .ck li::before { content: "☑️"; }
   .scopes { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 8px; margin: 8px 0 12px; }
   .scope { display: flex; gap: 10px; align-items: flex-start; border: 1.5px solid var(--line); border-radius: 14px; padding: 9px 12px; cursor: pointer; font-size: 13.5px; font-weight: 700; }
   .scope input { margin-top: 3px; accent-color: #0e8f83; } .scope.on { border-color: #0e8f83; background: rgba(14,143,131,.08); }
   .shared { display: flex; gap: 22px; flex-wrap: wrap; margin-top: 16px; padding-top: 16px; border-top: 1px dashed var(--line); } .shared .grow { flex: 1 1 300px; }
   .qrbox { background: #fff; padding: 8px; border-radius: 14px; border: 1px solid var(--line); align-self: flex-start; min-width: 226px; min-height: 226px; }
   .pin { font: 800 34px 'Space Grotesk', sans-serif; letter-spacing: .22em; padding: 12px 16px; border-radius: 14px; background: rgba(14,143,131,.1); display: inline-block; }
-  .bar { display: flex; gap: 10px; flex-wrap: wrap; margin: 4px 0 14px; }
+  @media (max-width: 560px) { .vp-nav { position: sticky; bottom: 0; background: color-mix(in srgb, var(--sand) 92%, transparent); padding: 10px 2px; backdrop-filter: blur(6px); } .vp-card { border-radius: 22px; } .paper { border-radius: 14px; } .paper table { font-size: 12.5px; } }
+  @media (prefers-reduced-motion: reduce) { body::before, body::after, .vp-sun, .vp-card, .vp-pill.pop, .vp-face.wob { animation: none !important; } .vp-fill, .vp-plant { transition: none; } }
   @media print {
-    .topbar, .bar, .page-eyebrow, #qc-verify-banner, .no-print { display: none !important; }
-    body { background: #fff !important; color: #000 !important; } .card, .hero { box-shadow: none !important; border: 1px solid #bbb !important; background: #fff !important; break-inside: avoid; }
-    .shell { max-width: 100%; padding: 0; } a { color: #000; text-decoration: none; }
+    body::before, body::after, .topbar, .tabs, .toolbar, .hero-v, .page-eyebrow, .page-title, .page-sub, #qc-verify-banner, .no-print, #pane-prep, #pane-bring { display: none !important; }
+    body { background: #fff !important; } .shell { max-width: 100%; padding: 0; } #pane-summary { display: block !important; } .paper { box-shadow: none; border-radius: 0; padding: 0; }
   }
 </style>
 <script src="../assets/qc-csp.js?v=77f89cc2"></script>
@@ -68,18 +132,30 @@
   </div>
 
   <div class="shell">
-    <span class="page-eyebrow">Visit prep</span>
-    <h1 class="page-title">Walk into your appointment prepared</h1>
-    <p class="page-sub">Your readings, symptom checks, documents and questions for the next visit, on one page you can print or show on your phone.</p>
-    <div class="bar">
-      <button class="btn btn-primary" id="print" type="button">🖨️ Print or save as PDF</button>
-      <button class="btn" id="copy" type="button">📋 Copy as text</button>
-      <a class="btn" href="../calendar/?new=1&amp;type=doctor">📅 Add a visit</a>
+    <span class="page-eyebrow">Prepare for your visit</span>
+    <h1 class="page-title">Walk in calm, walk out clear</h1>
+    <p class="page-sub">A few gentle questions turn into a one-page summary your doctor can read in under a minute. We fill in what we already know.</p>
+    <div class="hero-v" id="hero"><div class="hv-ic" aria-hidden="true">🌤️</div><div><div class="hv-t">Getting things ready…</div></div></div>
+    <div class="tabs" role="tablist" aria-label="Visit preparation">
+      <button type="button" role="tab" class="on" aria-selected="true" data-tab="prep">🌱 Prepare with me</button>
+      <button type="button" role="tab" aria-selected="false" data-tab="summary">📋 Doctor summary</button>
+      <button type="button" role="tab" aria-selected="false" data-tab="bring">🎒 Bring &amp; share</button>
     </div>
-    <div id="out"><div class="card"><p class="sub">Putting your page together...</p></div></div>
+    <div id="pane-prep" role="tabpanel"><div id="vp"><div class="vp-card"><p class="sub">Putting your page together…</p></div></div></div>
+    <div id="pane-summary" role="tabpanel" hidden>
+      <div class="toolbar">
+        <button class="btn btn-primary" id="dl" type="button">⬇ Download PDF</button>
+        <button class="btn" id="print" type="button">🖨️ Print</button>
+        <button class="btn" id="copy" type="button">📋 Copy as text</button>
+        <button class="btn" type="button" data-tab="prep">✏️ Edit my answers</button>
+        <button class="btn" id="restart" type="button">↺ Start again</button>
+      </div>
+      <div id="sum"></div>
+    </div>
+    <div id="pane-bring" role="tabpanel" hidden></div>
   </div>
-  <script src="../assets/qc-app.js?v=22a3a990"></script>
+  <script src="../assets/qc-app.js?v=f264e7e4"></script>
   <script src="../assets/qc-page.js?v=c34c97a9"></script>
-  <script src="../assets/js/visit.js?v=de20b34d"></script>
+  <script src="../assets/js/visit.js?v=73cfea1f"></script>
 </body>
 </html>
