@@ -1239,3 +1239,8 @@ html[data-theme="dark"] .dr-path, html[data-theme="dark"] .dr-card, html[data-th
 .gi-t { width: 100%; border-collapse: collapse; margin: 10px 0; } .gi-t th, .gi-t td { border: 1px solid #999; padding: 4px 6px; text-align: right; } .gi-t th:nth-child(2), .gi-t td:nth-child(2) { text-align: left; }
 .gi-sum { margin-left: auto; border-collapse: collapse; min-width: 260px; } .gi-sum td { padding: 3px 8px; text-align: right; } .gi-sum .gi-tot td { font-weight: 800; border-top: 2px solid #222; }
 .gi-words { font-weight: 700; margin-top: 10px; } .gi-sign { text-align: right; margin-top: 30px; }
+
+/* offline */
+.offline-banner { position: sticky; top: 0; z-index: 30; margin: 0 0 12px; padding: 10px 16px; border-radius: 14px; background: #3b2a06; color: #ffe6b0; font: 600 13.5px/1.5 var(--body, inherit); box-shadow: 0 10px 24px -14px rgba(0,0,0,.6); }
+.offline-banner.back { background: #0b4f48; color: #d6fff7; } .offline-banner b { color: #fff; }
+.ob-fail { margin-top: 6px; padding-top: 6px; border-top: 1px solid rgba(255,255,255,.15); } .ob-fail .link { color: #fff; }

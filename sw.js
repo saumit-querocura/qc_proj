@@ -4,7 +4,8 @@
  *     Scripts and styles are only kept when their URL carries a content hash (?v=...): a changed file gets a new URL, so a
  *     release is picked up on the next page load. They are also re-checked in the background, so even a file whose hash
  *     was forgotten is fresh on the visit after.
- * Pages and API calls are NEVER cached here, so signed-in content always comes straight from the network. */
+ * API calls are NEVER cached here, so signed-in content always comes straight from the network.  The one page kept is the
+ * hospital portal's empty shell (no patient data in it), so the desk can open the portal while the internet is down. */
 const CACHE = "qc-static-v2";
 const STATIC_HOSTS = ["fonts.gstatic.com"];
 
@@ -19,11 +20,27 @@ self.addEventListener("activate", event => {
 });
 
 /* ---------- caching of static media ---------- */
+const SHELL = "qc-shell-v1";
+const SHELL_PAGES = ["/hospital/", "/hospital/index.html"];        // the portal's empty page: no patient data in it
 self.addEventListener("fetch", event => {
   const req = event.request;
   if (req.method !== "GET") return;
   const url = new URL(req.url);
   const sameOrigin = url.origin === self.location.origin;
+  if (sameOrigin && req.mode === "navigate" && SHELL_PAGES.includes(url.pathname)) {
+    // network first, so a release is picked up at once; the last copy when the internet is down
+    event.respondWith((async () => {
+      const cache = await caches.open(SHELL);
+      try {
+        const res = await fetch(req);
+        if (res && res.ok) cache.put("/hospital/", res.clone());
+        return res;
+      } catch (e) {
+        return (await cache.match("/hospital/")) || Response.error();
+      }
+    })());
+    return;
+  }
   const isMedia = sameOrigin && /\.(?:png|jpe?g|webp|svg|ico|woff2?)$/i.test(url.pathname) && (url.pathname.startsWith("/assets/") || url.pathname.startsWith("/icons/"));
   const isVersionedCode = sameOrigin && /\.(?:js|css)$/i.test(url.pathname) && /^[0-9a-f]{6,}$/.test(url.searchParams.get("v") || "");
   if (isVersionedCode) {

@@ -152,7 +152,7 @@
       api("/hospital/ops/encounters/" + encodeURIComponent(x.id) + "/obs", { method: "POST", body: body }).then(function (r) {
         if (H().guard(r)) return;
         if (!r.ok) { H().say(el("ob-msg"), r.message, "err"); return; }
-        toast(r.message, r.item.news2.score >= 5 ? "err" : "");
+        toast(r.message, r.item && r.item.news2.score >= 5 ? "err" : "");
         b.oninput = b.onchange = null;
         reopen();
       });

@@ -223,6 +223,7 @@
         api("/hospital/ops/encounters", { method: "POST", body: body }).then(function (r) {
           if (H().guard(r)) return;
           if (!r.ok) { H().say(el("ci-msg"), r.message, "err"); return; }
+          if (r.queued) { H().say(el("ci-msg"), r.message + " Note the patient on paper for now; their token is given when it is sent.", "ok"); return; }
           b.innerHTML = '<div class="ops-token-big"><small>Token</small><b>' + (r.item.token || "–") + "</b><span>" + esc(deptName(body.dept_id)) + '</span></div><p class="sub" style="text-align:center">Tell the patient their number. They can also follow their place in the queue in their QueroCura app.</p><div style="text-align:center"><button class="btn btn-primary" type="button" id="ci-done">Done</button> <button class="btn" type="button" id="ci-more">Check in another</button></div>';
           el("ci-done").onclick = function () { closeModal(); if (S.tab === "queue") loadQueue(true); };
           el("ci-more").onclick = function () { checkIn(); };
@@ -444,7 +445,7 @@
       el("da-form").onsubmit = function (e) {
         e.preventDefault();
         api("/hospital/ops/encounters", { method: "POST", body: { grant_id: el("da-p").value, kind: kind, dept_id: el("da-d").value, bed_id: el("da-b").value, reason: el("da-r").value } }).then(function (r) {
-          if (r.ok) { toast(r.message); openVisit(r.item.id); refresh(); } else H().say(el("da-msg"), r.message, "err");
+          if (r.ok && r.item) { toast(r.message); openVisit(r.item.id); refresh(); } else H().say(el("da-msg"), r.message, "err");
         });
       };
       void b;

@@ -422,6 +422,7 @@
     function act(body, after) {
       api("/hospital/billing/" + encodeURIComponent(x.id), { method: "POST", body: body }).then(function (r) {
         if (H().guard(r)) return;
+        if (r.queued) { toast(r.message); M().close(2); return; }
         if (!r.ok) return say(el("bl-msg"), r.message, "err");
         toast(r.message);
         renderBill(r.item);

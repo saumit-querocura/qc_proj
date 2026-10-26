@@ -3,11 +3,11 @@
   var P = QCPage, esc = P.esc;
   var MEMO = {}, MEMO_MS = 4000;
   function api(path, opts) {
-    var m = ((opts && opts.method) || "GET").toUpperCase();
-    if (m !== "GET") { MEMO = {}; return P.api(path, opts); }
+    var m = ((opts && opts.method) || "GET").toUpperCase(), O = window.QCOffline;
+    if (m !== "GET") { MEMO = {}; return O && m === "POST" ? O.post(path, opts) : P.api(path, opts); }
     var hit = MEMO[path], now = Date.now();
     if (hit && now - hit.t < MEMO_MS) return hit.p.then(function (r) { return JSON.parse(JSON.stringify(r)); });
-    var p = P.api(path, opts).then(function (r) { if (!r || !r.ok) delete MEMO[path]; return r; });
+    var p = (O ? O.get(path, P.api(path, opts)) : P.api(path, opts)).then(function (r) { if (!r || !r.ok || r.offline) delete MEMO[path]; return r; });
     MEMO[path] = { t: now, p: p };
     if (Object.keys(MEMO).length > 120) MEMO = {};
     return p.then(function (r) { return JSON.parse(JSON.stringify(r)); });
@@ -138,12 +138,25 @@
     return api("/hospital/me").then(function (r) {
       if (!r.ok) { goPublic(); return; }
       ME = r; PERMS = r.perms || []; IDLE_MS = (r.idle_seconds || 1200) * 1000; lastActive = Date.now();
+      if (window.QCOffline) window.QCOffline.setUser(r.staff.id);
       show(el("public"), false); show(el("portal"), true); show(el("pub-nav"), false); show(el("app-nav"), true);
       el("who").textContent = r.staff.name + " · " + r.staff.roles.map(function (k) { return (r.role_labels || {})[k] || k; }).join(", ");
       if (location.hash === "#setup") { tabNow = "setup"; try { history.replaceState(null, "", location.pathname); } catch (e) {} }
       render();
     });
   }
+  /* ---------- offline banner ---------- */
+  if (window.QCOffline) window.QCOffline.onChange(function (st) {
+    var b = el("offline-banner"); if (!b) return;
+    if (st.online && !st.queued && !st.failed.length) { b.hidden = true; return; }
+    b.hidden = false;
+    b.className = "offline-banner" + (st.online ? " back" : "");
+    b.innerHTML = (st.online ? (st.queued ? "<b>Back online.</b> Sending " + st.queued + " saved step" + (st.queued === 1 ? "" : "s") + "…" : "")
+      : "<b>You’re offline.</b> Screens show what you last saw. Check-ins, arrivals, cash payments and vital signs are saved here and sent when you’re back" + (st.queued ? " (" + st.queued + " waiting)" : "") + ". Registering new patients needs a connection.") +
+      st.failed.map(function (f) { return '<div class="ob-fail">' + esc(f.label) + " couldn’t be sent: " + esc(f.message || "") + ' <button type="button" class="link" data-ob-drop="' + esc(f.id) + '">Dismiss</button></div>'; }).join("");
+  });
+  document.addEventListener("click", function (e) { var d = e.target.closest("[data-ob-drop]"); if (d && window.QCOffline) window.QCOffline.discard(d.getAttribute("data-ob-drop")); });
+
   function goPublic(message) {
     ME = null; PERMS = [];
     show(el("public"), true); show(el("portal"), false); show(el("pub-nav"), true); show(el("app-nav"), false);
@@ -151,6 +164,9 @@
   }
 
   el("signout").addEventListener("click", function () {
+    var st = window.QCOffline ? window.QCOffline.state() : { queued: 0 };
+    if (st.queued && !window.confirm(st.queued + " step" + (st.queued === 1 ? " was" : "s were") + " saved while offline and not sent yet. Sign out anyway and lose " + (st.queued === 1 ? "it" : "them") + "?")) return;
+    if (window.QCOffline) window.QCOffline.clear();
     api("/hospital/logout", { method: "POST" }).then(function () { goPublic(); location.hash = "#signin"; });
   });
 
