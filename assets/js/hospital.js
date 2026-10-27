@@ -23,6 +23,28 @@
   }
   function initials(name) { return (name || "?").trim().split(/\s+/).slice(0, 2).map(function (w) { return w[0].toUpperCase(); }).join(""); }
 
+  var SITE = "", SITES = [];
+  /* several sites (branches): which one this person is looking at; "" means all of them */
+  function loadSites() {
+    return api("/hospital/sites").then(function (r) {
+      SITES = (r && r.ok ? r.items : []).filter(function (x) { return x.active; });
+      if (SITE && !SITES.some(function (x) { return x.id === SITE; })) SITE = "";
+      drawSitePicker();
+    });
+  }
+  function drawSitePicker() {
+    var box = el("site-pick"); if (!box) return;
+    if (SITES.length < 2) { box.innerHTML = ""; box.hidden = true; return; }
+    box.hidden = false;
+    box.innerHTML = '<label for="site-sel" class="sr-only">Site</label><span aria-hidden="true">🏥</span><select id="site-sel" class="input input-sm"><option value="">All sites</option>' +
+      SITES.map(function (x) { return '<option value="' + esc(x.id) + '"' + (x.id === SITE ? " selected" : "") + ">" + esc(x.name) + (x.code ? " (" + esc(x.code) + ")" : "") + "</option>"; }).join("") + "</select>";
+    el("site-sel").onchange = function () {
+      SITE = this.value;
+      api("/hospital/custom/prefs", { method: "POST", body: { site: SITE } });
+      if (ME && ME.custom) ME.custom.prefs.site = SITE;
+      switchTab(tabNow);
+    };
+  }
   var OPTS = null, ME = null, PERMS = [], IDLE_MS = 20 * 60 * 1000, lastActive = Date.now(), tabNow = "overview", FILTER = "active", ROSTER = [], SIGNALS = {}, QUERY = "", SORT = "attention";
   function can(p) { return PERMS.indexOf(p) >= 0; }
 
@@ -148,6 +170,8 @@
       }
       enterPortal.done = true;
       if (window.QCCustom) window.QCCustom.apply(r.custom);
+      SITE = ((r.custom || {}).prefs || {}).site || "";
+      loadSites();
       relabel(r.custom);
       render();
     });
@@ -798,6 +822,8 @@
     me: function () { return ME; }, opts: function () { return OPTS; }, roster: function () { return ROSTER; },
     loadRoster: function () { return api("/hospital/roster").then(function (r) { if (r && r.ok) ROSTER = r.items; return ROSTER; }); },
     openChart: openChart, openRecord: openRecord, go: function (t) { tabNow = t; render(); },
+    site: function () { return SITE; }, sites: function () { return SITES; }, reloadSites: loadSites,
+    siteQ: function (sep) { return SITE ? (sep || "?") + "site=" + encodeURIComponent(SITE) : ""; },
     term: function (k, d) { return window.QCCustom ? window.QCCustom.term(k, d) : (d || k); },
     refreshMe: function () { return api("/hospital/me").then(function (r) { if (r.ok) { ME = r; if (window.QCCustom) window.QCCustom.apply(r.custom); relabel(r.custom); render(); } }); },
   };

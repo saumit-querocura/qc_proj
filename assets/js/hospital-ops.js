@@ -29,7 +29,9 @@
     if (S.structure && !force) return Promise.resolve(S.structure);
     return api("/hospital/ops/structure").then(function (r) { if (r && r.ok) S.structure = r; return S.structure; });
   }
-  function depts(kinds) { return ((S.structure && S.structure.departments) || []).filter(function (d) { return d.active && (!kinds || kinds.indexOf(d.kind) >= 0); }); }
+  function site() { return H().site ? H().site() : ""; }
+  function depts(kinds) { return ((S.structure && S.structure.departments) || []).filter(function (d) { return d.active && (!kinds || kinds.indexOf(d.kind) >= 0) && (!site() || d.site_id === site()); }); }
+  function siteWards(st) { return (st.wards || []).filter(function (w) { return !site() || w.site_id === site(); }); }
   function doctors() { return ((S.structure && S.structure.team) || []).filter(function (t) { return t.roles.indexOf("doctor") >= 0 && t.status === "active"; }); }
   function deptName(id) { var d = ((S.structure && S.structure.departments) || []).filter(function (x) { return x.id === id; })[0]; return d ? d.name : ""; }
 
@@ -55,7 +57,7 @@
   function board(box) {
     if (!box) return;
     if (!canAny("ops", "read", "structure")) { box.innerHTML = ""; return; }
-    api("/hospital/ops/board").then(function (r) {
+    api("/hospital/ops/board" + H().siteQ("?")).then(function (r) {
       if (!r || !r.ok) { box.innerHTML = ""; return; }
       if (!r.configured) {
         box.innerHTML = can("structure") ? '<div class="ops-callout"><span>🏗️</span><div><b>Run your whole hospital here.</b> Add departments, wards and beds to switch on the OPD queue, the bed board, orders between departments and shift handover.</div><button class="btn btn-primary btn-sm" type="button" data-goto="setup">Set up in one click →</button></div>' : "";
@@ -112,7 +114,8 @@
       if (!st || !depts(["clinical", "emergency"]).length) return unconfigured(box, "The queue");
       if (S.dept && !depts().some(function (d) { return d.id === S.dept; })) S.dept = "";
       if (!S.dept && !quiet && st.my_departments && st.my_departments.length && !S.deptChosen) S.dept = st.my_departments.filter(function (d) { return depts(["clinical", "emergency"]).some(function (x) { return x.id === d; }); })[0] || "";
-      api("/hospital/ops/queue" + (S.dept ? "?dept=" + encodeURIComponent(S.dept) : "")).then(function (r) {
+      if (S.dept && !depts().some(function (d) { return d.id === S.dept; })) S.dept = "";       // a department of another site
+      api("/hospital/ops/queue" + (S.dept ? "?dept=" + encodeURIComponent(S.dept) : "?") + H().siteQ("&")).then(function (r) {
         if (H().guard(r)) return;
         if (!r.ok) { box.innerHTML = '<div class="notice bad">' + esc(r.message) + "</div>"; return; }
         drawQueue(box, r);
@@ -370,13 +373,13 @@
   function loadBeds(quiet) {
     var box = el("tab-beds");
     if (!quiet) box.innerHTML = '<div class="empty">Loading beds…</div>';
-    Promise.all([loadStructure(true), api("/hospital/ops/inpatients")]).then(function (res) {
+    Promise.all([loadStructure(true), api("/hospital/ops/inpatients" + H().siteQ("?"))]).then(function (res) {
       var st = res[0], ip = res[1];
       if (!st || !st.wards.length) return unconfigured(box, "The bed board");
       if (H().guard(ip)) return;
       var byEnc = {};
       (ip.items || []).forEach(function (p) { byEnc[p.id] = p; });
-      var wards = st.wards.filter(function (w) { return w.active; });
+      var wards = siteWards(st).filter(function (w) { return w.active; });
       var tot = 0, occ = 0, free = 0, cleaning = 0;
       wards.forEach(function (w) { w.beds.forEach(function (b) { if (b.status !== "blocked") tot++; if (b.status === "occupied") occ++; if (b.status === "free") free++; if (b.status === "cleaning") cleaning++; }); });
       var h = '<div class="ops-bar"><div class="chips"><button type="button" class="chipbtn' + (S.bedView === "grid" ? " on" : "") + '" data-view="grid">🛏️ Bed board</button><button type="button" class="chipbtn' + (S.bedView === "list" ? " on" : "") + '" data-view="list">📋 Inpatient list (' + (ip.items || []).length + ")</button></div>" +
@@ -568,7 +571,7 @@
       if (!st || !st.wards.length) return unconfigured(box, "Handover");
       var pts = (ip.items || []).filter(function (p) { return p.access_active && (!S.ward || p.ward_id === S.ward); });
       var items = r.items || [];
-      var h = '<div class="ops-bar"><div class="chips"><button type="button" class="chipbtn' + (!S.ward ? " on" : "") + '" data-ward="">All wards</button>' + st.wards.filter(function (w) { return w.active; }).map(function (w) { return '<button type="button" class="chipbtn' + (S.ward === w.id ? " on" : "") + '" data-ward="' + esc(w.id) + '">' + esc(w.name) + "</button>"; }).join("") + "</div>" +
+      var h = '<div class="ops-bar"><div class="chips"><button type="button" class="chipbtn' + (!S.ward ? " on" : "") + '" data-ward="">All wards</button>' + siteWards(st).filter(function (w) { return w.active; }).map(function (w) { return '<button type="button" class="chipbtn' + (S.ward === w.id ? " on" : "") + '" data-ward="' + esc(w.id) + '">' + esc(w.name) + "</button>"; }).join("") + "</div>" +
         '<div class="ops-bar-r"><span class="ops-stat' + (items.some(function (x) { return !x.ack_ts; }) ? " warn" : "") + '"><b>' + items.filter(function (x) { return !x.ack_ts; }).length + "</b> to acknowledge</span></div></div>";
       h += '<div class="hand-grid">';
       if (can("handover")) h += '<div class="card"><h2>Write a handover</h2><p class="sub">SBAR keeps it short and complete. The next shift acknowledges it.</p><form id="ho-form" novalidate><div class="field"><label for="ho-p">About</label><select class="input" id="ho-p"><option value="">The whole ward' + (S.ward ? "" : " (choose a ward above)") + "</option>" +

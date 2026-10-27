@@ -1307,3 +1307,16 @@ html[data-theme="dark"] .dr-path, html[data-theme="dark"] .dr-card, html[data-th
 /* printed letterhead */
 .ph-head { border-bottom-color: var(--ph, #0e8f83) !important; } .ph-head .ph-img { max-height: 54px; max-width: 170px; object-fit: contain; margin-right: 14px; }
 .ph-head .grow span { display: block; } .ph-foot { position: fixed; bottom: 6mm; left: 0; right: 0; text-align: center; font-size: 10px; color: #555; }
+.img-asg { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; width: 100%; padding-top: 6px; border-top: 1px dashed var(--line); } .img-asg label { font-weight: 700; }
+
+/* sites */
+.hp-head-r { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
+.site-pick { display: flex; align-items: center; gap: 6px; } .site-pick select { min-width: 180px; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.cu-sitelist { display: grid; gap: 6px; margin-bottom: 12px; }
+.cu-site { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 14px; } .cu-site.off { opacity: .55; }
+.cu-site small { display: block; color: var(--muted); margin-top: 2px; }
+.cu-sitemap { margin-top: 12px; } .cu-sitemap summary { cursor: pointer; font-weight: 800; }
+.cu-place { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 8px; margin-top: 10px; }
+.cu-place label { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 6px 10px; border: 1px solid var(--line); border-radius: 12px; font-size: 13.5px; font-weight: 700; }
+.cu-who { overflow-x: auto; margin-top: 10px; } .cu-who td, .cu-who th { text-align: center; } .cu-who td:first-child, .cu-who th:first-child { text-align: left; }

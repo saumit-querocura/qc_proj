@@ -122,11 +122,64 @@
         Object.keys(r.target_info).map(function (k) { var i = r.target_info[k], hour = k === "discharge_by_hour";
           return '<div class="cu-target"><label for="cu-tg-' + k + '">' + esc(i.label) + '</label><div class="cu-tg-in"><input class="input" type="number" id="cu-tg-' + k + '" data-target="' + k + '" min="' + i.min + '" max="' + i.max + '" value="' + r.targets[k] + '"><span>' + (hour ? ":00" : "min") + "</span></div><small>" + (hour ? "" : esc(human(r.targets[k]))) + "</small></div>"; }).join("") +
         '</div><button class="btn btn-primary" type="button" id="cu-save-targets">Save targets</button></div>';
+      h += '<div class="card cu-card cu-wide" id="cu-sites"><h3>🏥 Sites</h3><div class="empty">Loading…</div></div>';
       h += "</div>";
     }
     box.innerHTML = h;
-    if (admin) drawFields(r.fields);
+    if (admin) { drawFields(r.fields); loadSitesCard(); }
     wire(box, r);
+  }
+  /* sites: a hospital group's branches, which departments are where, and who works where */
+  function loadSitesCard() {
+    Promise.all([api("/hospital/sites"), api("/hospital/ops/structure")]).then(function (res) {
+      var sr = res[0], st = res[1], box = el("cu-sites"); if (!box || !sr.ok) return;
+      var sites = sr.items, team = (st.team || []).filter(function (t) { return t.status === "active"; });
+      var h = '<h3>🏥 Sites</h3><p class="sub">' + (sites.length ? "Each department and ward belongs to a site. Patients keep one record across all of them; the queue, beds and board can show one site at a time (pick it at the top of the page)." :
+        "One building? You don't need this. If you run branches or a separate centre, name your main site first: your existing departments, wards and team join it. Then add the others.") + "</p>";
+      h += sites.length ? '<div class="cu-sitelist">' + sites.map(function (x) {
+        return '<div class="cu-site' + (x.active ? "" : " off") + '"><div class="grow"><b>' + esc(x.name) + "</b>" + (x.code ? ' <span class="pill">' + esc(x.code) + "</span>" : "") + (x.main ? ' <span class="pill ok">Main</span>' : "") +
+          '<small>' + esc([x.city, x.departments + " departments", x.beds + " beds", x.staff + " people"].filter(Boolean).join(" · ")) + "</small></div>" +
+          '<button type="button" class="btn btn-sm btn-ghost" data-site-edit="' + esc(x.id) + '">Edit</button></div>';
+      }).join("") + "</div>" : "";
+      h += '<form class="cu-siteform" id="cu-siteform" novalidate><input type="hidden" id="cs-id"><div class="grid3"><div class="field"><label for="cs-name">' + (sites.length ? "Site name" : "Your main site") + '</label><input class="input" id="cs-name" maxlength="80" placeholder="e.g. Main campus, Hinjewadi branch"></div>' +
+        '<div class="field"><label for="cs-code">Short code</label><input class="input" id="cs-code" maxlength="6" placeholder="e.g. HJW"></div><div class="field"><label for="cs-city">City</label><input class="input" id="cs-city" maxlength="60"></div></div>' +
+        '<div class="row"><label class="check" id="cs-mainw" hidden><input type="checkbox" id="cs-main"> Make this the main site</label><label class="check" id="cs-activew" hidden><input type="checkbox" id="cs-active" checked> Open</label><span class="grow"></span>' +
+        '<button type="button" class="btn btn-ghost" id="cs-cancel" hidden>Cancel</button><button class="btn btn-primary" type="submit" id="cs-save">' + (sites.length ? "Add site" : "Name the main site") + "</button></div></form>";
+      if (sites.length > 1) {
+        h += '<details class="cu-sitemap"><summary>Departments by site</summary><div class="cu-place">' + st.departments.filter(function (d) { return d.active; }).map(function (d) {
+          return '<label><span>' + esc(d.name) + '</span><select class="input input-sm" data-place-dept="' + esc(d.id) + '">' + sites.map(function (x) { return '<option value="' + esc(x.id) + '"' + (x.id === d.site_id ? " selected" : "") + ">" + esc(x.name) + "</option>"; }).join("") + "</select></label>";
+        }).join("") + '</div><p class="mini">A department’s wards move with it.</p></details>';
+        h += '<details class="cu-sitemap"><summary>Who works where</summary><div class="cu-who"><table class="t"><thead><tr><th>Person</th>' + sites.map(function (x) { return "<th>" + esc(x.code || x.name) + "</th>"; }).join("") + "</tr></thead><tbody>" +
+          team.map(function (t) { return "<tr><td>" + esc(t.name) + "</td>" + sites.map(function (x) { var on = ((sr.staff_sites || {})[t.id] || []).indexOf(x.id) >= 0; return '<td><input type="checkbox" aria-label="' + esc(t.name + " at " + x.name) + '" data-works="' + esc(t.id) + '" value="' + esc(x.id) + '"' + (on ? " checked" : "") + "></td>"; }).join("") + "</tr>"; }).join("") +
+          '</tbody></table></div><p class="mini">Ticks save straight away.</p></details>';
+      }
+      box.innerHTML = h;
+      var form = el("cu-siteform");
+      form.onsubmit = function (e) {
+        e.preventDefault();
+        var body = { id: el("cs-id").value, name: el("cs-name").value.trim(), code: el("cs-code").value.trim(), city: el("cs-city").value.trim() };
+        if (body.id) { body.main = el("cs-main").checked; body.active = el("cs-active").checked; }
+        api("/hospital/sites", { method: "POST", body: body }).then(function (x) { toast(x.message, x.ok ? "" : "err"); if (x.ok) { loadSitesCard(); H().reloadSites(); } });
+      };
+      el("cs-cancel").onclick = function () { loadSitesCard(); };
+      box.onclick = function (e) {
+        var t = e.target.closest("[data-site-edit]"); if (!t) return;
+        var x = sites.filter(function (y) { return y.id === t.getAttribute("data-site-edit"); })[0];
+        el("cs-id").value = x.id; el("cs-name").value = x.name; el("cs-code").value = x.code || ""; el("cs-city").value = x.city || "";
+        el("cs-main").checked = x.main; el("cs-active").checked = x.active; el("cs-mainw").hidden = x.main; el("cs-activew").hidden = false; el("cs-cancel").hidden = false;
+        el("cs-save").textContent = "Save site"; el("cs-name").focus();
+      };
+      box.onchange = function (e) {
+        var p = e.target.closest("[data-place-dept]");
+        if (p) return api("/hospital/sites/place", { method: "POST", body: { kind: "department", id: p.getAttribute("data-place-dept"), site_id: p.value } }).then(function (x) { toast(x.ok ? "Moved." : x.message, x.ok ? "" : "err"); });
+        var w = e.target.closest("[data-works]");
+        if (w) {
+          var sid = w.getAttribute("data-works");
+          var ids = [].map.call(box.querySelectorAll('[data-works="' + sid + '"]:checked'), function (i) { return i.value; });
+          api("/hospital/sites/staff", { method: "POST", body: { staff_id: sid, site_ids: ids } }).then(function (x) { if (!x.ok) toast(x.message, "err"); });
+        }
+      };
+    });
   }
   function human(m) { m = +m; return m < 60 ? m + " min" : m < 1440 ? (Math.round(m / 6) / 10) + " h" : (Math.round(m / 144) / 10) + " days"; }
 

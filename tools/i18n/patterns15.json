@@ -1,0 +1,23 @@
+[
+ ["^Step (\\d+) of (\\d+)$", "चरण $1 / $2"],
+ ["^Let's get you ready for (.+)$", "चलिए, @1 की तैयारी करते हैं"],
+ ["^(.+?) \\((your child|your parent|your grandparent|your partner|your sibling|family|your friend)\\)$", "@1 ($2)"],
+ ["^(.+?) took a medicine ✓$", "@1 ने दवा ली ✓"],
+ ["^(.+?) skipped a dose$", "@1 ने एक खुराक छोड़ी"],
+ ["^(.+?) may have missed a dose$", "शायद @1 की एक खुराक छूट गई"],
+ ["^(.+?) has taken the (.+?) dose of (.+?) \\(marked by (.+?)\\)\\.$", "$1 ने $2 वाली @3 की खुराक ले ली (@4 ने दर्ज किया)।"],
+ ["^(.+?) has taken the (.+?) dose of (.+?)\\.$", "$1 ने $2 वाली @3 की खुराक ले ली।"],
+ ["^(.+?) skipped the (.+?) dose of (.+?)\\.$", "$1 ने $2 वाली @3 की खुराक छोड़ी।"],
+ ["^(.+?) hasn't marked the (.+?) dose of (.+?) yet\\.$", "$1 ने $2 वाली @3 की खुराक अभी दर्ज नहीं की।"],
+ ["^(.+?)'s medicine time$", "@1 की दवा का समय"],
+ ["^(.+?)'s medicine is waiting$", "@1 की दवा बाकी है"],
+ ["^(\\d+) min ago$", "$1 मिनट पहले"],
+ ["^(\\d+) h ago$", "$1 घंटे पहले"],
+ ["^(\\d+) new$", "$1 नई"],
+ ["^Due (.+?) · (.+)$", "समय $1 · $2"],
+ ["^Due (.+)$", "समय $1"],
+ ["^Earlier today, (.+)$", "आज पहले, $1"],
+ ["^Last doctor visit (.+?) \\((\\d+) days ago\\)$", "पिछली डॉक्टर विज़िट $1 ($2 दिन पहले)"],
+ ["^(.+?) would like to link with (.+)$", "@1 आपसे (@2) जुड़ना चाहते हैं"],
+ ["^Saved\\. (.+?) now sees only what is switched on\\.$", "सहेजा गया। @1 अब सिर्फ़ वही देखते हैं जो चालू है।"]
+]

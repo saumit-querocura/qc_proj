@@ -531,12 +531,21 @@
       if (r.ok) return openStudy(S.study.id).then(function () { if (el("img-report") && keep) el("img-report").value = keep; });
     });
   }
+  /* choose a colleague who can report, least busy first */
   function assignTo() {
+    var bar = document.querySelector(".img-wf"); if (!bar) return;
     api("/hospital/imaging/readers").then(function (r) {
       if (!r.ok || !r.items.length) { toast("No colleagues who can report imaging yet.", "err"); return; }
-      var pick = window.prompt("Assign to (type the number):\n" + r.items.map(function (p, i) { return (i + 1) + ". " + p.name + " · " + p.open + " open"; }).join("\n"), "1");
-      var p = r.items[(+pick || 0) - 1]; if (!p) return;
-      post("assign", { to: p.id });
+      var old = el("img-asg-box"); if (old) old.remove();
+      var box = document.createElement("div");
+      box.id = "img-asg-box"; box.className = "img-asg";
+      box.innerHTML = '<label for="img-asg">Assign to</label><select class="input input-sm" id="img-asg">' + r.items.map(function (p) {
+        return '<option value="' + esc(p.id) + '"' + (p.id === S.study.assigned_to ? " selected" : "") + ">" + esc(p.name) + " · " + p.open + " open" + (p.id === H().me().staff.id ? " (you)" : "") + "</option>";
+      }).join("") + '</select><button type="button" class="btn btn-sm btn-primary" id="img-asg-go">Assign</button><button type="button" class="btn btn-sm btn-ghost" id="img-asg-x">Cancel</button>';
+      bar.appendChild(box);
+      el("img-asg").focus();
+      el("img-asg-go").onclick = function () { post("assign", { to: el("img-asg").value }); };
+      el("img-asg-x").onclick = function () { box.remove(); };
     });
   }
   function recalc(fid) {
