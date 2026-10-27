@@ -103,14 +103,26 @@
   /* the on-premise engine: which models are installed, validated here, and how they're doing */
   function engineStrip(st) {
     if (!st.engine || st.mode !== "local" && st.mode !== "hybrid") return "";
-    var ms = st.engine.models || {}, perf = {};
+    var ms = st.engine.models || {}, perf = {}, cl = st.engine.clinician || {}, member = {};
     (st.engine.performance || []).forEach(function (p) { perf[p.model] = p; });
-    return '<details class="img-engine"><summary>🖥️ <b>On-premise AI</b> · runs on your own server, images never leave it · ' + Object.keys(ms).filter(function (k) { return ms[k].ready; }).length + " model(s) ready</summary>" +
-      '<div class="img-engine-list">' + Object.keys(ms).map(function (k) {
-        var m = ms[k], p = perf[k];
+    Object.keys(ms).forEach(function (k) { (ms[k].members || []).forEach(function (x) { member[x] = k; }); });
+    var tops = Object.keys(ms).filter(function (k) { return !member[k]; });
+    var warns = Object.keys(cl).filter(function (k) { return cl[k].warning; });
+    return '<details class="img-engine"' + (warns.length ? " open" : "") + '><summary>🖥️ <b>On-premise AI</b> · runs on your own server, images never leave it · ' +
+      tops.filter(function (k) { return ms[k].ready; }).length + " of " + tops.length + " readers ready" + (warns.length ? ' · <span class="pill wait">⚠ review a model</span>' : "") + "</summary>" +
+      warns.map(function (k) { return '<div class="notice wait">' + esc((ms[k] || {}).title || k) + ": " + esc(cl[k].warning) + "</div>"; }).join("") +
+      '<div class="img-engine-list">' + tops.map(function (k) {
+        var m = ms[k], p = perf[k], c = cl[k];
+        var mem = (m.members || []).map(function (x) {
+          var mm = ms[x] || {};
+          return '<li class="' + (mm.ready ? "" : "off") + '">' + (mm.ready ? "✓ " : "✕ ") + esc(mm.title || x) + ' <span class="mini">v' + esc(mm.version || "") + "</span></li>";
+        }).join("");
         return '<div class="img-engine-m' + (m.ready ? "" : " off") + '"><b>' + esc(m.title) + '</b> <span class="mini">v' + esc(m.version) + "</span>" +
-          '<div class="mini">' + (m.ready ? "✓ Ready" : "✕ Not installed") + " · " + (m.validated_here ? "✓ Validated on your cases" : "Not yet validated on your cases") + (p ? " · " + p.reads + " reads, " + p.avg_ms + " ms average" : "") + "</div>" +
-          '<div class="mini">For: ' + esc(m.intended_use || "") + "</div>" + (m.kind === "weights" ? '<div class="mini">Trained on: ' + esc(m.trained_on || "") + "<br>Licence: " + esc(m.licence || "") + "</div>" : '<div class="mini">' + esc(m.trained_on || "") + "</div>") + "</div>";
+          '<div class="mini">' + (m.ready ? "✓ Ready" : "✕ Not installed (python -m app.vision.fetch)") + " · " + (m.validated_here ? "✓ Validated on your cases" : "Not yet validated on your cases") + "</div>" +
+          (p ? '<div class="mini">' + p.reads + " reads, " + p.avg_ms + " ms average" + (p.refused ? " · " + p.refused + " refused by its safety checks" : "") + (p.errors ? " · " + p.errors + " errors" : "") + "</div>" : "") +
+          (c && c.acceptance_rate !== null && c.acceptance_rate !== undefined ? '<div class="mini">Clinicians accepted ' + Math.round(c.acceptance_rate * 100) + "% of its findings (" + (c.accepted + c.rejected) + " decisions)</div>" : "") +
+          (mem ? '<ul class="img-engine-mem">' + mem + "</ul>" : "") +
+          '<div class="mini">For: ' + esc(m.intended_use || "") + "</div>" + '<div class="mini">' + esc(m.trained_on || "") + (m.kind !== "code" ? "<br>Licence: " + esc(m.licence || "") : "") + "</div></div>";
       }).join("") + "</div></details>";
   }
 
@@ -326,16 +338,33 @@
         '<span class="img-conf" title="AI confidence"><i style="width:' + Math.round(f.confidence * 100) + '%"></i></span><small>' + Math.round(f.confidence * 100) + "%</small></div>" +
         '<div class="img-f-d">' + esc(f.description) + "</div>" + (f.location ? '<div class="mini">📍 ' + esc(f.location) + (f.image_index != null ? " · image " + (f.image_index + 1) : "") + (f.measurements ? " · " + esc(f.measurements) : "") + "</div>" : "") +
         (f.evidence ? '<div class="mini">🔎 ' + esc(f.evidence) + "</div>" : "") +
-        '<div class="img-badges">' + (f.consensus === "model" ? '<span class="ib px">◆ On-premise model</span>' : "") + (f.consensus === "both" ? '<span class="ib both">✓✓ Both readers</span>' : f.consensus === "both_revised" ? '<span class="ib both">✓✓ Both readers (revised)</span>' : f.consensus === "second_only" ? '<span class="ib one">2nd reader only</span>' : "") +
+        '<div class="img-badges">' + (f.consensus === "model" ? '<span class="ib px">◆ On-premise ' + (f.agreement === "one" ? "(one of two models)" : f.agreement === "both" ? "(both models)" : "model") + "</span>" : "") + (f.consensus === "both" ? '<span class="ib both">✓✓ Both readers</span>' : f.consensus === "both_revised" ? '<span class="ib both">✓✓ Both readers (revised)</span>' : f.consensus === "second_only" ? '<span class="ib one">2nd reader only</span>' : "") +
         (f.pixel_support ? '<span class="ib px">◐ Asymmetry map agrees</span>' : "") + (f.box_mm ? '<span class="ib mm">📏 box ≈ ' + f.box_mm[0] + " × " + f.box_mm[1] + " mm</span>" : "") +
         (f.classification ? '<span class="ib gl">📘 ' + esc(f.classification.system.toUpperCase()) + "</span>" : "") + "</div>" + (n ? '<div class="img-note ' + n.action + '">2nd reader ' + esc(n.action) + (n.reason ? ": " + esc(n.reason) : "") + "</div>" : "") +
         '<div class="img-f-a">' + (f.image_index != null ? '<button type="button" class="btn btn-sm btn-ghost" data-show="' + esc(f.id) + '">Show on image</button>' : "") +
         (signer ? '<button type="button" class="btn btn-sm' + (d === "accepted" ? " btn-primary" : "") + '" data-dec="accepted" data-id="' + esc(f.id) + '">✓ Accept</button><button type="button" class="btn btn-sm' + (d === "rejected" ? " btn-danger" : "") + '" data-dec="rejected" data-id="' + esc(f.id) + '">✕ Reject</button>' : (d ? '<span class="pill ' + (d === "accepted" ? "ok" : "bad") + '">' + esc(d) + "</span>" : "")) + "</div></div>";
     }).join("") : '<div class="mini">No findings reported.</div>') + "</div>";
+    if (eg && eg.gates) {
+      var gt = eg.gates, an = gt.anatomy || {};
+      h += '<div class="img-gates"><span class="ib both">✓ Chest-film shape (lungs ' + (Math.min(an.left_lung, an.right_lung) || 0).toFixed(2) + " vs mediastinum " + (an.centre || 0).toFixed(2) + ")</span>" +
+        '<span class="ib both">✓ Frontal view ' + Math.round(gt.frontal * 100) + "%</span>" +
+        '<span class="ib ' + (gt.ood_calibrated ? "both" : "one") + '">✓ Plausible film (' + gt.ood_error.toFixed(3) + " < " + gt.ood_threshold.toFixed(3) + (gt.ood_calibrated ? ", calibrated here" : ", provisional limit") + ")</span></div>";
+    }
+    if (eg && eg.ecg_metrics) {
+      var em = eg.ecg_metrics, pw = em.p_wave || {};
+      h += '<div class="img-sec"><div class="ops-h">ECG measurements</div><div class="img-ecgm">' + [
+        ["Rhythm", em.rhythm], ["Axis", em.axis_deg === null || em.axis_deg === undefined ? "n/a" : em.axis_deg + "°"],
+        ["QTc (Fridericia / Bazett)", em.qtc_fridericia ? em.qtc_fridericia + " / " + em.qtc_bazett + " ms" : "n/a"],
+        ["P wave", pw.state === "present" ? "present (" + pw.amplitude_mv + " mV)" : pw.state === "absent" ? "not found" : "hidden in T wave"],
+        ["Ectopic beats", em.ectopic_beats], ["Longest RR", em.longest_rr_s + " s"],
+        ["Usable leads", em.good_leads + " of " + em.leads], ["Beat detectors agree", Math.round(em.detector_agreement * 100) + "%"]
+      ].map(function (r) { return "<div><span>" + esc(r[0]) + "</span><b>" + esc(String(r[1])) + "</b></div>"; }).join("") + "</div></div>";
+    }
     if (eg && eg.scores) {
       var top = Object.keys(eg.scores).map(function (k) { return [k, eg.scores[k]]; }).sort(function (a, b) { return b[1] - a[1]; }).slice(0, 8);
+      var sd = eg.score_detail || {};
       h += '<details class="img-sec"><summary class="ops-h">Model scores (0.50 = its operating point)</summary><div class="img-scores">' + top.map(function (t) {
-        return '<div class="img-score' + (t[1] >= 0.5 ? " on" : t[1] >= 0.4 ? " mid" : "") + '"><span>' + esc(t[0].replace(/_/g, " ")) + '</span><i><b style="width:' + Math.round(t[1] * 100) + '%"></b><em style="left:50%"></em></i><small>' + t[1].toFixed(2) + "</small></div>";
+        return '<div class="img-score' + (t[1] >= 0.5 ? " on" : t[1] >= 0.4 ? " mid" : "") + '"><span>' + esc(t[0].replace(/_/g, " ")) + '</span><i><b style="width:' + Math.round(t[1] * 100) + '%"></b><em style="left:50%"></em></i><small>' + t[1].toFixed(2) + "</small>" + (sd[t[0]] ? '<em class="img-score-m">DenseNet ' + sd[t[0]].densenet.toFixed(2) + " · ResNet-512 " + (sd[t[0]].resnet512 === null ? "n/a" : sd[t[0]].resnet512.toFixed(2)) + "</em>" : "") + "</div>";
       }).join("") + "</div></details>";
     }
     if (eg && eg.st_mm) h += '<details class="img-sec"><summary class="ops-h">ST deviation at J+60 ms (mm)</summary><div class="img-st">' + Object.keys(eg.st_mm).map(function (l) {
