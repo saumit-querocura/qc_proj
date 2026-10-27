@@ -551,3 +551,507 @@ QueroCura started with a simple observation: how long it takes for doctors to ev
 - **Built with clinicians.** Shaped by the people who treat patients every day.
 - **Seconds matter.** In an emergency, speed is the whole point.
 
+
+---
+
+# BMI calculator with Indian cut-offs
+
+Source: https://querocura.com/calculators/bmi-calculator/
+
+Body mass index (BMI) is weight in kilograms divided by height in metres squared. Indians develop diabetes and heart disease at lower BMIs than Europeans, so Indian guidelines use lower cut-offs: overweight from 23 and obese from 25. This calculator shows both.
+
+## BMI categories
+
+
+| Category | Asian-Indian cut-off | WHO international |
+|---|---|---|
+| Underweight | Below 18.5 | Below 18.5 |
+| Normal | 18.5 to 22.9 | 18.5 to 24.9 |
+| Overweight | 23 to 24.9 | 25 to 29.9 |
+| Obese | 25 or more | 30 or more |
+
+## How it's calculated
+
+BMI = weight (kg) ÷ height (m)². The Asian-Indian cut-offs come from the 2009 Indian consensus guidelines on obesity, which lowered them because of higher body fat and metabolic risk at the same BMI.
+
+BMI does not measure body fat directly: very muscular people can score high, and older people can score normal while carrying too much fat. Waist size adds useful information (risk rises above 90 cm for Indian men and 80 cm for Indian women).
+
+
+## Frequently asked questions
+
+**What is a normal BMI for Indians?**
+
+18.5 to 22.9. Indian guidelines treat 23 to 24.9 as overweight and 25 or more as obese, lower than the WHO international cut-offs.
+
+**Is BMI accurate?**
+
+It is a quick screening number, not a diagnosis. It does not tell muscle from fat; waist size and a doctor's assessment add to it.
+
+
+---
+
+# Is my blood pressure normal? Check a reading
+
+Source: https://querocura.com/calculators/blood-pressure-checker/
+
+Enter the top (systolic) and bottom (diastolic) numbers of a reading. The checker shows which category it falls in under the International Society of Hypertension 2020 guideline. One reading is not a diagnosis: blood pressure is judged on several readings taken on different days.
+
+## Blood pressure categories (ISH 2020, adults, clinic readings)
+
+
+| Category | Systolic (top) | Diastolic (bottom) |
+|---|---|---|
+| Normal | Below 130 | and below 85 |
+| High-normal | 130 to 139 | or 85 to 89 |
+| Grade 1 hypertension | 140 to 159 | or 90 to 99 |
+| Grade 2 hypertension | 160 or more | or 100 or more |
+
+## When it is urgent
+
+A reading of 180/110 or higher needs medical attention the same day. Go to an emergency department now if a high reading comes with chest pain, breathlessness, a severe headache, confusion, weakness on one side, blurred vision or trouble speaking. In India, call 112.
+
+
+## Measuring it right
+
+- Sit quietly for five minutes, back supported, feet flat, arm resting at heart level.
+- No caffeine, smoking or exercise in the 30 minutes before.
+- Take two readings a minute apart and use the average.
+- Home readings run lower than clinic ones: 135/85 at home is roughly equivalent to 140/90 in a clinic.
+
+## Frequently asked questions
+
+**What is normal blood pressure?**
+
+Under the ISH 2020 guideline, below 130/85 is normal for adults. Hypertension starts at 140/90 on repeated clinic readings.
+
+**Is 140/90 high blood pressure?**
+
+Yes, 140/90 or above on repeated readings is grade 1 hypertension. Talk to your doctor; do not start or change medicines on your own.
+
+
+---
+
+# HbA1c to average blood sugar
+
+Source: https://querocura.com/calculators/hba1c-to-average-glucose/
+
+HbA1c shows your average blood sugar over the past two to three months. Enter an HbA1c percentage to see the estimated average glucose (eAG) it corresponds to, or enter an average glucose to see the matching HbA1c.
+
+## HbA1c ranges
+
+
+| HbA1c | Meaning (ADA) | Average glucose |
+|---|---|---|
+| Below 5.7% | Normal | below about 117 mg/dL |
+| 5.7% to 6.4% | Prediabetes | about 117 to 137 mg/dL |
+| 6.5% or more | Diabetes range (confirm with a repeat test) | about 140 mg/dL or more |
+
+## How it's calculated
+
+The ADAG study formula: average glucose (mg/dL) = 28.7 × HbA1c − 46.7, or in mmol/L = 1.59 × HbA1c − 2.59. Anaemia, recent blood loss or transfusion, pregnancy, kidney disease and some haemoglobin variants can make HbA1c misleading; your doctor reads it with those in mind.
+
+
+## Frequently asked questions
+
+**What is a normal HbA1c?**
+
+Below 5.7%. 5.7% to 6.4% is prediabetes and 6.5% or more is in the diabetes range.
+
+**HbA1c 7 means what blood sugar?**
+
+An HbA1c of 7% corresponds to an estimated average glucose of about 154 mg/dL (8.6 mmol/L).
+
+
+---
+
+# Pregnancy due date calculator
+
+Source: https://querocura.com/calculators/pregnancy-due-date/
+
+Enter the first day of your last menstrual period and your usual cycle length. The calculator gives your estimated due date, how far along you are today and your trimester. An early ultrasound scan gives a more exact date.
+
+## How it's calculated
+
+Naegele's rule: the due date is 280 days (40 weeks) after the first day of the last period, adjusted by the difference between your cycle length and 28 days. Only about 1 in 20 babies arrives on the due date; most arrive within two weeks either side.
+
+
+## Trimesters
+
+
+| Trimester | Weeks |
+|---|---|
+| First | Up to 13 weeks 6 days |
+| Second | 14 to 27 weeks 6 days |
+| Third | 28 weeks to birth |
+
+## Frequently asked questions
+
+**How accurate is a due date calculator?**
+
+It is an estimate. A dating ultrasound in the first trimester is more accurate, especially with irregular cycles.
+
+
+---
+
+# Make a printable medicine schedule
+
+Source: https://querocura.com/calculators/medicine-schedule-maker/
+
+Write down each medicine exactly as your doctor prescribed it, tick the times of day, and print a clear chart to stick on the fridge. Everything stays in your browser. For reminders on your phone with a Taken button and family alerts, use the QueroCura app.
+
+## Tips for a medicine chart that works
+
+- Copy names and doses exactly from the prescription; ask your pharmacist if anything is unclear.
+- Note "before food" or "after food" where the prescription says so.
+- Keep the chart next to the medicines, and a photo of it on your phone.
+- Bring the chart and the medicines to every doctor's visit.
+
+## Frequently asked questions
+
+**Does this tell me what medicines to take?**
+
+No. Fill it in from your doctor's prescription. QueroCura never recommends medicines or doses.
+
+
+---
+
+# QTc calculator (four formulas)
+
+Source: https://querocura.com/calculators/qtc-calculator/
+
+Enter the measured QT interval and the heart rate. The calculator gives the corrected QT by Bazett, Fridericia, Framingham and Hodges. Fridericia is preferred at fast or slow rates, where Bazett over- and under-corrects.
+
+## Formulas
+
+
+| Formula | QTc = |
+|---|---|
+| Bazett | QT ÷ √RR |
+| Fridericia | QT ÷ ∛RR |
+| Framingham | QT + 154 × (1 − RR) |
+| Hodges | QT + 1.75 × (HR − 60) |
+
+## Thresholds
+
+Prolonged: over 450 ms in men, over 470 ms in women. 500 ms or more, or a rise of 60 ms or more from baseline, carries a high risk of torsades de pointes. RR is in seconds (60 ÷ heart rate). With a QRS of 120 ms or more, the JT interval is a better guide.
+
+
+## Frequently asked questions
+
+**Which QTc formula is best?**
+
+Fridericia and Framingham correct better than Bazett at heart rates outside 60 to 100; Bazett remains common but overestimates QTc at fast rates.
+
+
+---
+
+# Bed occupancy rate and length-of-stay calculator
+
+Source: https://querocura.com/calculators/bed-occupancy-rate/
+
+Four numbers hospital managers watch every month. Enter your bed count, the period, inpatient days and discharges to get bed occupancy rate, average length of stay (ALOS), bed turnover rate and turnover interval.
+
+## Formulas
+
+
+| Indicator | Formula |
+|---|---|
+| Bed occupancy rate | Inpatient days ÷ (beds × days in period) × 100 |
+| Average length of stay | Inpatient days ÷ discharges |
+| Bed turnover rate | Discharges ÷ beds |
+| Turnover interval | (Beds × days − inpatient days) ÷ discharges |
+
+## What good looks like
+
+Many hospitals aim for 75% to 85% occupancy: lower wastes capacity, while running above about 85% leaves little room for emergencies and is linked to bed shortages and infection risk. ALOS depends heavily on case mix, so compare it within a specialty and over time.
+
+
+## Frequently asked questions
+
+**What is a good bed occupancy rate?**
+
+Around 75% to 85% is a common target. Sustained occupancy above 85% leaves too little room for emergency admissions.
+
+**How do you calculate average length of stay?**
+
+Total inpatient days in a period divided by the number of discharges in the same period.
+
+
+---
+
+# OPD capacity and waiting time calculator
+
+Source: https://querocura.com/calculators/opd-capacity-planner/
+
+Enter how many doctors are in OPD, their hours and the average consultation time. The planner shows how many patients you can see per day and per hour, and how long a patient arriving now will wait behind those already in the queue.
+
+## How it's calculated
+
+Capacity per day = doctors × hours × 60 ÷ consultation minutes. Expected wait for a new arrival ≈ patients waiting × consultation minutes ÷ doctors. Real days drift: consultations vary and doctors start late. QueroCura learns each doctor's real consultation times and shows the real wait for every slot.
+
+
+## Frequently asked questions
+
+**How do you reduce OPD waiting time?**
+
+Book patients for when the doctor will really be free, spread arrivals with arrive-by times, separate quick follow-ups, and show the queue honestly. See our guide on reducing OPD waiting time.
+
+
+---
+
+# How to reduce OPD waiting time: 8 practical fixes
+
+Source: https://querocura.com/guides/how-to-reduce-opd-waiting-time/
+
+Most OPD waiting comes from one mismatch: patients are booked for the time on the schedule, but doctors run to the time of the real day. Fixing that mismatch, and being honest with patients about it, does more than adding chairs to the waiting room.
+
+## 1. Measure the real wait first
+
+Record arrival time, time called and time seen for a week. Most clinics find the wait is concentrated in two or three peak hours and with one or two doctors, which tells you where to act.
+
+
+## 2. Book to the real consultation length
+
+Fixed 10-minute slots fail when a doctor really averages 14. Book each doctor to their own average consultation time, and recalculate it every few weeks.
+
+
+## 3. Give arrive-by times, not slot times
+
+Tell patients when to arrive based on when the doctor will really be free, and warn them on the day if the doctor is running late. Fewer people arrive early and sit for an hour.
+
+
+## 4. Separate quick visits
+
+Report reviews, dressing changes and prescription renewals take minutes. A separate queue or time block for them stops them waiting behind new consultations.
+
+
+## 5. Do the paperwork before the patient reaches the doctor
+
+Registration, vitals and history-taking at the front desk or by a nurse, and patients who send their history before the visit, save minutes in every consultation.
+
+
+## 6. Use fair, visible tokens
+
+A token per department and a waiting-room screen that shows the queue (by number, never by name) reduces anxiety and the stream of "how much longer?" questions at the desk.
+
+
+## 7. Watch every doctor's status live
+
+The desk should see at a glance who is free, who is with a patient and who is running late, and send walk-ins to the doctor with the shortest real wait.
+
+
+## 8. Review weekly
+
+Look at waiting times by doctor and hour every week and adjust slots and staffing. Small changes compound.
+
+
+## Frequently asked questions
+
+**What is a reasonable OPD waiting time?**
+
+Many hospitals aim for patients to be seen within 30 minutes of their appointment time; publish your own target and measure against it.
+
+
+---
+
+# How to help elderly parents take their medicines on time
+
+Source: https://querocura.com/guides/how-to-remind-elderly-parents-to-take-medicines/
+
+Missed and doubled doses are common when parents take several medicines a day, and harder to spot when you live in another city. A clear list, a simple routine and reminders that tell you when a dose has been taken make the biggest difference.
+
+## 1. Make one up-to-date list
+
+Gather every prescription and every strip in the house. Write one list with each medicine, its dose, when to take it and what it is for, and ask their doctor or pharmacist to check it, especially if several doctors prescribe. Our free medicine schedule maker prints one.
+
+
+## 2. Tie doses to daily habits
+
+Morning tea, lunch and the evening news are easier to remember than clock times. Keep the medicines where that habit happens, away from heat and children.
+
+
+## 3. Use a weekly pill organiser
+
+A box with morning, afternoon and night compartments for each day shows at a glance whether a dose was taken. Fill it together once a week, or ask a neighbour or pharmacist to help.
+
+
+## 4. Set reminders that close the loop
+
+A reminder only helps if someone knows the dose was taken. With QueroCura, your parent taps Taken on the reminder and, with their permission, you are told straight away. If no confirmation comes, you know to call.
+
+
+## 5. Watch for side effects and changes
+
+Dizziness, falls, confusion or new sleepiness after a medicine change are worth a call to the doctor. Never stop or change a medicine without the doctor's advice.
+
+
+## 6. Take the list to every visit
+
+Bring the list and the medicines themselves to each appointment so the doctor can review everything together, and update the list the same day.
+
+
+## Frequently asked questions
+
+**How can I check if my parents took their medicine when I live far away?**
+
+Use a reminder app with family alerts. In QueroCura, your parent marks a dose as taken and, with their permission, you are notified immediately.
+
+
+---
+
+# EMR vs EHR vs HMS vs PHR: what's the difference?
+
+Source: https://querocura.com/guides/emr-vs-ehr-vs-hms/
+
+These four terms are often used as if they mean the same thing. In short: an EMR is one provider's clinical record, an EHR is a record designed to follow the patient between providers, an HMS runs the hospital's operations, and a PHR belongs to the patient.
+
+## At a glance
+
+
+|  | Who owns it | What it holds | Example use |
+|---|---|---|---|
+| EMR (electronic medical record) | One clinic or hospital | Diagnoses, notes, prescriptions, results at that provider | A doctor reviewing last month's visit |
+| EHR (electronic health record) | Shared across providers | A patient's record from many providers, built to be exchanged | A specialist seeing a GP's history |
+| HMS / HIS (hospital management or information system) | The hospital | Operations: registration, appointments, beds, theatres, pharmacy, billing, plus the EMR | Running the OPD queue and billing |
+| PHR (personal health record) | The patient | Reports, prescriptions, readings and history the patient keeps | A family keeping parents' reports in one place |
+
+## How they fit together in India
+
+ABDM (Ayushman Bharat Digital Mission) links these pieces: patients get an ABHA number, facilities register in the Health Facility Registry, and records can move between providers with the patient's consent. A hospital's HMS holds its EMR; the patient's PHR app can receive copies; consent decides who sees what.
+
+
+## Where QueroCura fits
+
+QueroCura has both ends: a hospital management system with a clinical record for providers, and CuraVault, a personal health record for patients and families, connected by the patient's consent.
+
+
+## Frequently asked questions
+
+**Is an HMS the same as an EMR?**
+
+No. An HMS runs hospital operations (appointments, beds, pharmacy, billing) and usually contains an EMR, which is the clinical record.
+
+**What is a PHR?**
+
+A personal health record: the patient's own collection of reports, prescriptions and readings, which the patient controls.
+
+
+---
+
+# How to organise your family's medical records
+
+Source: https://querocura.com/guides/how-to-organise-your-familys-medical-records/
+
+Reports in WhatsApp chats, prescriptions in drawers, scans on CDs: most families' records are scattered until the day a doctor needs them. An hour of organising, then a habit of adding each new report the day it arrives, fixes it.
+
+## 1. One place per person
+
+Give each family member their own folder or record. Mixing everyone's papers is how a parent's report ends up in a child's file.
+
+
+## 2. Keep these first
+
+- Allergies, long-term conditions and current medicines (one page per person).
+- Blood group, ABHA number and insurance details.
+- The last two years of lab reports, discharge summaries and scan reports.
+- Vaccination records for children and older adults.
+
+## 3. Digitise and name files clearly
+
+Photograph or scan each paper and name it with the date, the person and the test, such as "2026-03-14 Papa HbA1c". In CuraVault, upload the photo: it reads the values, you check them, and each one is explained and tracked over time.
+
+
+## 4. Share safely
+
+Share only what a doctor needs, for as long as they need it. QueroCura share links need a PIN, expire on their own and can be switched off; a hospital sees nothing until you say yes.
+
+
+## 5. Make it a habit
+
+Add every new report the day you receive it, and review each person's one-page summary before a visit.
+
+
+## Frequently asked questions
+
+**Which medical records should I keep?**
+
+Allergies, conditions and current medicines; blood group and insurance; recent lab, scan and discharge reports; and vaccination records.
+
+
+---
+
+# Press kit
+
+Source: https://querocura.com/press/
+
+Everything you need to write about QueroCura. For interviews, demos and images, write to hello@querocura.com.
+
+## Boilerplate
+
+QueroCura is Indian healthcare software that connects the people who give care with the people who receive it. Its free health app helps people and families check symptoms in English and Hindi, remember their medicines, keep and understand their medical reports and prepare for doctor visits. Its hospital management system runs appointments, OPD queues, emergency triage, beds, theatres, pharmacy and billing for clinics and hospitals of any size. Patients decide what their hospital can see. QueroCura was founded by Udantika Dhar and Saumit Pradhan.
+
+
+## One line
+
+QueroCura: one place for your family's health, and one system for the hospital that cares for them.
+
+
+## Facts
+
+
+|  |  |
+|---|---|
+| Name | QueroCura (one word, capital Q and C) |
+| Website | querocura.com |
+| Founders | Udantika Dhar, Chief Executive Officer; Saumit Pradhan, Chief Technology Officer |
+| Country | India |
+| Languages | English and Hindi |
+| For people | Free: symptom checker, medicine reminders, CuraVault health records, family garden, calendar, visit prep |
+| For providers | Hospital management system, clinic software, AI-assisted imaging that can run on the hospital's own server |
+| Principles | Consent first; never medicine advice; encrypted records; an audit log of every access |
+| Contact | hello@querocura.com |
+
+## Story angles
+
+- Booking patients for when the doctor will really be free, instead of the time on the schedule.
+- AI imaging reads that run on the hospital's own server, so scans never leave the building.
+- Family health with consent: each person chooses what their relatives can see.
+- A symptom checker that works end to end in Hindi and never recommends medicines.
+
+
+---
+
+# Healthcare and hospital glossary
+
+Source: https://querocura.com/glossary/
+
+- **ABDM**: Ayushman Bharat Digital Mission: India's national programme to connect patients, health facilities and professionals digitally, with records shared by consent.
+- **ABHA**: Ayushman Bharat Health Account: a free 14-digit health ID that lets a person link and share their health records across ABDM-connected providers with consent.
+- **ALOS (average length of stay)**: Total inpatient days in a period divided by the number of discharges in that period.
+- **Bed occupancy rate**: Inpatient days divided by available bed-days in a period, as a percentage; many hospitals aim for 75% to 85%.
+- **CGHS**: Central Government Health Scheme: health cover for central government employees, pensioners and their dependants, used at empanelled hospitals.
+- **DICOM**: Digital Imaging and Communications in Medicine: the standard format for medical images such as X-ray, CT and MRI, and for exchanging them.
+- **Discharge summary**: A document given when a patient leaves hospital: diagnosis, treatment given, medicines and follow-up instructions.
+- **Early warning score (NEWS2)**: A score from vital signs (breathing rate, oxygen, blood pressure, pulse, consciousness, temperature) that flags patients who are getting worse.
+- **EHR (electronic health record)**: A patient's record designed to be shared across providers.
+- **EMR (electronic medical record)**: The clinical record kept by one provider.
+- **e-Prescription**: A prescription created digitally, which can be checked for allergies and duplicates and printed or shared.
+- **HbA1c**: A blood test showing average blood sugar over about three months; 6.5% or more is in the diabetes range.
+- **HFR (Health Facility Registry)**: ABDM's registry of verified health facilities in India; a registered facility has a facility ID.
+- **HMS / HIS**: Hospital management system or hospital information system: software that runs a hospital's operations and records.
+- **HPR (Healthcare Professionals Registry)**: ABDM's registry of verified doctors, nurses and other health professionals.
+- **IPD (in-patient department)**: Care for patients admitted to a hospital bed.
+- **LIS**: Laboratory information system: software that manages lab orders, samples and results.
+- **Medication adherence**: Taking medicines as prescribed: the right dose, at the right time, for the right duration.
+- **MRN / UHID**: Medical record number or unique health ID: the number a hospital uses to identify one patient's record.
+- **NABH**: National Accreditation Board for Hospitals & Healthcare Providers, part of the Quality Council of India, which accredits hospitals against quality standards.
+- **OPD (out-patient department)**: Care for patients who visit and leave the same day, without admission.
+- **PACS**: Picture archiving and communication system: stores and shows medical images.
+- **PHR (personal health record)**: A health record kept and controlled by the patient.
+- **PM-JAY**: Ayushman Bharat Pradhan Mantri Jan Arogya Yojana: government health cover of up to ₹5 lakh per family per year for hospital care at empanelled hospitals.
+- **Pre-authorisation**: Approval from an insurer, TPA or scheme before a planned treatment, so the hospital is paid.
+- **QTc**: The QT interval of an ECG corrected for heart rate; prolongation raises the risk of dangerous arrhythmias.
+- **RIS**: Radiology information system: manages radiology orders, scheduling and reports.
+- **TPA (third-party administrator)**: A company that processes health insurance claims and cashless approvals for insurers.
+- **Triage**: Sorting patients by how urgently they need care, usually in five levels in emergency departments.
+- **WHO surgical safety checklist**: A checklist used before anaesthesia, before incision and before the patient leaves theatre, shown to reduce surgical complications.

@@ -25,12 +25,40 @@ Key facts:
 - [A symptom checker that asks the questions a doctor would](https://querocura.com/symptom-checker/): Describe how you feel in your own words, in English or Hindi. QueroCura asks the follow-up questions a doctor would and tells you how urgent it is. Never medicine advice.
 - [One health app for your symptoms, medicines, records and family](https://querocura.com/health-app/): One free health app for symptom checks in English and Hindi, medicine reminders, personal health records, visit prep and your family's health. Never medicine advice.
 
+## Free calculators
+
+- [BMI calculator with Indian cut-offs](https://querocura.com/calculators/bmi-calculator/): Free BMI calculator with both WHO and the lower Asian-Indian cut-offs (overweight from 23, obese from 25). Enter height and weight; nothing is sent anywhere.
+- [Is my blood pressure normal? Check a reading](https://querocura.com/calculators/blood-pressure-checker/): Enter your blood pressure reading to see its category (ISH 2020): normal, high-normal, grade 1 or grade 2 hypertension, and when to get urgent care.
+- [HbA1c to average blood sugar](https://querocura.com/calculators/hba1c-to-average-glucose/): Convert an HbA1c result to estimated average glucose in mg/dL and mmol/L, or the other way round, with the normal, prediabetes and diabetes ranges.
+- [Pregnancy due date calculator](https://querocura.com/calculators/pregnancy-due-date/): Calculate your estimated due date and how many weeks pregnant you are from the first day of your last period, with your cycle length.
+- [Make a printable medicine schedule](https://querocura.com/calculators/medicine-schedule-maker/): Make a printable daily medicine chart for a parent or yourself: medicines, doses and times of day in a clear table. Free, in your browser, nothing is sent anywhere.
+- [QTc calculator (four formulas)](https://querocura.com/calculators/qtc-calculator/): Corrected QT interval calculator for clinicians: Bazett, Fridericia, Framingham and Hodges from QT and heart rate, with prolongation thresholds.
+- [Bed occupancy rate and length-of-stay calculator](https://querocura.com/calculators/bed-occupancy-rate/): Free hospital KPI calculator: bed occupancy rate, average length of stay (ALOS), bed turnover rate and turnover interval from beds, inpatient days and discharges.
+- [OPD capacity and waiting time calculator](https://querocura.com/calculators/opd-capacity-planner/): How many OPD patients can your doctors see per day, and how long will the next patient wait? A free calculator for clinics and hospitals.
+
+## Guides and reference
+
+- [How to reduce OPD waiting time: 8 practical fixes](https://querocura.com/guides/how-to-reduce-opd-waiting-time/): Long OPD queues cost patients and revenue. Eight practical ways Indian clinics and hospitals cut waiting time, from realistic booking to honest queue screens.
+- [How to help elderly parents take their medicines on time](https://querocura.com/guides/how-to-remind-elderly-parents-to-take-medicines/): Practical ways to help ageing parents take medicines correctly, especially from another city: a clear list, pill organisers, reminders, and family alerts.
+- [EMR vs EHR vs HMS vs PHR: what's the difference?](https://querocura.com/guides/emr-vs-ehr-vs-hms/): Plain-language definitions of EMR, EHR, HMS (HIS) and PHR, how they differ, and how they fit together with ABHA and ABDM in India.
+- [How to organise your family's medical records](https://querocura.com/guides/how-to-organise-your-familys-medical-records/): A simple system for keeping your family's reports, prescriptions and scans organised and ready for any doctor's visit or emergency.
+- [Healthcare and hospital glossary](https://querocura.com/glossary/): Plain-language definitions of 30 healthcare and hospital terms used in India: OPD, IPD, ABHA, ABDM, PM-JAY, CGHS, NABH, EMR, EHR, ALOS, triage and more.
+
 ## About
 
 - [Organised healthcare software, for the people who give care and the people who receive it](https://querocura.com/healthcare-software/): QueroCura is organised healthcare software for India: a hospital management system for providers and a free health app for patients and families, connected by consent.
 - [About QueroCura](https://querocura.com/about/): QueroCura builds a hospital management system and a free family health app, connected by patient consent. Founded by Udantika Dhar (CEO) and Saumit Pradhan (CTO).
+- [Press kit](https://querocura.com/press/): Facts, boilerplate, founders and contact for journalists and partners writing about QueroCura, Indian healthcare software for hospitals and families.
 - [Hospital portal](https://querocura.com/hospital/): sign in or apply to onboard a hospital or clinic
 - [For doctors](https://querocura.com/doctor/): practice tools for doctors
+
+## हिन्दी (Hindi)
+
+- [आपकी और आपके परिवार की सेहत, एक ही जगह](https://querocura.com/hi/): हिन्दी में मुफ़्त हेल्थ ऐप: लक्षण जाँच, दवा याद दिलाने वाले रिमाइंडर, मेडिकल रिपोर्ट सँभालना और समझना, और पूरे परिवार की सेहत एक जगह। दवा की सलाह कभी नहीं।
+- [दवा याद दिलाने वाला ऐप, जो पूरे परिवार को साथ रखता है](https://querocura.com/hi/medicine-reminder-app/): मुफ़्त दवा रिमाइंडर ऐप: पर्चे के हिसाब से समय पर याद, नोटिफ़िकेशन पर ही "ले ली" बटन, और दवा लेते ही परिवार को सूचना। हिन्दी और अंग्रेज़ी में।
+- [पूरे परिवार की सेहत, सबकी अनुमति से](https://querocura.com/hi/family-health-app/): पूरे परिवार की सेहत एक जगह: माता-पिता और बच्चों के खाते जोड़ें, हर व्यक्ति तय करे कि आप क्या देख सकते हैं (दवाएँ, रिपोर्ट, रीडिंग)। मुफ़्त।
+- [हिन्दी में लक्षण जाँच, जो डॉक्टर की तरह सवाल पूछती है](https://querocura.com/hi/symptom-checker/): अपने लक्षण हिन्दी में अपने शब्दों में बताइए। QueroCura डॉक्टर की तरह आगे के सवाल पूछता है और बताता है कि मामला कितना ज़रूरी है। दवा की सलाह कभी नहीं।
+- [आपकी मेडिकल रिपोर्टें, एक जगह, आसान भाषा में](https://querocura.com/hi/personal-health-records/): CuraVault आपकी रिपोर्ट, पर्चे और स्कैन एक एन्क्रिप्टेड जगह रखता है, उन्हें पढ़ता है (हाथ से लिखे भी) और हर वैल्यू आसान भाषा में समझाता है। मुफ़्त।
 
 ## Optional
 
