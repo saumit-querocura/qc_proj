@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>QueroCura: guides and articles</title>
+  <subtitle>Healthcare in India, hospital management, family health and health records</subtitle>
+  <link href="https://querocura.com/feed.xml" rel="self"/>
+  <link href="https://querocura.com/"/>
+  <id>https://querocura.com/</id>
+  <updated>2026-10-27T00:00:00Z</updated>
+  <author><name>QueroCura</name><email>hello@querocura.com</email></author>
+  <entry>
+    <title>How to choose a hospital management system: a practical checklist</title>
+    <link href="https://querocura.com/guides/how-to-choose-a-hospital-management-system/"/>
+    <id>https://querocura.com/guides/how-to-choose-a-hospital-management-system/</id>
+    <updated>2026-10-27T00:00:00Z</updated>
+    <summary>A practical checklist for choosing the best hospital management system for your hospital or clinic in India: modules, billing, ABHA, security, setup time and cost.</summary>
+  </entry>
+  <entry>
+    <title>The future of healthcare in India: 10 shifts already underway</title>
+    <link href="https://querocura.com/future-of-healthcare/"/>
+    <id>https://querocura.com/future-of-healthcare/</id>
+    <updated>2026-10-27T00:00:00Z</updated>
+    <summary>Where healthcare in India is heading: connected records with consent, AI that supports clinicians, care at home, hospitals run in real time, and health in every language.</summary>
+  </entry>
+  <entry>
+    <title>Connected healthcare: what it is and how it works</title>
+    <link href="https://querocura.com/connected-healthcare/"/>
+    <id>https://querocura.com/connected-healthcare/</id>
+    <updated>2026-10-27T00:00:00Z</updated>
+    <summary>Connected healthcare links patients, families, doctors and hospitals through shared, consented health information. What it is, how it works with ABDM, and its benefits.</summary>
+  </entry>
+  <entry>
+    <title>Healthcare management: how good hospitals and clinics are run</title>
+    <link href="https://querocura.com/healthcare-management/"/>
+    <id>https://querocura.com/healthcare-management/</id>
+    <updated>2026-10-27T00:00:00Z</updated>
+    <summary>What healthcare management covers: patient flow, clinical operations, revenue, quality and people. The KPIs that matter and how software helps hospitals in India.</summary>
+  </entry>
+  <entry>
+    <title>Digital health in India: a plain guide</title>
+    <link href="https://querocura.com/digital-health-india/"/>
+    <id>https://querocura.com/digital-health-india/</id>
+    <updated>2026-10-27T00:00:00Z</updated>
+    <summary>A plain guide to digital health in India: ABDM and ABHA, health facility and professional registries, telemedicine guidelines, eSanjeevani and the DPDP Act, 2023.</summary>
+  </entry>
+  <entry>
+    <title>Hospital management system features: the complete list</title>
+    <link href="https://querocura.com/guides/hospital-management-system-features/"/>
+    <id>https://querocura.com/guides/hospital-management-system-features/</id>
+    <updated>2026-10-27T00:00:00Z</updated>
+    <summary>The complete list of hospital management system (HMS) modules and features, from registration to discharge, billing and reports, with what each should do.</summary>
+  </entry>
+  <entry>
+    <title>Cloud vs on-premise hospital software: which is right for you?</title>
+    <link href="https://querocura.com/guides/cloud-vs-on-premise-hospital-software/"/>
+    <id>https://querocura.com/guides/cloud-vs-on-premise-hospital-software/</id>
+    <updated>2026-10-27T00:00:00Z</updated>
+    <summary>Cloud or on-premise hospital management software? A fair comparison of cost, security, uptime, data location and AI for hospitals in India.</summary>
+  </entry>
+  <entry>
+    <title>How to implement a hospital management system: a 30-day plan</title>
+    <link href="https://querocura.com/guides/hospital-management-system-implementation-plan/"/>
+    <id>https://querocura.com/guides/hospital-management-system-implementation-plan/</id>
+    <updated>2026-10-27T00:00:00Z</updated>
+    <summary>A practical 30-day plan for implementing a hospital management system: setup, data, training, a pilot and go-live, with the mistakes to avoid.</summary>
+  </entry>
+  <entry>
+    <title>Hospital KPIs: 12 metrics every administrator should track</title>
+    <link href="https://querocura.com/guides/hospital-kpis/"/>
+    <id>https://querocura.com/guides/hospital-kpis/</id>
+    <updated>2026-10-27T00:00:00Z</updated>
+    <summary>The hospital KPIs that matter: OPD waiting time, bed occupancy, ALOS, collections, claim rejections, readmissions and more, with formulas and free calculators.</summary>
+  </entry>
+  <entry>
+    <title>Hospital software vs Excel and paper registers: when to switch</title>
+    <link href="https://querocura.com/guides/hospital-software-vs-excel-and-paper/"/>
+    <id>https://querocura.com/guides/hospital-software-vs-excel-and-paper/</id>
+    <updated>2026-10-27T00:00:00Z</updated>
+    <summary>Still running your hospital on registers and Excel? An honest comparison with hospital management software, the costs of staying, and when to switch.</summary>
+  </entry>
+  <entry>
+    <title>How to reduce OPD waiting time: 8 practical fixes</title>
+    <link href="https://querocura.com/guides/how-to-reduce-opd-waiting-time/"/>
+    <id>https://querocura.com/guides/how-to-reduce-opd-waiting-time/</id>
+    <updated>2026-10-27T00:00:00Z</updated>
+    <summary>Long OPD queues cost patients and revenue. Eight practical ways Indian clinics and hospitals cut waiting time, from realistic booking to honest queue screens.</summary>
+  </entry>
+  <entry>
+    <title>How to help elderly parents take their medicines on time</title>
+    <link href="https://querocura.com/guides/how-to-remind-elderly-parents-to-take-medicines/"/>
+    <id>https://querocura.com/guides/how-to-remind-elderly-parents-to-take-medicines/</id>
+    <updated>2026-10-27T00:00:00Z</updated>
+    <summary>Practical ways to help ageing parents take medicines correctly, especially from another city: a clear list, pill organisers, reminders, and family alerts.</summary>
+  </entry>
+  <entry>
+    <title>EMR vs EHR vs HMS vs PHR: what&#x27;s the difference?</title>
+    <link href="https://querocura.com/guides/emr-vs-ehr-vs-hms/"/>
+    <id>https://querocura.com/guides/emr-vs-ehr-vs-hms/</id>
+    <updated>2026-10-27T00:00:00Z</updated>
+    <summary>Plain-language definitions of EMR, EHR, HMS (HIS) and PHR, how they differ, and how they fit together with ABHA and ABDM in India.</summary>
+  </entry>
+  <entry>
+    <title>How to organise your family&#x27;s medical records</title>
+    <link href="https://querocura.com/guides/how-to-organise-your-familys-medical-records/"/>
+    <id>https://querocura.com/guides/how-to-organise-your-familys-medical-records/</id>
+    <updated>2026-10-27T00:00:00Z</updated>
+    <summary>A simple system for keeping your family&#x27;s reports, prescriptions and scans organised and ready for any doctor&#x27;s visit or emergency.</summary>
+  </entry>
+  <entry>
+    <title>What Is ABHA and Why Should Your Family Have One? A Digital Health ID Explained</title>
+    <link href="https://querocura.com/blog/abha-health-id-explained/"/>
+    <id>https://querocura.com/blog/abha-health-id-explained/</id>
+    <updated>2026-10-27T00:00:00Z</updated>
+    <summary>ABHA is India&#x27;s push toward one digital health record per person. Here&#x27;s what it actually does, why it matters in an emergency, and how it fits alongside your own CuraVault.</summary>
+  </entry>
+  <entry>
+    <title>Cold, Flu, or Something Else? A Home Guide to Telling Symptoms Apart</title>
+    <link href="https://querocura.com/blog/cold-flu-or-something-else/"/>
+    <id>https://querocura.com/blog/cold-flu-or-something-else/</id>
+    <updated>2026-10-27T00:00:00Z</updated>
+    <summary>Runny nose, fever, body ache — is it a cold, the flu, or something that needs a doctor? A practical, symptom-by-symptom guide to telling them apart at home.</summary>
+  </entry>
+  <entry>
+    <title>Fever with Body Ache in Monsoon Season: Dengue, Malaria, or Just a Viral Fever?</title>
+    <link href="https://querocura.com/blog/fever-body-ache-monsoon-dengue-malaria/"/>
+    <id>https://querocura.com/blog/fever-body-ache-monsoon-dengue-malaria/</id>
+    <updated>2026-10-27T00:00:00Z</updated>
+    <summary>Every monsoon, fever cases spike across India. Here&#x27;s how to tell a routine viral fever apart from dengue or malaria — and exactly when to stop waiting and get a blood test.</summary>
+  </entry>
+  <entry>
+    <title>What Happens to Your Health Data in an Emergency?</title>
+    <link href="https://querocura.com/blog/health-data-in-an-emergency/"/>
+    <id>https://querocura.com/blog/health-data-in-an-emergency/</id>
+    <updated>2026-10-27T00:00:00Z</updated>
+    <summary>When you can&#x27;t speak for yourself in an emergency, your medical history either disappears into paperwork — or it becomes instantly, securely accessible. Here&#x27;s how QueroCura&#x27;s Emergency Glass Door and CuraVault change that.</summary>
+  </entry>
+  <entry>
+    <title>When Is a Headache Serious? A Symptom-by-Symptom Guide</title>
+    <link href="https://querocura.com/blog/when-is-a-headache-serious/"/>
+    <id>https://querocura.com/blog/when-is-a-headache-serious/</id>
+    <updated>2026-10-27T00:00:00Z</updated>
+    <summary>Most headaches are harmless. A few are emergencies. Here&#x27;s how to tell a tension headache from a migraine from a headache that needs immediate medical attention.</summary>
+  </entry>
+</feed>

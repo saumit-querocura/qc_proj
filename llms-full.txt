@@ -1264,6 +1264,254 @@ OPD waiting time, emergency door-to-doctor time, bed occupancy, ALOS, turnover i
 
 ---
 
+# Software for eye hospitals
+
+Source: https://querocura.com/eye-hospital-software/
+
+Eye hospitals see many patients a day and run high-volume theatre lists, mostly for cataract. Their software must keep a busy OPD moving, schedule theatres tightly and bill packages and schemes cleanly.
+
+## What eye hospitals need from their software
+
+- A fast, fair OPD with many quick reviews.
+- Theatre lists that can hold many short cases a day.
+- Package billing and schemes such as PM-JAY and CGHS.
+- Pre-operative checks and follow-up visits on one record.
+
+## What QueroCura covers
+
+- OPD tokens, live doctor status and real wait times.
+- Theatre lists with clash checks and the WHO surgical safety checklist.
+- Pharmacy with allergy checks and stock by expiry.
+- Billing by cash, UPI, card, PM-JAY, CGHS and insurance.
+- One record per patient for visits, results and bills.
+
+## What to pair it with
+
+QueroCura does not include ophthalmology-specific tools such as refraction records, device integration with autorefractors or optical shop inventory. Pair it with your existing ophthalmic EMR or optical system for those.
+
+
+## Frequently asked questions
+
+**What software do eye hospitals use?**
+
+A hospital management system for OPD, theatres, pharmacy and billing, often alongside an ophthalmology EMR for refraction and device data.
+
+
+---
+
+# Software for dental clinics
+
+Source: https://querocura.com/dental-clinic-software/
+
+A dental clinic runs on chair time: appointments that match how long each procedure really takes, treatment over several visits, and clear billing for each step.
+
+## What dental clinics need from their software
+
+- Appointments sized to the real length of each procedure.
+- Treatment that spans several visits on one record.
+- Clear estimates and billing per visit.
+- Reminders so patients come back for the next step.
+
+## What QueroCura covers
+
+- Appointments that learn each dentist's real consultation times.
+- One record per patient across visits, with prescriptions and allergy checks.
+- Billing by cash, UPI and card with receipts; prices per doctor and per procedure.
+- Patients get visit reminders in the QueroCura app.
+
+## What to pair it with
+
+QueroCura has no dental charting (tooth-by-tooth records), imaging integration with dental X-ray sensors or lab-work tracking. Pair it with a dental charting tool if you need those.
+
+
+## Frequently asked questions
+
+**Is QueroCura a dental charting software?**
+
+No. It runs appointments, records, prescriptions and billing; pair it with a dental charting tool for tooth-level records.
+
+
+---
+
+# Software for maternity hospitals
+
+Source: https://querocura.com/maternity-hospital-software/
+
+A maternity hospital follows a mother over months: antenatal visits, admission in labour, delivery or caesarean section, post-natal care and the newborn's first days. The software must keep that journey on one record and the beds and theatre ready.
+
+## What maternity hospitals need from their software
+
+- Antenatal OPD with regular visits and results on one record.
+- Labour, post-natal and newborn beds on a live board.
+- A theatre ready for emergency caesarean sections.
+- Package billing and schemes.
+
+## What QueroCura covers
+
+- OPD with real wait times and one record across visits.
+- Live bed board for labour and post-natal wards, admission and discharge summaries.
+- Theatre lists with the WHO surgical safety checklist.
+- Pharmacy and billing including PM-JAY, CGHS and insurance.
+- A free [due date calculator](https://querocura.com/calculators/pregnancy-due-date/) for patients.
+
+## What to pair it with
+
+QueroCura does not include a partograph, fetal monitoring integration or a dedicated newborn register. Use your obstetric tools for those alongside it.
+
+
+## Frequently asked questions
+
+**What does maternity hospital software need?**
+
+Antenatal OPD, a live view of labour and post-natal beds, a theatre for caesarean sections, pharmacy and billing, with the whole journey on one record.
+
+
+---
+
+# Software for diagnostic centres
+
+Source: https://querocura.com/diagnostic-centre-software/
+
+Diagnostic centres live between doctors and patients: orders arrive, samples and scans are taken, and results must go back to the right doctor and patient quickly, with the right bill.
+
+## What diagnostic centres need from their software
+
+- Orders from doctors that reach the right department.
+- Results that return to the requesting doctor and the patient's record.
+- Imaging viewing and reporting.
+- Billing per test with clear prices.
+
+## What QueroCura covers
+
+- Orders between departments; lab and radiology staff see only the orders sent to them.
+- Imaging: X-ray, CT and MRI series, ultrasound, ECG and more, with AI-assisted draft reads that a radiologist signs.
+- Prices per test, billing by cash, UPI and card.
+- Results shared to the patient's QueroCura app with their consent.
+
+## What to pair it with
+
+QueroCura is not a full laboratory information system: it does not interface with lab analysers or manage sample barcodes and quality control. Pair it with a LIS for those.
+
+
+## Frequently asked questions
+
+**Can QueroCura read scans?**
+
+Its imaging workspace views and reports studies, and can prepare AI-assisted draft reads for chest X-ray, ECG and CT that a radiologist reviews and signs.
+
+
+---
+
+# Software for orthopaedic hospitals
+
+Source: https://querocura.com/orthopaedic-hospital-software/
+
+Orthopaedic care runs through X-rays, theatres and beds: a busy OPD that reviews images, planned and trauma surgery, and in-patient stays with physiotherapy and follow-up.
+
+## What orthopaedic hospitals need from their software
+
+- OPD that keeps images next to the consultation.
+- Theatre lists for planned and trauma cases.
+- Beds and discharge with follow-up plans.
+- Package billing for procedures.
+
+## What QueroCura covers
+
+- Imaging workspace for X-ray, CT and MRI with reports on the patient record.
+- Theatre lists with clash checks and the WHO checklist.
+- Live bed board, discharge checklists and summaries.
+- Billing with packages, schemes and insurance.
+
+## What to pair it with
+
+QueroCura does not include implant inventory tracking or physiotherapy session planning. Use specialised tools for those alongside it.
+
+
+## Frequently asked questions
+
+**What should orthopaedic hospital software include?**
+
+OPD with image review, theatre scheduling with safety checks, bed management, pharmacy and package billing.
+
+
+---
+
+# Software for dialysis centres
+
+Source: https://querocura.com/dialysis-centre-software/
+
+Dialysis patients come back two or three times a week for years. A centre needs schedules that repeat reliably, a record that shows the trend across sessions, and billing that handles schemes and insurance without friction.
+
+## What dialysis centres need from their software
+
+- Recurring schedules for each patient.
+- One record across many sessions, with results and medicines.
+- Medicine safety checks.
+- Billing by schemes, insurance and self-pay.
+
+## What QueroCura covers
+
+- Appointments and reminders for every session.
+- One record per patient with results, prescriptions and allergy checks.
+- Billing by cash, UPI, card, PM-JAY, CGHS and insurance.
+- Patients can track readings such as blood pressure and weight in the QueroCura app and share them with consent.
+
+## What to pair it with
+
+QueroCura does not connect to dialysis machines or record per-session machine parameters. Keep those in your dialysis machine software.
+
+
+## Frequently asked questions
+
+**What does dialysis centre software need?**
+
+Reliable recurring schedules, one record across sessions, medicine safety checks and billing for schemes and insurance.
+
+
+---
+
+# Hospital software vs Excel and paper registers: when to switch
+
+Source: https://querocura.com/guides/hospital-software-vs-excel-and-paper/
+
+Many good hospitals in India still run on paper registers and spreadsheets. They work until they don't: when a report can't be found, a bill is missed or the waiting room overflows. Here is an honest comparison, and the signs that it is time to switch.
+
+## Side by side
+
+
+|  | Paper and Excel | Hospital management software |
+|---|---|---|
+| Cost to start | Almost nothing | A subscription |
+| Finding a patient's history | Search registers and files | One record, found in seconds |
+| Billing | Typed from memory; services get missed | Built from the visit |
+| Queues | Shouted names, guesswork | Tokens and real wait times |
+| Beds | A whiteboard, out of date by noon | A live bed board |
+| Reports | Hours of counting | Live and exportable |
+| Security | Anyone can read a register | Roles and an audit log |
+| Patients' own records | Paper they may lose | Shared with consent, digitally |
+
+## Signs it is time to switch
+
+- Patients wait more than half an hour and the desk can't say how long.
+- Month-end collections don't match services given.
+- Staff spend hours on counts for reports.
+- You can't tell which beds are free without walking the wards.
+- You are opening a second site.
+
+## How to switch without chaos
+
+Start with the front desk and billing for one OPD, then add departments over a month. Our [30-day implementation plan](https://querocura.com/guides/hospital-management-system-implementation-plan/) shows the order.
+
+
+## Frequently asked questions
+
+**Can a small hospital run on Excel?**
+
+It can for a while, but billing leaks, slow record searches and no live view of beds and queues usually cost more than software once patient numbers grow.
+
+
+---
+
 # BMI calculator with Indian cut-offs
 
 Source: https://querocura.com/calculators/bmi-calculator/

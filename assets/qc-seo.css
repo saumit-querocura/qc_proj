@@ -96,3 +96,5 @@ html[lang="hi-IN"] h1 { line-height: 1.38; } html[lang="hi-IN"] h2 { line-height
 .toc b { display: block; font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin-bottom: 6px; }
 .toc ol { margin: 0; padding-left: 0; list-style: none; columns: 2 260px; } .toc li { font-size: 15px; margin: 4px 0; break-inside: avoid; }
 main section { scroll-margin-top: 80px; }
+
+.embed-code { font-family: ui-monospace, Consolas, monospace; font-size: 13px; resize: vertical; max-width: 880px; }

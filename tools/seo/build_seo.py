@@ -30,6 +30,8 @@ sys.path.insert(0, HERE)
 from pages import PAGES, SITE, SUMMARY  # noqa: E402
 from pages_more import CALC_HUB, GLOSSARY, GLOSSARY_TERMS, GUIDES, HINDI, PRESS, TOOLS  # noqa: E402
 from pages_topics import CLUSTER, HMS_CLUSTER, PILLARS  # noqa: E402
+from pages_boost import COMPARE, HINDI_HMS, HINDI_TOOLS, SPECIALTY  # noqa: E402
+import extras  # noqa: E402
 
 LOGO = "assets/d4f7acc01b9438e998c9e7b9676584b0.png"
 OG = SITE + "/assets/og-image.png"
@@ -60,15 +62,23 @@ UI = {
     "hi": {"nav": [("हेल्थ ऐप", "hi/"), ("दवा रिमाइंडर", "hi/medicine-reminder-app/"), ("परिवार", "hi/family-health-app/"), ("लक्षण जाँच", "hi/symptom-checker/"), ("English", "")],
            "signin": "साइन इन", "start": "मुफ़्त शुरू करें", "home": "होम", "faq": "अक्सर पूछे जाने वाले सवाल", "related": "और पढ़ें", "updated": "आख़िरी बदलाव",
            "menu": "मेन्यू", "theme": "थीम बदलें", "skip": "सीधे सामग्री पर जाएँ",
-           "trust": {"consumer": ["मुफ़्त", "हिन्दी और English", "दवा की सलाह कभी नहीं", "आप तय करें क्या साझा हो"]},
-           "band": {"consumer": ["आपकी सेहत की पूरी कहानी, एक शांत जगह।", "मुफ़्त, हिन्दी और अंग्रेज़ी में। क्या साझा हो, आप तय करें।"]},
+           "trust": {"consumer": ["मुफ़्त", "हिन्दी और English", "दवा की सलाह कभी नहीं", "आप तय करें क्या साझा हो"],
+                     "business": ["भारत के लिए: UPI, PM-JAY, CGHS", "ABHA के लिए तैयार", "मरीज़ की सहमति पहले", "हर पहुँच का ऑडिट लॉग"]},
+           "band": {"consumer": ["आपकी सेहत की पूरी कहानी, एक शांत जगह।", "मुफ़्त, हिन्दी और अंग्रेज़ी में। क्या साझा हो, आप तय करें।"],
+                    "business": ["अपने अस्पताल के लिए देखना चाहते हैं?", "कुछ सवालों के जवाब दीजिए और अपने अस्पताल के आकार का सेटअप प्लान पाइए।"]},
            "legal": "भारत में बना हेल्थ सॉफ़्टवेयर। QueroCura सामान्य सेहत की जानकारी देता है, चिकित्सा सलाह नहीं, और कभी दवा नहीं सुझाता। आपात स्थिति में 112 पर कॉल करें।",
-           "tool_note": ""},
+           "tool_note": "आपके ब्राउज़र में चलता है: आप जो लिखते हैं वह कहीं नहीं भेजा जाता। सिर्फ़ जानकारी के लिए, यह निदान नहीं है।"},
 }
 
-ALL = PAGES + PILLARS + CLUSTER + TOOLS + [CALC_HUB] + GUIDES + [GLOSSARY, PRESS] + HINDI
+SPECIALTY_HUB = {"slug": "specialties", "kind": "hub", "audience": "business", "title": "Hospital Software by Specialty | QueroCura",
+                 "description": "What eye hospitals, dental clinics, maternity hospitals, diagnostic centres, orthopaedic hospitals and dialysis centres need from hospital software, and what QueroCura covers.",
+                 "eyebrow": "By specialty", "h1": "Hospital software by specialty",
+                 "lead": "Every specialty runs a little differently. Each page below says what that kind of hospital needs from its software, what QueroCura covers, and what to pair it with.",
+                 "cta": ["Plan my setup", "hospital/setup/"], "cta2": ["Hospital management system", "hospital-management-system/"],
+                 "sections": [{"h2": "Specialties", "ul": ['<a href="{root}%s/">%s</a>: %s' % (x["slug"], x["eyebrow"], x["description"]) for x in SPECIALTY]}], "faq": [], "related": []}
+ALL = (PAGES + PILLARS + CLUSTER + SPECIALTY + [SPECIALTY_HUB, COMPARE] + TOOLS + [CALC_HUB] + GUIDES + [GLOSSARY, PRESS] + HINDI + HINDI_TOOLS + [HINDI_HMS])
 BY_SLUG = {p["slug"]: p for p in ALL}
-HI_OF = {p["en"]: p["slug"] for p in HINDI}                     # English slug -> Hindi slug
+HI_OF = {p["en"]: p["slug"] for p in ALL if p.get("lang") == "hi" and p.get("en")}      # English slug -> Hindi slug
 
 
 def e(s: str) -> str:
@@ -187,8 +197,8 @@ def footer(root: str, lang: str) -> str:
     calc = col("Free calculators", [t["slug"] for t in TOOLS][:6])
     hi = col("हिन्दी में", [p["slug"] for p in HINDI])
     topics = col("Topics", [p["slug"] for p in PILLARS] + ["healthcare-software"])
-    company = ('<div><h3>Company</h3><a href="%sabout/">About QueroCura</a><a href="%spress/">Press kit</a><a href="%sglossary/">Glossary</a><a href="%sguides/">Guides</a>'
-               '<a href="%sblog/">Blog</a><a href="%sprivacy-notice/">Privacy notice</a><a href="mailto:hello@querocura.com">hello@querocura.com</a></div>') % ((root,) * 6)
+    company = ('<div><h3>Company</h3><a href="%sabout/">About QueroCura</a><a href="%spress/">Press kit</a><a href="%sfaq/">FAQ</a><a href="%sglossary/">Glossary</a><a href="%sguides/">Guides</a>'
+               '<a href="%sspecialties/">By specialty</a><a href="%sblog/">Blog</a><a href="%sprivacy-notice/">Privacy notice</a><a href="mailto:hello@querocura.com">hello@querocura.com</a></div>') % ((root,) * 8)
     return '<footer><div class="wrap"><div class="foot-grid">%s%s%s%s%s%s</div><p class="foot-legal">© %d QueroCura · %s</p></div></footer>' % (
         biz, con, topics, calc, hi, company, dt.date.today().year, UI[lang]["legal"])
 
@@ -210,11 +220,12 @@ def section_html(s: dict, root: str) -> str:
 
 
 def tool_html(p: dict) -> str:
+    note = UI[lang_of(p)]["tool_note"]
     if p["tool"] == "meds":
         return ('<div class="tool" data-tool="meds"><div class="tool-f"><label class="tool-l">Who is it for (optional)<input class="tool-in" name="who" placeholder="e.g. Ma"></label></div>'
                 '<div class="meds-rows"></div><div class="ctas"><button type="button" class="btn btn-g" data-add>+ Add a medicine</button>'
                 '<button type="button" class="btn btn-p" data-make>Make my chart</button></div><div class="tool-out" aria-live="polite"></div>'
-                '<p class="tool-note">%s</p></div>') % UI["en"]["tool_note"]
+                '<p class="tool-note">%s</p></div>') % note
     fields = ""
     for f in p["fields"]:
         attrs = ' type="%s" name="%s" id="f-%s"' % (f["type"], f["k"], f["k"])
@@ -225,7 +236,7 @@ def tool_html(p: dict) -> str:
         fields += '<div class="tool-f"><label class="tool-l" for="f-%s">%s%s</label><div class="tool-i"><input class="tool-in"%s>%s</div>%s</div>' % (
             f["k"], e(f["label"]), "", attrs, '<span class="tool-u">%s</span>' % e(f["unit"]) if f["unit"] else "", '<small class="tool-h">%s</small>' % e(f["hint"]) if f["hint"] else "")
     return ('<form class="tool" data-tool="%s" novalidate><div class="tool-fields">%s</div><div class="tool-out" aria-live="polite"></div>'
-            '<p class="tool-note">%s</p></form>') % (p["tool"], fields, UI["en"]["tool_note"])
+            '<p class="tool-note">%s</p></form>') % (p["tool"], fields, note)
 
 
 def glossary_html() -> str:
@@ -257,6 +268,11 @@ def render(p: dict) -> str:
         body += '<nav class="toc" aria-label="Contents"><b>%s</b><ol>%s</ol></nav>' % ("Contents", "".join('<li><a href="#%s">%s</a></li>' % (anchor(x["h2"]), e(x["h2"])) for x in p["sections"]))
     if p.get("kind") == "tool":
         body += tool_html(p)
+        if lang == "en" and p["tool"] != "meds":
+            name = p["slug"].split("/")[-1]
+            snip = extras.embed_snippet("%s/embed/%s/" % (SITE, name), url, plain(p["h1"]))
+            body += ('<section id="embed"><h2>Add this calculator to your website</h2><p>Free for clinics, hospitals, schools and health writers. Paste this where you want it to appear; '
+                     'it runs on our site, keeps nothing and needs no sign-up.</p><textarea class="tool-in embed-code" readonly rows="4" aria-label="Embed code">%s</textarea></section>') % e(snip)
     if p.get("kind") == "glossary":
         body += glossary_html()
     body += "".join(section_html(s, root) for s in p["sections"])
@@ -272,6 +288,7 @@ def render(p: dict) -> str:
     ld = "".join('<script type="application/ld+json">%s</script>' % json.dumps(x, ensure_ascii=False, separators=(",", ":")) for x in schema(p))
     scripts = '<script src="%sassets/js/qc-seo.js"></script>' % root + ('\n<script src="%sassets/js/qc-tools.js"></script>' % root if p.get("kind") == "tool" else "")
     modified = dt.date.fromisoformat(p.get("_modified", TODAY))
+    og = SITE + "/" + extras.og_image(ROOT, LOGO, p["slug"], plain(p["eyebrow"]), plain(p["h1"]), lang)
     return """<!doctype html>
 <html lang="{htmllang}">
 <head>
@@ -296,6 +313,7 @@ def render(p: dict) -> str:
 <meta name="twitter:description" content="{desc}">
 <meta name="twitter:image" content="{og}">
 <link rel="alternate" type="text/plain" href="{site}/llms.txt" title="QueroCura for AI assistants">
+<link rel="alternate" type="application/atom+xml" href="{site}/feed.xml" title="QueroCura guides and articles">
 {ld}
 <link rel="icon" type="image/png" sizes="32x32" href="{root}icons/favicon-32x32.png">
 <link rel="apple-touch-icon" sizes="180x180" href="{root}icons/apple-touch-icon.png">
@@ -327,12 +345,29 @@ def render(p: dict) -> str:
 <!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{{"token": "cf10cc866a9f4ffeb50a6ce35a72e773"}}'></script><!-- End Cloudflare Web Analytics -->
 </body>
 </html>
-""".format(htmllang="hi-IN" if lang == "hi" else "en-IN", csp=CSP, title=e(p["title"]), desc=e(p["description"]), url=url, alts=alternates(p), og=OG, site=SITE,
+""".format(htmllang="hi-IN" if lang == "hi" else "en-IN", csp=CSP, title=e(p["title"]), desc=e(p["description"]), url=url, alts=alternates(p), og=og, site=SITE,
            ogtype="article" if p.get("kind") in ("guide", "pillar") else "website", oglocale="hi_IN" if lang == "hi" else "en_IN", ld=ld, root=root, scripts=scripts,
            nav=nav(root, lang), crumb=crumb, eyebrow=e(plain(p["eyebrow"])), h1=e(p["h1"]), lead=p["lead"].replace("{root}", root),
            cta1u=href(root, p["cta"][1]), cta1=e(p["cta"][0]), cta2u=href(root, p["cta2"][1]), cta2=e(p["cta2"][0]),
            trust="".join("<span>%s</span>" % t for t in ui["trust"][aud]), body=body, band=band, updated=ui["updated"],
            modified=modified.isoformat() if lang == "hi" else modified.strftime("%d %B %Y"), footer=footer(root, lang))
+
+
+def faq_hub() -> dict:
+    """Every question answered on the English pages, grouped, each linking to its page (no FAQPage markup here: it
+    stays on the source page, where each question is marked up once)."""
+    groups = [("For hospitals and clinics", [p for p in ALL if lang_of(p) == "en" and p["audience"] == "business"]),
+              ("For people and families", [p for p in ALL if lang_of(p) == "en" and p["audience"] == "consumer"]),
+              ("About healthcare and QueroCura", [p for p in ALL if lang_of(p) == "en" and p["audience"] == "both"])]
+    secs = []
+    for title, ps in groups:
+        items = ['<b>%s</b> %s <a href="{root}%s/">More →</a>' % (e(q), e(plain(a)), p["slug"]) for p in ps for q, a in p["faq"]]
+        if items:
+            secs.append({"h2": title, "ul": items})
+    return {"slug": "faq", "kind": "hub", "audience": "both", "title": "QueroCura FAQ: Hospital Software, Health App & Healthcare Questions",
+            "description": "Answers to common questions about hospital management systems, connected healthcare, medicine reminders, family health, health records and QueroCura.",
+            "eyebrow": "FAQ", "h1": "Frequently asked questions", "lead": "Short answers to the questions people ask about running hospitals and clinics, looking after family health, and QueroCura. Each links to a full page.",
+            "cta": ["Get started free", "register/"], "cta2": ["For hospitals", "hospital-management-system/"], "sections": secs, "faq": [], "related": []}
 
 
 def guides_index() -> dict:
@@ -411,17 +446,19 @@ def write_llms(blog: list) -> None:
             "", "## For people and families", ""] + group(con) + [
             "", "## Healthcare topics", ""] + group(PILLARS) + [
             "", "## Hospital management system, in depth", ""] + group(CLUSTER) + [
-            "", "## Free calculators", ""] + group(TOOLS) + [
+            "", "## Hospital software by specialty", ""] + group(SPECIALTY) + [item(COMPARE)] + [
+            "", "## Free calculators", ""] + group(TOOLS) + group(HINDI_TOOLS) + [
             "", "## Guides and reference", ""] + group(GUIDES) + [item(GLOSSARY)] + [
             "", "## About", ""] + group(other) + [item(PRESS),
             "- [Hospital portal](%s/hospital/): sign in or apply to onboard a hospital or clinic" % SITE,
             "- [For doctors](%s/doctor/): practice tools for doctors" % SITE,
-            "", "## हिन्दी (Hindi)", ""] + group(HINDI) + [
+            "", "## हिन्दी (Hindi)", ""] + group(HINDI) + [item(HINDI_HMS)] + [
+            "- [Frequently asked questions](%s/faq/): every question answered on the site, in one place" % SITE,
             "", "## Optional", ""] + ["- [%s](%s/%s): %s" % (t, SITE, rel, d) for rel, t, d in blog] + [
             "- [Full text of these pages](%s/llms-full.txt)" % SITE, ""]
     write("llms.txt", "\n".join(llms))
     full = ["# QueroCura: full text of the public pages", "", "> " + SUMMARY, ""]
-    for p in PAGES + PILLARS + CLUSTER + TOOLS + GUIDES + [PRESS]:
+    for p in PAGES + PILLARS + CLUSTER + SPECIALTY + [COMPARE] + TOOLS + GUIDES + [PRESS]:
         full += ["", "---", "", "# " + p["h1"], "", "Source: " + url_of(p["slug"]), "", md(p["lead"]), ""]
         for s in p["sections"]:
             full += ["## " + s["h2"], ""]
@@ -441,7 +478,8 @@ def write_llms(blog: list) -> None:
 
 def main() -> int:
     print("existing pages updated:", update_existing())
-    all_pages = ALL + [guides_index()]
+    print("blog posts linked:", extras.blog_related(ROOT))
+    all_pages = ALL + [guides_index(), faq_hub()]
     drafts = {p["slug"]: render(p) for p in all_pages}                 # first pass: content hashes
     lm = lastmods(drafts)
     for p in all_pages:
@@ -461,6 +499,15 @@ def main() -> int:
     blog = [(rel, html.unescape(re.search(r"<title>(.*?)</title>", s).group(1)).replace(" — QueroCura", ""), html.unescape((re.search(r'name="description" content="([^"]*)"', s) or [None, ""])[1]))
             for rel, s in indexable() if rel.startswith("blog/") and rel != "blog/"]
     write_llms(blog)
+    # embeddable calculators (not indexed; the credit links back to the calculator page)
+    for t in TOOLS:
+        if t["tool"] == "meds":
+            continue
+        name = t["slug"].split("/")[-1]
+        write("embed/%s/index.html" % name, extras.embed_page("../../assets/qc-seo.css", "../../assets/js/qc-tools.js", tool_html(t), plain(t["h1"]), url_of(t["slug"]), CSP))
+    feed = [(url_of(p["slug"]), p["h1"], p["description"], p["_modified"]) for p in all_pages if p.get("kind") in ("guide", "pillar")]
+    feed += [(SITE + "/" + rel, t, d, dt.date.fromtimestamp(os.path.getmtime(os.path.join(ROOT, rel, "index.html"))).isoformat()) for rel, t, d in blog]
+    write("feed.xml", extras.atom_feed(SITE, feed, max(x[3] for x in feed)))
     print("pages: %d, sitemap urls: %d" % (len(all_pages), len(rows)))
     return 0
 

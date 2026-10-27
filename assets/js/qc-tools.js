@@ -10,36 +10,40 @@
     return '<div class="tool-row"><span>' + label + '</span><b>' + value + "</b>" + (note ? "<small>" + note + "</small>" : "") + "</div>";
   }
   function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
-  var ask = '<p class="tool-msg">Fill in the boxes above.</p>';
+  var HI = /^hi/.test(document.documentElement.lang || "");
+  function t(en, hi) { return HI && hi ? hi : en; }                 // Hindi pages get Hindi results
+  var ask = '<p class="tool-msg">' + t("Fill in the boxes above.", "ऊपर के खाने भरें।") + "</p>";
 
   var T = {
     bmi: function (f) {
       var h = num(f, "h"), w = num(f, "w");
       if (!h || !w || h < 50 || w < 2) return ask;
       var b = w / Math.pow(h / 100, 2);
-      var india = b < 18.5 ? "Underweight" : b < 23 ? "Normal" : b < 25 ? "Overweight" : "Obese";
-      var who = b < 18.5 ? "Underweight" : b < 25 ? "Normal" : b < 30 ? "Overweight" : "Obese";
+      var C = [t("Underweight", "कम वज़न"), t("Normal", "सामान्य"), t("Overweight", "ज़्यादा वज़न"), t("Obese", "मोटापा")];
+      var india = b < 18.5 ? C[0] : b < 23 ? C[1] : b < 25 ? C[2] : C[3];
+      var who = b < 18.5 ? C[0] : b < 25 ? C[1] : b < 30 ? C[2] : C[3];
       var lo = 18.5 * Math.pow(h / 100, 2), hi = 22.9 * Math.pow(h / 100, 2);
-      return '<div class="tool-big">' + b.toFixed(1) + "</div>" + row("Asian-Indian cut-offs", india) + row("WHO international", who) +
-        row("Normal weight for your height (Indian)", lo.toFixed(0) + " to " + hi.toFixed(0) + " kg");
+      return '<div class="tool-big">' + b.toFixed(1) + "</div>" + row(t("Asian-Indian cut-offs", "भारतीय मानक"), india) + row(t("WHO international", "WHO अंतरराष्ट्रीय मानक"), who) +
+        row(t("Normal weight for your height (Indian)", "आपकी लंबाई के लिए सामान्य वज़न (भारतीय)"), lo.toFixed(0) + t(" to ", " से ") + hi.toFixed(0) + " kg");
     },
     bp: function (f) {
       var s = num(f, "s"), d = num(f, "d");
       if (!s || !d) return ask;
-      if (d >= s) return '<p class="tool-msg">The top number is usually the bigger one. Check the reading.</p>';
-      var cat = s >= 160 || d >= 100 ? "Grade 2 hypertension" : s >= 140 || d >= 90 ? "Grade 1 hypertension" : s >= 130 || d >= 85 ? "High-normal" : "Normal";
-      var out = '<div class="tool-big">' + s + "/" + d + "</div>" + row("Category (ISH 2020)", cat);
-      if (s >= 180 || d >= 110) out += '<p class="tool-warn">This reading is very high. Get medical attention today, and go to an emergency department now (call 112) if you also have chest pain, breathlessness, a severe headache, confusion, weakness, or trouble seeing or speaking.</p>';
-      else if (s < 90 || d < 60) out += '<p class="tool-msg">This is low. If you feel faint, dizzy or unwell, see a doctor.</p>';
-      return out + '<p class="tool-msg">One reading is not a diagnosis. Take readings on several days and discuss them with your doctor.</p>';
+      if (d >= s) return '<p class="tool-msg">' + t("The top number is usually the bigger one. Check the reading.", "ऊपर वाली संख्या आम तौर पर बड़ी होती है। रीडिंग दोबारा देखें।") + "</p>";
+      var cat = s >= 160 || d >= 100 ? t("Grade 2 hypertension", "ग्रेड 2 हाई ब्लड प्रेशर") : s >= 140 || d >= 90 ? t("Grade 1 hypertension", "ग्रेड 1 हाई ब्लड प्रेशर") : s >= 130 || d >= 85 ? t("High-normal", "सामान्य से थोड़ा ज़्यादा") : t("Normal", "सामान्य");
+      var out = '<div class="tool-big">' + s + "/" + d + "</div>" + row(t("Category (ISH 2020)", "श्रेणी (ISH 2020)"), cat);
+      if (s >= 180 || d >= 110) out += '<p class="tool-warn">' + t("This reading is very high. Get medical attention today, and go to an emergency department now (call 112) if you also have chest pain, breathlessness, a severe headache, confusion, weakness, or trouble seeing or speaking.",
+        "यह रीडिंग बहुत ज़्यादा है। आज ही डॉक्टर को दिखाएँ, और अगर साथ में सीने में दर्द, साँस फूलना, तेज़ सिरदर्द, उलझन, कमज़ोरी, या देखने या बोलने में परेशानी हो तो तुरंत इमरजेंसी जाएँ (112 पर कॉल करें)।") + "</p>";
+      else if (s < 90 || d < 60) out += '<p class="tool-msg">' + t("This is low. If you feel faint, dizzy or unwell, see a doctor.", "यह कम है। अगर चक्कर, कमज़ोरी या बेहोशी जैसा लगे तो डॉक्टर को दिखाएँ।") + "</p>";
+      return out + '<p class="tool-msg">' + t("One reading is not a diagnosis. Take readings on several days and discuss them with your doctor.", "एक रीडिंग से बीमारी तय नहीं होती। कई दिन रीडिंग लें और डॉक्टर से बात करें।") + "</p>";
     },
     a1c: function (f) {
       var a = num(f, "a"), g = num(f, "g");
       if (a === null && g !== null) a = (g + 46.7) / 28.7;
       if (a === null || a < 3 || a > 20) return ask;
       var mg = 28.7 * a - 46.7, mmol = 1.59 * a - 2.59;
-      var cat = a < 5.7 ? "Normal" : a < 6.5 ? "Prediabetes range" : "Diabetes range (a repeat test confirms it)";
-      return '<div class="tool-big">' + a.toFixed(1) + "%</div>" + row("Estimated average glucose", Math.round(mg) + " mg/dL", mmol.toFixed(1) + " mmol/L") + row("Range (ADA)", cat);
+      var cat = a < 5.7 ? t("Normal", "सामान्य") : a < 6.5 ? t("Prediabetes range", "प्रीडायबिटीज़ की सीमा") : t("Diabetes range (a repeat test confirms it)", "डायबिटीज़ की सीमा (दोबारा जाँच से पक्का होता है)");
+      return '<div class="tool-big">' + a.toFixed(1) + "%</div>" + row(t("Estimated average glucose", "अनुमानित औसत शुगर"), Math.round(mg) + " mg/dL", mmol.toFixed(1) + " mmol/L") + row(t("Range (ADA)", "सीमा (ADA)"), cat);
     },
     due: function (f) {
       var el = f.querySelector('[name="l"]'), c = num(f, "c") || 28;

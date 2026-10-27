@@ -1,198 +1,250 @@
 {
  "about": {
   "date": "2026-10-27",
-  "hash": "e5d8e7af85c4"
+  "hash": "5ca85c299fc6"
  },
  "ai-medical-imaging": {
   "date": "2026-10-27",
-  "hash": "0c8c847dea7d"
+  "hash": "f2a60f4c8c3f"
  },
  "bed-management-system": {
   "date": "2026-10-27",
-  "hash": "79d749d4c8ff"
+  "hash": "676897ab6b0f"
  },
  "calculators": {
   "date": "2026-10-27",
-  "hash": "98981724ce44"
+  "hash": "664d31d7c69a"
  },
  "calculators/bed-occupancy-rate": {
   "date": "2026-10-27",
-  "hash": "dc664fee5edf"
+  "hash": "f3318586d383"
  },
  "calculators/blood-pressure-checker": {
   "date": "2026-10-27",
-  "hash": "1cf6e8e34438"
+  "hash": "36d448d6ad9c"
  },
  "calculators/bmi-calculator": {
   "date": "2026-10-27",
-  "hash": "5945f3963527"
+  "hash": "9f3ac670bdc4"
  },
  "calculators/hba1c-to-average-glucose": {
   "date": "2026-10-27",
-  "hash": "39b19f7f0bf3"
+  "hash": "8284b0719d5a"
  },
  "calculators/medicine-schedule-maker": {
   "date": "2026-10-27",
-  "hash": "5953aba0042d"
+  "hash": "81eaaf847a31"
  },
  "calculators/opd-capacity-planner": {
   "date": "2026-10-27",
-  "hash": "fc045002aa5a"
+  "hash": "a224391608dd"
  },
  "calculators/pregnancy-due-date": {
   "date": "2026-10-27",
-  "hash": "2ae531731fe8"
+  "hash": "8b6e8ec99361"
  },
  "calculators/qtc-calculator": {
   "date": "2026-10-27",
-  "hash": "9690ecab9adf"
+  "hash": "a22a384aefb0"
  },
  "clinic-management-software": {
   "date": "2026-10-27",
-  "hash": "3128a08e2d7f"
+  "hash": "1634fcc40b09"
  },
  "connected-healthcare": {
   "date": "2026-10-27",
-  "hash": "5877d8f16ef1"
+  "hash": "f66a89f8128a"
+ },
+ "dental-clinic-software": {
+  "date": "2026-10-27",
+  "hash": "6999e343a93a"
+ },
+ "diagnostic-centre-software": {
+  "date": "2026-10-27",
+  "hash": "372d79e901d8"
+ },
+ "dialysis-centre-software": {
+  "date": "2026-10-27",
+  "hash": "0de5e9104b7b"
  },
  "digital-health-india": {
   "date": "2026-10-27",
-  "hash": "0893f9d47136"
+  "hash": "38620f22fc2f"
  },
  "doctor-appointment-booking": {
   "date": "2026-10-27",
-  "hash": "b589485560c7"
+  "hash": "754921a56873"
  },
  "emergency-department-software": {
   "date": "2026-10-27",
-  "hash": "3a0d13d44649"
+  "hash": "223f930db90e"
+ },
+ "eye-hospital-software": {
+  "date": "2026-10-27",
+  "hash": "6131f4c084b6"
  },
  "family-health-app": {
   "date": "2026-10-27",
-  "hash": "5b53461f1fb1"
+  "hash": "b1f3186583f4"
+ },
+ "faq": {
+  "date": "2026-10-27",
+  "hash": "e050d2852a47"
  },
  "future-of-healthcare": {
   "date": "2026-10-27",
-  "hash": "534f8aafb54c"
+  "hash": "68d666f1eece"
  },
  "glossary": {
   "date": "2026-10-27",
-  "hash": "6f4f187c40a9"
+  "hash": "92b04538aa18"
  },
  "guides": {
   "date": "2026-10-27",
-  "hash": "41d02a09aa2f"
+  "hash": "5c8289d1b475"
  },
  "guides/cloud-vs-on-premise-hospital-software": {
   "date": "2026-10-27",
-  "hash": "43d75f52aa29"
+  "hash": "dfa251136539"
  },
  "guides/emr-vs-ehr-vs-hms": {
   "date": "2026-10-27",
-  "hash": "28f89e380de4"
+  "hash": "9cec5bc253c4"
  },
  "guides/hospital-kpis": {
   "date": "2026-10-27",
-  "hash": "e45ac7404245"
+  "hash": "7c436cb198ea"
  },
  "guides/hospital-management-system-features": {
   "date": "2026-10-27",
-  "hash": "768dbbe51c86"
+  "hash": "42ce34d91515"
  },
  "guides/hospital-management-system-implementation-plan": {
   "date": "2026-10-27",
-  "hash": "84c8640fd47a"
+  "hash": "c7df5b794791"
+ },
+ "guides/hospital-software-vs-excel-and-paper": {
+  "date": "2026-10-27",
+  "hash": "cf74b42ef1a4"
  },
  "guides/how-to-choose-a-hospital-management-system": {
   "date": "2026-10-27",
-  "hash": "3864b1193cef"
+  "hash": "23e07802f7c1"
  },
  "guides/how-to-organise-your-familys-medical-records": {
   "date": "2026-10-27",
-  "hash": "dc691ba9cd94"
+  "hash": "d1d8473971d8"
  },
  "guides/how-to-reduce-opd-waiting-time": {
   "date": "2026-10-27",
-  "hash": "0f06a3e072ae"
+  "hash": "627139fc26df"
  },
  "guides/how-to-remind-elderly-parents-to-take-medicines": {
   "date": "2026-10-27",
-  "hash": "ff62ce842586"
+  "hash": "189876be963a"
  },
  "health-app": {
   "date": "2026-10-27",
-  "hash": "a2f5be868fb8"
+  "hash": "f99ecd2b9d04"
  },
  "healthcare-management": {
   "date": "2026-10-27",
-  "hash": "3b657289190a"
+  "hash": "15dddb1f9270"
  },
  "healthcare-software": {
   "date": "2026-10-27",
-  "hash": "6c8847de1e89"
+  "hash": "c63f9cc729bf"
  },
  "hi": {
   "date": "2026-10-27",
-  "hash": "ff09ec3744cf"
+  "hash": "998f65d606fe"
+ },
+ "hi/calculators/bmi": {
+  "date": "2026-10-27",
+  "hash": "01c36dec320a"
+ },
+ "hi/calculators/bp": {
+  "date": "2026-10-27",
+  "hash": "8a06c0883ee8"
+ },
+ "hi/calculators/sugar-hba1c": {
+  "date": "2026-10-27",
+  "hash": "b7c4396af6c4"
  },
  "hi/family-health-app": {
   "date": "2026-10-27",
-  "hash": "b6b264a8a81e"
+  "hash": "752d09a23711"
+ },
+ "hi/hospital-management-system": {
+  "date": "2026-10-27",
+  "hash": "53508f25456b"
  },
  "hi/medicine-reminder-app": {
   "date": "2026-10-27",
-  "hash": "d117f55d9ea3"
+  "hash": "01efb9661de2"
  },
  "hi/personal-health-records": {
   "date": "2026-10-27",
-  "hash": "69f7b9d7e13f"
+  "hash": "2e03f187130b"
  },
  "hi/symptom-checker": {
   "date": "2026-10-27",
-  "hash": "bb237376268b"
+  "hash": "88490b52377a"
  },
  "hospital-billing-software": {
   "date": "2026-10-27",
-  "hash": "d9488f5ac5c6"
+  "hash": "d6676284e698"
  },
  "hospital-management-system": {
   "date": "2026-10-27",
-  "hash": "0e841ccb9a29"
+  "hash": "40656b2fe39f"
+ },
+ "maternity-hospital-software": {
+  "date": "2026-10-27",
+  "hash": "a96b6c924d70"
  },
  "medicine-reminder-app": {
   "date": "2026-10-27",
-  "hash": "bcfe6508c5e0"
+  "hash": "9c445cb4ce62"
  },
  "multi-specialty-hospital-software": {
   "date": "2026-10-27",
-  "hash": "6712435cddcd"
+  "hash": "81f34c5f15f8"
  },
  "nursing-home-software": {
   "date": "2026-10-27",
-  "hash": "cd88317a2203"
+  "hash": "a6b398f6a87e"
  },
  "opd-management-system": {
   "date": "2026-10-27",
-  "hash": "e4317f697448"
+  "hash": "53d3d6d6a380"
  },
  "operation-theatre-management": {
   "date": "2026-10-27",
-  "hash": "459848e6b190"
+  "hash": "553d5f626961"
+ },
+ "orthopaedic-hospital-software": {
+  "date": "2026-10-27",
+  "hash": "296ac7dec3a3"
  },
  "personal-health-records": {
   "date": "2026-10-27",
-  "hash": "fe970d10ddb2"
+  "hash": "ea90098d1eaa"
  },
  "pharmacy-management-software": {
   "date": "2026-10-27",
-  "hash": "84b29d2232e2"
+  "hash": "632d93ee7ec0"
  },
  "press": {
   "date": "2026-10-27",
-  "hash": "8205c75d0cef"
+  "hash": "68e9da794222"
+ },
+ "specialties": {
+  "date": "2026-10-27",
+  "hash": "4a83c171b8b6"
  },
  "symptom-checker": {
   "date": "2026-10-27",
-  "hash": "10576f4ee811"
+  "hash": "2b275ca0c9df"
  }
 }

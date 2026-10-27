@@ -19,6 +19,11 @@ do is be the clearest, most trustworthy page on each topic, make it easy to craw
 | Free calculators | `/calculators/` (BMI with Indian cut-offs, BP checker, HbA1c↔glucose, due date, medicine chart maker, QTc, bed occupancy, OPD capacity) | Tools earn links and repeat visits; logic in `assets/js/qc-tools.js`, content in `pages_more.py` |
 | Hindi pages | `/hi/`, `/hi/medicine-reminder-app/`, `/hi/family-health-app/`, `/hi/symptom-checker/`, `/hi/personal-health-records/` | Hindi health searches have far less competition; paired with English pages by `hreflang` |
 | Guides, glossary, press kit | `/guides/…`, `/glossary/`, `/press/` | Definitions and how-tos are what AI assistants quote; the press kit makes writing about us easy |
+| Specialty pages | `/specialties/` (eye, dental, maternity, diagnostic, orthopaedic, dialysis) | Each says honestly what QueroCura covers and what to pair it with |
+| Hindi calculators and HMS | `/hi/calculators/bp/`, `/hi/calculators/sugar-hba1c/`, `/hi/calculators/bmi/`, `/hi/hospital-management-system/` | Huge Hindi health search volume with little competition |
+| Embeddable calculators | `/embed/<calculator>/` (noindex) + an embed code on each calculator page | Other sites embed them with a credit link back: earned backlinks |
+| Social preview images | `assets/og/` (one per page, made by `extras.py`) | Better click-through when pages are shared |
+| Atom feed, FAQ hub, blog links | `/feed.xml`, `/faq/`, "Keep reading" on blog posts | Faster discovery, one page AI assistants can quote, internal links |
 | IndexNow | key file at the site root, `tools/seo/indexnow.py` | Tells Bing (and so ChatGPT search and Copilot) about new pages within minutes |
 
 **After editing any page content:**

@@ -47,6 +47,16 @@ Key facts:
 - [How to implement a hospital management system: a 30-day plan](https://querocura.com/guides/hospital-management-system-implementation-plan/): A practical 30-day plan for implementing a hospital management system: setup, data, training, a pilot and go-live, with the mistakes to avoid.
 - [Hospital KPIs: 12 metrics every administrator should track](https://querocura.com/guides/hospital-kpis/): The hospital KPIs that matter: OPD waiting time, bed occupancy, ALOS, collections, claim rejections, readmissions and more, with formulas and free calculators.
 
+## Hospital software by specialty
+
+- [Software for eye hospitals](https://querocura.com/eye-hospital-software/): Hospital software for eye hospitals and clinics in India: high-volume OPD, cataract theatre lists, pharmacy and billing with PM-JAY, CGHS and insurance.
+- [Software for dental clinics](https://querocura.com/dental-clinic-software/): Software for dental clinics in India: appointments to real chair time, patient records, prescriptions and billing by UPI and card, with patients who arrive prepared.
+- [Software for maternity hospitals](https://querocura.com/maternity-hospital-software/): Software for maternity hospitals and nursing homes in India: antenatal OPD, labour and post-natal beds, theatre for caesarean sections, pharmacy and billing.
+- [Software for diagnostic centres](https://querocura.com/diagnostic-centre-software/): Software for diagnostic centres and labs that work with hospitals: orders from doctors, results back to the record, imaging with AI-assisted drafts, and billing.
+- [Software for orthopaedic hospitals](https://querocura.com/orthopaedic-hospital-software/): Software for orthopaedic hospitals: busy OPD with X-ray review, theatre lists with safety checks, in-patient beds, pharmacy and package billing.
+- [Software for dialysis centres](https://querocura.com/dialysis-centre-software/): Software for dialysis centres: recurring session schedules, one record per patient, medicines with safety checks, and billing by schemes, insurance and UPI.
+- [Hospital software vs Excel and paper registers: when to switch](https://querocura.com/guides/hospital-software-vs-excel-and-paper/): Still running your hospital on registers and Excel? An honest comparison with hospital management software, the costs of staying, and when to switch.
+
 ## Free calculators
 
 - [BMI calculator with Indian cut-offs](https://querocura.com/calculators/bmi-calculator/): Free BMI calculator with both WHO and the lower Asian-Indian cut-offs (overweight from 23, obese from 25). Enter height and weight; nothing is sent anywhere.
@@ -57,6 +67,9 @@ Key facts:
 - [QTc calculator (four formulas)](https://querocura.com/calculators/qtc-calculator/): Corrected QT interval calculator for clinicians: Bazett, Fridericia, Framingham and Hodges from QT and heart rate, with prolongation thresholds.
 - [Bed occupancy rate and length-of-stay calculator](https://querocura.com/calculators/bed-occupancy-rate/): Free hospital KPI calculator: bed occupancy rate, average length of stay (ALOS), bed turnover rate and turnover interval from beds, inpatient days and discharges.
 - [OPD capacity and waiting time calculator](https://querocura.com/calculators/opd-capacity-planner/): How many OPD patients can your doctors see per day, and how long will the next patient wait? A free calculator for clinics and hospitals.
+- [बीपी कितना होना चाहिए? अपनी रीडिंग जाँचें](https://querocura.com/hi/calculators/bp/): अपनी बीपी रीडिंग डालकर जानिए कि वह सामान्य है या ज़्यादा (ISH 2020): सामान्य, थोड़ा ज़्यादा, ग्रेड 1 या ग्रेड 2 हाई बीपी, और कब तुरंत डॉक्टर के पास जाएँ।
+- [HbA1c कितना होना चाहिए? औसत शुगर जानें](https://querocura.com/hi/calculators/sugar-hba1c/): HbA1c रिपोर्ट को औसत ब्लड शुगर (mg/dL) में बदलें, और जानें कि सामान्य, प्रीडायबिटीज़ या डायबिटीज़ की सीमा क्या है। मुफ़्त, कुछ भी कहीं नहीं भेजा जाता।
+- [BMI कैलकुलेटर, भारतीय मानकों के साथ](https://querocura.com/hi/calculators/bmi/): अपनी लंबाई और वज़न से BMI निकालें, भारतीय मानकों के साथ (23 से ज़्यादा वज़न, 25 से मोटापा)। मुफ़्त, कुछ भी कहीं नहीं भेजा जाता।
 
 ## Guides and reference
 
@@ -81,6 +94,8 @@ Key facts:
 - [पूरे परिवार की सेहत, सबकी अनुमति से](https://querocura.com/hi/family-health-app/): पूरे परिवार की सेहत एक जगह: माता-पिता और बच्चों के खाते जोड़ें, हर व्यक्ति तय करे कि आप क्या देख सकते हैं (दवाएँ, रिपोर्ट, रीडिंग)। मुफ़्त।
 - [हिन्दी में लक्षण जाँच, जो डॉक्टर की तरह सवाल पूछती है](https://querocura.com/hi/symptom-checker/): अपने लक्षण हिन्दी में अपने शब्दों में बताइए। QueroCura डॉक्टर की तरह आगे के सवाल पूछता है और बताता है कि मामला कितना ज़रूरी है। दवा की सलाह कभी नहीं।
 - [आपकी मेडिकल रिपोर्टें, एक जगह, आसान भाषा में](https://querocura.com/hi/personal-health-records/): CuraVault आपकी रिपोर्ट, पर्चे और स्कैन एक एन्क्रिप्टेड जगह रखता है, उन्हें पढ़ता है (हाथ से लिखे भी) और हर वैल्यू आसान भाषा में समझाता है। मुफ़्त।
+- [अस्पताल प्रबंधन सॉफ़्टवेयर, जो आपके अस्पताल का हर घंटा सँभाले](https://querocura.com/hi/hospital-management-system/): QueroCura अस्पताल प्रबंधन सॉफ़्टवेयर: अपॉइंटमेंट, OPD टोकन, इमरजेंसी ट्राइएज, बेड, ऑपरेशन थिएटर, फ़ार्मेसी और बिलिंग (UPI, PM-JAY, CGHS), हर आकार के अस्पताल के लिए।
+- [Frequently asked questions](https://querocura.com/faq/): every question answered on the site, in one place
 
 ## Optional
 
