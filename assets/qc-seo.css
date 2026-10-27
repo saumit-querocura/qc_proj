@@ -92,3 +92,7 @@ html[data-theme="dark"] .tool-warn { color: #ffb39c; }
 html[lang="hi-IN"] body { font-family: 'Manrope', 'Noto Sans Devanagari', 'Nirmala UI', 'Mangal', system-ui, sans-serif; }
 html[lang="hi-IN"] main p, html[lang="hi-IN"] main li { line-height: 1.9; }
 html[lang="hi-IN"] h1 { line-height: 1.38; } html[lang="hi-IN"] h2 { line-height: 1.45; }
+.toc { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 16px 20px; margin: 0 0 10px; max-width: 760px; }
+.toc b { display: block; font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin-bottom: 6px; }
+.toc ol { margin: 0; padding-left: 0; list-style: none; columns: 2 260px; } .toc li { font-size: 15px; margin: 4px 0; break-inside: avoid; }
+main section { scroll-margin-top: 80px; }

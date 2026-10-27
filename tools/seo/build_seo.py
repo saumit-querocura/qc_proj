@@ -29,6 +29,7 @@ ROOT = os.path.dirname(os.path.dirname(HERE))
 sys.path.insert(0, HERE)
 from pages import PAGES, SITE, SUMMARY  # noqa: E402
 from pages_more import CALC_HUB, GLOSSARY, GLOSSARY_TERMS, GUIDES, HINDI, PRESS, TOOLS  # noqa: E402
+from pages_topics import CLUSTER, HMS_CLUSTER, PILLARS  # noqa: E402
 
 LOGO = "assets/d4f7acc01b9438e998c9e7b9676584b0.png"
 OG = SITE + "/assets/og-image.png"
@@ -65,7 +66,7 @@ UI = {
            "tool_note": ""},
 }
 
-ALL = PAGES + TOOLS + [CALC_HUB] + GUIDES + [GLOSSARY, PRESS] + HINDI
+ALL = PAGES + PILLARS + CLUSTER + TOOLS + [CALC_HUB] + GUIDES + [GLOSSARY, PRESS] + HINDI
 BY_SLUG = {p["slug"]: p for p in ALL}
 HI_OF = {p["en"]: p["slug"] for p in HINDI}                     # English slug -> Hindi slug
 
@@ -128,7 +129,7 @@ def schema(p: dict) -> list:
             "publisher": {"@id": ORG_ID}, "dateModified": p.get("_modified", TODAY)}
     kind = p.get("kind")
     feats = [plain(x) for s in p["sections"] for x in s.get("ul", [])][:12] or [plain(r[0]) + ": " + plain(r[1]) for s in p["sections"] for r in s.get("table", {}).get("rows", [])][:12]
-    if kind == "guide":
+    if kind in ("guide", "pillar"):
         page["@type"] = "Article"
         page.update({"headline": p["h1"], "author": {"@id": ORG_ID}, "datePublished": p.get("_published", TODAY), "image": OG, "mainEntityOfPage": url})
     elif kind == "about":
@@ -144,7 +145,7 @@ def schema(p: dict) -> list:
     elif kind == "glossary":
         g.append({"@type": "DefinedTermSet", "@id": url + "#terms", "name": p["h1"], "url": url, "hasDefinedTerm": [
             {"@type": "DefinedTerm", "name": t, "description": d, "url": url + "#" + anchor(t), "inDefinedTermSet": url + "#terms"} for t, d in GLOSSARY_TERMS]})
-    elif kind not in ("guide", "about", "hub"):
+    elif kind not in ("guide", "about", "hub", "pillar"):
         if p["audience"] == "business":
             g.append({"@type": "SoftwareApplication", "@id": url + "#software", "name": "QueroCura " + plain(p["eyebrow"]), "url": url,
                       "applicationCategory": "BusinessApplication", "applicationSubCategory": plain(p["eyebrow"]), "operatingSystem": "Web browser",
@@ -185,15 +186,16 @@ def footer(root: str, lang: str) -> str:
     con = col("For you &amp; your family", ["health-app", "symptom-checker", "medicine-reminder-app", "personal-health-records", "family-health-app"])
     calc = col("Free calculators", [t["slug"] for t in TOOLS][:6])
     hi = col("हिन्दी में", [p["slug"] for p in HINDI])
+    topics = col("Topics", [p["slug"] for p in PILLARS] + ["healthcare-software"])
     company = ('<div><h3>Company</h3><a href="%sabout/">About QueroCura</a><a href="%spress/">Press kit</a><a href="%sglossary/">Glossary</a><a href="%sguides/">Guides</a>'
                '<a href="%sblog/">Blog</a><a href="%sprivacy-notice/">Privacy notice</a><a href="mailto:hello@querocura.com">hello@querocura.com</a></div>') % ((root,) * 6)
-    return '<footer><div class="wrap"><div class="foot-grid">%s%s%s%s%s</div><p class="foot-legal">© %d QueroCura · %s</p></div></footer>' % (
-        biz, con, calc, hi, company, dt.date.today().year, UI[lang]["legal"])
+    return '<footer><div class="wrap"><div class="foot-grid">%s%s%s%s%s%s</div><p class="foot-legal">© %d QueroCura · %s</p></div></footer>' % (
+        biz, con, topics, calc, hi, company, dt.date.today().year, UI[lang]["legal"])
 
 
 def section_html(s: dict, root: str) -> str:
     fix = lambda x: x.replace("{root}", root)
-    h = "<section><h2>%s</h2>" % e(s["h2"])
+    h = '<section id="%s"><h2>%s</h2>' % (anchor(s["h2"]), e(s["h2"]))
     for para in s.get("p", []):
         h += "<p>%s</p>" % fix(para)
     if s.get("ul"):
@@ -251,6 +253,8 @@ def render(p: dict) -> str:
     crumb = " › ".join(('<a href="%s%s">%s</a>' % (root, s + "/" if s else "", e(ui["home"] if not s else n))) for n, s in cr[:-1]) + " › " + e(cr[-1][0])
     aud = p["audience"] if p["audience"] in ui["trust"] else "consumer"
     body = ""
+    if p.get("kind") == "pillar":
+        body += '<nav class="toc" aria-label="Contents"><b>%s</b><ol>%s</ol></nav>' % ("Contents", "".join('<li><a href="#%s">%s</a></li>' % (anchor(x["h2"]), e(x["h2"])) for x in p["sections"]))
     if p.get("kind") == "tool":
         body += tool_html(p)
     if p.get("kind") == "glossary":
@@ -324,7 +328,7 @@ def render(p: dict) -> str:
 </body>
 </html>
 """.format(htmllang="hi-IN" if lang == "hi" else "en-IN", csp=CSP, title=e(p["title"]), desc=e(p["description"]), url=url, alts=alternates(p), og=OG, site=SITE,
-           ogtype="article" if p.get("kind") == "guide" else "website", oglocale="hi_IN" if lang == "hi" else "en_IN", ld=ld, root=root, scripts=scripts,
+           ogtype="article" if p.get("kind") in ("guide", "pillar") else "website", oglocale="hi_IN" if lang == "hi" else "en_IN", ld=ld, root=root, scripts=scripts,
            nav=nav(root, lang), crumb=crumb, eyebrow=e(plain(p["eyebrow"])), h1=e(p["h1"]), lead=p["lead"].replace("{root}", root),
            cta1u=href(root, p["cta"][1]), cta1=e(p["cta"][0]), cta2u=href(root, p["cta2"][1]), cta2=e(p["cta2"][0]),
            trust="".join("<span>%s</span>" % t for t in ui["trust"][aud]), body=body, band=band, updated=ui["updated"],
@@ -405,6 +409,8 @@ def write_llms(blog: list) -> None:
             "- Privacy: patients choose what a hospital sees, records are encrypted, and every access is logged.",
             "", "## For hospitals and clinics", ""] + group(biz) + [
             "", "## For people and families", ""] + group(con) + [
+            "", "## Healthcare topics", ""] + group(PILLARS) + [
+            "", "## Hospital management system, in depth", ""] + group(CLUSTER) + [
             "", "## Free calculators", ""] + group(TOOLS) + [
             "", "## Guides and reference", ""] + group(GUIDES) + [item(GLOSSARY)] + [
             "", "## About", ""] + group(other) + [item(PRESS),
@@ -415,7 +421,7 @@ def write_llms(blog: list) -> None:
             "- [Full text of these pages](%s/llms-full.txt)" % SITE, ""]
     write("llms.txt", "\n".join(llms))
     full = ["# QueroCura: full text of the public pages", "", "> " + SUMMARY, ""]
-    for p in PAGES + TOOLS + GUIDES + [PRESS]:
+    for p in PAGES + PILLARS + CLUSTER + TOOLS + GUIDES + [PRESS]:
         full += ["", "---", "", "# " + p["h1"], "", "Source: " + url_of(p["slug"]), "", md(p["lead"]), ""]
         for s in p["sections"]:
             full += ["## " + s["h2"], ""]
@@ -462,8 +468,8 @@ def main() -> int:
 # ---------------------------------------------------------------- the existing hand-written pages: titles and the managed head block
 
 EXISTING = {
-    "": {"title": "QueroCura: Free Health App for Symptoms, Medicine Reminders & Family Health",
-         "description": "QueroCura keeps your family's health in one place: a symptom checker in English and Hindi, medicine reminders, health records that explain your reports, and visit prep. Free.",
+    "": {"title": "QueroCura: Connected Healthcare App & Hospital Management System",
+         "description": "Connected healthcare for India: a free family health app (symptom checker in English and Hindi, medicine reminders, health records) and a hospital management system for clinics and hospitals.",
          "type": "home"},
     "hospital/": {"title": "Hospital Management System for Hospitals & Clinics | QueroCura",
                   "description": "QueroCura hospital portal: appointments with real wait times, OPD tokens, triage, beds, theatres, pharmacy and billing with UPI, PM-JAY and CGHS. Apply to onboard.",

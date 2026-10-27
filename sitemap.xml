@@ -3,6 +3,7 @@
   <url><loc>https://querocura.com/</loc><lastmod>2026-10-27</lastmod><priority>1.0</priority></url>
   <url><loc>https://querocura.com/about/</loc><lastmod>2026-10-27</lastmod><priority>0.8</priority></url>
   <url><loc>https://querocura.com/ai-medical-imaging/</loc><lastmod>2026-10-27</lastmod><priority>0.8</priority></url>
+  <url><loc>https://querocura.com/bed-management-system/</loc><lastmod>2026-10-27</lastmod><priority>0.8</priority></url>
   <url><loc>https://querocura.com/blog/</loc><lastmod>2026-10-27</lastmod><priority>0.7</priority></url>
   <url><loc>https://querocura.com/blog/abha-health-id-explained/</loc><lastmod>2026-10-07</lastmod><priority>0.7</priority></url>
   <url><loc>https://querocura.com/blog/cold-flu-or-something-else/</loc><lastmod>2026-10-07</lastmod><priority>0.7</priority></url>
@@ -20,28 +21,43 @@
   <url><loc>https://querocura.com/calculators/pregnancy-due-date/</loc><lastmod>2026-10-27</lastmod><priority>0.8</priority></url>
   <url><loc>https://querocura.com/calculators/qtc-calculator/</loc><lastmod>2026-10-27</lastmod><priority>0.8</priority></url>
   <url><loc>https://querocura.com/clinic-management-software/</loc><lastmod>2026-10-27</lastmod><priority>0.9</priority></url>
+  <url><loc>https://querocura.com/connected-healthcare/</loc><lastmod>2026-10-27</lastmod><priority>0.8</priority></url>
+  <url><loc>https://querocura.com/digital-health-india/</loc><lastmod>2026-10-27</lastmod><priority>0.8</priority></url>
   <url><loc>https://querocura.com/doctor-appointment-booking/</loc><lastmod>2026-10-27</lastmod><priority>0.8</priority></url>
   <url><loc>https://querocura.com/doctor/</loc><lastmod>2026-10-27</lastmod><priority>0.8</priority></url>
+  <url><loc>https://querocura.com/emergency-department-software/</loc><lastmod>2026-10-27</lastmod><priority>0.8</priority></url>
   <url><loc>https://querocura.com/family-health-app/</loc><lastmod>2026-10-27</lastmod><priority>0.9</priority></url>
+  <url><loc>https://querocura.com/future-of-healthcare/</loc><lastmod>2026-10-27</lastmod><priority>0.8</priority></url>
   <url><loc>https://querocura.com/glossary/</loc><lastmod>2026-10-27</lastmod><priority>0.8</priority></url>
   <url><loc>https://querocura.com/guides/</loc><lastmod>2026-10-27</lastmod><priority>0.7</priority></url>
+  <url><loc>https://querocura.com/guides/cloud-vs-on-premise-hospital-software/</loc><lastmod>2026-10-27</lastmod><priority>0.7</priority></url>
   <url><loc>https://querocura.com/guides/emr-vs-ehr-vs-hms/</loc><lastmod>2026-10-27</lastmod><priority>0.7</priority></url>
+  <url><loc>https://querocura.com/guides/hospital-kpis/</loc><lastmod>2026-10-27</lastmod><priority>0.7</priority></url>
+  <url><loc>https://querocura.com/guides/hospital-management-system-features/</loc><lastmod>2026-10-27</lastmod><priority>0.7</priority></url>
+  <url><loc>https://querocura.com/guides/hospital-management-system-implementation-plan/</loc><lastmod>2026-10-27</lastmod><priority>0.7</priority></url>
   <url><loc>https://querocura.com/guides/how-to-choose-a-hospital-management-system/</loc><lastmod>2026-10-27</lastmod><priority>0.7</priority></url>
   <url><loc>https://querocura.com/guides/how-to-organise-your-familys-medical-records/</loc><lastmod>2026-10-27</lastmod><priority>0.7</priority></url>
   <url><loc>https://querocura.com/guides/how-to-reduce-opd-waiting-time/</loc><lastmod>2026-10-27</lastmod><priority>0.7</priority></url>
   <url><loc>https://querocura.com/guides/how-to-remind-elderly-parents-to-take-medicines/</loc><lastmod>2026-10-27</lastmod><priority>0.7</priority></url>
   <url><loc>https://querocura.com/health-app/</loc><lastmod>2026-10-27</lastmod><priority>0.9</priority></url>
+  <url><loc>https://querocura.com/healthcare-management/</loc><lastmod>2026-10-27</lastmod><priority>0.8</priority></url>
   <url><loc>https://querocura.com/healthcare-software/</loc><lastmod>2026-10-27</lastmod><priority>0.8</priority></url>
   <url><loc>https://querocura.com/hi/</loc><lastmod>2026-10-27</lastmod><priority>0.7</priority></url>
   <url><loc>https://querocura.com/hi/family-health-app/</loc><lastmod>2026-10-27</lastmod><priority>0.7</priority></url>
   <url><loc>https://querocura.com/hi/medicine-reminder-app/</loc><lastmod>2026-10-27</lastmod><priority>0.7</priority></url>
   <url><loc>https://querocura.com/hi/personal-health-records/</loc><lastmod>2026-10-27</lastmod><priority>0.7</priority></url>
   <url><loc>https://querocura.com/hi/symptom-checker/</loc><lastmod>2026-10-27</lastmod><priority>0.7</priority></url>
+  <url><loc>https://querocura.com/hospital-billing-software/</loc><lastmod>2026-10-27</lastmod><priority>0.8</priority></url>
   <url><loc>https://querocura.com/hospital-management-system/</loc><lastmod>2026-10-27</lastmod><priority>0.9</priority></url>
   <url><loc>https://querocura.com/hospital/</loc><lastmod>2026-10-27</lastmod><priority>0.9</priority></url>
   <url><loc>https://querocura.com/hospital/setup/</loc><lastmod>2026-10-27</lastmod><priority>0.8</priority></url>
   <url><loc>https://querocura.com/medicine-reminder-app/</loc><lastmod>2026-10-27</lastmod><priority>0.9</priority></url>
+  <url><loc>https://querocura.com/multi-specialty-hospital-software/</loc><lastmod>2026-10-27</lastmod><priority>0.8</priority></url>
+  <url><loc>https://querocura.com/nursing-home-software/</loc><lastmod>2026-10-27</lastmod><priority>0.8</priority></url>
+  <url><loc>https://querocura.com/opd-management-system/</loc><lastmod>2026-10-27</lastmod><priority>0.8</priority></url>
+  <url><loc>https://querocura.com/operation-theatre-management/</loc><lastmod>2026-10-27</lastmod><priority>0.8</priority></url>
   <url><loc>https://querocura.com/personal-health-records/</loc><lastmod>2026-10-27</lastmod><priority>0.8</priority></url>
+  <url><loc>https://querocura.com/pharmacy-management-software/</loc><lastmod>2026-10-27</lastmod><priority>0.8</priority></url>
   <url><loc>https://querocura.com/press/</loc><lastmod>2026-10-27</lastmod><priority>0.8</priority></url>
   <url><loc>https://querocura.com/privacy-notice/</loc><lastmod>2026-10-07</lastmod><priority>0.8</priority></url>
   <url><loc>https://querocura.com/symptom-checker/</loc><lastmod>2026-10-27</lastmod><priority>0.8</priority></url>

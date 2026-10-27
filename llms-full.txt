@@ -405,6 +405,13 @@ Healthcare information is usually scattered: a prescription on one hospital's se
 - [CuraVault personal health records](https://querocura.com/personal-health-records/) that explain your reports.
 - [Family health](https://querocura.com/family-health-app/) with permissions for each person.
 
+## Healthcare topics, explained
+
+- [The future of healthcare in India](https://querocura.com/future-of-healthcare/): ten shifts already underway.
+- [Connected healthcare](https://querocura.com/connected-healthcare/): what it is and how it works with ABDM.
+- [Healthcare management](https://querocura.com/healthcare-management/): running hospitals and clinics well.
+- [Digital health in India](https://querocura.com/digital-health-india/): ABHA, registries, telemedicine and data law.
+
 ## Connected by consent
 
 A hospital sees a patient's QueroCura data only if the patient connects and picks what to share: basics and allergies, vitals, medicines, lab results, scan reports or recent symptom checks. Each connection has an end date and an off switch, and every view is written to an audit log.
@@ -550,6 +557,709 @@ QueroCura started with a simple observation: how long it takes for doctors to ev
 - **Clarity over jargon.** Health information should make sense to the person it is about.
 - **Built with clinicians.** Shaped by the people who treat patients every day.
 - **Seconds matter.** In an emergency, speed is the whole point.
+
+
+---
+
+# The future of healthcare in India: 10 shifts already underway
+
+Source: https://querocura.com/future-of-healthcare/
+
+The future of healthcare is less about one breakthrough than about many gaps closing at once: between the patient and their own records, between one hospital and the next, between a symptom at home and the right level of care, and between the time on the schedule and the real day. Here are ten shifts already underway in India, what they mean for patients and hospitals, and what to watch.
+
+## 1. The record follows the patient, with consent
+
+For decades a patient's history has lived in the files of whichever hospital treated them. The Ayushman Bharat Digital Mission (ABDM) changes the default: every person can have an ABHA number, facilities and professionals are registered, and records move between them when the patient agrees. The future hospital will not ask "do you have your old reports?" but "may I see them?"
+
+What matters is consent that is specific (which records), time-limited (for how long) and revocable (switched off at any time), with a log the patient can read. That is the model QueroCura is built on: a hospital sees only what a patient chooses to share, and every view is recorded.
+
+
+## 2. AI supports clinicians, it does not replace them
+
+AI already drafts reads of chest X-rays, measures ECGs and flags possible bleeding on CT scans. The useful future is not a machine that diagnoses, but one that prepares: it reviews systematically, points out what might be missed, says plainly what it could not assess, and leaves the decision and the signature to a qualified clinician.
+
+Two things decide whether AI helps or harms: whether it refuses inputs it was not built for instead of answering confidently, and whether the hospital measures its accuracy on its own patients. Both should be requirements for any clinical AI a hospital adopts.
+
+
+## 3. Patient data stays where it should
+
+Sending every scan and record to a distant cloud is giving way to a mixed model: analysis that can run on the hospital's own servers, and data that leaves only when it must. India's Digital Personal Data Protection Act, 2023 makes careful handling of personal data a legal duty, and patients increasingly ask where their information goes.
+
+
+## 4. Hospitals run on the real day, not the schedule
+
+A 10:00 appointment that starts at 10:40 is the everyday failure of healthcare operations. Software that watches each doctor's day as it happens, predicts when patients will really be seen and tells them when to arrive turns waiting rooms from crowded to calm. The same live view applies to beds, theatres and the emergency department: the future hospital knows its own state, minute by minute.
+
+
+## 5. Care moves home
+
+Blood pressure cuffs, glucometers, pulse oximeters and phones mean much of chronic care happens at home. The shift is from isolated numbers to trends: a pressure creeping up over two weeks, a weight dropping, a sugar that is steady. People who track readings and bring them to visits, or share them with their doctor, give care a continuity a single clinic visit cannot.
+
+
+## 6. Families become part of the care team
+
+In India, care for elderly parents and children is a family effort, often across cities. Connected tools let family members help with permission: being told when a parent takes a medicine, seeing readings, keeping reports in order. The future of family health is shared but consented, not one relative holding everyone's data.
+
+
+## 7. Health information in every language
+
+Most health information online is in English, while most Indians are more comfortable in another language. Symptom checks, reminders and explanations of lab reports in Hindi and other Indian languages are not a feature but a requirement for reaching most patients.
+
+
+## 8. Triage before the hospital
+
+Many people either rush to an emergency department for something that could wait, or wait at home with something that cannot. Well-designed symptom checkers that ask follow-up questions, explain urgency and point to the right level of care, while never recommending medicines, can help people decide when and where to go.
+
+
+## 9. Prevention becomes measurable
+
+Screening numbers like HbA1c, blood pressure and BMI (with Indian cut-offs) turn into tracked goals when people can see their own trends. Health scores with a reason for every point, and gentle weekly summaries, make prevention something people can follow rather than a lecture.
+
+
+## 10. Software sized to every hospital
+
+India's healthcare is delivered largely by small hospitals, nursing homes and clinics, not only by large chains. The future belongs to systems that a 20-bed nursing home can set up in days and that grow with it to many branches, with UPI billing, PM-JAY and CGHS support, and roles that keep each person to their job.
+
+
+## What this means for patients
+
+- Keep your own record: reports, prescriptions and readings in one place you control.
+- Get an ABHA number and link it where your hospital supports it.
+- Share deliberately: the right records, with the right doctor, for as long as needed.
+- Track trends, not single readings, and bring them to your visits.
+
+## What this means for hospitals
+
+- Run operations on live data: queues, beds, theatres and billing in one system.
+- Build consent into every connection with patients' own apps.
+- Adopt AI as decision support with refusals, local validation and clinician sign-off.
+- Choose software that fits your size today and your network tomorrow.
+
+## Frequently asked questions
+
+**What is the future of healthcare in India?**
+
+Connected, consented records through ABDM and ABHA; AI that supports clinicians; more care at home and within families; hospitals run on live operational data; and health information in Indian languages.
+
+**How will AI change healthcare?**
+
+Mostly as decision support: drafting reads of scans and ECGs, flagging what might be missed and organising information, with a clinician reviewing and signing every result.
+
+**What is ABDM?**
+
+The Ayushman Bharat Digital Mission, India's programme to connect patients, facilities and professionals digitally, with records shared by consent.
+
+
+---
+
+# Connected healthcare: what it is and how it works
+
+Source: https://querocura.com/connected-healthcare/
+
+Connected healthcare means the people and systems involved in someone's care can share the right information at the right time, with that person's consent: the patient and their family, their doctors, the hospital's departments, labs and pharmacies. Instead of starting from zero at every visit, care picks up where it left off.
+
+## The four connections that matter
+
+
+| Connection | What flows | Why it matters |
+|---|---|---|
+| Patient ↔ their own record | Reports, prescriptions, readings, symptom history | People can see, understand and carry their own story |
+| Patient ↔ hospital | Chosen records into the visit; notes and results back | No retyping, no lost history, consent on every share |
+| Department ↔ department | Orders, results, handovers, bed and theatre status | The hospital works as one team, not separate counters |
+| Family ↔ family | Medicines taken, readings, records, with permission | Care for parents and children, even from another city |
+
+## How connected healthcare works in India
+
+The Ayushman Bharat Digital Mission provides the public rails: ABHA numbers for people, the Health Facility Registry and the Healthcare Professionals Registry, and a consent framework for moving records between them. On top of those rails sit the systems people actually use: hospital management systems, lab and imaging systems, and personal health record apps.
+
+Standards make the pieces fit: DICOM for medical images, HL7 FHIR for clinical records in the ABDM ecosystem, and consent artefacts that say who may see what, for how long.
+
+
+## Consent is the heart of it
+
+- **Specific:** the patient chooses which records, such as medicines and lab results but not symptom history.
+- **Time-limited:** access ends on a date, or after the episode of care.
+- **Revocable:** the patient can switch it off at any time.
+- **Visible:** every view is logged in a record the patient can read.
+
+## Benefits
+
+- Faster starts to treatment, especially in emergencies, because history is available.
+- Fewer repeated tests when earlier results can be seen.
+- Safer prescribing with allergies and current medicines known.
+- Better continuity between specialists, hospitals and home.
+- Less paperwork for patients and staff.
+
+## Challenges
+
+- Uneven adoption: not every hospital or lab is connected yet.
+- Data quality: scanned, handwritten and inconsistent records need checking.
+- Privacy and security: more connections need stronger controls and audit.
+- Trust: patients share only when they understand and control what happens.
+
+## How QueroCura connects care
+
+QueroCura has both ends of the connection. People and families use the free app to keep records (CuraVault), track readings, set medicine reminders and prepare for visits. Hospitals and clinics use the QueroCura hospital management system to run appointments, queues, beds, theatres, pharmacy and billing. When a patient connects to their hospital, they pick what it can see and for how long; every view is logged; and they can switch it off at any time.
+
+
+## Frequently asked questions
+
+**What is connected healthcare?**
+
+A model of care where patients, families, doctors and hospital departments share the right health information at the right time, with the patient's consent.
+
+**What is an example of connected healthcare?**
+
+A patient shares their medicines and recent lab results with a hospital before an appointment; the doctor sees them in the visit, adds the new prescription, and it appears back in the patient's own record.
+
+**How does ABDM support connected healthcare?**
+
+ABDM provides ABHA numbers, registries of facilities and professionals, and a consent framework so records can move between providers when the patient agrees.
+
+
+---
+
+# Healthcare management: how good hospitals and clinics are run
+
+Source: https://querocura.com/healthcare-management/
+
+Healthcare management is the work of running a hospital or clinic so that patients get safe, timely care and the organisation stays sustainable. It spans five areas: patient flow, clinical operations, revenue, quality and safety, and people. Each has a handful of numbers worth watching and decisions that software can make easier.
+
+## 1. Patient flow
+
+From booking to discharge, flow decides how patients experience the hospital. Good flow means realistic appointments, fair OPD queues, fast emergency triage, and beds that are ready when patients need them.
+
+- [OPD management](https://querocura.com/opd-management-system/): tokens, queues and real waiting times.
+- [Emergency department](https://querocura.com/emergency-department-software/): five-level triage with time targets.
+- [Bed management](https://querocura.com/bed-management-system/): a live bed board, admission and discharge.
+
+## 2. Clinical operations
+
+Orders between departments, theatre lists, pharmacy dispensing, shift handovers and discharge summaries are where errors hide. Checklists built into the work (the WHO surgical safety checklist, allergy and duplicate checks, discharge checklists) catch them.
+
+- [Operation theatre management](https://querocura.com/operation-theatre-management/).
+- [Pharmacy management](https://querocura.com/pharmacy-management-software/).
+- [Imaging with AI-assisted draft reads](https://querocura.com/ai-medical-imaging/).
+
+## 3. Revenue
+
+Revenue leaks through services given but never billed, claims rejected for missing documents, and dues nobody follows up. Bills that fill from the visit, a payments desk that sees what is owed, and clean scheme and insurance claims protect income.
+
+- [Hospital billing](https://querocura.com/hospital-billing-software/): cash, UPI, card, PM-JAY, CGHS and insurance.
+
+## 4. Quality and safety
+
+Quality is measured: waiting times, readmissions, infections, incidents, and patient feedback. NABH accreditation standards give Indian hospitals a framework; a tamper-evident audit log and role-based access protect patients' data.
+
+
+## 5. People
+
+Doctors, nurses, front desk, lab, pharmacy and billing staff each need the right information and nothing more. Roles that match real jobs, shift handovers that don't lose information, and fewer screens to fill keep good people.
+
+
+## The numbers to watch
+
+Try our free [bed occupancy](https://querocura.com/calculators/bed-occupancy-rate/) and [OPD capacity](https://querocura.com/calculators/opd-capacity-planner/) calculators, and see the full [hospital KPI guide](https://querocura.com/guides/hospital-kpis/).
+
+
+| Area | Indicator |
+|---|---|
+| Flow | OPD waiting time; door-to-doctor time in emergency |
+| Beds | Bed occupancy rate; average length of stay; turnover interval |
+| Revenue | Collections; unbilled services; claim rejection rate |
+| Quality | Readmissions within 30 days; incidents; patient feedback |
+| Theatres | Utilisation; cancellations on the day |
+
+## Where software helps
+
+A hospital management system puts these five areas on one record and one live picture, so managers decide from today's numbers instead of last month's registers. QueroCura is built for Indian hospitals of every size, from a single clinic to many branches.
+
+
+## Frequently asked questions
+
+**What is healthcare management?**
+
+Running hospitals and clinics so patients get safe, timely care and the organisation stays sustainable: patient flow, clinical operations, revenue, quality and people.
+
+**What are the most important KPIs for a hospital?**
+
+OPD waiting time, bed occupancy, average length of stay, collections and unbilled services, claim rejections, readmissions and incidents.
+
+
+---
+
+# Digital health in India: a plain guide
+
+Source: https://querocura.com/digital-health-india/
+
+India has built public digital infrastructure for health, much as it did for payments with UPI. Here is what exists, what it means for patients and hospitals, and the rules that govern it.
+
+## The building blocks
+
+
+| Piece | What it is |
+|---|---|
+| ABDM | Ayushman Bharat Digital Mission, run by the National Health Authority: the national programme for digital health |
+| ABHA | A free 14-digit health ID for each person, used to link and share records with consent |
+| HFR | Health Facility Registry: verified hospitals, clinics, labs and pharmacies |
+| HPR | Healthcare Professionals Registry: verified doctors, nurses and other professionals |
+| Consent manager | The mechanism that asks a patient before records move between providers |
+| eSanjeevani | The government's national telemedicine service |
+
+## Rules that apply
+
+- **Telemedicine Practice Guidelines (2020):** how registered doctors may consult remotely in India.
+- **Digital Personal Data Protection Act, 2023:** duties for anyone handling personal data, including consent and security.
+- **Medical devices regulation (CDSCO):** software that diagnoses or treats can be regulated as a medical device.
+
+## What it means for patients
+
+- Create an ABHA number (free, through the ABDM app or website) and link records where your providers support it.
+- Keep your own copy too: a personal health record app keeps everything in one place, including older paper reports.
+- Read consent requests: what is shared, with whom, for how long.
+
+## What it means for hospitals
+
+- Register your facility in the HFR and your professionals in the HPR.
+- Use software that can work with ABHA and handle consent properly.
+- Keep an audit trail of who saw what, and give staff only the access their job needs.
+
+## Where QueroCura fits
+
+QueroCura's hospital management system records your ABDM facility ID and is built around patient consent; the QueroCura app lets people keep their ABHA number on their profile and their records in CuraVault. Every share is consented, time-limited and logged.
+
+
+## Frequently asked questions
+
+**What is digital health in India?**
+
+The use of digital systems for health, built on the Ayushman Bharat Digital Mission's public infrastructure: ABHA health IDs, registries of facilities and professionals, and consented sharing of records.
+
+**Is ABHA mandatory?**
+
+No, creating an ABHA number is voluntary.
+
+
+---
+
+# Hospital billing software that stops revenue leaking
+
+Source: https://querocura.com/hospital-billing-software/
+
+Most hospital revenue is lost quietly: a test done but never billed, a bed-day missed, a claim rejected for a missing document, a balance nobody followed up. QueroCura builds each bill from what actually happened in the visit, shows the payments desk who owes what, and collects by cash, UPI or card with a receipt.
+
+## How billing works in QueroCura
+
+- **Bills fill themselves** from consultations, tests, procedures and bed-days recorded in the visit.
+- **Prices you set** per doctor and per test, in your price list.
+- **The payments desk** sees what is owed and what is still to bill, and collects by cash, UPI or card with receipts.
+- **Payers:** PM-JAY, CGHS and insurance alongside self-pay.
+- **Reports:** collections by day and department, live and as CSV.
+
+## Where hospitals lose money, and the fix
+
+
+| Leak | Fix |
+|---|---|
+| Services not billed | Bills built from the visit, not typed from memory |
+| Dues not followed up | A desk view of outstanding balances |
+| Claims rejected | Complete records and discharge summaries attached to each case |
+| Price confusion | One price list per doctor and test |
+
+## Who sees billing
+
+Billing staff see bills and payments, not clinical notes. Every change is written to an audit log nobody can edit.
+
+
+## Frequently asked questions
+
+**What is hospital billing software?**
+
+Software that turns the services a patient received into a bill, collects payment and tracks dues and claims. QueroCura's billing is part of its hospital management system.
+
+**Does it support PM-JAY and CGHS?**
+
+Yes, alongside insurance payers and self-pay by cash, UPI or card.
+
+
+---
+
+# Hospital pharmacy management with safety checks built in
+
+Source: https://querocura.com/pharmacy-management-software/
+
+A hospital pharmacy has two jobs: give the right medicine to the right patient, and keep the right stock without waste. QueroCura connects the prescription to the pharmacy, checks it against the patient's allergies and current medicines, and dispenses stock by expiry date.
+
+## What it does
+
+- **Prescriptions in the visit**, printable, with allergy and duplicate-medicine checks.
+- **Dispensing by expiry** (first-expiry, first-out), so stock doesn't go out of date on the shelf.
+- **One record**: what was prescribed, dispensed and billed for each patient.
+- **Pharmacy staff** see what they need to dispense, not the full clinical chart.
+
+## Why checks belong in the software
+
+Allergies and duplicate prescriptions are among the most common avoidable medication errors. When the check happens as the prescription is written, it reaches the doctor while they can still change it.
+
+
+## Frequently asked questions
+
+**What does pharmacy management software do?**
+
+It links prescriptions to dispensing and stock, checks for allergies and duplicates, and tracks expiry so medicines are used before they lapse.
+
+
+---
+
+# An OPD management system that keeps the waiting room calm
+
+Source: https://querocura.com/opd-management-system/
+
+The out-patient department is where most patients meet a hospital, and where most complaints start: long, unexplained waits. QueroCura runs the OPD on the real day: each doctor's live status, tokens issued fairly by department, a waiting-room screen that shows numbers not names, and bookings timed to when patients will really be seen.
+
+## What it includes
+
+- **Registration** with one record and MRN per patient.
+- **Tokens** by department, called in fair order.
+- **Waiting-room screen** showing token numbers and rooms only, with a private link the administrator can switch off.
+- **Live doctor status**: free, with a patient, or running late.
+- **Real wait times** for every slot, learned from each doctor's own consultations.
+- **Arrive-by times** for patients, and a warning on the day if the doctor is late.
+
+## Plan your capacity
+
+How many patients can your OPD see per day, and how long will a new arrival wait? Try the free [OPD capacity planner](https://querocura.com/calculators/opd-capacity-planner/), and read [8 ways to reduce OPD waiting time](https://querocura.com/guides/how-to-reduce-opd-waiting-time/).
+
+
+## Frequently asked questions
+
+**What is an OPD management system?**
+
+Software that runs the out-patient department: registration, appointments, token queues, the waiting-room display and the consultation record.
+
+
+---
+
+# A bed management system that shows every bed, live
+
+Source: https://querocura.com/bed-management-system/
+
+Knowing which beds are free, which are being cleaned and which patients are about to go home is the difference between admitting an emergency in minutes and in hours. QueroCura keeps a live bed board for every ward and the ICU, and connects it to admission, handover and discharge.
+
+## What it shows and does
+
+- **Live bed board**: occupied, being admitted, cleaning and free, by ward and ICU.
+- **Admission** to the right bed in the right ward.
+- **Shift handover** so nursing tasks and concerns aren't lost between shifts.
+- **Discharge checklists** and signed discharge summaries.
+- **Several sites**: each branch with its own wards and board.
+- **Command centre**: occupancy across the hospital at a glance.
+
+## Measure it
+
+Bed occupancy rate, average length of stay and turnover interval tell you whether beds are used well. Use the free [bed occupancy calculator](https://querocura.com/calculators/bed-occupancy-rate/).
+
+
+## Frequently asked questions
+
+**What is a bed management system?**
+
+Software that tracks the status of every hospital bed in real time and connects it to admission, transfer and discharge.
+
+
+---
+
+# Operation theatre management with safety built into every case
+
+Source: https://querocura.com/operation-theatre-management/
+
+Theatres are the most expensive hours in a hospital, and the place where a missed check costs most. QueroCura keeps theatre lists with clash checks, so a surgeon, anaesthetist or theatre isn't double-booked, and puts the WHO surgical safety checklist into every case.
+
+## What it includes
+
+- **Theatre lists** by theatre and day.
+- **Clash checks** for theatres and staff.
+- **WHO surgical safety checklist**: sign in before anaesthesia, time out before incision, sign out before the patient leaves.
+- **One record**: the case links to the patient's admission, bills and discharge.
+
+## Why the checklist matters
+
+The WHO surgical safety checklist was shown in a multi-country study to reduce complications and deaths after surgery. Building it into the theatre list makes it part of the workflow instead of a paper form.
+
+
+## Frequently asked questions
+
+**What is OT management software?**
+
+Software that schedules operation theatres and staff, prevents clashes and records safety checks for each surgical case.
+
+
+---
+
+# Emergency department software that puts the sickest patient first
+
+Source: https://querocura.com/emergency-department-software/
+
+In an emergency department, order matters more than speed alone: the sickest patient must be seen first. QueroCura triages every arrival into one of five levels with a time-to-be-seen target, uses early-warning scores to spot patients getting worse, and connects the emergency department to beds and theatres.
+
+## What it includes
+
+- **Five-level triage** with a target time for each level.
+- **Early-warning scores** from vital signs to flag deterioration.
+- **Live view** of who is waiting, how long and at what level.
+- **Onward care**: admission to a bed, theatre or transfer from the same record.
+- **Critical results**: the AI imaging module records when a critical finding is told to the treating team.
+
+## Emergency access to a patient's record
+
+If a patient switched it on, an emergency team can open a short, read-only essentials view for two hours, with a written reason; the patient is told immediately.
+
+
+## Frequently asked questions
+
+**What is emergency triage software?**
+
+Software that sorts emergency patients by urgency, sets target times to be seen and tracks them until they are seen and moved on.
+
+
+---
+
+# Software for nursing homes and small hospitals, without an IT department
+
+Source: https://querocura.com/nursing-home-software/
+
+A 10 to 50-bed nursing home needs the same essentials as a large hospital (registration, OPD, beds, a theatre, pharmacy and billing) but has no IT team and no months to spare. QueroCura creates a setup plan sized to your facility in about two minutes, and one click creates your departments, wards, beds, theatres and price list.
+
+## Built for small teams
+
+- **Fast setup:** answer questions about beds, doctors and services; the plan is applied in one click.
+- **One person, several roles:** roles you design, such as a receptionist who also takes payments.
+- **Works in a browser** on the computers and phones you already have.
+- **Indian billing:** cash, UPI, card, PM-JAY, CGHS and insurance.
+- **Grows with you**: add departments, theatres and branches later.
+
+## What a small hospital should ask any vendor
+
+How long from signing to first patient? Who sets up the price list? What happens when we add beds or a second site? Our [HMS buyer's guide](https://querocura.com/guides/how-to-choose-a-hospital-management-system/) has the full checklist.
+
+
+## Frequently asked questions
+
+**What is the best software for a small hospital or nursing home in India?**
+
+One that covers OPD, beds, theatre, pharmacy and billing with UPI and government schemes, is set up in days rather than months, and needs no IT team. QueroCura is built for exactly that.
+
+
+---
+
+# Software for multi-specialty hospitals and hospital groups
+
+Source: https://querocura.com/multi-specialty-hospital-software/
+
+A multi-specialty hospital is many departments that must act as one: OPD and emergency, wards and ICU, theatres, lab, radiology, pharmacy and billing, often across several sites. QueroCura gives each its own view and connects them on one patient record.
+
+## What large hospitals need
+
+- **Departments and sites**: each branch with its own departments, wards, queue and bed board.
+- **Orders between departments**, with lab and radiology staff seeing only the orders sent to them.
+- **Imaging** with AI-assisted draft reads, including an option that runs on your own server.
+- **Roles you design** for every job, with two-step sign-in for all staff.
+- **Command centre** for footfall, admissions, collections and occupancy across sites.
+
+## Alongside your existing system
+
+Larger hospitals can run QueroCura next to an existing hospital information system for the parts that involve patients' own apps and consented records.
+
+
+## Frequently asked questions
+
+**Can one system run several hospital branches?**
+
+Yes. In QueroCura each site has its own departments, wards, queue and bed board, and staff are assigned to the sites they work at.
+
+
+---
+
+# Hospital management system features: the complete list
+
+Source: https://querocura.com/guides/hospital-management-system-features/
+
+A hospital management system is a set of modules that follow the patient from the front desk to discharge and the money from service to collection. Here is every module a full HMS should have, and what each should do. Use it as a checklist when comparing systems.
+
+## Front desk and out-patients
+
+
+| Module | Should do |
+|---|---|
+| Registration | One record and MRN per patient, deduplicated |
+| Appointments | Doctors' days side by side; real wait times |
+| OPD queue | Fair tokens; a private waiting-room display |
+| Consultation | Notes, orders, prescriptions with safety checks |
+
+## Emergency and in-patients
+
+
+| Module | Should do |
+|---|---|
+| Emergency | Five-level triage, time targets, early-warning scores |
+| Admission and beds | Live bed board; admission to the right bed |
+| Nursing | Vitals, tasks, shift handover |
+| Discharge | Checklist and signed discharge summary |
+
+## Clinical support
+
+
+| Module | Should do |
+|---|---|
+| Operation theatres | Lists, clash checks, WHO surgical safety checklist |
+| Pharmacy | Allergy and duplicate checks; stock by expiry |
+| Laboratory | Orders and results to the requesting doctor |
+| Radiology and imaging | DICOM viewing, reporting, AI-assisted drafts with sign-off |
+
+## Money, management and safety
+
+
+| Module | Should do |
+|---|---|
+| Billing | Bills from the visit; cash, UPI, card; schemes and insurance |
+| Reports | Footfall, admissions, collections, occupancy; export |
+| Roles and security | Custom roles, two-step sign-in, audit log |
+| Patient connection | Consent-based sharing with patients' own apps; ABHA |
+
+## How QueroCura measures up
+
+QueroCura includes every module above. See the [QueroCura hospital management system](https://querocura.com/hospital-management-system/), or [plan your setup](https://querocura.com/hospital/setup/).
+
+
+## Frequently asked questions
+
+**What are the modules of a hospital management system?**
+
+Registration, appointments, OPD queue, consultation, emergency, admission and beds, nursing, discharge, operation theatres, pharmacy, laboratory, radiology, billing, reports, roles and security, and patient connection.
+
+
+---
+
+# Cloud vs on-premise hospital software: which is right for you?
+
+Source: https://querocura.com/guides/cloud-vs-on-premise-hospital-software/
+
+Cloud software runs on the vendor's servers and is used through a browser; on-premise software runs on servers inside the hospital. Neither is always better. Here is a fair comparison for Indian hospitals, and a common middle path.
+
+## Side by side
+
+
+|  | Cloud | On-premise |
+|---|---|---|
+| Upfront cost | Low: no servers to buy | High: servers, backup, licences |
+| Running cost | Subscription | IT staff, power, upgrades |
+| Setup time | Days | Weeks to months |
+| Updates | Automatic | Planned by your IT team |
+| Internet outage | Needs a backup connection | Keeps working inside the hospital |
+| Data location | Vendor's data centre | Inside your building |
+| Security | Vendor's specialists; check their controls | Your team's responsibility |
+
+## The middle path
+
+Many hospitals run day-to-day operations in the cloud and keep the most sensitive or heaviest workloads on site. For example, QueroCura's hospital management system works through a browser, while its AI imaging engine can run on the hospital's own server so scans never leave the building.
+
+
+## Questions to ask any vendor
+
+- Where is our data stored, and who can access it?
+- What happens during an internet outage?
+- How are backups made and tested?
+- Can we export all our data if we leave?
+- Is every access logged?
+
+## Frequently asked questions
+
+**Is cloud hospital software safe?**
+
+It can be, if the vendor encrypts data, controls and logs access, backs up reliably and meets Indian data-protection law. Ask for specifics.
+
+
+---
+
+# How to implement a hospital management system: a 30-day plan
+
+Source: https://querocura.com/guides/hospital-management-system-implementation-plan/
+
+Most HMS projects fail not because of the software but because of the rollout: too much at once, too little training, no pilot. This plan takes a small or mid-sized hospital from signing to go-live in about 30 days.
+
+## Week 1: set up
+
+- Agree three goals (for example, shorter OPD waits, no unbilled services, a live bed board).
+- Create departments, wards, beds, theatres and the price list.
+- Create roles and invite staff with two-step sign-in.
+
+## Week 2: data and training
+
+- Load doctors' schedules and current in-patients.
+- Train each role on its own screens only, in short sessions.
+- Name one champion per department.
+
+## Week 3: pilot
+
+- Run one OPD and the billing desk on the new system for a week.
+- Fix friction daily; measure waiting time and unbilled services.
+
+## Week 4: go live
+
+- Switch the remaining departments over in a planned order.
+- Keep champions on the floor for the first days.
+- Review the three goals at the end of the month.
+
+## Mistakes to avoid
+
+- Going live everywhere on the same day.
+- Training everyone on everything.
+- Leaving the price list until the last day.
+- No owner for each department's problems.
+
+## Frequently asked questions
+
+**How long does it take to implement a hospital management system?**
+
+From a few weeks for clinics and small hospitals to several months for large ones. With a ready setup plan, a small hospital can go live in about 30 days.
+
+
+---
+
+# Hospital KPIs: 12 metrics every administrator should track
+
+Source: https://querocura.com/guides/hospital-kpis/
+
+You can't improve what you don't measure, but tracking fifty numbers helps nobody. These twelve indicators cover patient flow, beds, theatres, money and quality. Most come straight out of a hospital management system.
+
+## The 12 KPIs
+
+
+| KPI | How to calculate | Why it matters |
+|---|---|---|
+| OPD waiting time | Time seen − appointment or arrival time | The patient's first impression |
+| Door-to-doctor (emergency) | Time seen by doctor − arrival | Safety of emergency care |
+| Bed occupancy rate | Inpatient days ÷ (beds × days) × 100 | Use of capacity; aim 75–85% |
+| Average length of stay | Inpatient days ÷ discharges | Efficiency, by specialty |
+| Bed turnover interval | (Beds × days − inpatient days) ÷ discharges | Idle time between patients |
+| Theatre utilisation | Hours used ÷ hours available | Your most expensive resource |
+| Same-day cancellations | Cases cancelled on the day ÷ cases listed | Wasted theatre time |
+| Collections | Money received per day and department | Cash flow |
+| Unbilled services | Services given but not billed | Hidden revenue loss |
+| Claim rejection rate | Rejected ÷ submitted claims | Scheme and insurance income |
+| 30-day readmissions | Readmitted within 30 days ÷ discharges | Quality of care and discharge |
+| Patient feedback | Share rating their visit good or better | Experience and reputation |
+
+## Calculate them now
+
+Use the free [bed occupancy and ALOS calculator](https://querocura.com/calculators/bed-occupancy-rate/) and the [OPD capacity planner](https://querocura.com/calculators/opd-capacity-planner/). QueroCura's command centre shows footfall, admissions, collections and occupancy live.
+
+
+## Frequently asked questions
+
+**What are the key performance indicators for a hospital?**
+
+OPD waiting time, emergency door-to-doctor time, bed occupancy, ALOS, turnover interval, theatre utilisation, cancellations, collections, unbilled services, claim rejections, readmissions and patient feedback.
 
 
 ---

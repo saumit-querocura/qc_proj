@@ -25,6 +25,28 @@ Key facts:
 - [A symptom checker that asks the questions a doctor would](https://querocura.com/symptom-checker/): Describe how you feel in your own words, in English or Hindi. QueroCura asks the follow-up questions a doctor would and tells you how urgent it is. Never medicine advice.
 - [One health app for your symptoms, medicines, records and family](https://querocura.com/health-app/): One free health app for symptom checks in English and Hindi, medicine reminders, personal health records, visit prep and your family's health. Never medicine advice.
 
+## Healthcare topics
+
+- [The future of healthcare in India: 10 shifts already underway](https://querocura.com/future-of-healthcare/): Where healthcare in India is heading: connected records with consent, AI that supports clinicians, care at home, hospitals run in real time, and health in every language.
+- [Connected healthcare: what it is and how it works](https://querocura.com/connected-healthcare/): Connected healthcare links patients, families, doctors and hospitals through shared, consented health information. What it is, how it works with ABDM, and its benefits.
+- [Healthcare management: how good hospitals and clinics are run](https://querocura.com/healthcare-management/): What healthcare management covers: patient flow, clinical operations, revenue, quality and people. The KPIs that matter and how software helps hospitals in India.
+- [Digital health in India: a plain guide](https://querocura.com/digital-health-india/): A plain guide to digital health in India: ABDM and ABHA, health facility and professional registries, telemedicine guidelines, eSanjeevani and the DPDP Act, 2023.
+
+## Hospital management system, in depth
+
+- [Hospital billing software that stops revenue leaking](https://querocura.com/hospital-billing-software/): Hospital billing software that builds bills from the visit, collects by cash, UPI and card, and handles PM-JAY, CGHS and insurance payers. Fewer leaks, faster collection.
+- [Hospital pharmacy management with safety checks built in](https://querocura.com/pharmacy-management-software/): Hospital pharmacy software with allergy and duplicate checks, printable prescriptions and stock dispensed by expiry date. Part of the QueroCura hospital management system.
+- [An OPD management system that keeps the waiting room calm](https://querocura.com/opd-management-system/): OPD management software for Indian hospitals: fair token queues by department, a waiting-room screen without names, live doctor status and booking to real wait times.
+- [A bed management system that shows every bed, live](https://querocura.com/bed-management-system/): A live bed board for every ward and ICU: occupied, admitting, cleaning and free beds; admission to the right bed; shift handover and discharge checklists.
+- [Operation theatre management with safety built into every case](https://querocura.com/operation-theatre-management/): OT scheduling with clash checks and the WHO surgical safety checklist in every case. Theatre lists for surgeons, anaesthetists and nurses in one hospital system.
+- [Emergency department software that puts the sickest patient first](https://querocura.com/emergency-department-software/): Emergency department software with five-level triage, time-to-be-seen targets and early-warning scores, connected to beds, theatres and the rest of the hospital.
+- [Software for nursing homes and small hospitals, without an IT department](https://querocura.com/nursing-home-software/): Hospital software sized for nursing homes and small hospitals in India: set up in days, OPD, beds, theatre, pharmacy and billing with UPI and PM-JAY, without an IT team.
+- [Software for multi-specialty hospitals and hospital groups](https://querocura.com/multi-specialty-hospital-software/): Hospital software for multi-specialty hospitals and groups: departments and branches, orders between departments, imaging, roles you design and a command centre.
+- [Hospital management system features: the complete list](https://querocura.com/guides/hospital-management-system-features/): The complete list of hospital management system (HMS) modules and features, from registration to discharge, billing and reports, with what each should do.
+- [Cloud vs on-premise hospital software: which is right for you?](https://querocura.com/guides/cloud-vs-on-premise-hospital-software/): Cloud or on-premise hospital management software? A fair comparison of cost, security, uptime, data location and AI for hospitals in India.
+- [How to implement a hospital management system: a 30-day plan](https://querocura.com/guides/hospital-management-system-implementation-plan/): A practical 30-day plan for implementing a hospital management system: setup, data, training, a pilot and go-live, with the mistakes to avoid.
+- [Hospital KPIs: 12 metrics every administrator should track](https://querocura.com/guides/hospital-kpis/): The hospital KPIs that matter: OPD waiting time, bed occupancy, ALOS, collections, claim rejections, readmissions and more, with formulas and free calculators.
+
 ## Free calculators
 
 - [BMI calculator with Indian cut-offs](https://querocura.com/calculators/bmi-calculator/): Free BMI calculator with both WHO and the lower Asian-Indian cut-offs (overweight from 23, obese from 25). Enter height and weight; nothing is sent anywhere.
