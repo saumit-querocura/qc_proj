@@ -1,0 +1,54 @@
+{
+ "about": {
+  "date": "2026-10-27",
+  "hash": "b29277518de2"
+ },
+ "ai-medical-imaging": {
+  "date": "2026-10-27",
+  "hash": "e104a2320d1b"
+ },
+ "clinic-management-software": {
+  "date": "2026-10-27",
+  "hash": "6a65842c422d"
+ },
+ "doctor-appointment-booking": {
+  "date": "2026-10-27",
+  "hash": "c33b452dfcae"
+ },
+ "family-health-app": {
+  "date": "2026-10-27",
+  "hash": "f87fcc68e904"
+ },
+ "guides": {
+  "date": "2026-10-27",
+  "hash": "b5eb38e18275"
+ },
+ "guides/how-to-choose-a-hospital-management-system": {
+  "date": "2026-10-27",
+  "hash": "a7da185cf51d"
+ },
+ "health-app": {
+  "date": "2026-10-27",
+  "hash": "34aaa8fe08a2"
+ },
+ "healthcare-software": {
+  "date": "2026-10-27",
+  "hash": "99796186c147"
+ },
+ "hospital-management-system": {
+  "date": "2026-10-27",
+  "hash": "10cc1465c8b7"
+ },
+ "medicine-reminder-app": {
+  "date": "2026-10-27",
+  "hash": "38aa91c00081"
+ },
+ "personal-health-records": {
+  "date": "2026-10-27",
+  "hash": "29526affa587"
+ },
+ "symptom-checker": {
+  "date": "2026-10-27",
+  "hash": "8333e4ac9655"
+ }
+}

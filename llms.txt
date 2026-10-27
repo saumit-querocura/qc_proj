@@ -1,0 +1,42 @@
+# QueroCura
+
+> QueroCura is an Indian healthcare software platform with two connected parts: a free health app for people and families (symptom checker in English and Hindi, medicine reminders, personal health records called CuraVault, family health management, visit preparation) and a hospital management system (HMS) for clinics and hospitals of any size (appointments with real wait times, OPD tokens, emergency triage, beds, operation theatres, pharmacy, billing with UPI, PM-JAY and CGHS, roles, audit logs and AI-assisted imaging). Patients decide what their hospital can see. QueroCura never recommends medicines and is not a diagnosis.
+
+Key facts:
+- Website: https://querocura.com . Contact: hello@querocura.com. Founded by Udantika Dhar (CEO) and Saumit Pradhan (CTO). Based in India.
+- The health app is free, works in English and Hindi, in any phone or computer browser.
+- The hospital management system is for clinics, nursing homes and multi-specialty hospitals, from one site to many branches; QueroCura is onboarding its first hospitals and prices by size.
+- Safety: QueroCura never recommends medicines; symptom checks are not a diagnosis; imaging AI drafts are decision support signed off by a clinician.
+- Privacy: patients choose what a hospital sees, records are encrypted, and every access is logged.
+
+## For hospitals and clinics
+
+- [A hospital management system that runs every hour of your hospital](https://querocura.com/hospital-management-system/): QueroCura HMS runs appointments, OPD tokens, triage, beds, theatres, pharmacy and billing (UPI, PM-JAY, CGHS) for clinics and hospitals of any size. ABHA ready.
+- [Clinic management software for doctors who would rather see patients than paperwork](https://querocura.com/clinic-management-software/): Clinic management software for doctors and small clinics in India: appointments with real wait times, OPD tokens, e-prescriptions, billing with UPI, and practice insights.
+- [Doctor appointment booking that shows when patients will really be seen](https://querocura.com/doctor-appointment-booking/): Online doctor appointment booking that shows when you'll really be seen, an OPD token queue and a waiting-room screen. For clinics and hospitals in India.
+- [AI-assisted imaging reads that your radiologist stays in charge of](https://querocura.com/ai-medical-imaging/): AI-assisted draft reads for chest X-ray, CT and ECG that your radiologist accepts and signs. Runs on your own server so images never leave the hospital. Decision support.
+- [How to choose a hospital management system: a practical checklist](https://querocura.com/guides/how-to-choose-a-hospital-management-system/): A practical checklist for choosing the best hospital management system for your hospital or clinic in India: modules, billing, ABHA, security, setup time and cost.
+
+## For people and families
+
+- [A medicine reminder app that keeps the whole family in the loop](https://querocura.com/medicine-reminder-app/): A free medicine reminder app: dose reminders timed to your prescriptions, a Taken button right on the notification, and alerts to family when a dose is taken. English & Hindi.
+- [Manage your family's health together, with everyone's permission](https://querocura.com/family-health-app/): Manage your family's health in one place: connect parents and children, choose what each person can see (medicines, records, vitals), and get instant updates. Free.
+- [Your medical reports, in one place, explained in plain language](https://querocura.com/personal-health-records/): CuraVault keeps your reports, prescriptions and scans in one encrypted place, reads them (even handwritten ones) and explains each value in plain language. Free.
+- [A symptom checker that asks the questions a doctor would](https://querocura.com/symptom-checker/): Describe how you feel in your own words, in English or Hindi. QueroCura asks the follow-up questions a doctor would and tells you how urgent it is. Never medicine advice.
+- [One health app for your symptoms, medicines, records and family](https://querocura.com/health-app/): One free health app for symptom checks in English and Hindi, medicine reminders, personal health records, visit prep and your family's health. Never medicine advice.
+
+## About
+
+- [Organised healthcare software, for the people who give care and the people who receive it](https://querocura.com/healthcare-software/): QueroCura is organised healthcare software for India: a hospital management system for providers and a free health app for patients and families, connected by consent.
+- [About QueroCura](https://querocura.com/about/): QueroCura builds a hospital management system and a free family health app, connected by patient consent. Founded by Udantika Dhar (CEO) and Saumit Pradhan (CTO).
+- [Hospital portal](https://querocura.com/hospital/): sign in or apply to onboard a hospital or clinic
+- [For doctors](https://querocura.com/doctor/): practice tools for doctors
+
+## Optional
+
+- [What Is ABHA and Why Should Your Family Have One? A Digital Health ID Explained](https://querocura.com/blog/abha-health-id-explained/): ABHA is India's push toward one digital health record per person. Here's what it actually does, why it matters in an emergency, and how it fits alongside your own CuraVault.
+- [Cold, Flu, or Something Else? A Home Guide to Telling Symptoms Apart](https://querocura.com/blog/cold-flu-or-something-else/): Runny nose, fever, body ache — is it a cold, the flu, or something that needs a doctor? A practical, symptom-by-symptom guide to telling them apart at home.
+- [Fever with Body Ache in Monsoon Season: Dengue, Malaria, or Just a Viral Fever?](https://querocura.com/blog/fever-body-ache-monsoon-dengue-malaria/): Every monsoon, fever cases spike across India. Here's how to tell a routine viral fever apart from dengue or malaria — and exactly when to stop waiting and get a blood test.
+- [What Happens to Your Health Data in an Emergency?](https://querocura.com/blog/health-data-in-an-emergency/): When you can't speak for yourself in an emergency, your medical history either disappears into paperwork — or it becomes instantly, securely accessible. Here's how QueroCura's Emergency Glass Door and CuraVault change that.
+- [When Is a Headache Serious? A Symptom-by-Symptom Guide](https://querocura.com/blog/when-is-a-headache-serious/): Most headaches are harmless. A few are emergencies. Here's how to tell a tension headache from a migraine from a headache that needs immediate medical attention.
+- [Full text of these pages](https://querocura.com/llms-full.txt)

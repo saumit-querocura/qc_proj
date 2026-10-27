@@ -1,0 +1,553 @@
+# QueroCura: full text of the public pages
+
+> QueroCura is an Indian healthcare software platform with two connected parts: a free health app for people and families (symptom checker in English and Hindi, medicine reminders, personal health records called CuraVault, family health management, visit preparation) and a hospital management system (HMS) for clinics and hospitals of any size (appointments with real wait times, OPD tokens, emergency triage, beds, operation theatres, pharmacy, billing with UPI, PM-JAY and CGHS, roles, audit logs and AI-assisted imaging). Patients decide what their hospital can see. QueroCura never recommends medicines and is not a diagnosis.
+
+
+---
+
+# A hospital management system that runs every hour of your hospital
+
+Source: https://querocura.com/hospital-management-system/
+
+QueroCura is a hospital management system (HMS) for clinics, nursing homes and multi-specialty hospitals in India. It brings the patient register, appointments, OPD queue, emergency triage, beds, operation theatres, pharmacy, billing and reports into one system, and connects to the patient's own health app with their consent.
+
+## What a hospital management system should do, and what QueroCura does
+
+A good HMS removes retyping, waiting and guesswork. Every department should work from the same patient record, the front desk should know when each doctor will really be free, and the accounts team should see what is billed and what is still owed without chasing paper.
+
+
+| Area | In QueroCura |
+|---|---|
+| Patient register | One record and MRN per patient: visits, prescriptions, results, scans and bills |
+| Appointments | Every doctor's day side by side; each free slot shows when the patient will really be seen |
+| OPD queue | Fair tokens by department and a waiting-room screen that never shows names |
+| Emergency | Five-level triage with time-to-be-seen targets and early-warning scores |
+| In-patients | Live bed board, admission to the right bed, shift handover, discharge checklists and signed summaries |
+| Operation theatres | Theatre lists with clash checks and the WHO surgical safety checklist in every case |
+| Pharmacy | Allergy and duplicate checks, printable prescriptions, stock dispensed by expiry |
+| Billing | Bills fill themselves from the visit; cash, UPI and card with receipts; PM-JAY, CGHS and insurance payers |
+| Imaging | AI-assisted draft reads that a radiologist accepts, rejects and signs; an on-premise option keeps images on your server |
+| Reports | Footfall, admissions, collections and occupancy, live and as CSV, in a command centre |
+
+## Appointments that follow the real day
+
+A 10:00 appointment means little if the doctor is twenty minutes behind. QueroCura watches each doctor's day as it happens: who is with them, who is waiting and how long their consultations usually take. It predicts when each patient will really be seen, highlights the slot with the shortest real wait, and tells patients when to arrive. Patients using the QueroCura app are told on the day if their doctor is running late.
+
+
+## Sized to your hospital, from a single clinic to many branches
+
+- **A setup plan in about two minutes.** Answer questions about beds, doctors and services; one click creates your departments, wards, beds, theatres and price list.
+- **Several sites.** Branches with their own departments, wards, queue, bed board and front-desk board, with staff assigned to the sites they work at.
+- **Roles you design.** Change what each role can do, or create your own, such as "Senior receptionist". Front desk and billing never see clinical notes.
+- **Run it alongside what you have.** For many clinics and nursing homes QueroCura can be the day-to-day system; larger hospitals can run it next to an existing HIS for patient-consented records.
+
+## Built for Indian hospitals
+
+- Payments by cash, UPI and card; PM-JAY, CGHS and insurance payers.
+- ABHA ready, with your ABDM facility ID on your organisation profile.
+- English and Hindi for patients, end to end.
+- Every organisation is verified with its registration or licence number before it can reach a patient.
+
+## Security and patient consent
+
+Staff sign in with a password and an authenticator code, and idle sessions end on their own. Every request, view and change goes into a hash-chained audit log that nobody can edit, and patients can see their own part of it. Clinical text is encrypted at rest. A hospital sees a patient's app data only if the patient connects and chooses what to share, with an end date and an off switch.
+
+
+## Frequently asked questions
+
+**What is a hospital management system?**
+
+A hospital management system (HMS) is software that runs a hospital's daily work in one place: patient registration, appointments and queues, emergency and in-patient care, theatres, pharmacy, billing and reports. QueroCura is an HMS built for hospitals and clinics in India.
+
+**Which is the best hospital management system for a small hospital or clinic in India?**
+
+The right HMS is the one your team will actually use: quick to set up, priced for your size, with UPI billing, PM-JAY and CGHS support, ABHA readiness and role-based access. QueroCura creates a setup plan sized to your facility in about two minutes and can be the day-to-day system for clinics and nursing homes. Our buyer's guide lists what to check before choosing any HMS.
+
+**Does QueroCura support PM-JAY, CGHS and insurance?**
+
+Yes. Bills can be raised to PM-JAY, CGHS and insurance payers, alongside cash, UPI and card payments with receipts.
+
+**Is QueroCura ABHA and ABDM ready?**
+
+Yes. Organisations can record their ABDM facility ID, and patients can keep their ABHA on their QueroCura profile.
+
+**Can QueroCura handle more than one branch?**
+
+Yes. Sites have their own departments, wards, queue and bed board, and staff are assigned to the sites they work at.
+
+**How much does the QueroCura hospital management system cost?**
+
+We are onboarding our first hospitals now and price by size. Plan your setup online or write to hello@querocura.com and we will talk.
+
+
+---
+
+# Clinic management software for doctors who would rather see patients than paperwork
+
+Source: https://querocura.com/clinic-management-software/
+
+QueroCura gives a doctor practising alone, or a clinic with a few doctors, one place for opening hours and bookings, today's patients, prescriptions, bills and practice insights. Patients who use the QueroCura app can arrive with their history, readings and questions already shared with you.
+
+## Everything a clinic runs on
+
+- **Hours and bookings.** Set your hours; patients book real free slots, and each slot shows when they are likely to be seen.
+- **Today's patients.** A list of who is booked, who has arrived and who is with you.
+- **OPD tokens.** A fair token queue and a waiting-room screen that shows token numbers, never names.
+- **Prescriptions.** Printable prescriptions with allergy and duplicate checks.
+- **Billing.** Bills fill from the visit; collect by cash, UPI or card with receipts; set prices per doctor and per test.
+- **Practice insights.** Footfall, collections and how your days actually run.
+
+## Patients who arrive prepared
+
+Patients using QueroCura can send you a one-page brief before the visit: why they are coming, what worries them most and what has changed in their readings, behind a link that needs a PIN and expires on its own. You see what they chose to share, and nothing else.
+
+
+## Grow from one doctor to a hospital without changing systems
+
+The same software runs a hospital: add departments, wards and beds, emergency triage, theatres and pharmacy when you need them, and invite your team with the role that fits each person.
+
+
+## Frequently asked questions
+
+**What is clinic management software?**
+
+Clinic management software runs a clinic's day: appointments, the waiting queue, patient records, prescriptions and billing. QueroCura does this for single doctors and multi-doctor clinics in India.
+
+**Is there clinic software with UPI billing?**
+
+Yes. QueroCura collects by cash, UPI or card and gives receipts, with prices set per doctor and per test.
+
+**Can patients book appointments online?**
+
+Yes. Patients book real free slots, see when they are likely to be seen, and get told on the day if the doctor is running late.
+
+**Can I start as a single doctor and add a clinic later?**
+
+Yes. Start on your own; when you open or join a clinic, the same account works inside it.
+
+
+---
+
+# Doctor appointment booking that shows when patients will really be seen
+
+Source: https://querocura.com/doctor-appointment-booking/
+
+Most booking systems hand out fixed slots that drift as the day runs late. QueroCura predicts the real start time of every slot from each doctor's own recent consultations, points the front desk and the patient to the shortest real wait, and keeps the waiting room quiet.
+
+## How it works
+
+- **Live status of every doctor:** free now, with a patient, or running late, at a glance on the front-desk board.
+- **The best slot, highlighted:** every free slot shows when the patient will really be seen, and the soonest real start is marked.
+- **Arrive-by times:** the desk tells patients when to come, and the app warns them on the day if their doctor is running late.
+- **Learns each doctor:** predictions use each doctor's own consultations, not a fixed slot length.
+
+## OPD tokens and the waiting room
+
+Tokens are issued fairly by department. The waiting-room screen shows token numbers and room names only, never a patient's name, and each screen has its own private link that an administrator can switch off at any time.
+
+
+## For patients
+
+Book a visit with a doctor or clinic on QueroCura, see the time you are likely to be seen, add it to your calendar and get reminders. Visit prep helps you write down why you are going and what to ask.
+
+
+## Frequently asked questions
+
+**What is an OPD queue management system?**
+
+It issues tokens to out-patients, calls them in order and shows the queue on a waiting-room screen. QueroCura's queue issues fair tokens by department and never shows names on the screen.
+
+**Can patients see the doctor's real waiting time?**
+
+Yes. Each free slot shows when the patient will really be seen, based on how the doctor's day is actually running.
+
+
+---
+
+# AI-assisted imaging reads that your radiologist stays in charge of
+
+Source: https://querocura.com/ai-medical-imaging/
+
+QueroCura's imaging workspace views X-ray, CT and MRI series, ultrasound, ECG and more, and can prepare an AI draft read for a qualified clinician to review. The QueroCura Vision Engine can run on the hospital's own server, so images never leave it. It is decision support, not a diagnosis: every finding is accepted or rejected and the report signed by your clinician.
+
+## What the on-premise engine reads
+
+
+| Study | What it does |
+|---|---|
+| Chest X-ray (frontal, adult) | Two independently trained models read for 18 findings, behind safety checks that refuse lateral views, other body parts and unusual images. Heatmap boxes show where the model looked. |
+| 12-lead ECG (digital waveform) | Signal quality per lead, rhythm (including atrial fibrillation and broad-complex tachycardia), PR, QRS, QT and QTc, axis, bundle-branch blocks, and ST elevation by published criteria. |
+| CT chest and head (DICOM series) | Hounsfield-unit measurements: lung nodule candidates with Fleischner follow-up, an emphysema index, and possible acute intracranial blood with midline shift. |
+
+## Built to avoid confident mistakes
+
+- Each reader refuses rather than guesses when an image or trace is outside what it was built for, and says why.
+- Can't-miss chest findings such as pneumothorax are shown as "possible" when either model flags them.
+- Every model is pinned and checksummed; nothing runs from an altered file.
+- Hospitals validate the models on their own labelled cases; until then every draft says it is not yet validated there.
+- Clinicians' accept and reject decisions are tallied per model, with a warning if a model's findings are mostly rejected.
+
+## The radiologist decides
+
+Patients never see an unsigned draft. AI is off until an administrator switches it on, and patients can opt out of AI help with their own scans. QueroCura's imaging AI is not a cleared medical device and can be wrong or miss things.
+
+
+## Frequently asked questions
+
+**Does QueroCura's AI diagnose scans?**
+
+No. It prepares a draft for a qualified clinician, who accepts or rejects every finding and signs the report. It is decision support, not a diagnosis or a cleared medical device.
+
+**Can AI imaging run without sending images to the cloud?**
+
+Yes. The QueroCura Vision Engine can run on the hospital's own server on ordinary CPUs, so images never leave the hospital.
+
+**Which scans can it read?**
+
+On-premise: frontal adult chest X-rays, digital 12-lead ECGs and CT chest or head series. Other studies are viewed and reported by your clinicians as usual.
+
+
+---
+
+# A medicine reminder app that keeps the whole family in the loop
+
+Source: https://querocura.com/medicine-reminder-app/
+
+QueroCura reminds you to take each dose at the times on the prescriptions you confirmed. Tap Taken right on the notification, and the family members you allow are told straight away, so a parent's or child's medicines never depend on memory alone. It is free, and it works in English and Hindi.
+
+## How the reminders work
+
+- **Timed to your prescriptions.** Add a prescription (or let CuraVault read it from a photo) and confirm the doses; reminders follow those times.
+- **Taken, from the notification.** Mark a dose as taken without opening the app.
+- **Family alerts.** People you give permission to are notified when a dose is taken, for example "Aarav (your child) has taken his morning dose".
+- **On your phone or computer.** Notifications arrive through your browser, with no app store needed.
+- **Your visits too.** The health calendar reminds you of appointments and tests, and exports to any calendar.
+
+## Reminders, never recommendations
+
+QueroCura reminds you to take what your doctor prescribed. It never suggests a medicine, a dose or a change: those decisions stay with your doctor.
+
+
+## Looking after someone else's medicines
+
+Caring for an elderly parent? Connect your QueroCura accounts in the family garden and choose what you can see. With permission for Medicines, you can follow their doses and be told when they are taken, from anywhere.
+
+
+## Frequently asked questions
+
+**What is the best free medicine reminder app in India?**
+
+Look for reminders timed to your actual prescriptions, an easy way to mark a dose taken, family alerts for people you care for, and Hindi support. QueroCura does all of these and is free.
+
+**Can I get reminders for my parents' medicines?**
+
+Yes. Connect your accounts in QueroCura's family garden with permission for Medicines, and you are told when their doses are taken.
+
+**Does the app tell me which medicine to take?**
+
+No. QueroCura only reminds you about medicines your doctor prescribed and you confirmed. It never recommends a medicine or dose.
+
+**Does it work in Hindi?**
+
+Yes. The whole app, including reminders, works in English and Hindi.
+
+
+---
+
+# Manage your family's health together, with everyone's permission
+
+Source: https://querocura.com/family-health-app/
+
+QueroCura's family garden connects the QueroCura accounts of the people you care for, so you can look after parents, children and partners from one place. Each person decides exactly what you can see and do: medicines, records, vitals, symptom checks, or editing their profile. Updates arrive instantly, such as when a parent takes their medicine.
+
+## Permissions, one area at a time
+
+
+| Permission | What it lets you do |
+|---|---|
+| Medicines | See their medicines and doses, and be told when a dose is taken |
+| Records | See the reports and prescriptions in their CuraVault |
+| Vitals | Follow readings such as blood pressure, glucose and weight over time |
+| Symptom checks | See the symptom checks they have done and how urgent they were |
+| Edit profile | Help keep their profile, allergies and details up to date |
+
+## Real accounts, real consent
+
+Everyone in the family garden has their own QueroCura account, so nobody's health information is held by someone else without their knowledge. A connection is made with an invitation, each person chooses the areas they share, and either side can change or end it at any time.
+
+
+## Everything the family needs
+
+- Symptom checks in English and Hindi that say how urgent things look and when to see a doctor.
+- CuraVault for each person's reports, prescriptions and scans.
+- Medicine reminders with a Taken button and family alerts.
+- A health calendar for visits, tests and follow-ups.
+- Visit prep and a one-page doctor brief before an appointment.
+
+## Frequently asked questions
+
+**How can I manage my family's health in one app?**
+
+In QueroCura, connect your family members' accounts in the family garden and choose permissions for each area (medicines, records, vitals, symptom checks, profile). You then see what each person shares with you, in one place.
+
+**Can I track my elderly parents' health from another city?**
+
+Yes. With their permission you can follow their medicines and readings and are notified when they take a dose.
+
+**Can I add my child?**
+
+Each family member connects with their own QueroCura account, and you choose together what you can see and do.
+
+**Is the family health app free?**
+
+Yes. Signing up and using QueroCura's personal and family features is free.
+
+
+---
+
+# Your medical reports, in one place, explained in plain language
+
+Source: https://querocura.com/personal-health-records/
+
+CuraVault is QueroCura's personal health record. Upload a blood test, scan report or prescription, even a handwritten one; it reads the values, lets you check them, explains each one in plain language and tracks them over time. Your records are encrypted, and you decide who sees them.
+
+## What CuraVault does
+
+- **Reads your reports.** Lab reports, scan reports and prescriptions, including handwritten ones. You confirm what was read.
+- **Explains each value.** What a result like HbA1c or vitamin D means, in plain language, and how it compares with your earlier results.
+- **Notices change.** Insights flag a creeping blood pressure, a sudden weight drop or a result that keeps coming back.
+- **Brings your readings in.** Import blood pressure, glucose, SpO2, weight, steps and sleep from Apple Health, Google Fit or a spreadsheet; the file is read on your device.
+- **Shares on your terms.** Share links need a PIN, expire, have a view limit and can be turned off in one tap; a hospital sees nothing until you say yes.
+
+## Private by design
+
+Records are encrypted. Every look by anyone other than you is written to an access log you can read. You can download everything QueroCura holds about you in one file, and delete your account and all of it yourself, whenever you choose.
+
+
+## Works alongside ABHA
+
+ABHA is India's digital health ID for linking records across participating providers. CuraVault is your own record of your health story: readings, symptom history, medicines and reports. They complement each other.
+
+
+## Frequently asked questions
+
+**What is a personal health record app?**
+
+A personal health record (PHR) app keeps your own medical reports, prescriptions and readings in one place that you control. QueroCura's CuraVault also reads your reports and explains them.
+
+**Can an app read my lab report and explain it?**
+
+Yes. Upload a lab report to CuraVault, check the values it read, and it explains each one in plain language and tracks it over time. It does not diagnose or recommend medicines.
+
+**Is my health data safe?**
+
+Records are encrypted, shared only when you choose, and every access by someone else is logged for you to see. You can export or delete everything at any time.
+
+
+---
+
+# A symptom checker that asks the questions a doctor would
+
+Source: https://querocura.com/symptom-checker/
+
+Type or speak how you feel, in English or Hindi. QueroCura's symptom checker asks a few follow-up questions, each chosen to rule something in or out, then tells you how urgent things look, what is safe at home, what to avoid and when to see a doctor. It takes about two minutes, is free, and never tells you which medicine to take.
+
+## How a check works
+
+- **Say it your way.** No medical words needed, in English or Hindi.
+- **Cura asks what matters.** A clinical-interview style: the next most useful question, with the reason it asks.
+- **Know what to do next.** A clear urgency level, what is safe at home, and the warning signs that mean you should go now.
+
+## What it knows
+
+The symptom engine covers 55 health conditions and more than 130 symptoms and warning signs, with seasonal patterns that matter in India, such as dengue and malaria in the monsoon. It only shows a result once it is confident enough.
+
+
+## What it is not
+
+A symptom check shows patterns that fit what you described and how urgent things look. It is a starting point for a conversation with your doctor, not a diagnosis, and it never recommends a medicine. In an emergency, call 112.
+
+
+## Frequently asked questions
+
+**Is there a symptom checker in Hindi?**
+
+Yes. QueroCura's symptom checker works end to end in Hindi: you can describe symptoms in Hindi and get the questions and results in Hindi.
+
+**Is an online symptom checker accurate?**
+
+No symptom checker can replace a doctor. QueroCura asks follow-up questions like a clinical interview, shows a result only when confident enough, and is clear about urgency and when to see a doctor.
+
+**Does it recommend medicines?**
+
+No. QueroCura never tells you which medicine to take.
+
+
+---
+
+# Organised healthcare software, for the people who give care and the people who receive it
+
+Source: https://querocura.com/healthcare-software/
+
+Healthcare information is usually scattered: a prescription on one hospital's server, a lab report in a chat, a scan on a CD. QueroCura organises it with two connected parts: a hospital management system for clinics and hospitals, and a free health app for people and families. When a patient chooses to connect, their hospital sees exactly what they share, and nothing is retyped.
+
+## For hospitals and clinics
+
+- [Hospital management system](https://querocura.com/hospital-management-system/): appointments, OPD tokens, triage, beds, theatres, pharmacy, billing and reports.
+- [Clinic management software](https://querocura.com/clinic-management-software/) for single doctors and small clinics.
+- [Appointment booking and OPD queues](https://querocura.com/doctor-appointment-booking/) that follow the real day.
+- [AI-assisted imaging](https://querocura.com/ai-medical-imaging/) for X-ray, CT and ECG, on your own server.
+
+## For people and families
+
+- [Symptom checker](https://querocura.com/symptom-checker/) in English and Hindi.
+- [Medicine reminders](https://querocura.com/medicine-reminder-app/) with family alerts.
+- [CuraVault personal health records](https://querocura.com/personal-health-records/) that explain your reports.
+- [Family health](https://querocura.com/family-health-app/) with permissions for each person.
+
+## Connected by consent
+
+A hospital sees a patient's QueroCura data only if the patient connects and picks what to share: basics and allergies, vitals, medicines, lab results, scan reports or recent symptom checks. Each connection has an end date and an off switch, and every view is written to an audit log.
+
+
+## Frequently asked questions
+
+**What is QueroCura?**
+
+QueroCura is an Indian healthcare software platform: a hospital management system for clinics and hospitals, and a free health app for people and families (symptom checker, medicine reminders, health records, family health), connected with the patient's consent.
+
+**Who makes QueroCura?**
+
+QueroCura was founded by Udantika Dhar (Chief Executive Officer) and Saumit Pradhan (Chief Technology Officer).
+
+
+---
+
+# One health app for your symptoms, medicines, records and family
+
+Source: https://querocura.com/health-app/
+
+QueroCura keeps your health story in one calm place. Check symptoms in English or Hindi, get reminded about your medicines, keep and understand your reports, prepare for your next visit and look after your family, free.
+
+## What's inside
+
+
+| Feature | What it does |
+|---|---|
+| [Symptom check](https://querocura.com/symptom-checker/) | Asks follow-up questions like a doctor and tells you how urgent it is |
+| [Medicine reminders](https://querocura.com/medicine-reminder-app/) | Dose reminders with a Taken button and family alerts |
+| [CuraVault](https://querocura.com/personal-health-records/) | Reads and explains your reports, prescriptions and scans |
+| Insights and health score | Notices change in your readings, with a reason for every point |
+| Health calendar | Visits, tests and follow-ups, with prep checklists and reminders |
+| Visit prep | A one-page brief for your doctor, behind a PIN, and a PDF summary to take along |
+| [Family garden](https://querocura.com/family-health-app/) | Look after parents and children with their permission |
+| Your week in health | A gentle weekly story of what went well and what is coming up |
+
+## Works the way you do
+
+Use it on your phone or computer, in English or Hindi. Import readings from Apple Health, Google Fit or a spreadsheet. Your data stays yours: nothing is shared unless you choose, and you can export or delete it at any time.
+
+
+## Frequently asked questions
+
+**Is QueroCura free?**
+
+Yes. Signing up and using the symptom checker, insights, calendar, reminders, family garden and CuraVault is free.
+
+**Does QueroCura give medical advice?**
+
+QueroCura gives general wellness information and helps you prepare for your doctor. It is not a diagnosis and never recommends medicines. In an emergency, call 112.
+
+
+---
+
+# How to choose a hospital management system: a practical checklist
+
+Source: https://querocura.com/guides/how-to-choose-a-hospital-management-system/
+
+Searching for the top hospital management systems gives you long lists and little help choosing. The best HMS for your hospital is the one that fits your size, your payers and your team. Use this checklist to compare any system, including ours.
+
+## 1. Start with your own problems
+
+Write down the three things that hurt most today: a crowded waiting room, lost revenue at billing, beds you can't see, or records that don't follow the patient. Judge every system by how it fixes those, not by the length of its module list.
+
+
+## 2. The modules a hospital actually uses
+
+
+| Module | Ask the vendor |
+|---|---|
+| Registration & records | Is there one record per patient across departments and visits? |
+| Appointments & OPD | Does booking reflect how late doctors are really running? Is the token screen private? |
+| Emergency | Is there structured triage with time targets? |
+| In-patients | Is the bed board live? Are handover and discharge checklists built in? |
+| Theatres | Are clashes caught? Is the WHO surgical safety checklist built in? |
+| Pharmacy | Are allergies and duplicates checked? Is stock dispensed by expiry? |
+| Billing | UPI, PM-JAY, CGHS and insurance? Do bills fill from the visit? |
+| Reports | Live occupancy, footfall and collections, exportable? |
+
+## 3. India-specific must-haves
+
+- UPI and card collection with receipts.
+- PM-JAY, CGHS and insurance payers.
+- ABHA and ABDM readiness.
+- Patient-facing language support (at least English and Hindi).
+
+## 4. Security and consent
+
+- Two-step sign-in for staff.
+- Role-based access where front desk and billing can't read clinical notes.
+- A tamper-evident audit log.
+- Encryption at rest, and a clear answer to who owns the data.
+- Patient consent for anything shared from outside the hospital.
+
+## 5. Setup time, size and cost
+
+Ask how long it takes from signing to the first patient, whether the vendor can create your departments, wards, beds and price list for you, and how pricing changes as you add doctors, beds or branches. A system that takes months to configure costs more than its licence.
+
+
+## 6. Try it on a real day
+
+Run a pilot with your front desk, one doctor and your billing desk for a week. Count waiting time, billing gaps and retyping before and after. That tells you more than any demo.
+
+
+## Frequently asked questions
+
+**What are the most important features of a hospital management system?**
+
+One patient record across departments, appointments and OPD queues, emergency triage, a live bed board, pharmacy checks, billing with UPI and government schemes, role-based access, an audit log and live reports.
+
+**How long does it take to set up an HMS?**
+
+It ranges from days to months. QueroCura produces a setup plan in about two minutes and creates departments, wards, beds, theatres and a price list in one click.
+
+
+---
+
+# About QueroCura
+
+Source: https://querocura.com/about/
+
+QueroCura started with a simple observation: how long it takes for doctors to even begin treatment, and how much hassle it takes just to retrieve a patient's information before care can start. We built QueroCura to close that gap.
+
+## QueroCura at a glance
+
+
+|  |  |
+|---|---|
+| What it is | Healthcare software with two connected parts: a hospital management system and a free health app for people and families |
+| Where | India; the app works in English and Hindi |
+| Founders | Udantika Dhar (Chief Executive Officer) and Saumit Pradhan (Chief Technology Officer) |
+| For people | Symptom checker, medicine reminders, CuraVault health records, family garden, health calendar, visit prep. Free. |
+| For providers | Hospital management system and clinic software: appointments, OPD, triage, beds, theatres, pharmacy, billing, imaging, reports |
+| Principles | Consent first, never medicine advice, encrypted records, an audit log of every access |
+| Status | Live for people and families; onboarding our first hospitals |
+| Contact | hello@querocura.com |
+
+## What we believe
+
+- **Privacy first.** Your data is yours: encrypted, and shown only when it needs to be.
+- **Clarity over jargon.** Health information should make sense to the person it is about.
+- **Built with clinicians.** Shaped by the people who treat patients every day.
+- **Seconds matter.** In an emergency, speed is the whole point.
+
