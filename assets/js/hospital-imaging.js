@@ -64,8 +64,9 @@
       if (!st.ok) { box.innerHTML = '<div class="notice bad">' + esc(st.message) + "</div>"; return; }
       S.settings = st;
       var q = st.quality || {};
-      var aiState = !st.provider_ready ? '<span class="pill">AI not configured on this server</span>' : st.enabled ? '<span class="pill ok">✓ AI-assisted reading on</span>' : '<span class="pill wait">AI-assisted reading off</span>';
-      var h = '<div class="img-head"><div><h2>Imaging</h2><p class="sub">X-ray, CT and MRI (single images or whole series), ultrasound, mammography, PET and nuclear medicine, ECG, echo, dental, retinal and skin photos, endoscopy, DEXA and CTG. An AI can prepare a draft read; a doctor or radiologist reviews every finding and signs the report.</p></div>' +
+      var where = st.mode === "local" ? "on-premise " : st.mode === "hybrid" ? "on-premise + cloud " : "";
+      var aiState = !st.provider_ready ? '<span class="pill">AI not configured on this server</span>' : st.enabled ? '<span class="pill ok">✓ ' + where + 'AI-assisted reading on</span>' : '<span class="pill wait">AI-assisted reading off</span>';
+      var h = engineStrip(st) + '<div class="img-head"><div><h2>Imaging</h2><p class="sub">X-ray, CT and MRI (single images or whole series), ultrasound, mammography, PET and nuclear medicine, ECG, echo, dental, retinal and skin photos, endoscopy, DEXA and CTG. An AI can prepare a draft read; a doctor or radiologist reviews every finding and signs the report.</p></div>' +
         '<div class="img-head-r">' + aiState + (can("org") && st.provider_ready ? ' <button class="btn btn-sm btn-ghost" type="button" data-aiset>' + (st.enabled ? "Turn off" : "Turn on") + "</button>" : "") + "</div></div>";
       if (q.studies_with_ai) h += '<div class="img-gov"><span>🧭 <b>How the AI is doing here</b></span><span><b>' + (q.acceptance_rate == null ? "–" : Math.round(q.acceptance_rate * 100) + "%") + "</b> of its findings accepted by your clinicians (" + q.findings_accepted + "/" + (q.findings_accepted + q.findings_rejected) + ")</span>" +
         "<span><b>" + q.critical_confirmed + "/" + q.critical_flags + "</b> critical flags confirmed</span><span><b>" + (q.median_turnaround_min == null ? "–" : q.median_turnaround_min + " min") + "</b> median time to a signed report</span></div>";
@@ -97,6 +98,20 @@
       };
       var ms = el("img-mod"); if (ms) ms.onchange = function () { S.mod = this.value; load(); };
     });
+  }
+
+  /* the on-premise engine: which models are installed, validated here, and how they're doing */
+  function engineStrip(st) {
+    if (!st.engine || st.mode !== "local" && st.mode !== "hybrid") return "";
+    var ms = st.engine.models || {}, perf = {};
+    (st.engine.performance || []).forEach(function (p) { perf[p.model] = p; });
+    return '<details class="img-engine"><summary>🖥️ <b>On-premise AI</b> · runs on your own server, images never leave it · ' + Object.keys(ms).filter(function (k) { return ms[k].ready; }).length + " model(s) ready</summary>" +
+      '<div class="img-engine-list">' + Object.keys(ms).map(function (k) {
+        var m = ms[k], p = perf[k];
+        return '<div class="img-engine-m' + (m.ready ? "" : " off") + '"><b>' + esc(m.title) + '</b> <span class="mini">v' + esc(m.version) + "</span>" +
+          '<div class="mini">' + (m.ready ? "✓ Ready" : "✕ Not installed") + " · " + (m.validated_here ? "✓ Validated on your cases" : "Not yet validated on your cases") + (p ? " · " + p.reads + " reads, " + p.avg_ms + " ms average" : "") + "</div>" +
+          '<div class="mini">For: ' + esc(m.intended_use || "") + "</div>" + (m.kind === "weights" ? '<div class="mini">Trained on: ' + esc(m.trained_on || "") + "<br>Licence: " + esc(m.licence || "") + "</div>" : '<div class="mini">' + esc(m.trained_on || "") + "</div>") + "</div>";
+      }).join("") + "</div></details>";
   }
 
   function aiSettings() {
@@ -285,15 +300,17 @@
       var why = !st.provider_ready ? "AI-assisted reading isn't configured on this server." : !st.enabled ? "An administrator can switch on AI-assisted reading." : !s.ai_allowed ? "This patient has turned off AI help with their scans." : "";
       return '<div class="img-ai"><div class="img-ai-h">🧠 AI-assisted draft</div>' + (s.ai_error ? '<div class="notice bad">' + esc(s.ai_error) + "</div>" : "") +
         (why ? '<p class="mini">' + esc(why) + " You can read and report the study yourself below.</p>" :
-          '<p class="mini">Two independent AI passes read the images around your clinical question: a systematic first read, then a second reader that hunts for misses and challenges every finding. You review and sign.</p>' +
-          (can("imaging") ? '<button class="btn btn-primary" type="button" data-ai>Ask AI for a draft read</button>' : "")) + "</div>";
+          (st.mode === "local" ? '<p class="mini">The on-premise engine reads this study on your own server (nothing is sent out) and marks what it finds; you review every finding and sign.</p>' : '<p class="mini">Two independent AI passes read the images around your clinical question: a systematic first read, then a second reader that hunts for misses and challenges every finding. You review and sign.</p>') +
+          (can("imaging") ? '<button class="btn btn-primary" type="button" data-ai>' + (st.mode === "local" ? "Run the on-premise AI read" : "Ask AI for a draft read") + "</button>" : "")) + "</div>";
     }
     var dec = s.decisions || {}, signer = can("imaging_sign") && s.status !== "signed";
     var sevRank = { critical: 0, significant: 1, minor: 2, incidental: 3 };
     var fs = ai.findings.slice().sort(function (a, b) { return sevRank[a.severity] - sevRank[b.severity]; });
     var notes = {};
     (ai.review_notes || []).forEach(function (n) { notes[n.finding_id] = n; });
-    var h = '<div class="img-ai done"><div class="img-ai-h">🧠 AI draft <span class="mini">· not a report · ' + esc(s.ai_model || "") + " · " + esc(H().when(s.ai_done_ts)) + "</span></div>";
+    var eg = ai.engine;
+    var h = '<div class="img-ai done"><div class="img-ai-h">' + (eg ? "🖥️ On-premise AI draft" : "🧠 AI draft") + ' <span class="mini">· not a report · ' + esc(eg ? eg.title + " v" + eg.version + " · " + eg.latency_ms + " ms" : s.ai_model || "") + " · " + esc(H().when(s.ai_done_ts)) + "</span></div>";
+    if (eg) h += '<div class="img-onprem"><span>🔒 Read on this server; the images never left it.</span>' + (eg.validated_here ? '<span class="ib both">✓ Validated on your cases</span>' : '<span class="ib one">Not yet validated on your cases</span>') + "</div>";
     if (ai.critical_alert.present) h += '<div class="img-crit" role="alert">🚨 <b>Possible critical finding:</b> ' + esc(ai.critical_alert.reason) + ". Confirm on the images and act on it now if you agree.</div>";
     if (ai.reliability) {
       var rl = ai.reliability;
@@ -309,12 +326,22 @@
         '<span class="img-conf" title="AI confidence"><i style="width:' + Math.round(f.confidence * 100) + '%"></i></span><small>' + Math.round(f.confidence * 100) + "%</small></div>" +
         '<div class="img-f-d">' + esc(f.description) + "</div>" + (f.location ? '<div class="mini">📍 ' + esc(f.location) + (f.image_index != null ? " · image " + (f.image_index + 1) : "") + (f.measurements ? " · " + esc(f.measurements) : "") + "</div>" : "") +
         (f.evidence ? '<div class="mini">🔎 ' + esc(f.evidence) + "</div>" : "") +
-        '<div class="img-badges">' + (f.consensus === "both" ? '<span class="ib both">✓✓ Both readers</span>' : f.consensus === "both_revised" ? '<span class="ib both">✓✓ Both readers (revised)</span>' : f.consensus === "second_only" ? '<span class="ib one">2nd reader only</span>' : "") +
+        '<div class="img-badges">' + (f.consensus === "model" ? '<span class="ib px">◆ On-premise model</span>' : "") + (f.consensus === "both" ? '<span class="ib both">✓✓ Both readers</span>' : f.consensus === "both_revised" ? '<span class="ib both">✓✓ Both readers (revised)</span>' : f.consensus === "second_only" ? '<span class="ib one">2nd reader only</span>' : "") +
         (f.pixel_support ? '<span class="ib px">◐ Asymmetry map agrees</span>' : "") + (f.box_mm ? '<span class="ib mm">📏 box ≈ ' + f.box_mm[0] + " × " + f.box_mm[1] + " mm</span>" : "") +
         (f.classification ? '<span class="ib gl">📘 ' + esc(f.classification.system.toUpperCase()) + "</span>" : "") + "</div>" + (n ? '<div class="img-note ' + n.action + '">2nd reader ' + esc(n.action) + (n.reason ? ": " + esc(n.reason) : "") + "</div>" : "") +
         '<div class="img-f-a">' + (f.image_index != null ? '<button type="button" class="btn btn-sm btn-ghost" data-show="' + esc(f.id) + '">Show on image</button>' : "") +
         (signer ? '<button type="button" class="btn btn-sm' + (d === "accepted" ? " btn-primary" : "") + '" data-dec="accepted" data-id="' + esc(f.id) + '">✓ Accept</button><button type="button" class="btn btn-sm' + (d === "rejected" ? " btn-danger" : "") + '" data-dec="rejected" data-id="' + esc(f.id) + '">✕ Reject</button>' : (d ? '<span class="pill ' + (d === "accepted" ? "ok" : "bad") + '">' + esc(d) + "</span>" : "")) + "</div></div>";
     }).join("") : '<div class="mini">No findings reported.</div>') + "</div>";
+    if (eg && eg.scores) {
+      var top = Object.keys(eg.scores).map(function (k) { return [k, eg.scores[k]]; }).sort(function (a, b) { return b[1] - a[1]; }).slice(0, 8);
+      h += '<details class="img-sec"><summary class="ops-h">Model scores (0.50 = its operating point)</summary><div class="img-scores">' + top.map(function (t) {
+        return '<div class="img-score' + (t[1] >= 0.5 ? " on" : t[1] >= 0.4 ? " mid" : "") + '"><span>' + esc(t[0].replace(/_/g, " ")) + '</span><i><b style="width:' + Math.round(t[1] * 100) + '%"></b><em style="left:50%"></em></i><small>' + t[1].toFixed(2) + "</small></div>";
+      }).join("") + "</div></details>";
+    }
+    if (eg && eg.st_mm) h += '<details class="img-sec"><summary class="ops-h">ST deviation at J+60 ms (mm)</summary><div class="img-st">' + Object.keys(eg.st_mm).map(function (l) {
+      var v = eg.st_mm[l];
+      return '<span class="' + (v >= 1 ? "up" : v <= -1 ? "down" : "") + '"><b>' + esc(l) + "</b>" + (v > 0 ? "+" : "") + v.toFixed(1) + "</span>";
+    }).join("") + "</div></details>";
     if (ai.impression.length) h += '<div class="img-sec"><div class="ops-h">Impression</div><ol class="img-imp">' + ai.impression.map(function (i) { return "<li>" + esc(i.text) + ' <span class="mini">(' + Math.round(i.confidence * 100) + "%)</span></li>"; }).join("") + "</ol></div>";
     if (ai.differential.length) h += '<div class="img-sec"><div class="ops-h">Differential</div>' + ai.differential.map(function (d) {
       return '<div class="img-dd"><b>' + esc(d.diagnosis) + '</b> <span class="pill ' + (d.likelihood === "high" ? "ok" : d.likelihood === "low" ? "" : "wait") + '">' + esc(d.likelihood) + "</span>" +

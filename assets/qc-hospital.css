@@ -1320,3 +1320,18 @@ html[data-theme="dark"] .dr-path, html[data-theme="dark"] .dr-card, html[data-th
 .cu-place { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 8px; margin-top: 10px; }
 .cu-place label { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 6px 10px; border: 1px solid var(--line); border-radius: 12px; font-size: 13.5px; font-weight: 700; }
 .cu-who { overflow-x: auto; margin-top: 10px; } .cu-who td, .cu-who th { text-align: center; } .cu-who td:first-child, .cu-who th:first-child { text-align: left; }
+
+/* on-premise AI */
+.img-engine { margin: 0 0 12px; padding: 10px 14px; border-radius: 14px; border: 1px solid var(--line); background: var(--card); font-size: 13.5px; }
+.img-engine summary { cursor: pointer; }
+.img-engine-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 10px; margin-top: 10px; }
+.img-engine-m { padding: 10px 12px; border-radius: 12px; background: rgba(127,127,160,.07); } .img-engine-m.off { opacity: .55; } .img-engine-m .mini { margin-top: 4px; }
+.img-onprem { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 6px 0 10px; padding: 8px 10px; border-radius: 12px; background: rgba(14,143,131,.08); font-size: 12.5px; font-weight: 700; }
+.img-scores { display: grid; gap: 6px; margin-top: 8px; }
+.img-score { display: grid; grid-template-columns: 170px 1fr 44px; gap: 8px; align-items: center; font-size: 12.5px; }
+.img-score i { position: relative; height: 8px; border-radius: 999px; background: rgba(127,127,160,.15); overflow: hidden; }
+.img-score i b { position: absolute; left: 0; top: 0; bottom: 0; background: rgba(127,127,160,.55); border-radius: inherit; }
+.img-score i em { position: absolute; top: -2px; bottom: -2px; width: 2px; background: var(--ink); opacity: .5; }
+.img-score.on i b { background: #d24f28; } .img-score.mid i b { background: #c98a10; } .img-score small { text-align: right; font-weight: 800; }
+.img-st { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; } .img-st span { padding: 4px 8px; border-radius: 8px; background: rgba(127,127,160,.1); font-size: 12px; }
+.img-st b { margin-right: 4px; } .img-st .up { background: rgba(210,79,40,.15); color: #b8401f; font-weight: 800; } .img-st .down { background: rgba(47,143,209,.15); }
