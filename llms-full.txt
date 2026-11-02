@@ -28,6 +28,7 @@ A good HMS removes retyping, waiting and guesswork. Every department should work
 | Billing | Bills fill themselves from the visit; cash, UPI and card with receipts; PM-JAY, CGHS and insurance payers |
 | Imaging | AI-assisted draft reads that a radiologist accepts, rejects and signs; an on-premise option keeps images on your server |
 | Reports | Footfall, admissions, collections and occupancy, live and as CSV, in a command centre |
+| Analytics | A morning briefing, forecasts tested on your own history, 7-day bed demand, doctors needed by hour, revenue leaks and quality measures |
 
 ## Appointments that follow the real day
 
@@ -838,6 +839,51 @@ The use of digital systems for health, built on the Ayushman Bharat Digital Miss
 **Is ABHA mandatory?**
 
 No, creating an ABHA number is voluntary.
+
+
+---
+
+# Hospital analytics that tell you what to do this morning
+
+Source: https://querocura.com/hospital-analytics-software/
+
+Most hospital reports count what already happened. QueroCura's analytics compare, predict and explain: a short morning briefing of what needs attention, forecasts scored on your own history, how full your beds will be next week, how many doctors each hour needs, where revenue is leaking, and how care quality is moving.
+
+## What it shows
+
+
+| View | What you get |
+|---|---|
+| Morning briefing | A few plain sentences, each with the numbers behind it and a link to the detail |
+| Forecasts | Visits, admissions and billing for 14 days, each tested on a held-back fortnight of your history and compared with "same day last week" |
+| Bed demand | Expected inpatients for 7 days from today's patients and your real lengths of stay, with the chance of running out of beds |
+| Staffing | Doctors needed by weekday and hour for a wait target, against your schedule, using Erlang C queueing |
+| Revenue | Visits never billed, tests left off final bills, unpriced lines, receivables by age and payer, unusual discounts |
+| Quality | Readmissions, deaths, triage targets, lab and scan turnaround, critical-result acknowledgement, theatre punctuality |
+| Doctors | Visits, consultation length, waits, no-shows and billing per doctor |
+| Patients | Who comes back, kept follow-ups and a list of patients to call |
+| Pharmacy | ABC classes, days of cover, reorder quantities, stock likely to expire and dead stock |
+| Explore | Any measure by any cut, as a chart or CSV |
+
+## Numbers you can question
+
+Every forecast shows how far off it was on your own recent history, and says so when it is no better than "same day last week". Every line in the briefing states its basis. When there is too little history, the screen says so instead of guessing.
+
+
+## Who sees what
+
+Analytics need the Reports permission, and summaries show totals, not patient details. A list that names patients, such as unbilled visits or missed follow-ups, appears only for people whose role already lets them see those patients.
+
+
+## Frequently asked questions
+
+**What is hospital analytics software?**
+
+Software that turns a hospital's visits, beds, bills and results into comparisons, forecasts and worklists, so managers can act before problems grow.
+
+**How accurate are the forecasts?**
+
+It depends on your hospital, so QueroCura measures it: each forecast is tested on a held-back fortnight of your own history and the error is shown beside it.
 
 
 ---

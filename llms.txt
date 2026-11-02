@@ -34,6 +34,7 @@ Key facts:
 
 ## Hospital management system, in depth
 
+- [Hospital analytics that tell you what to do this morning](https://querocura.com/hospital-analytics-software/): Hospital analytics for India: a morning briefing, forecasts tested on your own history, 7-day bed demand, staffing by hour, revenue leaks, receivables and quality measures.
 - [Hospital billing software that stops revenue leaking](https://querocura.com/hospital-billing-software/): Hospital billing software that builds bills from the visit, collects by cash, UPI and card, and handles PM-JAY, CGHS and insurance payers. Fewer leaks, faster collection.
 - [Hospital pharmacy management with safety checks built in](https://querocura.com/pharmacy-management-software/): Hospital pharmacy software with allergy and duplicate checks, printable prescriptions and stock dispensed by expiry date. Part of the QueroCura hospital management system.
 - [An OPD management system that keeps the waiting room calm](https://querocura.com/opd-management-system/): OPD management software for Indian hospitals: fair token queues by department, a waiting-room screen without names, live doctor status and booking to real wait times.

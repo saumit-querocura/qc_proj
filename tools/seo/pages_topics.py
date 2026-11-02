@@ -133,6 +133,26 @@ def C(slug, title, desc, eyebrow, h1, lead, sections, faq, cta=None, related=Non
 
 
 CLUSTER = [
+    C("hospital-analytics-software", "Hospital Analytics Software: Forecasts, Beds & Revenue Leaks | QueroCura",
+      "Hospital analytics for India: a morning briefing, forecasts tested on your own history, 7-day bed demand, staffing by hour, revenue leaks, receivables and quality measures.",
+      "Hospital analytics", "Hospital analytics that tell you what to do this morning",
+      "Most hospital reports count what already happened. QueroCura's analytics compare, predict and explain: a short morning briefing of what needs attention, forecasts scored on your own history, how full your beds will be next week, how many doctors each hour needs, where revenue is leaking, and how care quality is moving.",
+      [{"h2": "What it shows", "table": {"head": ["View", "What you get"], "rows": [
+          ["Morning briefing", "A few plain sentences, each with the numbers behind it and a link to the detail"],
+          ["Forecasts", "Visits, admissions and billing for 14 days, each tested on a held-back fortnight of your history and compared with \"same day last week\""],
+          ["Bed demand", "Expected inpatients for 7 days from today's patients and your real lengths of stay, with the chance of running out of beds"],
+          ["Staffing", "Doctors needed by weekday and hour for a wait target, against your schedule, using Erlang C queueing"],
+          ["Revenue", "Visits never billed, tests left off final bills, unpriced lines, receivables by age and payer, unusual discounts"],
+          ["Quality", "Readmissions, deaths, triage targets, lab and scan turnaround, critical-result acknowledgement, theatre punctuality"],
+          ["Doctors", "Visits, consultation length, waits, no-shows and billing per doctor"],
+          ["Patients", "Who comes back, kept follow-ups and a list of patients to call"],
+          ["Pharmacy", "ABC classes, days of cover, reorder quantities, stock likely to expire and dead stock"],
+          ["Explore", "Any measure by any cut, as a chart or CSV"]]}},
+       {"h2": "Numbers you can question", "p": ["Every forecast shows how far off it was on your own recent history, and says so when it is no better than \"same day last week\". Every line in the briefing states its basis. When there is too little history, the screen says so instead of guessing."]},
+       {"h2": "Who sees what", "p": ["Analytics need the Reports permission, and summaries show totals, not patient details. A list that names patients, such as unbilled visits or missed follow-ups, appears only for people whose role already lets them see those patients."]}],
+      [["What is hospital analytics software?", "Software that turns a hospital's visits, beds, bills and results into comparisons, forecasts and worklists, so managers can act before problems grow."],
+       ["How accurate are the forecasts?", "It depends on your hospital, so QueroCura measures it: each forecast is tested on a held-back fortnight of your own history and the error is shown beside it."]],
+      related=["hospital-management-system", "guides/hospital-kpis", "healthcare-management"]),
     C("hospital-billing-software", "Hospital Billing Software with UPI, PM-JAY & CGHS | QueroCura",
       "Hospital billing software that builds bills from the visit, collects by cash, UPI and card, and handles PM-JAY, CGHS and insurance payers. Fewer leaks, faster collection.",
       "Hospital billing", "Hospital billing software that stops revenue leaking",

@@ -44,6 +44,7 @@ PAGES = [
                  ["Billing", "Bills fill themselves from the visit; cash, UPI and card with receipts; PM-JAY, CGHS and insurance payers"],
                  ["Imaging", "AI-assisted draft reads that a radiologist accepts, rejects and signs; an on-premise option keeps images on your server"],
                  ["Reports", "Footfall, admissions, collections and occupancy, live and as CSV, in a command centre"],
+                 ["Analytics", "A morning briefing, forecasts tested on your own history, 7-day bed demand, doctors needed by hour, revenue leaks and quality measures"],
              ]}},
             {"h2": "Appointments that follow the real day",
              "p": ["A 10:00 appointment means little if the doctor is twenty minutes behind. QueroCura watches each doctor's day as it happens: who is with them, who is waiting and how long their consultations usually take. It predicts when each patient will really be seen, highlights the slot with the shortest real wait, and tells patients when to arrive. Patients using the QueroCura app are told on the day if their doctor is running late."]},
@@ -69,7 +70,7 @@ PAGES = [
             ["How much does the QueroCura hospital management system cost?", "We are onboarding our first hospitals now and price by size. Plan your setup online or write to hello@querocura.com and we will talk."],
         ],
         "related": ["clinic-management-software", "doctor-appointment-booking", "ai-medical-imaging", "guides/how-to-choose-a-hospital-management-system", "healthcare-software",
-                    "hospital-billing-software", "pharmacy-management-software", "opd-management-system", "bed-management-system", "operation-theatre-management",
+                    "hospital-analytics-software", "hospital-billing-software", "pharmacy-management-software", "opd-management-system", "bed-management-system", "operation-theatre-management",
                     "emergency-department-software", "nursing-home-software", "multi-specialty-hospital-software", "guides/hospital-management-system-features", "guides/hospital-kpis"],
     },
     {

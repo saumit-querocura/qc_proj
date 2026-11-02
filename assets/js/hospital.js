@@ -236,6 +236,7 @@
     billing: ["🧾", "Billing", "Who owes what, visits still to bill, and today's takings. Collect payments here.", "Pharmacy and billing"],
     duty: ["👥", "Duty roster", "Who works which shift, and where.", "Running the hospital"],
     reports: ["📊", "Reports", "Patients seen, admissions, collections and common diagnoses, for any dates.", "Running the hospital"],
+    analytics: ["🔭", "Analytics", "A morning briefing, forecasts, bed and staffing needs, revenue leaks, quality measures and any number you want to explore.", "Running the hospital"],
     setup: ["⚙️", "Setup", "Departments, wards, beds and theatres, your setup plan and which modules are on.", "Running the hospital"],
     team: ["🔐", "Team and roles", "Invite people and decide what each role can do.", "Running the hospital"],
     activity: ["📜", "Activity log", "Every sign-in, record viewed and change, in a log nobody can edit.", "Running the hospital"],
