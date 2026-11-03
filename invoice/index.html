@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https://app.querocura.com; connect-src 'self' https://app.querocura.com; object-src 'none'; base-uri 'self'; form-action 'self'">
+<title>Your invoice · QueroCura</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<link rel="icon" type="image/x-icon" href="../icons/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/qc-base.css?v=7b9ea421">
+<style>
+  [hidden] { display: none !important; }
+  .shell { max-width: 640px; }
+  .iv { border-radius: 24px; background: var(--card); border: 1px solid var(--line); box-shadow: 0 30px 60px -40px rgba(16,14,42,.45); overflow: hidden; }
+  .iv-top { padding: 20px 20px 16px; border-top: 5px solid var(--iv, #0e8f83); display: flex; gap: 14px; align-items: flex-start; }
+  .iv-top img { max-height: 48px; max-width: 120px; object-fit: contain; border-radius: 6px; background: #fff; }
+  .iv-top h1 { font-size: 19px; margin: 0 0 2px; } .iv-sub { color: var(--muted); font-size: 13px; margin: 0; }
+  .iv-title { padding: 0 20px; display: flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  .iv-title b { font: 800 13px 'Space Grotesk', sans-serif; letter-spacing: .06em; text-transform: uppercase; color: var(--iv, #0e8f83); }
+  .iv-title span { font-size: 13px; color: var(--muted); }
+  .iv-amt { margin: 14px 20px; padding: 16px; border-radius: 16px; background: rgba(14,143,131,.08); display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .iv-amt.due { background: rgba(210,79,40,.09); } .iv-amt small { display: block; font-weight: 700; color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .05em; }
+  .iv-amt strong { font: 800 28px 'Space Grotesk', sans-serif; }
+  .iv-sec { padding: 4px 20px 14px; } .iv-h { font: 800 11.5px 'Manrope', sans-serif; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); margin: 12px 0 6px; }
+  .iv-kv { display: grid; grid-template-columns: 1fr auto; gap: 6px 16px; font-size: 14px; font-variant-numeric: tabular-nums; } .iv-kv b { text-align: right; }
+  .iv-kv .tot { font-weight: 800; border-top: 1.5px solid var(--line); padding-top: 6px; }
+  details.iv-lines summary { cursor: pointer; font-weight: 700; padding: 6px 0; }
+  .iv-line { display: flex; justify-content: space-between; gap: 12px; font-size: 13.5px; padding: 6px 0; border-bottom: 1px dashed var(--line); } .iv-line span small { display: block; color: var(--muted); font-size: 12px; }
+  .iv-acts { display: grid; gap: 10px; padding: 6px 20px 20px; }
+  .iv-btn { display: block; text-align: center; padding: 15px; border-radius: 14px; font: 800 16px 'Space Grotesk', sans-serif; text-decoration: none; border: 1.5px solid var(--line); color: inherit; }
+  .iv-btn.pay { color: #fff; border: 0; background: linear-gradient(135deg, #0e8f83, #2f8fd1); }
+  .iv-qr { display: flex; gap: 14px; align-items: center; padding: 0 20px 14px; } .iv-qr svg { width: 120px; height: 120px; background: #fff; border-radius: 10px; padding: 4px; flex: 0 0 auto; }
+  .iv-qr p { margin: 0; font-size: 13px; color: var(--muted); }
+  .iv-ok { margin: 14px 0 0; font-size: 12.5px; color: var(--muted); text-align: center; }
+  .iv-ok b { color: #0e8f83; }
+  @media (hover: none) { .iv-qr { display: none; } }
+</style>
+</head>
+<body>
+  <div class="topbar">
+    <a class="logo-wrap" href="../"><img src="../assets/d4f7acc01b9438e998c9e7b9676584b0.png" alt="QueroCura"><span class="logo-text"><span class="ink">Quero</span><span class="teal">Cura</span></span></a>
+    <div class="topbar-right"><button class="theme-toggle" data-theme-toggle aria-label="Toggle dark mode"><span id="theme-toggle-icon"></span></button></div>
+  </div>
+  <main class="shell" id="iv"><div class="iv"><div class="empty" style="padding:24px">Loading your invoice…</div></div></main>
+  <script src="../assets/qc-page.js?v=c34c97a9"></script>
+  <script src="../assets/js/invoice-view.js?v=a8b09f6e"></script>
+</body>
+</html>

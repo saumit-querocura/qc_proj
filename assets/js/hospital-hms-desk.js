@@ -321,6 +321,7 @@
     if (BL.view === "desk") return payDesk(box);
     if (BL.view === "prices") return priceList(box);
     if (BL.view === "gst" && window.QCGst) return window.QCGst.panel(box, head());
+    if (BL.view === "whatsapp" && window.QCWa) { box.innerHTML = '<div class="empty">Loading…</div>'; return window.QCWa.panel(box, head(), deskClick); }
     var exportable = window.QCGst && (can("billing_admin") || can("reports") || can("org"));
     box.innerHTML = head() + '<div class="bl-bar"><input class="input" type="search" id="bl-q" placeholder="Bill number, MRN or name" value="' + esc(BL.q) + '" aria-label="Search bills">' +
       (BL.view === "all" ? '<input class="input" type="date" id="bl-from" value="' + esc(BL.from) + '" aria-label="From"><input class="input" type="date" id="bl-to" value="' + esc(BL.to) + '" aria-label="To">' : "") +
@@ -364,10 +365,11 @@
   function head() {
     return '<div class="hms-head"><div><h2>Billing</h2><p class="sub">Bills fill themselves from the visit: consultation, tests, bed-days and medicines. Add anything else, take payment, print the receipt.</p></div>' +
       '<button class="btn btn-primary" type="button" data-newbill>+ New bill</button></div><div class="ops-bar"><div class="chips">' +
-      [["desk", "Payments desk"], ["today", "Today"], ["draft", "Drafts"], ["unpaid", "Unpaid"], ["all", "All"], ["day", "Day close"]].concat(can("billing_admin") || can("prices") ? [["prices", "Price list"]] : []).concat(window.QCGst && (can("billing_admin") || can("reports") || can("org")) ? [["gst", "GST & accounts"]] : []).map(function (v) { return '<button type="button" class="chipbtn' + (BL.view === v[0] ? " on" : "") + '" data-bv="' + v[0] + '">' + v[1] + "</button>"; }).join("") + "</div></div>";
+      [["desk", "Payments desk"], ["today", "Today"], ["draft", "Drafts"], ["unpaid", "Unpaid"], ["all", "All"], ["day", "Day close"]].concat(can("billing_admin") || can("prices") ? [["prices", "Price list"]] : []).concat(window.QCGst && (can("billing_admin") || can("reports") || can("org")) ? [["gst", "GST & accounts"]] : []).concat(window.QCWa ? [["whatsapp", "WhatsApp"]] : []).map(function (v) { return '<button type="button" class="chipbtn' + (BL.view === v[0] ? " on" : "") + '" data-bv="' + v[0] + '">' + v[1] + "</button>"; }).join("") + "</div></div>";
   }
-  function wire(box) {
-    box.onclick = function (e) {
+  function wire(box) { box.onclick = deskClick; }
+  function deskClick(e) {
+    {
       var t;
       if ((t = e.target.closest("[data-bv]"))) { BL.view = t.getAttribute("data-bv"); return loadBilling(); }
       if ((t = e.target.closest("[data-bill]"))) return openBill(t.getAttribute("data-bill"));
@@ -379,7 +381,7 @@
       if (e.target.closest("[data-starter]")) api("/hospital/billing/prices", { method: "POST", body: { starter: true } }).then(function (r) { M().reply(r, loadBilling); });
       if (e.target.closest("[data-addprice]")) return priceForm({});
       if ((t = e.target.closest("[data-price]"))) return priceForm(JSON.parse(t.getAttribute("data-price")));
-    };
+    }
   }
   /* the payments desk: who owes money, visits still to bill, today's takings */
   function payDesk(box) {
@@ -469,12 +471,13 @@
       '<div class="field"><label for="bl-bg">GSTIN</label><input class="input" id="bl-bg" maxlength="15" value="' + esc((x.bill_to || {}).gstin || "") + '"></div><div class="field"><label for="bl-ba">Address</label><input class="input" id="bl-ba" maxlength="300" value="' + esc((x.bill_to || {}).address || "") + '"></div></div>' +
       '<button type="button" class="btn btn-sm" data-upd>Save</button></details>';
     else if (x.payer !== "self") h += '<div class="field"><label for="bl-claim">Claim status (' + esc(x.payer_name || x.payer_label) + ')</label><select class="input" id="bl-claim">' + ["none", "preauth_pending", "preauth_approved", "submitted", "settled", "rejected"].map(function (c) { return '<option value="' + c + '"' + (x.claim_status === c ? " selected" : "") + ">" + c.replace("_", " ") + "</option>"; }).join("") + "</select></div>";
+    if (window.QCWa) h += window.QCWa.billLine(x);
     var canPay = x.status === "final" ? x.due > 0 : draft && x.encounter_id;
     if (canPay) h += '<div class="bill-pay"><input class="input" id="py-a" inputmode="decimal" value="' + (x.status === "final" ? x.due / 100 : "") + '" placeholder="' + (draft ? "Advance ₹" : "") + '" aria-label="Amount"><select class="input" id="py-m" aria-label="Paid by"><option value="cash">Cash</option><option value="upi">UPI</option><option value="card">Card</option><option value="insurance">Insurance</option><option value="scheme">Government scheme</option><option value="other">Other</option></select><input class="input" id="py-r" placeholder="Reference (UPI / card)" maxlength="60" aria-label="Reference"><button type="button" class="btn btn-primary" data-pay>' + (draft ? "Take advance" : "Take payment") + "</button></div>";
     if (x.payments.length) h += '<div class="ops-sec"><div class="ops-h">Payments</div>' + x.payments.map(function (p) { return '<div class="hms-row"><span class="grow"><b>' + M().money(p.amount) + " · " + esc(p.mode_label) + "</b><small>" + esc(p.receipt) + " · " + esc(M().dt(p.ts)) + " · " + esc(p.by || "") + (p.reference ? " · " + esc(p.reference) : "") + '</small></span><button type="button" class="btn btn-sm btn-ghost" data-receipt="' + esc(p.receipt) + '">' + (p.amount < 0 ? "Voucher" : "Receipt") + "</button></div>"; }).join("") + "</div>";
     if ((x.credit_notes || []).length) h += '<div class="ops-sec"><div class="ops-h">Credit notes</div>' + x.credit_notes.map(function (c) { return '<div class="hms-row"><span class="grow"><b>' + esc(c.number) + " · −" + M().money(c.total) + "</b><small>" + esc(c.reason) + " · " + esc(M().dt(c.ts)) + " · " + esc(c.by || "") + '</small></span><button type="button" class="btn btn-sm btn-ghost" data-cnprint="' + esc(c.number) + '">Print</button></div>'; }).join("") + "</div>";
     h += '<div class="row" style="margin-top:12px">' + (draft ? '<button type="button" class="btn btn-primary" data-final>Finalise bill</button>' : "") +
-      (x.status !== "void" ? '<button type="button" class="btn" data-print>' + (draft ? "Print interim bill" : "Print invoice") + "</button>" + (G && x.status === "final" ? '<button type="button" class="btn btn-ghost" data-printsum>Summary</button>' : "") : "") +
+      (x.status !== "void" ? '<button type="button" class="btn" data-print>' + (draft ? "Print interim bill" : "Print invoice") + "</button>" + (G && x.status === "final" ? '<button type="button" class="btn btn-ghost" data-printsum>Summary</button><button type="button" class="btn btn-ghost" data-pdf>PDF</button>' : "") : "") +
       (x.encounter_id && x.status !== "void" ? '<button type="button" class="btn btn-ghost" data-fb>Feedback link</button>' : "") +
       (x.can_credit ? '<button type="button" class="btn btn-ghost" data-cn>Credit note</button>' : "") +
       (admin && x.paid > 0 && (x.status !== "final" || x.paid > Math.max(x.net, 0) || x.due < 0) ? '<button type="button" class="btn btn-ghost" data-refund>Refund</button>' : "") +
@@ -482,6 +485,7 @@
       '</div><div class="msg" id="bl-msg"></div>' + (x.void_reason ? '<div class="mini">Voided: ' + esc(x.void_reason) + "</div>" : "") +
       (admin && x.status === "final" && !x.can_void && x.void_block ? '<p class="mini">Why there is no Void: ' + esc(x.void_block) + "</p>" : "");
     var b = M().modal(h, true, 2);
+    if (window.QCWa) window.QCWa.wireBill(b, x, function () { openBill(x.id); });
     if (draft) api("/hospital/billing/prices").then(function (r) { if (r.ok && el("bl-pr")) el("bl-pr").innerHTML = '<option value="">Add from price list…</option>' + r.items.map(function (p) { return '<option value="' + esc(p.id) + '">' + esc(p.name) + " · " + M().money(p.price) + "</option>"; }).join(""); });
     function act(body, after, btn) {
       if (btn) btn.disabled = true;
@@ -516,6 +520,7 @@
       if ((t = e.target.closest("[data-cnprint]"))) return G && G.printCreditNote(t.getAttribute("data-cnprint"));
       if (e.target.closest("[data-print]")) return G ? G.printInvoice(x.id, { interim: draft }) : M().print(billPrint(x));
       if (e.target.closest("[data-printsum]")) return G.printInvoice(x.id, { summary: true });
+      if (e.target.closest("[data-pdf]")) return G.download("/hospital/billing/" + encodeURIComponent(x.id) + "/pdf?download=1", (x.number || "bill") + ".pdf");
       if (e.target.closest("[data-fb]")) return feedbackShare(x.encounter_id, 2, function () { renderBill(x); });
       if (e.target.closest("[data-cn]")) return creditNote(x);
       if (e.target.closest("[data-refund]")) { var a = window.prompt("Refund how much (₹)?", x.due < 0 ? String(-x.due / 100) : ""); if (!a) return; var m = window.prompt("Refund by: cash, upi, card or other", "cash"); if (!m) return; return act({ action: "pay", amount: a, mode: m.trim().toLowerCase(), refund: true, key: payKey() }); }

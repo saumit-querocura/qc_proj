@@ -12,6 +12,7 @@ Disallow: /verify/
 Disallow: /forgot/
 Disallow: /checkin/
 Disallow: /feedback/
+Disallow: /invoice/
 Disallow: /onboarding/
 Disallow: /tests/
 Disallow: /tools/
@@ -27,6 +28,7 @@ Disallow: /verify/
 Disallow: /forgot/
 Disallow: /checkin/
 Disallow: /feedback/
+Disallow: /invoice/
 Disallow: /onboarding/
 Disallow: /tests/
 Disallow: /tools/
@@ -42,6 +44,7 @@ Disallow: /verify/
 Disallow: /forgot/
 Disallow: /checkin/
 Disallow: /feedback/
+Disallow: /invoice/
 Disallow: /onboarding/
 Disallow: /tests/
 Disallow: /tools/
@@ -57,6 +60,7 @@ Disallow: /verify/
 Disallow: /forgot/
 Disallow: /checkin/
 Disallow: /feedback/
+Disallow: /invoice/
 Disallow: /onboarding/
 Disallow: /tests/
 Disallow: /tools/
@@ -72,6 +76,7 @@ Disallow: /verify/
 Disallow: /forgot/
 Disallow: /checkin/
 Disallow: /feedback/
+Disallow: /invoice/
 Disallow: /onboarding/
 Disallow: /tests/
 Disallow: /tools/
@@ -87,6 +92,7 @@ Disallow: /verify/
 Disallow: /forgot/
 Disallow: /checkin/
 Disallow: /feedback/
+Disallow: /invoice/
 Disallow: /onboarding/
 Disallow: /tests/
 Disallow: /tools/
@@ -102,6 +108,7 @@ Disallow: /verify/
 Disallow: /forgot/
 Disallow: /checkin/
 Disallow: /feedback/
+Disallow: /invoice/
 Disallow: /onboarding/
 Disallow: /tests/
 Disallow: /tools/
@@ -117,6 +124,7 @@ Disallow: /verify/
 Disallow: /forgot/
 Disallow: /checkin/
 Disallow: /feedback/
+Disallow: /invoice/
 Disallow: /onboarding/
 Disallow: /tests/
 Disallow: /tools/
@@ -132,6 +140,7 @@ Disallow: /verify/
 Disallow: /forgot/
 Disallow: /checkin/
 Disallow: /feedback/
+Disallow: /invoice/
 Disallow: /onboarding/
 Disallow: /tests/
 Disallow: /tools/
@@ -147,6 +156,7 @@ Disallow: /verify/
 Disallow: /forgot/
 Disallow: /checkin/
 Disallow: /feedback/
+Disallow: /invoice/
 Disallow: /onboarding/
 Disallow: /tests/
 Disallow: /tools/
@@ -162,6 +172,7 @@ Disallow: /verify/
 Disallow: /forgot/
 Disallow: /checkin/
 Disallow: /feedback/
+Disallow: /invoice/
 Disallow: /onboarding/
 Disallow: /tests/
 Disallow: /tools/
@@ -177,6 +188,7 @@ Disallow: /verify/
 Disallow: /forgot/
 Disallow: /checkin/
 Disallow: /feedback/
+Disallow: /invoice/
 Disallow: /onboarding/
 Disallow: /tests/
 Disallow: /tools/
@@ -192,6 +204,7 @@ Disallow: /verify/
 Disallow: /forgot/
 Disallow: /checkin/
 Disallow: /feedback/
+Disallow: /invoice/
 Disallow: /onboarding/
 Disallow: /tests/
 Disallow: /tools/
@@ -207,6 +220,7 @@ Disallow: /verify/
 Disallow: /forgot/
 Disallow: /checkin/
 Disallow: /feedback/
+Disallow: /invoice/
 Disallow: /onboarding/
 Disallow: /tests/
 Disallow: /tools/
@@ -222,6 +236,7 @@ Disallow: /verify/
 Disallow: /forgot/
 Disallow: /checkin/
 Disallow: /feedback/
+Disallow: /invoice/
 Disallow: /onboarding/
 Disallow: /tests/
 Disallow: /tools/
@@ -237,6 +252,7 @@ Disallow: /verify/
 Disallow: /forgot/
 Disallow: /checkin/
 Disallow: /feedback/
+Disallow: /invoice/
 Disallow: /onboarding/
 Disallow: /tests/
 Disallow: /tools/
@@ -252,6 +268,7 @@ Disallow: /verify/
 Disallow: /forgot/
 Disallow: /checkin/
 Disallow: /feedback/
+Disallow: /invoice/
 Disallow: /onboarding/
 Disallow: /tests/
 Disallow: /tools/
@@ -267,6 +284,7 @@ Disallow: /verify/
 Disallow: /forgot/
 Disallow: /checkin/
 Disallow: /feedback/
+Disallow: /invoice/
 Disallow: /onboarding/
 Disallow: /tests/
 Disallow: /tools/
@@ -282,6 +300,7 @@ Disallow: /verify/
 Disallow: /forgot/
 Disallow: /checkin/
 Disallow: /feedback/
+Disallow: /invoice/
 Disallow: /onboarding/
 Disallow: /tests/
 Disallow: /tools/
@@ -297,6 +316,7 @@ Disallow: /verify/
 Disallow: /forgot/
 Disallow: /checkin/
 Disallow: /feedback/
+Disallow: /invoice/
 Disallow: /onboarding/
 Disallow: /tests/
 Disallow: /tools/

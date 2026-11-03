@@ -83,7 +83,8 @@
     h += '<div class="gi-bottom"><div class="gi-left">' + left + '</div><table class="gi-sum">' + tot.map(function (t) { return '<tr class="' + (t[2] || "") + '"><td>' + t[0] + "</td><td>" + t[1] + "</td></tr>"; }).join("") + "</table></div>";
     var qrs = "";
     if (v.upi) qrs += '<div class="gi-qr">' + v.upi.qr + "<span><b>Pay " + rs(v.upi.amount) + "</b>Scan with any UPI app<br>" + esc(v.upi.vpa) + "</span></div>";
-    if (v.feedback) qrs += '<div class="gi-qr">' + v.feedback.qr + "<span><b>How was your visit?</b>Scan to tell us. It takes a minute, and the hospital's management reads every answer.</span></div>";
+    if (v.online) qrs += '<div class="gi-qr">' + v.online.qr + "<span><b>This invoice online</b>Scan to check it is genuine, see what is due, pay and download it.</span></div>";
+    else if (v.feedback) qrs += '<div class="gi-qr">' + v.feedback.qr + "<span><b>How was your visit?</b>Scan to tell us. It takes a minute, and the hospital's management reads every answer.</span></div>";
     if (qrs) h += '<div class="gi-qrs">' + qrs + "</div>";
     h += '<div class="gi-end"><div class="gi-small">' + (v.footer ? esc(v.footer) + "<br>" : "") + "This is a computer-generated document." + (v.kind === "interim" ? "" : " Prices include all services listed; exempt healthcare services carry no GST.") + "</div>" +
       '<div class="gi-sign">For ' + esc(s.name) + "<br><br><br>Authorised signatory</div></div></div>";
