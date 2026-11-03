@@ -227,7 +227,7 @@
       drawAside(res);
       if (res.stop_reason === "need_more_detail" && !owner.answers.length) return showThin();
       if (res.stop_reason === "emergency") return showEmergency(res);
-      if (res.done) return showSummary(res, !!finishing);
+      if (res.done || finishing) return showSummary(res, !!finishing);   // an older server ignores "finish": stop here anyway
       showQuestion(res);
     }).catch(function () {
       if (st !== owner || !owner.active) return;
