@@ -73,6 +73,9 @@
     "Pattern estimates from what you've said, not a diagnosis.": "आपकी बताई बातों पर आधारित अनुमान, निदान नहीं।",
     "Keys: Y yes · N no · U not sure · ← back": "कुंजियाँ: Y हाँ · N नहीं · U पता नहीं · ← पीछे",
     "selected": "चुना गया",
+    "Keys: 0–9 to pick · ← back": "कुंजियाँ: चुनने के लिए 0–9 · ← पीछे",
+    "Continue": "आगे बढ़ें",
+    "How sure": "कितना पक्का",
   };
   function hi() { return !!(window.QCI18n && window.QCI18n.lang === "hi"); }
   function L(s) { return hi() && HI[s] ? HI[s] : s; }
@@ -149,7 +152,13 @@
     '.qr-text{width:100%;min-height:90px;border-radius:16px;border:1.5px solid rgba(16,14,42,.14);padding:13px 15px;font:500 15px "Manrope",sans-serif;color:inherit;background:#fff;resize:vertical;outline:none}.qr-text:focus{border-color:#0e8f83;box-shadow:0 0 0 3px rgba(14,143,131,.14)}' +
     '.qr-load{display:flex;align-items:center;gap:12px;font-weight:700;color:rgba(16,14,42,.6);padding:20px 0}.qr-dots i{display:inline-block;width:7px;height:7px;border-radius:50%;background:#0e8f83;margin-right:4px;animation:qrDot 1s infinite}.qr-dots i:nth-child(2){animation-delay:.15s}.qr-dots i:nth-child(3){animation-delay:.3s}' +
     '@keyframes qrDot{0%,80%,100%{opacity:.25;transform:scale(.8)}40%{opacity:1;transform:none}}' +
-    '.qr-card.dim .qr-yn,.qr-card.dim .qr-list{opacity:.5;pointer-events:none}' +
+    '.qr-card.dim .qr-yn,.qr-card.dim .qr-list,.qr-card.dim .qr-scale{opacity:.5;pointer-events:none}' +
+    '.qr-scale{display:grid;grid-template-columns:repeat(11,1fr);gap:6px}.qr-sc{aspect-ratio:1;border-radius:14px;border:1.5px solid rgba(16,14,42,.12);background:#fff;font:800 15px "Manrope",sans-serif;color:inherit;cursor:pointer;transition:transform .15s,background .15s,border-color .15s}' +
+    '.qr-sc:hover{transform:translateY(-3px);border-color:var(--c)}.qr-sc.on{background:var(--c);border-color:var(--c);color:#fff}.qr-sc:focus-visible{outline:2.5px solid #0e8f83;outline-offset:2px}' +
+    '.qr-scl{display:flex;justify-content:space-between;font-size:12px;font-weight:700;color:rgba(16,14,42,.5);margin-top:8px;gap:8px}' +
+    '@media (max-width:520px){.qr-scale{grid-template-columns:repeat(6,1fr)}.qr-sc{aspect-ratio:1.3}}' +
+    '.qr-story{font-size:14.5px;line-height:1.6;margin:0 0 14px;padding:12px 14px;border-left:4px solid #7c6fdb;background:rgba(124,111,219,.06);border-radius:0 14px 14px 0}' +
+    'html[data-theme="dark"] .qr-sc{background:#18162e;border-color:rgba(255,255,255,.14);color:#f2f0f8}html[data-theme="dark"] .qr-sc.on{color:#fff}html[data-theme="dark"] .qr-scl{color:#a9a6bd}html[data-theme="dark"] .qr-story{background:rgba(124,111,219,.12)}' +
     '@media (prefers-reduced-motion:reduce){.qr *{animation:none !important;transition:none !important}}' +
     '@media (hover:none){.qr-keys,.qr-btn kbd{display:none}}' +
     /* dark */
@@ -207,18 +216,18 @@
   }
   function main(html) { var m = root.querySelector("#qr-main"); m.className = "qr-card"; m.innerHTML = html; return m; }
 
-  function turn() {
+  function turn(finishing) {
     var owner = st;
     owner.busy = true; root.classList.add("busy");
     var m = root.querySelector("#qr-main"); if (m) m.classList.add("dim");
-    call({ text: owner.text, answers: owner.answers, detail: owner.detail, lang: hi() ? "hi" : "en" }).then(function (res) {
+    call({ text: owner.text, answers: owner.answers, detail: owner.detail, lang: hi() ? "hi" : "en", finish: !!finishing }).then(function (res) {
       if (st !== owner || !owner.active) return;
       owner.busy = false; root.classList.remove("busy");
       owner.prev = owner.res; owner.res = res;
       drawAside(res);
       if (res.stop_reason === "need_more_detail" && !owner.answers.length) return showThin();
       if (res.stop_reason === "emergency") return showEmergency(res);
-      if (res.done) return showSummary(res);
+      if (res.done) return showSummary(res, !!finishing);
       showQuestion(res);
     }).catch(function () {
       if (st !== owner || !owner.active) return;
@@ -259,6 +268,10 @@
         var k = o.value === "yes" ? "Y" : o.value === "no" ? "N" : "U";
         return '<button type="button" class="qr-btn ' + o.value + '" data-v="' + o.value + '" role="radio" aria-checked="false"><kbd>' + k + "</kbd>" + esc(o.label) + "</button>";
       }).join("") + "</div>";
+    } else if (q.type === "scale") {
+      var cols = ["#2f8f5e", "#2f8f5e", "#5aa05a", "#8ab04a", "#b8b83a", "#c98a10", "#c9780f", "#d1620f", "#d24f28", "#c63b24", "#b3182a"];
+      html += '<div class="qr-scale" role="radiogroup" aria-labelledby="qr-qtext">' + cols.map(function (c, n) { return '<button type="button" class="qr-sc" role="radio" aria-checked="false" data-n="' + n + '" style="--c:' + c + '">' + n + "</button>"; }).join("") + "</div>" +
+        '<div class="qr-scl">' + (q.labels || []).map(function (x) { return "<span>" + esc(x) + "</span>"; }).join("") + "</div>";
     } else {
       st.sel = [];
       html += '<div class="qr-list" role="' + (q.type === "multi" ? "group" : "radiogroup") + '" aria-labelledby="qr-qtext">' + q.options.map(function (o, i) {
@@ -269,15 +282,20 @@
     html += '<div class="qr-nav">' + (st.answers.length ? '<button type="button" class="qr-go qr-ghost" id="qr-back">← ' + esc(L("Back")) + "</button>" : "") +
       '<span class="qr-sp"></span>' + (st.answers.length >= 2 ? '<button type="button" class="qr-link" id="qr-finish">' + esc(L("Finish now")) + "</button>" : "") +
       (q.type === "multi" ? '<button type="button" class="qr-go" id="qr-next" disabled>' + esc(L("Continue")) + " →</button>" : "") + "</div>" +
-      (q.type === "yesno" ? '<div class="qr-keys">' + esc(L("Keys: Y yes · N no · U not sure · ← back")) + "</div>" : "");
+      (q.type === "yesno" ? '<div class="qr-keys">' + esc(L("Keys: Y yes · N no · U not sure · ← back")) + "</div>" : q.type === "scale" ? '<div class="qr-keys">' + esc(L("Keys: 0–9 to pick · ← back")) + "</div>" : "");
     var m = main(html);
     var b = m.querySelector("#qr-back"); if (b) b.onclick = back;
-    var f = m.querySelector("#qr-finish"); if (f) f.onclick = function () { showSummary(st.res, true); };
+    var f = m.querySelector("#qr-finish"); if (f) f.onclick = function () { turn(true); };   // the server writes up what it has
     if (q.type === "yesno") {
       [].forEach.call(m.querySelectorAll(".qr-btn"), function (btn) {
         btn.onclick = function () { btn.classList.add("on"); btn.setAttribute("aria-checked", "true"); var o = opt(q, btn.getAttribute("data-v")); answer(q.id, o.value, o.label); };
       });
       m.querySelector(".qr-btn").focus();
+    } else if (q.type === "scale") {
+      [].forEach.call(m.querySelectorAll(".qr-sc"), function (btn) {
+        btn.onclick = function () { btn.classList.add("on"); btn.setAttribute("aria-checked", "true"); var n = +btn.getAttribute("data-n"); answer(q.id, n, n + " / 10"); };
+      });
+      m.querySelector(".qr-sc").focus();
     } else if (q.type === "single") {
       [].forEach.call(m.querySelectorAll(".qr-opt"), function (btn) {
         btn.onclick = function () { btn.classList.add("on"); var o = opt(q, btn.getAttribute("data-v")); answer(q.id, o.value, o.label); };
@@ -314,6 +332,8 @@
     var q = st.res.next, k = e.key.toLowerCase();
     if (q.type === "yesno" && (k === "y" || k === "n" || k === "u")) {
       var btn = root.querySelector('.qr-btn[data-v="' + ({ y: "yes", n: "no", u: "unsure" })[k] + '"]'); if (btn) { e.preventDefault(); btn.click(); }
+    } else if (q.type === "scale" && /^[0-9]$/.test(k)) {
+      var sc = root.querySelector('.qr-sc[data-n="' + k + '"]'); if (sc) { e.preventDefault(); sc.click(); }
     } else if (q.type === "single" && /^[1-9]$/.test(k)) {
       var b = root.querySelectorAll(".qr-opt")[+k - 1]; if (b) { e.preventDefault(); b.click(); }
     } else if (e.key === "ArrowLeft" && st.answers.length) { e.preventDefault(); back(); }
@@ -376,7 +396,7 @@
     }, extra || {});
   }
   function slim(res) {
-    return { differential: res.differential, evidence: res.evidence, level: res.level, urgency: res.urgency, red_flags: res.red_flags, stop_reason: res.stop_reason, asked: res.asked, band: res.band };
+    return { differential: res.differential, evidence: res.evidence, level: res.level, urgency: res.urgency, red_flags: res.red_flags, stop_reason: res.stop_reason, asked: res.asked, band: res.band, note: res.note || null };
   }
 
   function showSummary(res, early) {
@@ -386,7 +406,8 @@
     var m = main((res.insight && n ? '<div class="qr-insight" role="status"><span>🧠</span><span>' + esc(res.insight) + "</span></div>" : "") +
       '<h2 class="qr-title">' + esc(L("Here's my thinking")) + "</h2>" +
       '<div class="qr-big"><span class="em">' + esc(top.emoji || "🩺") + "</span><div><span>" + esc(L("Leading explanation")) + "</span><b>" + esc(top.name || "") + "</b><span>" + esc(res.urgency || "") + "</span></div></div>" +
-      (n ? '<p class="qr-lead">' + esc(L("I asked %n questions and stopped because %r.").replace("%n", n).replace("%r", why)) + "</p>" : "") +
+      (res.note && res.note.story ? '<p class="qr-story">' + esc(res.note.story) + "</p>" : "") +
+      (n ? '<p class="qr-lead">' + esc(L("I asked %n questions and stopped because %r.").replace("%n", n).replace("%r", why)) + (res.note && res.note.confidence ? " " + esc(res.note.confidence.text) : "") + "</p>" : "") +
       '<div class="qr-nav"><button type="button" class="qr-go" id="qr-done">' + esc(L("See my full results →")) + "</button>" + (n ? '<button type="button" class="qr-go qr-ghost" id="qr-back">← ' + esc(L("Change an answer")) + "</button>" : "") + "</div>");
     m.querySelector("#qr-done").onclick = function () { finish(result(res)); };
     m.querySelector("#qr-done").focus();

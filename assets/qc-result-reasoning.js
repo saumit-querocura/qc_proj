@@ -50,6 +50,20 @@
     "none": "कोई नहीं",
     "From QueroCura's symptom checker: educational triage support, not a diagnosis.": "QueroCura के लक्षण जाँचकर्ता से: शैक्षिक मार्गदर्शन, निदान नहीं।",
     "can be serious": "गंभीर हो सकता है",
+    "How a doctor would read this": "डॉक्टर इसे कैसे पढ़ेंगे",
+    "Why %s leads": "%s सबसे आगे क्यों है",
+    "Points towards it": "इसकी ओर इशारा",
+    "Points away from it": "इसके ख़िलाफ़ इशारा",
+    "%a or %b?": "%a या %b?",
+    "How sure": "कितना पक्का",
+    "high": "ज़्यादा", "moderate": "मध्यम", "low": "कम",
+    "Why this level of care": "इतनी देखभाल क्यों",
+    "What a doctor will likely check": "डॉक्टर क्या जाँच कर सकते हैं",
+    "For %s": "%s के लिए",
+    "The doctor decides which of these you actually need, after examining you.": "इनमें से कौन-सी जाँच सच में ज़रूरी है, यह डॉक्टर आपको देखने के बाद तय करेंगे।",
+    "Questions to ask at your visit": "मिलने पर पूछने के सवाल",
+    "Summary": "सारांश",
+    "Likely checks": "संभावित जाँचें",
     "QueroCura's symptom checker gives educational guidance only. It is not a diagnosis. If you feel worse, or a warning sign appears, get care sooner.":
       "QueroCura का लक्षण जाँचकर्ता सिर्फ़ शैक्षिक मार्गदर्शन देता है। यह निदान नहीं है। अगर तबीयत बिगड़े या कोई चेतावनी संकेत दिखे, तो जल्दी इलाज लें।",
   };
@@ -85,6 +99,14 @@
     '.rr-doc{white-space:pre-wrap;font:500 13px/1.6 ui-monospace,"Cascadia Mono",Consolas,monospace;background:rgba(16,14,42,.035);border:1px dashed rgba(16,14,42,.16);border-radius:16px;padding:16px;margin:12px 0;max-height:360px;overflow:auto}' +
     '.rr-btns{display:flex;gap:8px;flex-wrap:wrap}.rr-btn{border:1.5px solid rgba(16,14,42,.15);background:#fff;color:inherit;border-radius:999px;padding:9px 16px;font:800 13px "Manrope",sans-serif;cursor:pointer}.rr-btn:hover{border-color:#0e8f83;color:#0e8f83}' +
     '.rr-fine{font-size:12px;opacity:.6;margin:8px 0 0;line-height:1.5}' +
+    '.rr-story{font:500 16px/1.65 "Manrope",sans-serif;margin:0 0 6px;padding:14px 16px;border-left:4px solid #7c6fdb;background:rgba(124,111,219,.06);border-radius:0 14px 14px 0}' +
+    '.rr-sub{font:800 13px "Manrope",sans-serif;margin:16px 0 8px}' +
+    '.rr-vs{font-size:14px;line-height:1.55;margin:12px 0 0;padding:11px 14px;border-radius:14px;background:rgba(47,143,209,.07)}' +
+    '.rr-conf{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:700;margin-top:12px}.rr-conf i{font-style:normal;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;padding:3px 9px;border-radius:999px;background:rgba(16,14,42,.07)}' +
+    '.rr-conf i.high{background:rgba(14,143,131,.14);color:#0b6f66}.rr-conf i.low{background:rgba(201,138,16,.15);color:#8a5d07}' +
+    '.rr-list{margin:6px 0 0;padding-left:20px;line-height:1.6;font-size:14px}.rr-list li{margin:2px 0}' +
+    '.rr-checks{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin-top:6px}.rr-checks>div{border:1px solid rgba(16,14,42,.08);border-radius:16px;padding:12px 14px}.rr-checks b{font-size:13px}' +
+    'html[data-theme="dark"] .rr-story{background:rgba(124,111,219,.1)}html[data-theme="dark"] .rr-vs{background:rgba(47,143,209,.1)}html[data-theme="dark"] .rr-checks>div{border-color:rgba(255,255,255,.1)}html[data-theme="dark"] .rr-conf i{background:rgba(255,255,255,.1)}' +
     'html[data-theme="dark"] .rr-row,html[data-theme="dark"] .rr-qa{border-color:rgba(255,255,255,.1)}html[data-theme="dark"] .rr-qa div{border-color:rgba(255,255,255,.07)}' +
     'html[data-theme="dark"] .rr-bar{background:rgba(255,255,255,.1)}html[data-theme="dark"] .rr-chip.y{color:#7ee0d4;background:rgba(126,224,212,.1)}html[data-theme="dark"] .rr-chip.n{color:#8b88a3}' +
     'html[data-theme="dark"] .rr-doc{background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.15)}html[data-theme="dark"] .rr-btn{background:#18162e;border-color:rgba(255,255,255,.18)}' +
@@ -106,6 +128,7 @@
       L("In their words") + ': "' + String(iv.original_text || "").trim() + '"',
     ];
     if (dur) lines.push(L("Duration") + ": " + dur);
+    if (R.note && R.note.story) lines.push(L("Summary") + ": " + R.note.story);
     lines.push(L("Reported") + ": " + (ev.present.map(function (x) { return x.label; }).join(", ") || L("none")));
     lines.push(L("Denied") + ": " + (ev.denied.map(function (x) { return x.label; }).join(", ") || L("none")));
     var qa = (iv.transcript || []).filter(function (t) { return !t.id || t.id.charAt(0) !== "_"; });   // safety and duration are in the lines above
@@ -117,6 +140,10 @@
     (R.differential || []).slice(0, 4).forEach(function (d) { lines.push("  • " + d.name + " (" + d.fit + "%)" + (d.supporting.length ? ": " + d.supporting.join(", ") : "")); });
     lines.push("", L("Suggested urgency") + ": " + (R.urgency || data.urgency || ""));
     lines.push(L("Warning signs flagged") + ": " + (((R.red_flags || []).map(function (f) { return f.title; }).join("; ")) || L("none")));
+    if (R.note && R.note.checks && R.note.checks.length) {
+      lines.push("", L("Likely checks") + ":");
+      R.note.checks.forEach(function (c) { c.items.forEach(function (x) { lines.push("  • " + x + " (" + c.for + ")"); }); });
+    }
     lines.push("", L("From QueroCura's symptom checker: educational triage support, not a diagnosis."));
     return lines.join("\n");
   }
@@ -124,7 +151,10 @@
   function render(wrap, data, iv, h) {
     if (!document.getElementById("rr-css")) { var s = document.createElement("style"); s.id = "rr-css"; s.textContent = CSS; document.head.appendChild(s); }
     var R = iv.reasoning || {}, dx = R.differential || [], top = dx[0] || {}, ev = R.evidence || { present: [], denied: [] };
+    var RANK = { self: 0, monitor: 1, soon: 2, urgent: 3, emergency: 4 };
     var level = (data.syndrome_engine && data.syndrome_engine.urgency_level) || R.level || "monitor";
+    if (R.level && (RANK[R.level] || 0) > (RANK[level] || 0)) level = R.level;   // the interview only ever raises it
+    var note = R.note || null;
     var emergency = level === "emergency" || (data.assessment && data.assessment.status === "urgent_action" && data.assessment.urgency_level === "emergency");
     var colors = LEVEL[emergency ? "emergency" : level] || LEVEL.monitor;
     var n = (iv.transcript || []).length;
@@ -150,7 +180,20 @@
       html += h.triageHtml(data, { noHead: true });
     }
 
-    // 2. Why
+    // 2. The handover: the story as a doctor would read it, and why the leading explanation leads
+    if (note && !emergency) {
+      var conf = note.confidence || {};
+      html += '<div class="card reveal"><div class="section-label" style="margin-top:0">🩺 ' + esc(L("How a doctor would read this")) + '</div><p class="rr-story">' + esc(note.story) + "</p>" +
+        '<div class="rr-sub">' + esc(L("Why %s leads").replace("%s", note.lead.name)) + "</div>" +
+        '<div class="rr-cols"><div><div class="rr-fine" style="margin:0 0 6px;font-weight:800">' + esc(L("Points towards it")) + '</div><div class="rr-chips">' + (chips(note.lead.towards, "y", "＋ ") || "—") + "</div></div>" +
+        '<div><div class="rr-fine" style="margin:0 0 6px;font-weight:800">' + esc(L("Points away from it")) + '</div><div class="rr-chips">' + (chips(note.lead.away, "t", "− ") || '<span class="rr-fine" style="margin:0">—</span>') + "</div></div></div>" +
+        (note.versus ? '<div class="rr-vs"><b>' + esc(L("%a or %b?").replace("%a", note.lead.name).replace("%b", note.versus.name)) + "</b> " + esc(note.versus.separator) + "</div>" : "") +
+        '<div class="rr-conf">' + esc(L("How sure")) + ' <i class="' + esc(conf.level) + '">' + esc(L(conf.level || "")) + "</i> " + esc(conf.text || "") + "</div>" +
+        (note.why_level && note.why_level.length ? '<div class="rr-sub">' + esc(L("Why this level of care")) + '</div><ul class="rr-list">' + note.why_level.map(function (x) { return "<li>" + esc(x) + "</li>"; }).join("") + "</ul>" : "") +
+        "</div>";
+    }
+
+    // 3. Why
     html += '<div class="card reveal"><div class="section-label" style="margin-top:0">🧠 ' + esc(L("How I reached this")) + '</div><p class="rr-fine" style="margin:0 0 10px">' + esc(L("Each bar is how well your story fits that explanation. Tap one to see the evidence.")) + '</p><div class="rr-dx">' +
       dx.slice(0, 5).map(function (d, i) {
         var serious = d.danger && (d.level === "emergency" || d.level === "urgent");
@@ -165,17 +208,25 @@
     if (n) html += '<details class="rr-more" style="margin-top:16px"><summary>💬 ' + esc(L("Your answers")) + " (" + n + ')</summary><div class="rr-qa">' + iv.transcript.map(function (t) { return "<div><span>" + esc(t.question) + "</span><b>" + esc(t.answer) + "</b></div>"; }).join("") + "</div></details>";
     html += "</div>";
 
-    // 3. What would change it
-    var watch = h.scrubList(data.red_flags || []);
+    // 4. What a doctor is likely to check, and what to ask
+    if (note && note.checks && note.checks.length) {
+      html += '<div class="card reveal"><div class="section-label" style="margin-top:0">🔬 ' + esc(L("What a doctor will likely check")) + '</div><div class="rr-checks">' +
+        note.checks.map(function (c) { return "<div><b>" + esc(L("For %s").replace("%s", c.for)) + '</b><ul class="rr-list">' + c.items.map(function (x) { return "<li>" + esc(x) + "</li>"; }).join("") + "</ul></div>"; }).join("") + "</div>" +
+        '<p class="rr-fine">' + esc(L("The doctor decides which of these you actually need, after examining you.")) + (note.checks_note ? " " + esc(note.checks_note) : "") + "</p>" +
+        (note.ask_doctor && note.ask_doctor.length ? '<div class="rr-sub">' + esc(L("Questions to ask at your visit")) + '</div><ul class="rr-list">' + note.ask_doctor.map(function (x) { return "<li>" + esc(x) + "</li>"; }).join("") + "</ul>" : "") + "</div>";
+    }
+
+    // 5. What would change it
+    var watch = h.scrubList((data.red_flags && data.red_flags.length ? data.red_flags : (note && note.watch) || []));
     if (watch.length && !emergency) html += '<div class="card reveal emergency-alert"><div class="section-label" style="margin-top:0">⚠️ ' + esc(L("Get help sooner if")) + '</div><div class="rr-chips">' + chips(watch, "r") + "</div></div>";
 
-    // 4. About the leading explanation
+    // 6. About the leading explanation
     if (data.name && data.description) {
       html += '<div class="card reveal"><div class="section-label" style="margin-top:0">' + esc(L("About %s").replace("%s", data.name)) + '</div><div class="condition-desc" style="margin:0">' + esc(h.scrubText(data.description)) + "</div>" +
         (h.scrubList(data.home_care_ongoing).length ? '<div class="section-label">' + esc("Ongoing care") + "</div>" + h.listHtml("care-list do", h.scrubList(data.home_care_ongoing)) : "") + h.ongoingNoteHtml(data) + "</div>";
     }
 
-    // 5. For the doctor
+    // 7. For the doctor
     var summary = doctorSummary(data, iv);
     html += '<div class="card reveal"><div class="section-label" style="margin-top:0">🩺 ' + esc(L("For your doctor")) + '</div><p class="rr-fine" style="margin:0">' + esc(L("A short summary of this check. Show it at your visit or send it ahead.")) + '</p><div class="rr-doc" id="rr-doc">' + esc(summary) + '</div>' +
       '<div class="rr-btns"><button type="button" class="rr-btn" id="rr-copy">📋 ' + esc(L("Copy")) + "</button>" + (navigator.share ? '<button type="button" class="rr-btn" id="rr-share">📤 ' + esc(L("Share")) + "</button>" : "") + '<button type="button" class="rr-btn" id="rr-print">🖨 ' + esc(L("Print")) + "</button></div></div>";

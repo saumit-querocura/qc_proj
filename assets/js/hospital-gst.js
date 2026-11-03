@@ -40,6 +40,10 @@
     h += '<div class="gi-top">' + supplierBlock(s, v.org_id, v.note) + '<div class="gi-meta"><h3>' + esc(v.title) + "</h3>" +
       kv([["No.", esc(v.number || "–")], ["Date", esc(v.date)], v.kind === "interim" ? ["", ""] : ["Place of supply", esc(v.place_of_supply)], v.kind === "interim" ? ["", ""] : ["Reverse charge", esc(v.reverse_charge)]]) + "</div></div>";
     if (v.interim_note) h += '<div class="gi-interim">' + esc(v.interim_note) + "</div>";
+    var ei = v.einvoice;
+    // Rule 48(4): the IRN and the QR code the IRP signed, on the face of the invoice
+    if (ei && ei.status === "generated") h += '<div class="gi-irn"><div><b>e-Invoice</b><span>IRN ' + esc(ei.irn) + "</span><span>Ack No. " + esc(ei.ack_no) + " · Ack date " + esc(ei.ack_dt) + "</span></div>" + (ei.qr || "") + "</div>";
+    else if (ei && ei.status === "cancelled") h += '<div class="gi-interim gi-void">IRN ' + esc(ei.irn) + " was cancelled (" + esc(ei.cancel_reason) + "). This invoice is not valid.</div>";
     h += '<div class="gi-parties">' +
       party("Patient", [esc(r.name), [r.mrn ? "MRN " + esc(r.mrn) : "", esc(r.age_sex || "")].filter(Boolean).join(" · "), esc(r.address || "")]) +
       (v.bill_to ? party("Billed to", [esc(v.bill_to.name), v.bill_to.gstin ? "GSTIN " + esc(v.bill_to.gstin) : "", esc(v.bill_to.address || "")]) : "") +
@@ -184,6 +188,7 @@
         '<div class="card"><div class="cl-listh"><h3>GST for the month</h3><input class="input" type="month" id="gs-month" value="' + esc(MONTH) + '" style="width:auto"></div>' +
         (m && m.ok ? monthHtml(m) : '<p class="mini">' + esc((m && m.message) || "You can’t see GST figures.") + "</p>") + "</div></div>";
       box.innerHTML = h;
+      if (window.QCEin && s.gstin) window.QCEin.card(box.querySelector(".pi-grid"));
       var f = el("gst-f");
       if (f) f.onsubmit = function (e) {
         e.preventDefault();

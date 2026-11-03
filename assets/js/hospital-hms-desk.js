@@ -471,6 +471,7 @@
       '<div class="field"><label for="bl-bg">GSTIN</label><input class="input" id="bl-bg" maxlength="15" value="' + esc((x.bill_to || {}).gstin || "") + '"></div><div class="field"><label for="bl-ba">Address</label><input class="input" id="bl-ba" maxlength="300" value="' + esc((x.bill_to || {}).address || "") + '"></div></div>' +
       '<button type="button" class="btn btn-sm" data-upd>Save</button></details>';
     else if (x.payer !== "self") h += '<div class="field"><label for="bl-claim">Claim status (' + esc(x.payer_name || x.payer_label) + ')</label><select class="input" id="bl-claim">' + ["none", "preauth_pending", "preauth_approved", "submitted", "settled", "rejected"].map(function (c) { return '<option value="' + c + '"' + (x.claim_status === c ? " selected" : "") + ">" + c.replace("_", " ") + "</option>"; }).join("") + "</select></div>";
+    if (window.QCEin) h += window.QCEin.billLine(x);
     if (window.QCWa) h += window.QCWa.billLine(x);
     var canPay = x.status === "final" ? x.due > 0 : draft && x.encounter_id;
     if (canPay) h += '<div class="bill-pay"><input class="input" id="py-a" inputmode="decimal" value="' + (x.status === "final" ? x.due / 100 : "") + '" placeholder="' + (draft ? "Advance ₹" : "") + '" aria-label="Amount"><select class="input" id="py-m" aria-label="Paid by"><option value="cash">Cash</option><option value="upi">UPI</option><option value="card">Card</option><option value="insurance">Insurance</option><option value="scheme">Government scheme</option><option value="other">Other</option></select><input class="input" id="py-r" placeholder="Reference (UPI / card)" maxlength="60" aria-label="Reference"><button type="button" class="btn btn-primary" data-pay>' + (draft ? "Take advance" : "Take payment") + "</button></div>";
@@ -486,6 +487,7 @@
       (admin && x.status === "final" && !x.can_void && x.void_block ? '<p class="mini">Why there is no Void: ' + esc(x.void_block) + "</p>" : "");
     var b = M().modal(h, true, 2);
     if (window.QCWa) window.QCWa.wireBill(b, x, function () { openBill(x.id); });
+    if (window.QCEin) window.QCEin.wireBill(b, x, function () { openBill(x.id); });
     if (draft) api("/hospital/billing/prices").then(function (r) { if (r.ok && el("bl-pr")) el("bl-pr").innerHTML = '<option value="">Add from price list…</option>' + r.items.map(function (p) { return '<option value="' + esc(p.id) + '">' + esc(p.name) + " · " + M().money(p.price) + "</option>"; }).join(""); });
     function act(body, after, btn) {
       if (btn) btn.disabled = true;

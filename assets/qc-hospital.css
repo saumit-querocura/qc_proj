@@ -1418,5 +1418,14 @@ label.chk { display: flex; gap: 8px; align-items: center; margin: 8px 0; font-we
 .wa-mode.on { border-color: var(--teal); background: rgba(14,143,131,.06); } .wa-mode.off { opacity: .55; cursor: default; }
 .wa-mode input { margin-top: 3px; width: 17px; height: 17px; flex: 0 0 auto; } .wa-mode b { display: block; font-size: 14px; } .wa-mode small { display: block; color: var(--muted); font-size: 12.5px; line-height: 1.45; margin-top: 2px; }
 .wa-dues { display: flex; flex-wrap: wrap; gap: 8px 16px; margin: 2px 0 6px 25px; font-size: 13px; color: var(--muted); } .wa-dues label { display: flex; align-items: center; gap: 6px; } .wa-dues .input { width: 62px; }
+.ein-line { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 10px 12px; border: 1px solid var(--line); border-radius: 14px; margin: 10px 0; font-size: 14px; }
+.ein-line.ok { border-color: rgba(14,143,131,.35); background: rgba(14,143,131,.05); }
+.ein-line.bad { border-color: rgba(210,79,40,.35); background: rgba(210,79,40,.05); }
+.ein-line code { font-size: 12.5px; }
+.gi-irn { display: flex; align-items: center; justify-content: space-between; gap: 14px; border: 1px solid var(--gi, #0e8f83); border-radius: 6px; padding: 8px 10px; margin-bottom: 10px; }
+.gi-irn div { display: flex; flex-direction: column; gap: 2px; font-size: 11px; word-break: break-all; }
+.gi-irn b { font-size: 13px; }
+.gi-irn svg { width: 34mm; height: 34mm; flex: 0 0 auto; }
+.gi-void { border-color: #b3182a; color: #b3182a; }
 .wa-line { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 10px 12px; border: 1px solid var(--line); border-radius: 14px; margin: 10px 0; font-size: 14px; }
 .wa-line .pill { margin: 0 4px; }

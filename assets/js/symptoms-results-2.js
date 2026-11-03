@@ -428,5 +428,7 @@ document.getElementById("qc-signout-btn").addEventListener("click", async () => 
     window.location.href = "../";
     return;
   }
+  // The reasoning renderer is a later script; on a fast connection the fetches above can finish before it has loaded.
+  if (!window.QCResReason && document.readyState !== "complete") await new Promise(r => window.addEventListener("load", r, { once: true }));
   renderResult(stored.data, stored.interview);
 })();
