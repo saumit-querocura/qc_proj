@@ -1233,12 +1233,41 @@ html[data-theme="dark"] .dr-path, html[data-theme="dark"] .dr-card, html[data-th
 .lab-band { fill: rgba(18,181,165,.12); } .lab-line { fill: none; stroke: #2b6fe8; stroke-width: 2; }
 .lab-pt { fill: #2b6fe8; } .lab-pt.lo { fill: #1d4fb8; } .lab-pt.hi { fill: #e0a52c; } .lab-pt.crit { fill: #e2483d; }
 
-/* GST invoice (print) */
-.gst-inv { font-size: 12.5px; } .gst-inv h2 { margin: 0 0 4px; } .gst-inv p { margin: 2px 0; }
-.gi-top { display: flex; justify-content: space-between; gap: 20px; border-bottom: 2px solid #222; padding-bottom: 10px; margin-bottom: 10px; } .gi-meta { text-align: right; } .gi-meta h3 { margin: 0 0 6px; text-transform: uppercase; letter-spacing: .04em; }
-.gi-t { width: 100%; border-collapse: collapse; margin: 10px 0; } .gi-t th, .gi-t td { border: 1px solid #999; padding: 4px 6px; text-align: right; } .gi-t th:nth-child(2), .gi-t td:nth-child(2) { text-align: left; }
-.gi-sum { margin-left: auto; border-collapse: collapse; min-width: 260px; } .gi-sum td { padding: 3px 8px; text-align: right; } .gi-sum .gi-tot td { font-weight: 800; border-top: 2px solid #222; }
-.gi-words { font-weight: 700; margin-top: 10px; } .gi-sign { text-align: right; margin-top: 30px; }
+/* GST invoice, credit note, receipt (print).  Black on white whatever the theme, A4-friendly, tables that repeat their
+   heading on each page and never split a row. */
+.gst-inv { font-size: 11.5px; color: #111; --gi: #0e8f83; } .gst-inv h2 { margin: 0 0 3px; font: 700 17px 'Space Grotesk', sans-serif; } .gst-inv p { margin: 1px 0; }
+.gi-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; border-bottom: 3px solid var(--gi); padding-bottom: 10px; margin-bottom: 10px; }
+.gi-from { display: flex; gap: 12px; align-items: flex-start; } .gi-logo { max-height: 56px; max-width: 150px; object-fit: contain; }
+.gi-meta { text-align: right; flex: 0 0 auto; } .gi-meta h3 { margin: 0 0 6px; text-transform: uppercase; letter-spacing: .06em; font: 800 15px 'Space Grotesk', sans-serif; color: var(--gi); }
+.gi-kv { border-collapse: collapse; margin-left: auto; } .gi-kv th { text-align: left; font-weight: 600; color: #555; padding: 1px 10px 1px 0; } .gi-kv td { text-align: right; font-weight: 700; padding: 1px 0; }
+.gi-interim { border: 1.5px dashed #b45309; color: #92400e; padding: 6px 10px; border-radius: 6px; margin-bottom: 10px; font-weight: 700; }
+.gi-parties { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 8px; margin-bottom: 10px; }
+.gi-party { border: 1px solid #ddd; border-radius: 6px; padding: 6px 8px; } .gi-party span { display: block; color: #444; } .gi-party b { display: block; }
+.gi-l { font-size: 9.5px; text-transform: uppercase; letter-spacing: .06em; color: #777 !important; font-weight: 700; }
+.gi-t { width: 100%; border-collapse: collapse; margin: 8px 0; font-variant-numeric: tabular-nums; } .gi-t thead { display: table-header-group; } .gi-t tr { break-inside: avoid; page-break-inside: avoid; }
+.gi-t th, .gi-t td { border: 1px solid #bbb; padding: 3px 5px; text-align: right; vertical-align: top; } .gi-t th { background: #f2f2f2; font-size: 10px; text-transform: uppercase; letter-spacing: .03em; }
+.gi-t th:nth-child(-n+3), .gi-t td:nth-child(-n+3) { text-align: left; } .gi-t td:nth-child(2) { white-space: nowrap; } .gi-t:not(.gi-sumt) td:nth-child(3) { width: 28%; }
+.gi-sumt th:nth-child(-n+3), .gi-sumt td:nth-child(-n+3) { text-align: right; } .gi-sumt th:first-child, .gi-sumt td:first-child { text-align: left; }
+.gi-t .gi-grp td { text-align: left; font-weight: 800; background: #fafafa; color: var(--gi); } .gi-t .gi-sub td { font-weight: 700; background: #fcfcfc; }
+.gi-t .gi-sub td:first-child { text-align: right; }
+.gi-bottom { display: flex; gap: 20px; align-items: flex-start; break-inside: avoid; page-break-inside: avoid; } .gi-left { flex: 1; min-width: 0; }
+.gi-rates { border-collapse: collapse; margin-bottom: 6px; } .gi-rates th, .gi-rates td { border: 1px solid #ccc; padding: 2px 6px; text-align: right; } .gi-rates th { background: #f2f2f2; font-size: 10px; }
+.gi-sum { border-collapse: collapse; min-width: 250px; font-variant-numeric: tabular-nums; } .gi-sum td { padding: 2px 6px; text-align: right; } .gi-sum td:first-child { text-align: left; color: #333; }
+.gi-sum .gi-tot td { font-weight: 800; border-top: 2px solid #111; font-size: 13px; } .gi-sum .gi-due td { font-weight: 800; border-top: 1px solid #111; border-bottom: 3px double #111; font-size: 13px; }
+.gi-words { font-weight: 700; margin: 6px 0; } .gi-small { font-size: 10.5px; color: #444; margin: 3px 0; }
+.gi-qrs { display: flex; flex-wrap: wrap; gap: 18px; margin-top: 10px; break-inside: avoid; page-break-inside: avoid; }
+.gi-qr { display: flex; gap: 8px; align-items: center; max-width: 300px; } .gi-qr svg { width: 92px; height: 92px; flex: 0 0 92px; } .gi-qr span { font-size: 10.5px; color: #333; } .gi-qr b { display: block; font-size: 12px; color: #111; }
+.gi-end { display: flex; justify-content: space-between; align-items: flex-end; gap: 20px; margin-top: 14px; break-inside: avoid; page-break-inside: avoid; } .gi-sign { text-align: right; font-weight: 600; }
+.gi-break { break-after: page; page-break-after: always; height: 0; }
+.gi-receipt .gi-rline { font-size: 13px; line-height: 1.7; margin: 14px 0; } .gi-amt { font: 800 26px 'Space Grotesk', sans-serif; border: 2px solid #111; display: inline-block; padding: 6px 16px; border-radius: 6px; }
+@media print { @page { @bottom-right { content: counter(page) " / " counter(pages); font-size: 9px; color: #777; } } }
+
+/* billing lists, feedback sharing */
+.bl-bar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 0 0 8px; } .bl-bar .input { width: auto; flex: 0 1 auto; } .bl-bar #bl-q { flex: 1 1 220px; min-width: 0; }
+.bl-row { display: flex; align-items: center; gap: 8px; } .bl-row .hms-row { flex: 1; min-width: 0; } .bl-sel { flex: 0 0 18px; width: 18px; height: 18px; }
+#bl-sum { margin: 2px 0 8px; } #bl-more { text-align: center; margin: 12px 0; }
+.fb-share { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; } .fb-qr { background: #fff; border-radius: 12px; padding: 6px; line-height: 0; } .fb-qr svg { width: 150px; height: 150px; }
+.fb-card { text-align: center; padding-top: 30mm; } .fb-card h2 { font: 800 28px 'Space Grotesk', sans-serif; } .fb-card .fb-qr svg { width: 70mm; height: 70mm; } .fb-card p { font-size: 15px; max-width: 120mm; margin: 12px auto; }
 
 /* offline */
 .offline-banner { position: sticky; top: 0; z-index: 30; margin: 0 0 12px; padding: 10px 16px; border-radius: 14px; background: #3b2a06; color: #ffe6b0; font: 600 13.5px/1.5 var(--body, inherit); box-shadow: 0 10px 24px -14px rgba(0,0,0,.6); }
@@ -1372,3 +1401,14 @@ html[data-theme="dark"] .an-root { --s1: #3987e5; --s1-soft: rgba(57,135,229,.2)
 .an-ex { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; margin-bottom: 12px; } .an-ex label { display: grid; gap: 4px; font-weight: 700; } .an-ex .input { min-width: 170px; }
 @media (max-width: 560px) { .an-brief { flex-wrap: wrap; } .an-bar { grid-template-columns: minmax(70px, 30%) 1fr auto; } }
 .an-t td:first-child { white-space: nowrap; }
+/* readmission risk on the ward and at discharge */
+.bed .rr-b { position: absolute; bottom: 3px; right: 3px; font: 800 9.5px 'Manrope', sans-serif; padding: 1px 5px; border-radius: 999px; background: var(--danger); color: #fff; }
+.bed-legend .rr-key::before { display: none !important; } .bed-legend .rr-key { color: var(--danger); }
+.rr .ops-h { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.rr-parts { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; margin: 8px 0; }
+.rr-parts > div { border: 1px solid var(--line); border-radius: 12px; padding: 8px 10px; display: flex; gap: 10px; align-items: center; }
+.rr-parts b { font: 800 20px 'Space Grotesk', sans-serif; min-width: 18px; } .rr-parts span { font-size: 12.5px; color: var(--muted); }
+.rr-do { margin: 6px 0 10px 18px; padding: 0; } .rr-do li { margin: 3px 0; font-size: 13.5px; }
+.rr-line { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin: 12px 0; }
+.an-grid.zero { stroke: var(--muted); } .an-whisk { stroke: var(--s1); stroke-width: 1.5; opacity: .45; } .an-dot { fill: var(--s1); stroke: var(--card); stroke-width: 2; }
+label.chk { display: flex; gap: 8px; align-items: center; margin: 8px 0; font-weight: 600; font-size: 14px; } label.chk input { width: 17px; height: 17px; flex: 0 0 auto; }

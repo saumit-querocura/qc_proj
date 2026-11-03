@@ -40,7 +40,7 @@ CSP = ("default-src 'self'; script-src 'self' https://static.cloudflareinsights.
        "font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https://app.querocura.com https://*.producthunt.com https://api.producthunt.com; "
        "connect-src 'self' https://app.querocura.com https://cloudflareinsights.com; media-src 'self'; frame-src 'none'; worker-src 'self'; object-src 'none'; "
        "base-uri 'self'; form-action 'self' https://app.querocura.com mailto:")
-PRIVATE = ["/admin/", "/dashboard/", "/profile/", "/share/", "/reset/", "/verify/", "/forgot/", "/checkin/", "/onboarding/", "/tests/", "/tools/"]
+PRIVATE = ["/admin/", "/dashboard/", "/profile/", "/share/", "/reset/", "/verify/", "/forgot/", "/checkin/", "/feedback/", "/onboarding/", "/tests/", "/tools/"]
 AI_AGENTS = ["GPTBot", "OAI-SearchBot", "ChatGPT-User", "ClaudeBot", "Claude-SearchBot", "Claude-User", "PerplexityBot", "Perplexity-User",
              "Google-Extended", "Applebot-Extended", "Bingbot", "Googlebot", "Applebot", "DuckAssistBot", "meta-externalagent", "Amazonbot", "MistralAI-User", "YouBot", "CCBot"]
 FOUNDERS = [{"@type": "Person", "name": "Udantika Dhar", "jobTitle": "Chief Executive Officer"}, {"@type": "Person", "name": "Saumit Pradhan", "jobTitle": "Chief Technology Officer"}]

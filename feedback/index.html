@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data:; connect-src 'self' https://app.querocura.com; object-src 'none'; base-uri 'self'; form-action 'self'">
+<title>How was your visit? · QueroCura</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<link rel="icon" type="image/x-icon" href="../icons/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/qc-base.css?v=7b9ea421">
+<style>
+  [hidden] { display: none !important; }
+  .shell { max-width: 560px; }
+  .fb-card { border-radius: 24px; padding: 24px 20px; background: var(--card); border: 1px solid var(--line); box-shadow: 0 30px 60px -40px rgba(16,14,42,.45); }
+  .fb-card h1 { font-size: clamp(22px, 6vw, 28px); margin: 4px 0 6px; } .fb-sub { color: var(--muted); font-size: 14px; margin: 0 0 6px; }
+  .fb-lang { display: flex; justify-content: flex-end; gap: 6px; margin-bottom: 4px; } .fb-lang button { border: 1px solid var(--line); background: none; border-radius: 999px; padding: 4px 12px; font-weight: 700; cursor: pointer; color: inherit; }
+  .fb-lang button.on { background: var(--teal); color: #fff; border-color: var(--teal); }
+  .fb-q { margin: 22px 0 8px; font: 700 16px 'Space Grotesk', sans-serif; }
+  .fb-nps { display: grid; grid-template-columns: repeat(11, minmax(0, 1fr)); gap: 4px; }
+  .fb-nps button { aspect-ratio: 1; min-height: 34px; border-radius: 10px; border: 1.5px solid var(--line); background: none; font: 800 15px 'Space Grotesk', sans-serif; cursor: pointer; color: inherit; padding: 0; }
+  .fb-nps button.on { background: var(--teal); border-color: var(--teal); color: #fff; }
+  .fb-ends { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin-top: 4px; }
+  .fb-asp { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+  .fb-asp span { font-weight: 600; font-size: 14.5px; } .fb-stars { display: flex; gap: 2px; }
+  .fb-stars button { border: 0; background: none; font-size: 28px; line-height: 1; cursor: pointer; color: var(--muted); opacity: .4; padding: 4px; min-width: 40px; min-height: 40px; }
+  .fb-stars button.on { color: #e0a52c; opacity: 1; }
+  textarea.input { width: 100%; min-height: 90px; resize: vertical; }
+  .fb-call { display: flex; gap: 10px; align-items: flex-start; margin: 14px 0; font-size: 14px; } .fb-call input { margin-top: 3px; width: 18px; height: 18px; }
+  .fb-send { display: block; width: 100%; margin-top: 16px; padding: 16px; border-radius: 16px; border: 0; cursor: pointer; font: 800 18px 'Space Grotesk', sans-serif; color: #fff; background: linear-gradient(135deg, #0e8f83, #2f8fd1); }
+  .fb-send:disabled { opacity: .55; cursor: default; }
+  .fb-done { text-align: center; } .fb-ic { font-size: 46px; }
+  .fb-priv { font-size: 12px; color: var(--muted); margin-top: 14px; }
+  @media (max-width: 380px) { .fb-nps { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
+</style>
+</head>
+<body>
+  <div class="topbar">
+    <a class="logo-wrap" href="../"><img src="../assets/d4f7acc01b9438e998c9e7b9676584b0.png" alt="QueroCura"><span class="logo-text"><span class="ink">Quero</span><span class="teal">Cura</span></span></a>
+    <div class="topbar-right"><button class="theme-toggle" data-theme-toggle aria-label="Toggle dark mode"><span id="theme-toggle-icon"></span></button></div>
+  </div>
+  <main class="shell" id="fb"><div class="fb-card"><div class="empty">Loading…</div></div></main>
+  <script src="../assets/qc-page.js?v=c34c97a9"></script>
+  <script src="../assets/js/feedback.js?v=7286de21"></script>
+</body>
+</html>

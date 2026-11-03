@@ -12,8 +12,8 @@
   function api(p) { return H().api(p); }
   function el(id) { return document.getElementById(id); }
   var S = { view: "overview", range: 30 };
-  var VIEWS = [["overview", "Overview"], ["coming", "What's coming"], ["revenue", "Revenue"], ["quality", "Quality"], ["doctors", "Doctors"], ["patients", "Patients"], ["pharmacy", "Pharmacy"], ["explore", "Explore"]];
-  var RANGED = { overview: 1, revenue: 1, quality: 1, doctors: 1, explore: 1 };
+  var VIEWS = [["overview", "Overview"], ["coming", "What's coming"], ["revenue", "Revenue"], ["quality", "Quality"], ["doctors", "Doctors"], ["patients", "Patients"], ["pharmacy", "Pharmacy"], ["feedback", "Feedback"], ["explore", "Explore"]];
+  var RANGED = { overview: 1, revenue: 1, quality: 1, doctors: 1, explore: 1, feedback: 1 };
 
   function dash(x) { return x === null || x === undefined ? "–" : x; }
   function rupees(p) { return p === null || p === undefined ? "–" : M().money(Math.round(p / 100) * 100); }      // whole rupees: paise only add noise here
@@ -102,7 +102,7 @@
     }).join("") : none("Nothing needs your attention this morning.");
     return card("Morning briefing", "", body + (r.hidden ? '<p class="mini">' + r.hidden + " more under the tabs.</p>" : ""));
   }
-  var GO = { beds: "coming", revenue: "revenue", overview: "overview", quality: "quality", pharmacy: "pharmacy", patients: "patients" };
+  var GO = { beds: "coming", revenue: "revenue", overview: "overview", quality: "quality", pharmacy: "pharmacy", patients: "patients", feedback: "feedback" };
   function kpi(k) {
     var d = k.delta_pct, tone = "", word = "";
     if (d !== null && d !== undefined && d !== 0) {
@@ -256,6 +256,71 @@
       box.innerHTML = h;
     });
   }
+  /* Net Promoter Score by week, on its own -100 to 100 scale, each week with its 95% interval; weeks with under 5
+     answers are left out rather than drawn as if they meant something */
+  function npsChart(rows) {
+    var pts = rows.filter(function (r) { return r.score !== null; });
+    if (pts.length < 2) return "";
+    var W = chartW(), H_ = 200, L = 40, R = 12, T = 10, B = 24;
+    var x = function (i) { return L + (W - L - R) * (pts.length > 1 ? i / (pts.length - 1) : 0.5); };
+    var y = function (v) { return T + (H_ - T - B) * (1 - (v + 100) / 200); };
+    var svg = '<svg class="an-svg" viewBox="0 0 ' + W + " " + H_ + '" role="img" aria-label="Net Promoter Score by week">';
+    [-100, -50, 0, 50, 100].forEach(function (g) { svg += '<line class="an-grid' + (g === 0 ? " zero" : "") + '" x1="' + L + '" x2="' + (W - R) + '" y1="' + y(g) + '" y2="' + y(g) + '"/><text class="an-ax" x="' + (L - 6) + '" y="' + (y(g) + 4) + '" text-anchor="end">' + g + "</text>"; });
+    pts.forEach(function (p, i) { svg += '<line class="an-whisk" x1="' + x(i) + '" x2="' + x(i) + '" y1="' + y(Math.min(100, p.score + p.ci)) + '" y2="' + y(Math.max(-100, p.score - p.ci)) + '"/>'; });
+    svg += '<polyline class="an-line" points="' + pts.map(function (p, i) { return x(i) + "," + y(p.score); }).join(" ") + '"/>';
+    var w = (W - L - R) / Math.max(1, pts.length - 1);
+    pts.forEach(function (p, i) {
+      svg += '<circle class="an-dot" cx="' + x(i) + '" cy="' + y(p.score) + '" r="4"/><rect class="an-hit" x="' + (x(i) - w / 2) + '" y="' + T + '" width="' + w + '" height="' + (H_ - T - B) + '"' +
+        tipAttr("Week of " + dayLabel(p.week) + ": " + p.score + " ± " + p.ci + " (" + p.n + " answers)") + "/>";
+    });
+    svg += '<text class="an-ax" x="' + L + '" y="' + (H_ - 6) + '">' + esc(dayLabel(pts[0].week)) + '</text><text class="an-ax" x="' + (W - R) + '" y="' + (H_ - 6) + '" text-anchor="end">' + esc(dayLabel(pts[pts.length - 1].week)) + "</text>";
+    return svg + "</svg>";
+  }
+  function feedback(box) {
+    api("/hospital/feedback/summary?" + range()).then(function (r) {
+      if (H().guard(r)) return;
+      if (!r.ok) return fail(box, r);
+      var n = r.nps, pv = r.previous;
+      var change = n.score !== null && pv.score !== null ? n.score - pv.score : null;
+      var h = '<div class="an-kpis">' + leak(n.score === null ? "–" : (n.score > 0 ? "+" : "") + n.score + " ± " + n.ci, "Net Promoter Score", n.n + " answer" + (n.n === 1 ? "" : "s") + (change !== null ? " · " + (change >= 0 ? "▲ " : "▼ ") + Math.abs(change) + " on the period before" : "")) +
+        leak(r.response_pct === null ? "–" : r.response_pct + "%", "Answered", r.answers + " of " + r.links + " links") +
+        leak(n.n ? Math.round(100 * n.promoters / n.n) + "% / " + Math.round(100 * n.detractors / n.n) + "%" : "–", "Promoters / detractors", "9–10 / 0–6") +
+        leak(r.callbacks.length, "To call back", "unhappy or asked for a call") + "</div>";
+      if (!n.n) {
+        box.innerHTML = h + card("No answers yet", "", none("Feedback QR codes print on bills and receipts, and the desk can send the link on WhatsApp from any visit (Feedback link). Answers appear here as they come in."));
+        return;
+      }
+      if (n.n < 30) h += '<p class="mini">With ' + n.n + " answers the score can move by about ±" + n.ci + " points by chance alone. Read it as a direction, not a verdict.</p>";
+      var trend = npsChart(r.trend);
+      h += card("Score by week", r.basis, (trend || none("Shown once two weeks each have 5 or more answers.")) + asTable(table(["Week of", "Answers", "Score"], r.trend.map(function (w) { return [esc(dayLabel(w.week)), w.n, w.score === null ? "too few" : w.score + " ± " + w.ci]; }))));
+      if (r.callbacks.length) {
+        h += card("Call these patients back", "Scored 0 to 6 or asked for a call, oldest first. Record what was done and they leave the list.", table(["Answered", "Score", r.names ? "Patient" : "Visit", "What they said", ""], r.callbacks.map(function (c) {
+          return [esc(c.date) + (c.days >= 2 ? ' <span class="an-st st-warn">' + c.days + " days</span>" : ""), '<span class="an-st ' + (c.nps <= 6 ? "st-bad" : "st-info") + '">' + c.nps + "</span>" + (c.call_back ? " 📞" : ""),
+            c.patient ? (c.patient_id ? '<button type="button" class="link" data-an-pt="' + esc(c.patient_id) + '">' + esc(c.patient) + "</button>" : esc(c.patient)) + (c.phone ? '<div class="mini">' + esc(c.phone) + "</div>" : "") : esc([c.department, c.doctor].filter(Boolean).join(" · ") || "–"),
+            esc(c.comment || "–"), '<button type="button" class="btn btn-sm" data-an-follow="' + esc(c.id) + '">Done</button>'];
+        })));
+      }
+      var groups = function (rows) { return rows.length ? table(["Name", "Answers", "Score"], rows.map(function (g) { return [esc(g.name), g.n, g.score === null ? '<span class="mini">needs ' + r.min_group + "</span>" : (g.score > 0 ? "+" : "") + g.score + " ± " + g.ci]; })) : none("No answers linked to one yet."); };
+      h += '<div class="an-2">' + card("What patients rated", "Average out of 5, lowest first; share rating it 4 or 5.", r.aspects.length ? bars(r.aspects.map(function (a) { return { label: a.label, value: a.avg }; }), "") +
+        asTable(table(["Aspect", "Answers", "Average", "Rated 4–5"], r.aspects.map(function (a) { return [esc(a.label), a.n, a.avg, a.good_pct + "%"]; }))) : none("No ratings yet.")) +
+        card("By department", "A score appears once there are " + r.min_group + " answers.", groups(r.departments)) + "</div>";
+      h += '<div class="an-2">' + card("By doctor", "A score appears once there are " + r.min_group + " answers.", groups(r.doctors)) +
+        card("What they wrote", "The latest comments.", r.comments.length ? r.comments.slice(0, 20).map(function (c) {
+          return '<div class="an-brief"><span class="an-st ' + (c.nps >= 9 ? "st-good" : c.nps <= 6 ? "st-bad" : "st-info") + '">' + c.nps + '</span><div class="grow"><div>' + esc(c.text) + '</div><div class="mini">' + esc([c.date, c.department, c.doctor].filter(Boolean).join(" · ")) + "</div></div></div>";
+        }).join("") : none("No comments yet.")) + "</div>";
+      box.innerHTML = h;
+      [].forEach.call(box.querySelectorAll("[data-an-follow]"), function (b) {
+        b.onclick = function () {
+          var note = window.prompt("What was done? (who called, what was agreed)");
+          if (!note) return;
+          H().api("/hospital/feedback/" + encodeURIComponent(b.getAttribute("data-an-follow")) + "/follow", { method: "POST", body: { note: note } }).then(function (x) {
+            H().P.toast(x.message || (x.ok ? "Recorded." : "Couldn't save."), x.ok ? "" : "err");
+            if (x.ok) feedback(box);
+          });
+        };
+      });
+    });
+  }
   var EX = { metric: "visits", group: "day", opts: null };
   function explore(box) {
     (EX.opts ? Promise.resolve({ ok: true, metrics: EX.opts }) : api("/hospital/analytics/explore")).then(function (o) {
@@ -276,7 +341,7 @@
     });
   }
   function fail(box, r) { box.innerHTML = '<div class="notice bad">' + esc(r.message || "Couldn't load this.") + "</div>"; }
-  var LOAD = { overview: overview, coming: coming, revenue: revenue, quality: quality, doctors: doctors, patients: patients, pharmacy: pharmacy, explore: explore };
+  var LOAD = { overview: overview, coming: coming, revenue: revenue, quality: quality, doctors: doctors, patients: patients, pharmacy: pharmacy, feedback: feedback, explore: explore };
 
   function render() {
     var root = el("tab-analytics");

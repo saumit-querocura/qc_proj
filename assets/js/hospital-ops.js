@@ -274,10 +274,12 @@
         if (can("billing") || can("billing_admin")) mg.push('<button type="button" class="btn btn-sm" data-hms="bill">🧾 Bill</button>');
         if (can("appointments") || can("rx")) mg.push('<button type="button" class="btn btn-sm" data-hms="followup">📅 Book follow-up</button>');
         if ((x.kind === "ipd" || x.kind === "daycare") && (can("orders") || can("read")) && window.QCHms.discharge) mg.push('<button type="button" class="btn btn-sm" data-dsum>📝 Discharge summary</button>');
+        if (window.QCHms.feedbackShare && (x.status === "closed" || x.status === "discharge_planned" || x.status === "in_consult")) mg.push('<button type="button" class="btn btn-sm btn-ghost" data-hms="feedback">💬 Feedback link</button>');
         h += '<div class="ops-v-acts hms-acts">' + mg.join("") + "</div>";
         if (x.prescriptions && x.prescriptions.length) h += '<div class="ops-sec"><div class="ops-h">Prescriptions</div>' + x.prescriptions.map(function (p) { return '<button type="button" class="rec-line" data-hmsrx="' + esc(p.id) + '"><b>' + esc(p.number) + "</b><span>" + esc((p.diagnosis || p.n_items + " medicines") + " · " + p.doctor) + "</span></button>"; }).join("") + "</div>";
       }
       if (window.QCClin) h += QCClin.section(x);
+      if (x.kind === "ipd" && (x.status === "admitted" || x.status === "discharge_planned") && canAny("read", "orders", "write")) h += '<div id="rr-visit"></div>';
       // discharge checklist
       if (x.status === "admitted" || x.status === "discharge_planned") {
         var ck = (S.structure && S.structure.checklist) || {};
@@ -293,6 +295,7 @@
       if (x.earlier && x.earlier.length) h += '<div class="mini" style="margin-top:12px">Came in through: ' + x.earlier.map(function (e) { return esc(e.kind.toUpperCase() + " · " + (e.dept || "") + " · " + new Date(e.created_ts * 1000).toLocaleDateString()); }).join(" → ") + "</div>";
       var b = modal(h);
       if (window.QCClin) QCClin.after(x);
+      if (el("rr-visit")) riskPanel(x.id, el("rr-visit"), { patient: x.patient_id ? { id: x.patient_id, name: x.patient_name, mrn: x.mrn } : null, doctor: x.doctor_id });
       b.onclick = function (e) {
         var t;
         if (window.QCClin && QCClin.click(e, x, function () { openVisit(x.id); })) return;
@@ -301,6 +304,7 @@
           var w = t.getAttribute("data-hms"), Q = window.QCHms;
           if (w === "record") { closeModal(); return Q.openRecord(x.patient_id); }
           if (w === "bill") return Q.billForVisit(x.id);
+          if (w === "feedback") return Q.feedbackShare(x.id, 2);
           var pp = { id: x.patient_id, name: x.patient_name, mrn: x.mrn };
           if (w === "followup") return Q.book({ patient: pp, kind: "follow_up", source: "followup", doctor: x.doctor_id, layer: 2 });
           if (w === "rx") return api("/hospital/patients/" + encodeURIComponent(x.patient_id)).then(function (r) { if (r.ok) Q.prescribe({ patient: r.patient, encounter_id: x.id, complaints: x.reason || "", layer: 2, after: function () { openVisit(x.id); } }); });
@@ -333,7 +337,8 @@
     var b = modal('<h2 id="ops-title">Discharge ' + esc(x.patient_name) + '</h2><p class="sub">The bed is marked for cleaning straight away.</p>' +
       '<div class="ops-choices">' + [["home", "🏠", "Home"], ["referred", "↗️", "Referred"], ["lama", "✍️", "Left against advice"], ["deceased", "🕊️", "Died"]].map(function (o) { return '<button type="button" class="ops-choice' + (o[0] === "home" ? " on" : "") + '" data-out="' + o[0] + '"><span>' + o[1] + "</span><b>" + o[2] + "</b></button>"; }).join("") + "</div>" +
       (missing.length ? '<div class="notice wait" style="margin-top:14px">Checklist not finished: ' + missing.map(function (k) { return esc(S.structure.checklist[k]); }).join("; ") + '.</div><div class="field"><label for="dc-why">Reason to discharge anyway</label><input class="input" id="dc-why" maxlength="200"></div>' : "") +
-      '<button class="btn btn-primary" type="button" id="dc-go">Discharge</button><div class="msg" id="dc-msg"></div>');
+      '<div id="rr-dc"></div><button class="btn btn-primary" type="button" id="dc-go">Discharge</button><div class="msg" id="dc-msg"></div>');
+    riskPanel(x.id, el("rr-dc"), { compact: true, patient: x.patient_id ? { id: x.patient_id, name: x.patient_name, mrn: x.mrn } : null, doctor: x.doctor_id });
     var out = "home";
     b.onclick = function (e) {
       var t = e.target.closest("[data-out]");
@@ -343,6 +348,37 @@
       });
     };
   }
+
+  /* =========================================================== readmission risk (LACE) where the decisions are made */
+  var BAND = { high: ["High", "bad"], moderate: ["Moderate", "wait"], low: ["Low", "ok"] };
+  function riskChip(r) { var b = BAND[r.band] || ["", ""]; return '<span class="pill ' + b[1] + '" title="Readmission risk, LACE ' + r.score + ' of 19">↩ ' + b[0] + " · " + r.score + "</span>"; }
+  /* fills box with the stay's risk, how it was reached and what to do; o.patient for the follow-up button, o.compact for one line */
+  function riskPanel(eid, box, o) {
+    o = o || {};
+    if (!box || !canAny("read", "orders", "write")) return;
+    api("/hospital/discharge-risk/" + encodeURIComponent(eid)).then(function (r) {
+      if (!r || !r.ok || !box.isConnected) return;
+      var x = r.item, p = x.parts;
+      if (o.compact) {
+        if (x.band === "low") { box.innerHTML = ""; return; }
+        box.innerHTML = '<div class="notice ' + (x.band === "high" ? "bad" : "wait") + ' rr-line">' + riskChip(x) + " <span>" + esc(x.actions[0]) + "</span>" + (o.patient && canAny("appointments", "rx") ? ' <button type="button" class="btn btn-sm" data-rrbook>Book follow-up</button>' : "") + "</div>";
+      } else {
+        box.innerHTML = '<div class="ops-sec rr"><div class="ops-h">Readmission risk ' + riskChip(x) + "</div>" +
+          '<div class="rr-parts"><div><b>' + p.L + "</b><span>Length of stay, " + x.days_in + " days</span></div><div><b>" + p.A + "</b><span>" + (x.emergency ? "Came in as an emergency" : "Planned admission") + "</span></div>" +
+          "<div><b>" + p.C + "</b><span>" + (x.problems_known ? (x.conditions.length ? x.conditions.map(function (c) { return esc(c.label); }).join(", ") : "No listed condition adds to the score") : "No problem list: this may be too low") + "</span></div>" +
+          "<div><b>" + p.E + "</b><span>" + x.er_visits_6m + " emergency visit" + (x.er_visits_6m === 1 ? "" : "s") + " in 6 months</span></div></div>" +
+          '<ul class="rr-do">' + x.actions.map(function (a) { return "<li>" + esc(a) + "</li>"; }).join("") + "</ul>" +
+          (o.patient && canAny("appointments", "rx") && x.band !== "low" ? '<button type="button" class="btn btn-sm" data-rrbook>📅 Book the follow-up now</button> ' : "") +
+          (o.onFollow && x.band !== "low" ? '<button type="button" class="btn btn-sm btn-ghost" data-rrfill>Add to the discharge advice</button>' : "") +
+          '<p class="mini">' + esc(r.basis) + "</p></div>";
+      }
+      var bk = box.querySelector("[data-rrbook]");
+      if (bk) bk.onclick = function () { window.QCHms.book({ patient: o.patient, kind: "follow_up", source: "followup", doctor: o.doctor || "", layer: 2 }); };
+      var fl = box.querySelector("[data-rrfill]");
+      if (fl) fl.onclick = function () { o.onFollow(x); };
+    });
+  }
+  window.QCRisk = { panel: riskPanel, chip: riskChip };
 
   /* admitting and moving: a bed picker that suggests the best free bed */
   function admit(id) {
@@ -373,8 +409,9 @@
   function loadBeds(quiet) {
     var box = el("tab-beds");
     if (!quiet) box.innerHTML = '<div class="empty">Loading beds…</div>';
-    Promise.all([loadStructure(true), api("/hospital/ops/inpatients" + H().siteQ("?"))]).then(function (res) {
-      var st = res[0], ip = res[1];
+    Promise.all([loadStructure(true), api("/hospital/ops/inpatients" + H().siteQ("?")), can("read") ? api("/hospital/discharge-risk").then(null, function () { return null; }) : null]).then(function (res) {
+      var st = res[0], ip = res[1], risk = {}, hasRisk = !!(res[2] && res[2].ok);
+      ((hasRisk && res[2].items) || []).forEach(function (x) { risk[x.id] = x; });
       if (!st || !st.wards.length) return unconfigured(box, "The bed board");
       if (H().guard(ip)) return;
       var byEnc = {};
@@ -385,21 +422,21 @@
       var h = '<div class="ops-bar"><div class="chips"><button type="button" class="chipbtn' + (S.bedView === "grid" ? " on" : "") + '" data-view="grid">🛏️ Bed board</button><button type="button" class="chipbtn' + (S.bedView === "list" ? " on" : "") + '" data-view="list">📋 Inpatient list (' + (ip.items || []).length + ")</button></div>" +
         '<div class="ops-bar-r"><span class="ops-stat"><b>' + occ + "/" + tot + "</b> occupied</span><span class=\"ops-stat\"><b>" + free + "</b> free</span>" + (cleaning ? '<span class="ops-stat warn"><b>' + cleaning + "</b> to clean</span>" : "") +
         (can("ops") ? '<button class="btn btn-primary btn-sm" type="button" data-direct>+ Admit directly</button>' : "") + "</div></div>" +
-        '<div class="bed-legend"><span class="free">Free</span><span class="occupied">Occupied</span><span class="cleaning">Cleaning</span><span class="reserved">Reserved</span><span class="blocked">Blocked</span><span class="gohome">Going home</span></div>';
+        '<div class="bed-legend"><span class="free">Free</span><span class="occupied">Occupied</span><span class="cleaning">Cleaning</span><span class="reserved">Reserved</span><span class="blocked">Blocked</span><span class="gohome">Going home</span>' + (hasRisk ? '<span class="rr-key">↩ high readmission risk</span>' : "") + "</div>";
       if (S.bedView === "list") {
-        h += '<div class="card"><div class="scroll-x"><table class="t"><thead><tr><th>Patient</th><th>Where</th><th>NEWS2</th><th>Days</th><th>Doctor</th><th>Open orders</th><th>Status</th></tr></thead><tbody>' +
+        h += '<div class="card"><div class="scroll-x"><table class="t"><thead><tr><th>Patient</th><th>Where</th><th>NEWS2</th><th>Days</th>' + (hasRisk ? "<th>Readmission risk</th>" : "") + '<th>Doctor</th><th>Open orders</th><th>Status</th></tr></thead><tbody>' +
           ((ip.items || []).map(function (p) {
-            return '<tr class="clickrow" data-open="' + esc(p.id) + '"><td><b>' + esc(p.patient_name) + "</b>" + (p.access_active ? "" : ' <span class="tag emg">access ended</span>') + '</td><td>' + esc(p.ward || "") + " · " + esc(p.bed || "") + "</td><td>" + (window.QCClin && p.news2 ? QCClin.badge(p.news2) : "–") + "</td><td>" + (p.los_days != null ? p.los_days : "") + "</td><td>" + esc(p.doctor || "–") + "</td><td>" + (p.open_orders || "–") + "</td><td>" + esc(STATUS[p.status] || p.status) + "</td></tr>";
-          }).join("") || '<tr><td colspan="7" class="empty">No inpatients.</td></tr>') + "</tbody></table></div></div>";
+            return '<tr class="clickrow" data-open="' + esc(p.id) + '"><td><b>' + esc(p.patient_name) + "</b>" + (p.access_active ? "" : ' <span class="tag emg">access ended</span>') + '</td><td>' + esc(p.ward || "") + " · " + esc(p.bed || "") + "</td><td>" + (window.QCClin && p.news2 ? QCClin.badge(p.news2) : "–") + "</td><td>" + (p.los_days != null ? p.los_days : "") + "</td>" + (hasRisk ? "<td>" + (risk[p.id] ? riskChip(risk[p.id]) : "–") + "</td>" : "") + "<td>" + esc(p.doctor || "–") + "</td><td>" + (p.open_orders || "–") + "</td><td>" + esc(STATUS[p.status] || p.status) + "</td></tr>";
+          }).join("") || '<tr><td colspan="8" class="empty">No inpatients.</td></tr>') + "</tbody></table></div></div>";
       } else {
         h += '<div class="wards">' + wards.map(function (w) {
           var t = w.beds.filter(function (b) { return b.status !== "blocked"; }).length, o = w.beds.filter(function (b) { return b.status === "occupied"; }).length;
           return '<div class="ward"><div class="ward-h"><b>' + esc(w.name) + '</b><span class="mini">' + esc((st.ward_kinds || {})[w.kind] || w.kind) + '</span><span class="ward-occ"><i style="width:' + (t ? 100 * o / t : 0) + '%"></i></span><span class="mini">' + o + "/" + t + '</span></div><div class="bedgrid">' +
             w.beds.map(function (b) {
-              var p = b.encounter_id ? byEnc[b.encounter_id] : null;
+              var p = b.encounter_id ? byEnc[b.encounter_id] : null, rk = b.encounter_id ? risk[b.encounter_id] : null;
               var cls = b.status + (p && p.status === "discharge_planned" ? " gohome" : "") + (p && !p.access_active ? " noaccess" : "");
               return '<button type="button" class="bed ' + cls + '" data-bed="' + esc(b.id) + '" data-enc="' + esc(b.encounter_id || "") + '" title="' + esc(b.label + (p ? " · " + p.patient_name : " · " + b.status) + (b.note ? " · " + b.note : "")) + '"><span class="bl">' + esc(b.label) + "</span>" +
-                (p ? '<span class="bi">' + esc(H().initials(p.patient_name)) + '</span><span class="bd">' + (p.los_days != null ? Math.floor(p.los_days) + "d" : "") + (p.open_orders ? " · " + p.open_orders + "🧪" : "") + "</span>" + (window.QCClin ? QCClin.badge(p.news2) : "") : b.status === "cleaning" ? '<span class="bi">🧽</span>' : b.status === "reserved" ? '<span class="bi">R</span>' : b.status === "blocked" ? '<span class="bi">⛔</span>' : "") + "</button>";
+                (p ? '<span class="bi">' + esc(H().initials(p.patient_name)) + '</span><span class="bd">' + (p.los_days != null ? Math.floor(p.los_days) + "d" : "") + (p.open_orders ? " · " + p.open_orders + "🧪" : "") + "</span>" + (window.QCClin ? QCClin.badge(p.news2) : "") + (rk && rk.band === "high" ? '<span class="rr-b" title="High readmission risk (LACE ' + rk.score + ')">↩' + rk.score + "</span>" : "") : b.status === "cleaning" ? '<span class="bi">🧽</span>' : b.status === "reserved" ? '<span class="bi">R</span>' : b.status === "blocked" ? '<span class="bi">⛔</span>' : "") + "</button>";
             }).join("") + "</div></div>";
         }).join("") + "</div>";
       }

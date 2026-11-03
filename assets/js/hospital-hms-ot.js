@@ -237,12 +237,20 @@
       h += '<div class="ds-auto"><div><div class="ops-h">Operations and procedures</div>' + (d.procedures.length ? "<ul>" + d.procedures.map(function (p) { return "<li>" + esc(p.item) + ' <span class="mini">' + esc(p.date) + "</span></li>"; }).join("") + "</ul>" : '<p class="mini">None recorded.</p>') + "</div>" +
         '<div><div class="ops-h">Investigations</div>' + (d.investigations.length ? "<ul>" + d.investigations.map(function (t) { return "<li><b>" + esc(t.item) + "</b>: " + esc((t.result || "done").slice(0, 200)) + "</li>"; }).join("") + "</ul>" : '<p class="mini">None recorded.</p>') + "</div>" +
         '<div><div class="ops-h">Medicines prescribed during the stay</div>' + (d.medicines.length ? "<ul>" + d.medicines.map(function (m) { return "<li>" + esc([m.name, m.strength, m.dose, m.frequency].filter(Boolean).join(" ")) + (m.days ? " · " + m.days + " days" : m.ongoing ? " · ongoing" : "") + ' <span class="mini">' + esc(m.rx) + "</span></li>"; }).join("") + "</ul>" : '<p class="mini">No signed prescriptions on this stay. Write the discharge prescription with ℞ Prescribe; it appears here.</p>') + "</div></div>";
+      h += '<div id="rr-ds"></div>';
       h += ta("advice", "Advice", 3, "Diet, activity, wound care, when to return to work") + ta("follow_up", "Follow-up", 1, "e.g. Surgery OPD in 7 days for suture removal") + ta("warning_signs", "When to come back at once", 2);
       var acts = [];
       if (edit) { if (!d.signed) acts.push('<button class="btn" type="button" data-ds-save>Save draft</button>'); acts.push('<button class="btn btn-primary" type="button" data-ds-sign>' + (d.signed ? "Sign the amended version" : "Sign and file") + "</button>"); }
       acts.push('<button class="btn btn-ghost" type="button" data-ds-print>Print</button>');
       h += '<div class="ot-acts">' + acts.join("") + '</div><div class="msg" id="ds-msg"></div>';
       var b = M.modal(h, true, layer);
+      /* the readmission risk beside the advice, with its follow-up written in for the doctor to keep or change */
+      if (window.QCRisk) window.QCRisk.panel(eid, el("rr-ds"), { patient: d.patient && d.patient.id ? d.patient : null, onFollow: edit ? function (x) {
+        var f = el("ds-follow_up"), a = el("ds-advice");
+        if (f && !f.value.trim()) f.value = x.band === "high" ? "Review in OPD within 7 days of discharge (booked before leaving)." : "Review in OPD within 14 days of discharge.";
+        if (a && x.band === "high" && a.value.indexOf("medicines") < 0) a.value = (a.value.trim() ? a.value.trim() + "\n" : "") + "Take the medicines exactly as listed; bring this summary and all your medicines to the follow-up visit.";
+        toast("Added. Change the wording as you need.");
+      } : null });
       var collect = function () { var out = {}; ["diagnosis", "condition", "secondary", "presenting", "findings", "course", "advice", "follow_up", "warning_signs"].forEach(function (k) { out[k] = el("ds-" + k).value; }); return out; };
       b.onclick = function (e) {
         var sign = !!e.target.closest("[data-ds-sign]");
