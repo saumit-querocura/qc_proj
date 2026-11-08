@@ -2,9 +2,47 @@
   "use strict";
   var P = QCPage, esc = P.esc;
   var MEMO = {}, MEMO_MS = 4000;
+  /* Step-up: a high-risk change (team and roles, where payments go, credentials, exports) needs the authenticator code
+     from the last few minutes.  The server answers code "reauth"; ask for the code once, then send the change again. */
+  var REAUTH = null;
+  function reauth() {
+    if (REAUTH) return REAUTH;
+    REAUTH = new Promise(function (resolve) {
+      var d = document.createElement("div");
+      d.className = "qc-reauth"; d.setAttribute("role", "dialog"); d.setAttribute("aria-modal", "true"); d.setAttribute("aria-labelledby", "ra-t");
+      d.innerHTML = '<form class="qc-reauth-card" novalidate><h2 id="ra-t">Confirm it’s you</h2><p>This change needs the 6-digit code from your authenticator app.</p>' +
+        '<input class="input" id="ra-code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" aria-label="Authenticator code"><div class="msg" id="ra-msg" role="status"></div>' +
+        '<div class="row"><button class="btn btn-primary" type="submit">Confirm</button><button class="btn btn-ghost" type="button" id="ra-x">Cancel</button></div></form>';
+      document.body.appendChild(d);
+      var input = d.querySelector("#ra-code"), busy = false;
+      input.focus();
+      function done(ok) { d.remove(); document.removeEventListener("keydown", onKey); REAUTH = null; resolve(ok); }
+      function onKey(e) { if (e.key === "Escape") done(false); }
+      document.addEventListener("keydown", onKey);
+      d.querySelector("#ra-x").onclick = function () { done(false); };
+      d.querySelector("form").onsubmit = function (e) {
+        e.preventDefault();
+        if (busy) return;
+        busy = true;
+        P.api("/hospital/reauth", { method: "POST", body: { code: input.value.replace(/\s/g, "") } }).then(function (r) {
+          busy = false;
+          if (r && r.ok) return done(true);
+          say(d.querySelector("#ra-msg"), (r && r.message) || "That didn’t work.", "err");
+          input.select();
+        });
+      };
+    });
+    return REAUTH;
+  }
   function api(path, opts) {
     var m = ((opts && opts.method) || "GET").toUpperCase(), O = window.QCOffline;
-    if (m !== "GET") { MEMO = {}; return O && m === "POST" ? O.post(path, opts) : P.api(path, opts); }
+    if (m !== "GET") {
+      MEMO = {};
+      return (O && m === "POST" ? O.post(path, opts) : P.api(path, opts)).then(function (r) {
+        if (!r || r.code !== "reauth") return r;
+        return reauth().then(function (ok) { return ok ? api(path, opts) : r; });
+      });
+    }
     var hit = MEMO[path], now = Date.now();
     if (hit && now - hit.t < MEMO_MS) return hit.p.then(function (r) { return JSON.parse(JSON.stringify(r)); });
     var p = (O ? O.get(path, P.api(path, opts)) : P.api(path, opts)).then(function (r) { if (!r || !r.ok || r.offline) delete MEMO[path]; return r; });
