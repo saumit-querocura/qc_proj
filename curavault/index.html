@@ -248,6 +248,141 @@
   html[data-theme="dark"] body::after { background: radial-gradient(circle, rgba(212,175,122,0.22), transparent 70%); }
   html[data-theme="dark"] .idc { background: linear-gradient(135deg, #020a08 0%, #073229 30%, #0c5a49 62%, #12a37e 100%); }
   html[data-theme="dark"] .tab-link.active { background: rgba(255,255,255,0.1); }
+
+  .field .card-sub { font-size: 12px; color: var(--ink-faint); margin: 8px 0 0; line-height: 1.5; }
+  #cv-camera-button { margin-top: 10px; font-size: 13.5px; padding: 10px 20px; }
+  /* ---- health story ---- */
+  .hs-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; flex-wrap: wrap; margin-bottom: 16px; }
+  .hs-head h2 { font-size: 20px; margin: 0 0 4px; }
+  .hs-head .card-sub { font-size: 12.5px; color: var(--ink-soft); margin: 0; max-width: 520px; line-height: 1.5; }
+  .hs-chip { display: inline-flex; align-items: center; font-size: 10.5px; font-weight: 800; letter-spacing: 0.03em; padding: 3px 9px; border-radius: 999px; white-space: nowrap; }
+  .hs-chip.good { background: rgba(74,222,128,0.16); color: var(--cv-4); }
+  .hs-chip.warn { background: rgba(232,182,79,0.18); color: #f0c464; }
+  .hs-chip.bad { background: rgba(255,138,101,0.18); color: #ff9b7a; }
+  .hs-chip.muted { background: rgba(255,255,255,0.09); color: var(--ink-soft); }
+  .hs-attn { display: flex; flex-direction: column; gap: 8px; margin-bottom: 8px; }
+  .hs-attn-row { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 14px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); font-size: 13.5px; line-height: 1.5; }
+  .hs-attn-row.warn { border-color: rgba(232,182,79,0.45); background: rgba(232,182,79,0.09); }
+  .hs-attn-ic { flex: 0 0 auto; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 13px; background: rgba(255,255,255,0.12); }
+  .hs-attn-row.warn .hs-attn-ic { background: #e8b64f; color: #241a05; }
+  .hs-attn-text { flex: 1 1 auto; }
+  .hs-attn-row .btn-ghost { flex: 0 0 auto; font-size: 12px; padding: 7px 13px; }
+  .hs-calm { padding: 12px 14px; border-radius: 14px; background: rgba(74,222,128,0.09); color: var(--cv-4); font-size: 13.5px; font-weight: 700; }
+  .hs-sub { font-size: 14px; margin: 24px 0 12px; color: var(--ink); letter-spacing: 0.01em; }
+  .hs-labs { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+  .hs-lab { border-radius: 16px; padding: 14px 15px 12px; background: rgba(255,255,255,0.045); border: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; gap: 8px; }
+  .hs-lab.off { border-color: rgba(232,182,79,0.3); }
+  .hs-lab-top { display: flex; justify-content: space-between; gap: 10px; }
+  .hs-lab-name { font-weight: 800; font-size: 14px; }
+  .hs-lab-what { font-size: 11.5px; color: var(--ink-faint); margin-top: 2px; }
+  .hs-lab-val { font-family: 'Fraunces', serif; font-size: 20px; font-weight: 600; text-align: right; white-space: nowrap; line-height: 1.1; }
+  .hs-lab-val small { display: block; font-family: 'Manrope', sans-serif; font-size: 10.5px; font-weight: 700; color: var(--ink-faint); margin-top: 3px; }
+  .hs-lab-mid { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .hs-lab-chips { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+  .hs-lab-text { margin: 0; font-size: 12.5px; line-height: 1.5; color: var(--ink-soft); }
+  .hs-lab-foot { font-size: 11px; color: var(--ink-faint); }
+  .sp { display: block; overflow: visible; color: var(--cv-4); flex: 0 0 auto; }
+  .hs-lab.off .sp { color: #f0c464; }
+  .sp-band { fill: rgba(74,222,128,0.13); }
+  .sp-line { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .sp-dot { fill: #0b2b23; stroke: currentColor; stroke-width: 2; }
+  .sp-dot.last { fill: currentColor; }
+  .hs-link { background: none; border: none; padding: 0; color: var(--cv-4); font: inherit; font-weight: 700; cursor: pointer; text-decoration: underline; text-underline-offset: 2px; }
+  .hs-more { margin-top: 10px; background: none; border: none; color: var(--cv-4); font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; padding: 4px 0; }
+  .hs-change { padding: 14px; border-radius: 14px; background: rgba(255,255,255,0.045); border: 1px solid rgba(255,255,255,0.1); margin-bottom: 8px; }
+  .hs-change.bigger { border-color: rgba(232,182,79,0.45); }
+  .hs-change p { margin: 10px 0 0; font-size: 13px; line-height: 1.5; color: var(--ink-soft); }
+  .hs-bar-row { display: grid; grid-template-columns: 96px 1fr 52px; align-items: center; gap: 10px; font-size: 12px; margin: 4px 0; color: var(--ink-soft); }
+  .hs-bar-row b { color: var(--ink); text-align: right; }
+  .hs-bar { height: 8px; border-radius: 999px; background: rgba(255,255,255,0.08); overflow: hidden; }
+  .hs-bar i { display: block; height: 100%; border-radius: 999px; background: var(--cv-grad); }
+  .hs-change.bigger .hs-bar i { background: linear-gradient(90deg, #c99a3a, #f0c464); }
+  .hs-fups { display: flex; flex-direction: column; gap: 8px; }
+  .hs-fup { display: grid; grid-template-columns: 150px 1fr; gap: 12px; padding: 12px 14px; border-radius: 14px; background: rgba(255,255,255,0.045); border: 1px solid rgba(255,255,255,0.1); }
+  .hs-fup-when { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; font-size: 12px; color: var(--ink-soft); font-weight: 700; }
+  .hs-fup-body q { display: block; font-size: 13px; line-height: 1.5; }
+  .hs-fup-body small { display: block; margin-top: 4px; font-size: 11.5px; color: var(--ink-faint); }
+  .hs-scans, .hs-q { margin-top: 18px; border-radius: 14px; padding: 12px 14px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); }
+  .hs-scans summary, .hs-q summary { cursor: pointer; font-weight: 800; font-size: 13.5px; }
+  .hs-scan { padding: 10px 0; border-top: 1px solid rgba(255,255,255,0.08); margin-top: 10px; }
+  .hs-scan-top { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; font-size: 13px; }
+  .hs-scan-top span, .hs-scan small { font-size: 11.5px; color: var(--ink-faint); }
+  .hs-scan p { margin: 6px 0 4px; font-size: 13px; line-height: 1.55; color: var(--ink-soft); white-space: pre-line; }
+  .hs-q ul { margin: 10px 0 0; padding-left: 18px; font-size: 13px; line-height: 1.6; color: var(--ink-soft); }
+  .hs-q li { margin-bottom: 8px; }
+  .hs-q li b { color: var(--ink); }
+  .hs-hint { font-size: 13px; color: var(--ink-soft); margin: 14px 0 0; }
+  .hs-note { font-size: 11.5px; color: var(--ink-faint); margin: 16px 0 0; line-height: 1.5; }
+  @media (max-width: 560px) {
+    .hs-fup { grid-template-columns: 1fr; }
+    .hs-fup-when { flex-direction: row; align-items: center; }
+    .hs-attn-row { flex-wrap: wrap; }
+    .hs-attn-row .btn-ghost { margin-left: 36px; }
+    .hs-bar-row { grid-template-columns: 82px 1fr 46px; }
+    .card { padding: 20px 16px; }
+  }
+
+  /* ---- medicines card ---- */
+  #cv-current-medications h2 { font-size: 18px; margin: 0 0 12px; }
+  #cv-current-medications h3 { font-size: 13.5px; margin: 16px 0 8px; color: var(--ink-soft); }
+  #cv-current-medications p { font-size: 13.5px; color: var(--ink-soft); margin: 0; line-height: 1.5; }
+  #cv-current-medications .cv-med-empty { color: var(--ink-faint); }
+  #cv-current-medications .cv-med-help { font-size: 11.5px; color: var(--ink-faint); margin-top: 10px; }
+  .cv-med-tools { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+  .cv-med-card, .cv-dose { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 10px; padding: 12px 14px; border-radius: 14px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); margin-bottom: 8px; }
+  .cv-med-card strong, .cv-dose strong { flex: 1 1 100%; font-size: 14px; }
+  .cv-med-card p, .cv-dose p { flex: 1 1 100%; }
+  .cv-med-card .btn-ghost, .cv-dose .btn-ghost { font-size: 12px; padding: 6px 12px; }
+  #cv-current-medications > button { margin-top: 8px; }
+  #cv-current-medications details summary { cursor: pointer; font-weight: 700; font-size: 13px; margin-top: 12px; }
+
+  /* ---- records list ---- */
+  .rec-search { display: flex; align-items: center; gap: 8px; padding: 0 14px; border-radius: 12px; border: 1.5px solid rgba(255,255,255,0.16); background: rgba(255,255,255,0.05); margin-bottom: 14px; }
+  .rec-search:focus-within { border-color: var(--cv-4); box-shadow: 0 0 0 3px var(--cv-tint); }
+  .rec-search input { border: none; background: none; box-shadow: none !important; padding: 12px 0; }
+  .rec-filters { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 6px; }
+  .rec-filter { border: 1px solid rgba(255,255,255,0.16); background: none; color: var(--ink-soft); font: inherit; font-size: 12.5px; font-weight: 700; padding: 6px 12px; border-radius: 999px; cursor: pointer; }
+  .rec-filter span { opacity: 0.6; margin-left: 2px; }
+  .rec-filter.on { background: var(--cv-tint-strong); color: var(--ink); border-color: transparent; }
+  .rec-year { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-faint); margin: 16px 0 6px; }
+  .rec-row { display: flex; align-items: center; gap: 12px; padding: 11px 6px; border-bottom: 1px solid rgba(255,255,255,0.07); flex-wrap: wrap; }
+  .rec-ic { width: 36px; height: 36px; border-radius: 10px; background: rgba(255,255,255,0.07); display: flex; align-items: center; justify-content: center; font-size: 17px; flex: 0 0 auto; }
+  .rec-main { flex: 1 1 200px; min-width: 0; }
+  .rec-meta { font-size: 12px; color: var(--ink-faint); margin-top: 2px; }
+  .rec-snip { font-size: 12.5px; color: var(--ink-soft); margin-top: 6px; line-height: 1.5; overflow-wrap: anywhere; }
+  .rec-snip mark { background: rgba(240,196,100,0.3); color: var(--ink); border-radius: 3px; padding: 0 2px; }
+  .rec-actions { display: flex; gap: 6px; flex: 0 0 auto; }
+  .rec-actions .btn-ghost { font-size: 12px; padding: 6px 12px; }
+  @media (max-width: 560px) { .rec-actions { width: 100%; padding-left: 48px; } }
+
+  /* ---- visit summary ---- */
+  .vs-dialog { width: min(820px, 94vw); max-height: 90vh; border: none; border-radius: 18px; padding: 0; background: #fbfaf5; color: #15261d; box-shadow: 0 30px 80px rgba(0,0,0,0.45); }
+  .vs-dialog::backdrop { background: rgba(2,12,9,0.72); }
+  .vs-body { padding: 28px 30px 8px; overflow: auto; max-height: calc(90vh - 76px); }
+  .vs-actions { display: flex; justify-content: flex-end; gap: 10px; padding: 14px 20px; border-top: 1px solid #e3e8e4; background: #fff; }
+  .vs-actions .btn-ghost { color: #15261d; border-color: #c6d3cb; }
+  .vs-actions .save-btn { margin: 0; font-size: 14px; padding: 10px 20px; color: #fff; background: #0f5c45; }
+  .vs-head { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; border-bottom: 2px solid #15261d; padding-bottom: 12px; margin-bottom: 8px; }
+  .vs-body h2, #cv-print h2 { font-family: 'Fraunces', serif; font-size: 24px; margin: 0; color: #15261d; }
+  .vs-body h3, #cv-print h3 { font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em; margin: 18px 0 6px; color: #0f5c45; }
+  .vs-body p, .vs-body li, #cv-print p, #cv-print li { font-size: 13px; line-height: 1.55; margin: 2px 0; color: #15261d; }
+  .vs-body ul, #cv-print ul { padding-left: 18px; margin: 4px 0; }
+  .vs-made { font-size: 11px !important; color: #5b6b61 !important; max-width: 320px; text-align: right; }
+  .vs-body table, #cv-print table { font-size: 12.5px; }
+  .vs-body th, .vs-body td, #cv-print th, #cv-print td { color: #15261d; border-bottom: 1px solid #e3e8e4; padding: 6px 8px; }
+  .vs-body th, #cv-print th { color: #5b6b61; font-size: 11px; }
+  .vs-body tbody tr:hover { background: none; }
+  .vs-body small, #cv-print small { color: #5b6b61; }
+  #cv-print { display: none; }
+  @media (max-width: 560px) { .vs-body { padding: 20px 16px 8px; } .vs-made { text-align: left; } }
+  @media print {
+    body { background: #fff !important; animation: none !important; }
+    body::before, body::after { display: none !important; }
+    body > *:not(#cv-print) { display: none !important; }
+    #cv-print { display: block !important; color: #000; font-family: 'Manrope', sans-serif; }
+    #cv-print table { width: 100%; border-collapse: collapse; }
+    #cv-print section { break-inside: avoid; }
+  }
 </style>
 <script src="../assets/qc-csp.js?v=77f89cc2"></script>
 <script src="../assets/qc-i18n.js?v=fb8e7449"></script>
@@ -295,6 +430,7 @@
 
     <!-- OVERVIEW -->
     <div class="tab-panel show" id="panel-overview">
+      <section id="cv-story" class="card hs" aria-label="Your health story" aria-live="polite"><div class="hs-head"><h2>Your health story</h2></div><div class="skel skel-row"></div><div class="skel skel-row"></div></section>
       <section id="cv-current-medications" class="card" aria-label="Current medications"><h2>Current medications</h2><p>Loading confirmed medicines…</p></section>
       <div class="idc-wrap">
         <div class="idc">
@@ -329,7 +465,7 @@
         <div class="egd-left">
           <span class="egd-ic">🛡️</span>
           <div class="egd-text">
-            <div class="egd-label">CURA ID<span class="egd-sub">Your identifier for EGD</span></div>
+            <div class="egd-label">CURA ID<span class="egd-sub">Share it with a clinic that asks for your CURA ID</span></div>
             <div class="egd-id" id="egd-id">—</div>
           </div>
         </div>
@@ -397,7 +533,9 @@
         </form>
       </div>
       <div class="card">
-        <div class="card-head"><div><h2>Your records</h2></div></div>
+        <div class="card-head"><div><h2>Your records</h2><p class="card-sub">Search finds words inside your reports too: a test name, a doctor, a hospital.</p></div></div>
+        <div class="rec-search"><span aria-hidden="true">🔍</span><input type="search" id="cv-search" placeholder="Search your records, e.g. ferritin, MRI, Dr Rao" autocomplete="off" aria-label="Search your records"></div>
+        <div id="cv-search-results" hidden aria-live="polite"></div>
         <div id="cv-records-wrap"><div class="skel skel-row"></div><div class="skel skel-row"></div></div>
       </div>
     </div>
@@ -457,11 +595,13 @@
   </div>
 
   <div class="toast-stack" id="qc-toast-stack"></div>
+  <div id="cv-print" aria-hidden="true"></div>
 
-<script src="../assets/js/curavault-2.js?v=372105fb"></script>
+<script src="../assets/js/curavault-2.js?v=525cdbfe"></script>
 <script src="../assets/js/curavault-3.js?v=8639d8cc"></script>
-<script src="../assets/js/curavault-4.js?v=05578f46"></script>
-<script src="../assets/js/curavault-5.js?v=206e1bd0"></script>
+<script src="../assets/js/curavault-4.js?v=19f3c9c6"></script>
+<script src="../assets/js/curavault-story.js?v=a618810b"></script>
+<script src="../assets/js/curavault-5.js?v=911959b3"></script>
 <script src="../assets/qc-app.js?v=f264e7e4"></script>
 </body>
 </html>

@@ -265,16 +265,7 @@ async function loadRecords() {
     return { count: 0 };
   }
   lastRecords = data.records;
-  const rows = data.records.map(r => (
-    "<tr>" +
-      "<td><div class=\"rec-title\">" + esc(r.title || r.original_filename || "Untitled") + "</div><span class=\"rec-cat\">" + esc((r.category || "other").replace(/_/g, " ")) + "</span></td>" +
-      "<td>" + fmtDate(r.record_date || r.created_at) + "</td>" +
-      "<td>" + esc(r.original_filename || "—") + "</td>" +
-      "<td>" + bytesToSize(r.size_bytes) + "</td>" +
-      '<td><button type="button" data-cv-review="' + esc(r.id) + '">Review record</button> <button type="button" data-cv-delete="' + esc(r.id) + '">Delete</button></td>' +
-    "</tr>"
-  )).join("");
-  wrap.innerHTML = "<table><thead><tr><th>Record</th><th>Date</th><th>File</th><th>Size</th><th>Review</th></tr></thead><tbody>" + rows + "</tbody></table>";
+  if (window.CuraVaultStory) window.CuraVaultStory.renderRecords();   // list with statuses, filters and years (curavault-story.js)
   return { count: data.records.length };
 }
 
@@ -413,6 +404,7 @@ document.getElementById("cv-upload-form").addEventListener("submit", async (e) =
     const recResult = await loadRecords();
     renderActivity(lastRecords, lastSymptoms, lastLogs);
     countUp(document.getElementById("st-records"), recResult.count);
+    document.dispatchEvent(new CustomEvent("cv-records-changed"));
     await documentReview.reviewRecords(data.records || []);
   } catch (err) {
     toast(err.message || "Something went wrong.", "err");
