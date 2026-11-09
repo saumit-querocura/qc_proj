@@ -383,6 +383,25 @@
   .legend-mini i { display: inline-block; width: 14px; height: 8px; border-radius: 3px; margin-left: 6px; } .lg-band { background: rgba(14,143,131,0.25); } .lg-pop { border-top: 2px dashed rgba(16,14,42,0.35); height: 0 !important; } .lg-anom { width: 9px !important; height: 9px !important; border-radius: 50% !important; border: 2px solid #d24f28; } .lg-fc { border-top: 2px dashed #c98a10; height: 0 !important; }
   html[data-theme="dark"] .legend-mini { color: #8f8ba3; } html[data-theme="dark"] .lg-pop { border-top-color: rgba(255,255,255,0.35); }
   #intel-patterns:empty { display: none; } #intel-patterns:not(:empty) + #qc-insight-wrap .qi-fallback { display: none; } #intel-patterns { margin-bottom: 14px; }
+  /* ---- connections across your health (insights-connect.js) ---- */
+  .cx-card { --cx-ink: #100e2a; --cx-soft: rgba(16,14,42,0.62); --cx-tile: #fbfaf7; --cx-line: rgba(16,14,42,0.08); --cx-a: #7c6fdb; --cx-b: #0e8f83; --cx-track: rgba(16,14,42,0.06); }
+  html[data-theme="dark"] .cx-card { --cx-ink: #f2f0f8; --cx-soft: #c3bfd6; --cx-tile: #1f1d38; --cx-line: rgba(255,255,255,0.1); --cx-a: #b3a9f5; --cx-b: #7ee0d4; --cx-track: rgba(255,255,255,0.08); }
+  .cx-card[hidden] { display: none; }
+  .cx-sub { margin: -8px 0 14px; font-size: 13.5px; color: var(--cx-soft); }
+  .cx { background: var(--cx-tile); border: 1px solid var(--cx-line); border-left: 4px solid var(--cx-a); border-radius: 18px; padding: 14px 16px; margin-bottom: 10px; color: var(--cx-ink); }
+  .cx.tone-warn { border-left-color: #c98a10; } .cx.tone-good { border-left-color: #0e8f83; }
+  .cx-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; } .cx-top b { font-size: 14.5px; flex: 1 1 200px; }
+  .cx-ic { font-size: 18px; } .cx-kind { font-size: 11px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; color: var(--cx-soft); }
+  .cx p { margin: 8px 0 0; font-size: 13px; line-height: 1.55; color: var(--cx-soft); }
+  .cx-bars { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; max-width: 520px; }
+  .cx-bar { display: grid; grid-template-columns: minmax(110px, 170px) 1fr auto; gap: 10px; align-items: center; font-size: 12px; }
+  .cx-lbl { color: var(--cx-soft); font-weight: 700; } .cx-lbl small { font-weight: 600; }
+  .cx-track { height: 10px; border-radius: 999px; background: var(--cx-track); overflow: hidden; }
+  .cx-track i { display: block; height: 100%; border-radius: 999px; } .cx-track i.a { background: var(--cx-a); } .cx-track i.b { background: var(--cx-b); }
+  .cx-bar b { font-family: 'Fraunces', serif; font-size: 15px; white-space: nowrap; } .cx-bar b small { font-family: 'Manrope', sans-serif; font-size: 10.5px; color: var(--cx-soft); }
+  .cx-empty { padding: 14px 16px; border-radius: 16px; border: 1px dashed var(--cx-line); font-size: 13.5px; color: var(--cx-soft); line-height: 1.55; }
+  .cx-note { font-size: 11.5px; color: var(--cx-soft); margin: 8px 0 0; }
+  @media (max-width: 520px) { .cx-bar { grid-template-columns: 1fr auto; } .cx-track { grid-column: 1 / -1; grid-row: 2; } }
 </style>
 <link rel="stylesheet" href="../assets/qc-intel.css?v=2a889959">
 <link rel="stylesheet" href="../assets/qc-calm.css?v=f9e1d320">
@@ -535,5 +554,6 @@
 <script src="../assets/qc-charts.js?v=39ee89ab"></script>
 <script src="../assets/qc-intel.js?v=f0cd80aa"></script>
 <script src="../assets/js/insights-3.js?v=55a42acb"></script>
+<script src="../assets/js/insights-connect.js?v=6beecd21"></script>
 </body>
 </html>

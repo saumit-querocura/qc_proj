@@ -436,11 +436,12 @@
 </style>
 <link rel="stylesheet" href="../assets/qc-intel.css?v=2a889959">
 <link rel="stylesheet" href="../assets/qc-calm.css?v=f9e1d320">
+<link rel="stylesheet" href="../assets/dashboard-fun.css?v=27ce22e4">
 <script src="../assets/qc-csp.js?v=77f89cc2"></script>
 <script src="../assets/qc-i18n.js?v=fb8e7449"></script>
 <script src="../assets/js/dashboard-h.js?v=dcd83250"></script>
 </head>
-<body>
+<body class="qc-cute">
   <div class="topbar">
     <a class="logo-wrap" href="../">
       <img src="../assets/d4f7acc01b9438e998c9e7b9676584b0.png" alt="QueroCura">
@@ -470,11 +471,13 @@
   <div class="shell">
     <div class="qc-ribbon"><a href="../weekly/">📬 Your week in health</a><a href="../privacy/#share">🩺 Share with a doctor</a><a href="../family/">🫂 Family garden</a><a href="../care/">🏥 Care teams</a></div>
     <header class="hero calm-hero">
+      <span class="hero-petal p1" aria-hidden="true">🌸</span><span class="hero-petal p2" aria-hidden="true">🍃</span><span class="hero-petal p3" aria-hidden="true">🌼</span>
       <div class="hero-inner">
         <div class="hero-text">
           <div class="hero-date" id="qc-today"></div>
           <h1 class="hero-greeting" id="qc-greeting">Welcome back</h1>
           <p class="hero-sub" id="qc-greeting-sub">Here's where things stand today.</p>
+          <div class="buddy" id="qc-buddy"></div>
           <a class="hero-read" id="qc-hero-read" href="#qc-read-card" hidden></a>
         </div>
         <div class="hero-score">
@@ -505,10 +508,13 @@
       <button type="button" class="checkin-dismiss" id="qc-checkin-dismiss" aria-label="Not now">✕</button>
     </div>
 
+    <section class="quest-card" id="qc-quests" aria-label="Today's quests" aria-live="polite" hidden></section>
     <section class="focus-card" id="qc-focus" aria-label="Today's focus" hidden></section>
 
     <div class="snapshot-strip" id="qc-snapshot"></div>
 
+    <section class="week-card" id="qc-week" aria-label="Your week" hidden></section>
+    <section class="noticed-card" id="qc-noticed" aria-label="What Cura noticed" hidden></section>
     <section class="card read-card" id="qc-read-card">
       <div id="qc-read"><div class="empty-note">Cura is reading your numbers…</div></div>
     </section>
@@ -607,5 +613,6 @@
 <script src="../assets/qc-charts.js?v=39ee89ab"></script>
 <script src="../assets/qc-intel.js?v=f0cd80aa"></script>
 <script src="../assets/js/dashboard-3.js?v=00538beb"></script>
+<script src="../assets/js/dashboard-fun.js?v=c625f62e"></script>
 </body>
 </html>
