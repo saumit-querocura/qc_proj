@@ -133,7 +133,10 @@
   .followup-list li::before { content: '?'; position: absolute; left: 0; color: #7c6fdb; font-weight: 800; }
   .monitor-list li::before { content: '👁'; position: absolute; left: 0; font-size: 11px; }
 
-  .bottom-actions { display: flex; justify-content: center; margin-top: 8px; }
+  .bottom-actions { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; margin-top: 8px; }
+  .analyse-btn.ghost-prep { background: transparent; color: #0e8f83; box-shadow: inset 0 0 0 2px #0e8f83; }
+  .analyse-btn.ghost-prep:hover { background: rgba(14,143,131,.08); color: #0b6f66; }
+  .prep-nudge { display: flex; gap: 10px; align-items: flex-start; margin-top: 12px; padding: 11px 14px; border-radius: 14px; background: rgba(14,143,131,.08); font-size: 13.5px; line-height: 1.5; }
   .analyse-btn { position: relative; overflow: hidden; background: #0e8f83; color: #fff; font-size: 15px; font-weight: 700; padding: 13px 30px; border-radius: 999px; border: none; cursor: pointer; font-family: 'Manrope', sans-serif; transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease; display: inline-block; }
   .analyse-btn:hover { background: #0b6f66; transform: translateY(-2px); box-shadow: 0 12px 24px -8px rgba(14,143,131,0.45); }
 
@@ -271,6 +274,7 @@
     <div id="sym-results"></div>
 
     <div class="bottom-actions" id="bottom-actions" style="display:none;">
+      <a class="analyse-btn ghost-prep" href="../../visit/?from=check">🗂️ Prepare for a doctor visit</a>
       <a class="analyse-btn" href="../">Run another check →</a>
     </div>
 
@@ -279,8 +283,8 @@
     </div>
   </div>
 
-<script src="../../assets/js/symptoms-results-2.js?v=8a7129c2"></script>
+<script src="../../assets/js/symptoms-results-2.js?v=8fcef513"></script>
 <script src="../../assets/qc-result-reasoning.js?v=6323b748"></script>
-<script src="../../assets/qc-app.js?v=f264e7e4"></script>
+<script src="../../assets/qc-app.js?v=329f5b34"></script>
 </body>
 </html>

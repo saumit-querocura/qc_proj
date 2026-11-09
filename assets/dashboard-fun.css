@@ -103,3 +103,20 @@
     body.qc-cute .buddy { gap: 10px; }
   }
   body.qc-cute .q a, body.qc-cute .q a:hover { color: var(--pk-ink); }
+
+/* ---- the next visit ---- */
+.visit-card { display: flex; gap: 16px; align-items: flex-start; border-radius: 28px; padding: 20px 22px; margin-bottom: 20px; border: 1px solid var(--pk-line);
+  background: radial-gradient(circle at 100% 0%, var(--pk-lilac) 0, transparent 55%), radial-gradient(circle at 0% 100%, var(--pk-mint) 0, transparent 50%), var(--pk-card); box-shadow: 0 14px 34px -28px rgba(16,14,42,.4); }
+.visit-card[hidden] { display: none; }
+.vc-ic { width: 58px; height: 58px; flex: 0 0 auto; border-radius: 20px; display: grid; place-items: center; font-size: 30px; background: var(--pk-butter); animation: vcBob 3.2s ease-in-out infinite; }
+@keyframes vcBob { 50% { transform: translateY(-4px) rotate(-4deg); } }
+.vc-main { flex: 1; min-width: 0; } .vc-eyebrow { font-size: 11px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; color: var(--pk-soft); }
+body.qc-cute .visit-card h2 { margin: 2px 0 4px !important; font-size: 18px; color: var(--pk-ink); } .visit-card p { margin: 0; font-size: 13.5px; line-height: 1.55; color: var(--pk-soft); }
+.vc-bar { height: 9px; border-radius: 999px; background: rgba(127,127,160,.18); margin: 12px 0 4px; overflow: hidden; } .vc-bar i { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #ffb4a2, #b39cf5, #6fd3c3); transition: width .8s cubic-bezier(.2,.8,.2,1); }
+.vc-pct { font-size: 12px; font-weight: 700; color: var(--pk-soft); }
+.vc-acts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.vc-btn { display: inline-flex; align-items: center; gap: 6px; padding: 10px 18px; border-radius: 999px; background: var(--pk-ink); color: var(--pk-card) !important; font-weight: 800; font-size: 13.5px; text-decoration: none; transition: transform .15s ease; }
+.vc-btn:hover { transform: translateY(-2px); } .vc-btn.ghost { background: transparent; color: var(--pk-ink) !important; border: 1.5px solid var(--pk-line); }
+.visit-card.done .vc-ic { background: var(--pk-rose); }
+@media (max-width: 560px) { .visit-card { padding: 16px; border-radius: 24px; gap: 12px; } .vc-ic { width: 46px; height: 46px; font-size: 24px; border-radius: 16px; } .vc-btn { flex: 1; justify-content: center; } }
+@media (prefers-reduced-motion: reduce) { .vc-ic { animation: none; } }

@@ -122,7 +122,9 @@ function triageHtml(data, opts) {
   html += '<div class="triage-actions">';
   if (t.recheck > 0) html += '<button type="button" class="tri-btn" id="tri-remind" data-hours="' + t.recheck + '">⏰ Remind me to re-check in ' + (t.recheck >= 24 ? (t.recheck / 24) + ' day' + (t.recheck >= 48 ? 's' : '') : t.recheck + 'h') + '</button>';
   if (t.idx >= 2) html += '<a class="tri-btn' + (t.recheck > 0 ? ' ghost' : '') + '" href="../../calendar/?new=1&type=doctor&title=' + encodeURIComponent('Doctor visit — ' + (data.name || 'symptoms')) + '">📅 Book a doctor visit</a>';
+  html += '<a class="tri-btn' + (t.idx >= 2 ? '' : ' ghost') + '" href="../../visit/?from=check">🗂️ Prepare for the doctor</a>';
   html += '<a class="tri-btn ghost" href="../../vitals/">❤️ Log vitals</a></div>';
+  if (t.idx >= 2) html += '<div class="prep-nudge"><span aria-hidden="true">🗂️</span><span><b>Make the visit count.</b> Cura can start your visit prep from this check: a one-page summary in your words, what stands out, and questions written for you. About three minutes.</span></div>';
   html += '<div class="triage-foot">' + escapeHtml(t.note) + '</div></div>';
   return html;
 }

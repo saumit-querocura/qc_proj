@@ -24,6 +24,14 @@ let view = { y: today0.getFullYear(), m: today0.getMonth() };
 let selected = dkey(today0);
 let events = [];
 let hidden = new Set();       // hidden types
+let CI = { visits: [], nudges: [] };   // GET /calendar/insights: visit readiness and nudges
+const VISIT_T = ["doctor", "specialist", "dental", "therapy", "followup"];
+function prepOf(ev) { return (CI.visits || []).find(v => v.id === ev.id); }
+function prepChip(ev) {
+  const v = prepOf(ev); if (!v || !v.prep) return "";
+  const p = v.prep, cls = p.state === "done" ? "done" : p.state === "started" ? "" : "none";
+  return '<a class="prep-chip ' + cls + '" href="../visit/?event=' + encodeURIComponent(ev.id) + '" data-stop="1" title="Visit prep">🗂️ ' + (p.state === "done" ? "Ready" : p.state === "started" ? p.pct + "% ready" : "Not prepared") + "</a>";
+}
 let mode = "month";
 let editing = null;           // event being edited (or null for new)
 let pendingConflictOk = false;
@@ -101,12 +109,12 @@ function evRowHtml(o, showDate) {
   ].filter(Boolean).map(esc).join(" · ");
   return '<div class="ev-row ' + (o.ev.status || "") + '" style="--c:' + t.color + '" data-id="' + esc(o.ev.id) + '" tabindex="0" role="button">' +
     '<div class="ev-ic">' + t.icon + '</div><div class="ev-main"><div class="ev-title">' + esc(o.ev.title) + '</div><div class="ev-sub">' + (showDate ? esc(fmtDay(o.when)) + " · " : "") + sub + '</div></div>' +
-    '<div class="ev-right">' + chip + '<span class="tag-chip" style="--c:' + t.color + '">' + esc(t.label) + '</span></div></div>';
+    '<div class="ev-right">' + (o.ev.status === "scheduled" && !past ? prepChip(o.ev) : "") + chip + '<span class="tag-chip" style="--c:' + t.color + '">' + esc(t.label) + '</span></div></div>';
 }
 function wireRows(scope) {
   scope.querySelectorAll(".ev-row").forEach(el => {
     const open = () => openEditor(events.find(e => e.id === el.getAttribute("data-id")));
-    el.addEventListener("click", open);
+    el.addEventListener("click", e => { if (e.target.closest && e.target.closest("[data-stop]")) return; open(); });
     el.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); open(); } });
   });
 }
@@ -161,7 +169,8 @@ function renderNextUp() {
     return;
   }
   const t = typeOf(next.ev);
-  const ms = next.when - now, days = Math.floor(ms / 86400000), hrs = Math.floor((ms % 86400000) / 3600000), mins = Math.floor((ms % 3600000) / 60000);
+  const ms = next.when - now, hrs = Math.floor((ms % 86400000) / 3600000), mins = Math.floor((ms % 3600000) / 60000);
+  const days = Math.round((fromKey(dkey(next.when)) - fromKey(dkey(now))) / 86400000);   // calendar days: Thursday from Monday is 3
   const count = ms < 0 ? ["now", ""] : days >= 1 ? [days, days === 1 ? "day to go" : "days to go"] : hrs >= 1 ? [hrs + "h " + mins + "m", "to go"] : [mins + "m", "to go"];
   const prep = next.ev.prep || [], done = prep.filter(p => p.done).length;
   box.className = "nextup";
@@ -171,9 +180,10 @@ function renderNextUp() {
     '<div class="nu-meta">' + esc(QC.cal.humanWhen(next.when)) + (next.ev.provider ? '<br>With ' + esc(next.ev.provider) : '') + (next.ev.location ? '<br>📍 ' + esc(next.ev.location) : '') + '</div></div>' +
     '<div class="nu-count"><b>' + count[0] + '</b><span>' + count[1] + '</span></div></div>' +
     (prep.length ? '<div class="nu-prep"><div class="nu-prep-bar"><i style="width:' + Math.round(done / prep.length * 100) + '%"></i></div><small>' + done + ' of ' + prep.length + ' prep items ready</small></div>' : '') +
+    (prepOf(next.ev) ? (vp => '<div class="nu-prep"><div class="nu-prep-bar"><i style="width:' + Math.max(3, vp.pct) + '%"></i></div><small>' + (vp.state === "done" ? "Visit prep done: your doctor summary is ready" : vp.pct + "% of your visit prep done") + '</small></div>')(prepOf(next.ev).prep) : '') +
     '<div class="nu-actions"><button class="nu-btn" id="nu-open">Details &amp; checklist</button>' +
     ((!next.ev.recurrence || next.ev.recurrence === "none") ? '<button class="nu-btn" id="nu-done">✓ Mark done</button>' : '') +
-    '<a class="nu-btn" style="text-decoration:none;color:#fff;" href="../visit/' + (next.ev.type === "doctor" || !next.ev.type ? "?event=" + encodeURIComponent(next.ev.id || "") : "") + '">🗂️ Visit prep</a></div>';
+    (VISIT_T.includes(next.ev.type || "doctor") ? '<a class="nu-btn" style="text-decoration:none;color:#fff;" href="../visit/?event=' + encodeURIComponent(next.ev.id || "") + '">🗂️ ' + ((prepOf(next.ev) || {}).prep && prepOf(next.ev).prep.state === "done" ? "Doctor summary" : "Prepare for it") + '</a>' : '') + '</div>';
   $("nu-open").addEventListener("click", () => openEditor(next.ev));
   const dn = $("nu-done"); if (dn) dn.addEventListener("click", () => saveEvent(Object.assign({}, next.ev, { status: "done" }), "Marked done — nice."));
 }
@@ -219,8 +229,24 @@ function setSuggestions(records) {
   renderSuggestions();
 }
 
+const NUDGE_HIDE = "qc-cal-nudge-hidden";
+function renderNudges() {
+  const box = $("cal-nudges"); if (!box) return;
+  let off = []; try { off = JSON.parse(localStorage.getItem(NUDGE_HIDE) || "[]"); } catch (e) {}
+  const list = (CI.nudges || []).filter(n => !off.includes(n.id)).slice(0, 3);
+  if (!list.length) { box.hidden = true; return; }
+  box.innerHTML = list.map(n => '<div class="cn ' + esc(n.tone) + '"><button type="button" class="cn-x" data-nid="' + esc(n.id) + '" aria-label="Hide this">✕</button><div class="cn-top"><span class="cn-ic" aria-hidden="true">' + esc(n.icon) + '</span><b>' + esc(n.title) + '</b></div><p>' + esc(n.text) + '</p>' +
+    (n.action && n.action.href ? '<a class="cn-go" href="' + esc(n.action.href) + '">' + esc(n.action.label) + ' →</a>' : '') + '</div>').join("");
+  box.hidden = false;
+  box.querySelectorAll(".cn-x").forEach(b => b.addEventListener("click", () => { off.push(b.getAttribute("data-nid")); try { localStorage.setItem(NUDGE_HIDE, JSON.stringify(off.slice(-60))); } catch (e) {} renderNudges(); }));
+}
+function loadInsights() {
+  if (QC.cal.mode === "local") return;
+  fetch(API_BASE + "/calendar/insights", { credentials: "include" }).then(r => r.ok ? r.json() : null).then(d => { if (d && d.ok) { CI = d; renderAll(); } }).catch(() => {});
+}
+
 function renderAll() {
-  renderNextUp(); renderFilters(); renderSuggestions();
+  renderNextUp(); renderFilters(); renderSuggestions(); renderNudges();
   if (mode === "month") { renderMonth(); renderDayPanel(); } else renderAgenda();
   QC.refreshAlerts({ toast: false });
 }
@@ -333,7 +359,7 @@ async function saveEvent(ev, okMsg) {
     const saved = await QC.cal.save(body);
     const i = events.findIndex(x => x.id === saved.id);
     if (i >= 0) events[i] = saved; else events.push(saved);
-    closeEditor(); renderAll();
+    closeEditor(); renderAll(); loadInsights();
     QC.toast(okMsg || "Saved ✓", "ok");
     // jump the calendar to the saved date so it's visible
     const d = QC.cal.parse(saved.start); if (d && mode === "month") { view = { y: d.getFullYear(), m: d.getMonth() }; selected = dkey(d); renderAll(); }
@@ -469,6 +495,7 @@ $("qc-signout-btn").addEventListener("click", async () => {
   if (events.length && window.QCPush) setTimeout(() => QCPush.maybePrompt(), 3500);
   const staleRec = QC.stale("records"); if (staleRec) setSuggestions(staleRec);
   renderAll();
+  loadInsights();
   QC.idle(() => QC.records().then(r => { if (r && r.ok !== false) setSuggestions(r); }), 600);
 
   // deep links, e.g. from Insights / symptom results: ?new=1&type=doctor&title=...

@@ -189,6 +189,29 @@
   html[data-theme="dark"] .btn-cancel { color: #f2f0f8; border-color: rgba(255,255,255,0.18); }
   html[data-theme="dark"] .btn-cancel:hover { background: rgba(255,255,255,0.06); }
   html[data-theme="dark"] .skeleton-line { background: rgba(255,255,255,0.08); }
+  /* Cura checked your profile */
+  .pi-card[hidden] { display: none; }
+  .pi-card { background: radial-gradient(circle at 100% 0%, rgba(124,111,219,.10) 0, transparent 50%), radial-gradient(circle at 0% 100%, rgba(14,143,131,.08) 0, transparent 45%), var(--card, #fff); }
+  .pi-head { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; margin-bottom: 8px; }
+  .pi-head h2 { margin: 0; font: 700 17px 'Space Grotesk', sans-serif; } .pi-head p { margin: 3px 0 0; font-size: 13px; opacity: .65; }
+  .pi-score { text-align: center; padding: 8px 12px; border-radius: 16px; background: rgba(14,143,131,.1); flex: 0 0 auto; } .pi-score b { display: block; font: 800 20px 'Space Grotesk', sans-serif; color: #0e8f83; } .pi-score span { font-size: 11px; opacity: .65; }
+  .pi-row { display: flex; gap: 12px; align-items: center; padding: 12px 0; border-top: 1px dashed rgba(16,14,42,.12); }
+  .pi-row.urgent { background: rgba(210,79,40,.08); border-radius: 14px; padding: 12px; border-top: 0; margin: 6px 0; } .pi-row.urgent b { color: #b3401f; }
+  .pi-row.sug { background: rgba(124,111,219,.08); border-radius: 14px; padding: 12px; border-top: 0; margin: 6px 0; }
+  .pi-ic { font-size: 22px; flex: 0 0 auto; } .pi-main { flex: 1; min-width: 0; } .pi-main b { font-size: 14px; } .pi-main p { margin: 2px 0 0; font-size: 12.5px; line-height: 1.5; opacity: .72; }
+  .pi-acts { display: flex; gap: 6px; flex: 0 0 auto; align-items: center; }
+  .pi-btn { border: 0; cursor: pointer; padding: 8px 15px; border-radius: 999px; background: #0e8f83; color: #fff !important; font: 800 12.5px 'Manrope', sans-serif; text-decoration: none; white-space: nowrap; flex: 0 0 auto; }
+  .pi-btn.ghost { background: transparent; color: #0e8f83 !important; box-shadow: inset 0 0 0 1.5px rgba(14,143,131,.5); } .pi-btn:disabled { opacity: .6; }
+  .pi-skip { border: 0; background: none; cursor: pointer; font: 700 12px 'Manrope', sans-serif; opacity: .55; color: inherit; } .pi-skip:hover { opacity: 1; }
+  .pi-powers { margin-top: 12px; } .pi-pl { font-size: 11.5px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; opacity: .55; margin-bottom: 8px; }
+  .pi-pg { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; }
+  .pi-p { display: flex; flex-direction: column; gap: 2px; padding: 11px 12px; border-radius: 16px; text-decoration: none; color: inherit; background: rgba(14,143,131,.07); border: 1px solid rgba(14,143,131,.18); }
+  .pi-p.gap { background: rgba(201,138,16,.08); border-color: rgba(201,138,16,.25); } .pi-p span { font-size: 18px; } .pi-p b { font-size: 13px; } .pi-p small { font-size: 11.5px; opacity: .6; }
+  .pi-p i { font-style: normal; font-size: 11.5px; font-weight: 800; color: #0b6f66; } .pi-p.gap i { color: #8a5f0a; }
+  .pi-note { margin: 10px 0 0; font-size: 11.5px; opacity: .55; }
+  html[data-theme="dark"] .pi-row { border-color: rgba(255,255,255,.12); } html[data-theme="dark"] .pi-row.urgent b { color: #ff9b7d; }
+  html[data-theme="dark"] .pi-p i { color: #7ee0d4; } html[data-theme="dark"] .pi-p.gap i { color: #f3c870; } html[data-theme="dark"] .pi-btn.ghost { color: #7ee0d4 !important; }
+  @media (max-width: 560px) { .pi-row { flex-wrap: wrap; } .pi-acts, .pi-row > .pi-btn { width: 100%; justify-content: flex-end; } .pi-row > .pi-btn { width: auto; margin-left: auto; } }
 </style>
 <script src="../assets/qc-csp.js?v=77f89cc2"></script>
 <script src="../assets/qc-i18n.js?v=fb8e7449"></script>
@@ -242,6 +265,8 @@
       <div class="id-tiles" id="qc-tiles"></div>
     </div>
 
+    <section class="sec-card pi-card" id="qc-pintel" aria-label="Cura checked your profile" aria-live="polite" hidden></section>
+
     <div id="qc-notify-card"></div>
 
     <div class="sec-card" style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;justify-content:space-between">
@@ -263,9 +288,10 @@
 
 <script src="../assets/qc-profile.js?v=2eccdc08"></script>
 <script src="../assets/js/profile-2.js?v=f19360c9"></script>
-<script src="../assets/qc-app.js?v=f264e7e4"></script>
+<script src="../assets/qc-app.js?v=329f5b34"></script>
 <script src="../assets/qc-avatar.js?v=e729c0e9"></script>
 <script src="../assets/qc-push.js?v=d4eb1548"></script>
 <script src="../assets/js/profile-3.js?v=ea38cee3"></script>
+<script src="../assets/js/profile-intel.js?v=662476b6"></script>
 </body>
 </html>

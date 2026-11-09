@@ -589,6 +589,18 @@
     a.innerHTML = '<span class="tl-ic">\ud83e\udec2</span>Family';
     nav.insertBefore(a, prof);
   }
+  function injectVisitTab() {
+    var nav = $(".tab-nav"); if (!nav || nav.querySelector('a[href*="visit/"]') || /Visit prep/.test(nav.textContent)) return;
+    var links = Array.prototype.slice.call(nav.querySelectorAll("a.tab-link"));
+    var cal = links.filter(function (x) { return /Calendar/.test(x.textContent); })[0];
+    var ref = links.filter(function (x) { return /(profile|vitals|insights)\/$/.test(x.getAttribute("href") || ""); })[0];
+    if (!cal || !ref) return;
+    var a = document.createElement("a"), here = /\/visit\/?$/.test(location.pathname);
+    a.className = "tab-link" + (here ? " active" : ""); a.href = here ? "#" : ref.getAttribute("href").replace(/(profile|vitals|insights)\/$/, "visit/");
+    a.innerHTML = '<span class="tl-ic">\ud83d\uddc2\ufe0f</span>Visit prep';
+    if (here) nav.querySelectorAll(".tab-link.active").forEach(function (x) { x.classList.remove("active"); });
+    nav.insertBefore(a, cal.nextSibling);
+  }
   function syncActing() {
     paintActing(QC.acting());
     return QC.me().then(function (d) {
@@ -693,7 +705,7 @@
 
   /* ---------- boot ---------- */
   QC.boot = function () {
-    injectFamilyTab();
+    injectFamilyTab(); injectVisitTab();
     syncActing();
     buildBell();
     // Gentle nudges: confirm your e-mail, and hospital access requests waiting for your answer.

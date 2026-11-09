@@ -55,9 +55,13 @@
     return '<svg class="q-ring" viewBox="0 0 48 48" width="48" height="48" aria-hidden="true"><circle cx="24" cy="24" r="20" class="q-ring-bg"/><circle cx="24" cy="24" r="20" class="q-ring-fg" stroke-dasharray="' + C.toFixed(1) + '" stroke-dashoffset="' + (C * (1 - p)).toFixed(1) + '"/></svg>' +
       '<span class="q-ring-num">' + done + "/" + total + "</span>";
   }
-  function renderQuests(d, focus) {
+  function renderQuests(d, focus, vs) {
     var box = el("qc-quests"); if (!box) return;
     var t = d.today || { quests: [] }, qs = (t.quests || []).slice();
+    var v = vs && vs.visit, p = (vs && vs.progress) || {};
+    if (v && v.in_days != null && v.in_days <= 7)
+      qs.unshift({ id: "visit", icon: "🗂️", title: p.state === "done" ? "Ready for " + v.title : "Get ready for " + v.title, sub: (v.in_days === 0 ? "Today" : v.in_days === 1 ? "Tomorrow" : "In " + v.in_days + " days") + " · " + (p.pct || 0) + "% prepared",
+                   done: p.state === "done", href: "../visit/?event=" + encodeURIComponent(v.id || ""), progress: [p.pct || 0, 100] });
     (focus || []).forEach(function (f) {
       if (qs.length >= 5 || qs.some(function (q) { return q.title === f.title; })) return;
       if (/^checkin/.test(f.id || "")) return;                       // the Quick check-in banner above already asks it
@@ -75,6 +79,27 @@
       }).join("") + "</ul>";
     box.hidden = false;
     if (all && store("qc-quests-party") !== todayKey()) { store("qc-quests-party", todayKey()); party(); }
+  }
+
+  /* ---------- the next visit ---------- */
+  function renderVisit(vs) {
+    var box = el("qc-visit"); if (!box || !vs || vs.ok === false) return;
+    var v = vs.visit, p = vs.progress || {};
+    var when = v && v.when ? new Date(String(v.when).replace(" ", "T")) : null;
+    var whenTxt = when && !isNaN(when) ? when.toLocaleString([], { weekday: "short", day: "numeric", month: "short", hour: "numeric", minute: "2-digit" }) : "";
+    var inTxt = v && v.in_days != null ? (v.in_days === 0 ? "today" : v.in_days === 1 ? "tomorrow" : "in " + v.in_days + " days") : "";
+    var href = "../visit/" + (v && v.id ? "?event=" + encodeURIComponent(v.id) : "");
+    var face = !v ? "🩺" : p.state === "done" ? "🌸" : p.state === "started" ? "🌿" : "🌱";
+    var title = !v ? "Seeing a doctor soon?" : p.state === "done" ? "Ready for " + v.title + " 🎉" : "Get ready for " + v.title;
+    var sub = !v ? "Answer a few gentle questions and Cura turns them, with your readings, medicines and symptom checks, into a one-page summary your doctor can read in a minute."
+      : (whenTxt + (inTxt ? " · " + inTxt : "") + (v.provider ? " · " + v.provider : "")) ;
+    var bar = v ? '<div class="vc-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + (p.pct || 0) + '" aria-label="How prepared you are"><i style="width:' + Math.max(4, p.pct || 0) + '%"></i></div><small class="vc-pct">' +
+      (p.state === "done" ? "All set" + (p.questions ? " · " + p.questions + " question" + (p.questions === 1 ? "" : "s") + " for the doctor" : "") : (p.pct || 0) + "% prepared" + (p.state === "started" ? " · pick up where you left off" : " · about 3 minutes")) + "</small>" : "";
+    var btns = '<a class="vc-btn" href="' + href + (p.state === "done" ? "#summary" : "") + '">' + (p.state === "done" ? "Open my doctor summary" : p.state === "started" ? "Continue preparing →" : "Prepare now →") + "</a>" +
+      (!v ? '<a class="vc-btn ghost" href="../calendar/?new=1&type=doctor">📅 Add the appointment</a>' : "");
+    box.innerHTML = '<div class="vc-ic" aria-hidden="true">' + face + '</div><div class="vc-main"><div class="vc-eyebrow">Visit prep</div><h2>' + esc(title) + '</h2><p>' + esc(sub) + "</p>" + bar + '<div class="vc-acts">' + btns + "</div></div>";
+    box.className = "visit-card " + (!v ? "none" : p.state || "none");
+    box.hidden = false;
   }
 
   /* ---------- the week ---------- */
@@ -133,11 +158,13 @@
     var tz = -new Date().getTimezoneOffset();
     var conn = fetch(API + "/insights/connections?tz=" + tz, { credentials: "include" }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; });
     var dash = (window.QC && QC.insights) ? QC.insights(30).catch(function () { return null; }) : Promise.resolve(null);
-    Promise.all([conn, dash]).then(function (r) {
+    var vis = fetch(API + "/insights/visit-prep/status", { credentials: "include" }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; });
+    vis.then(renderVisit);
+    Promise.all([conn, dash, vis]).then(function (r) {
       var d = r[0], focus = (r[1] && r[1].focus) || [];
       if (!d || d.ok === false) return;
       DATA = d;
-      renderBuddy(d); renderQuests(d, focus); renderWeek(d); renderNoticed(d);
+      renderBuddy(d); renderQuests(d, focus, r[2]); renderWeek(d); renderNoticed(d);
       var fc = el("qc-focus"); if (fc) fc.classList.add("merged");          // its items are in the quests now
     });
   }

@@ -202,6 +202,18 @@
   .cal-banner.show { display: block; }
 
   /* next-up hero */
+  /* what Cura noticed across the calendar, symptom checks, readings and medicines */
+  .cal-nudges { margin: -6px 0 22px; display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+  .cal-nudges[hidden] { display: none; }
+  .cn { display: flex; flex-direction: column; gap: 6px; padding: 14px 16px; border-radius: 20px; background: var(--card, #fff); border: 1px solid rgba(16,14,42,0.08); box-shadow: 0 12px 26px -22px rgba(16,14,42,.45); position: relative; }
+  .cn.warn { background: linear-gradient(135deg, rgba(255,214,140,.22), rgba(255,180,162,.14)); border-color: rgba(201,138,16,.3); }
+  .cn-top { display: flex; gap: 10px; align-items: flex-start; } .cn-ic { font-size: 22px; line-height: 1; } .cn b { font-size: 14px; line-height: 1.35; }
+  .cn p { margin: 0; font-size: 12.5px; line-height: 1.5; opacity: .75; } .cn-go { align-self: flex-start; margin-top: 2px; padding: 7px 14px; border-radius: 999px; background: #0e8f83; color: #fff !important; font-weight: 800; font-size: 12.5px; text-decoration: none; }
+  .cn-x { position: absolute; top: 8px; right: 8px; border: 0; background: none; cursor: pointer; opacity: .4; font-size: 12px; color: inherit; padding: 4px; } .cn-x:hover { opacity: 1; }
+  html[data-theme="dark"] .cn { background: rgba(255,255,255,.04); border-color: rgba(255,255,255,.1); } html[data-theme="dark"] .cn.warn { background: linear-gradient(135deg, rgba(255,214,140,.10), rgba(255,180,162,.08)); }
+  .prep-chip { font-size: 10.5px; font-weight: 800; padding: 3px 9px; border-radius: 999px; text-decoration: none; white-space: nowrap; background: rgba(124,111,219,.14); color: #5b4fc0; }
+  .prep-chip.done { background: rgba(14,143,131,.14); color: #0b6f66; } .prep-chip.none { background: rgba(201,138,16,.14); color: #8a5f0a; }
+  html[data-theme="dark"] .prep-chip { color: #c9c0ff; } html[data-theme="dark"] .prep-chip.done { color: #7ee0d4; } html[data-theme="dark"] .prep-chip.none { color: #f3c870; }
   /* suggestions from records */
   .suggest { margin: -6px 0 22px; padding: 16px 18px; border-radius: 20px; background: linear-gradient(135deg, rgba(124,111,219,0.1), rgba(47,143,209,0.08)); border: 1px solid rgba(124,111,219,0.25); }
   .sg-head { display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: baseline; margin-bottom: 6px; } .sg-head b { font-size: 14px; } .sg-head span { font-size: 12px; opacity: .6; }
@@ -404,6 +416,8 @@
 
     <div class="nextup empty" id="nextup"></div>
 
+    <div class="cal-nudges" id="cal-nudges" hidden></div>
+
     <div class="suggest" id="suggest" hidden></div>
 
     <div class="cal-toolbar">
@@ -490,8 +504,8 @@
     </form>
   </dialog>
 
-<script src="../assets/qc-app.js?v=f264e7e4"></script>
+<script src="../assets/qc-app.js?v=329f5b34"></script>
 <script src="../assets/qc-push.js?v=d4eb1548"></script>
-<script src="../assets/js/calendar-2.js?v=aac1932f"></script>
+<script src="../assets/js/calendar-2.js?v=04974296"></script>
 </body>
 </html>

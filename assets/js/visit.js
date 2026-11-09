@@ -8,6 +8,7 @@
   "use strict";
   var P = QCPage, esc = P.esc, api = P.api;
   var PREP = null, A = null, MEDS = [], PROFILE = {}, STEP = 0, SAVE_T = null, SAVING = null, EVENT = new URLSearchParams(location.search).get("event") || "";
+  var STARTER = null, FROM_CHECK = new URLSearchParams(location.search).get("from") === "check", PERSONAL = null;
   function el(id) { return document.getElementById(id); }
   function q(path) { return path + (EVENT ? (path.indexOf("?") < 0 ? "?" : "&") + "event=" + encodeURIComponent(EVENT) : ""); }
 
@@ -94,7 +95,10 @@
           (v ? '<p class="vp-when">' + esc(fmtWhen(v.when)) + (v.in_days != null ? " · " + inWords(v.in_days) : "") + "</p>" : "") +
           "<p>A few gentle questions, about three minutes. We'll turn your answers into a one-page summary your doctor can read in under a minute, so more of your visit is about you.</p>" +
           (k.length ? '<div class="vp-known"><div class="vp-lbl">Already filled in from QueroCura ✨</div><div class="vp-chips">' + k.map(function (c) { return '<span class="vp-chip"><span aria-hidden="true">' + c[0] + "</span>" + esc(c[1]) + "</span>"; }).join("") + "</div></div>" : "") +
-          (A.reasons.length || A.reason_text ? '<p class="vp-soft">You started this earlier. We kept everything, so you can pick up where you left off.</p>' : "") + "</div>";
+          (A.reasons.length || A.reason_text ? '<p class="vp-soft">You started this earlier. We kept everything, so you can pick up where you left off.</p>' : "") +
+          (STARTER && !(A.reasons.length || A.reason_text) ? '<div class="vp-starter"><div class="vp-st-ic" aria-hidden="true">🔍</div><div class="grow"><b>Start from your symptom check?</b><p>On ' + esc(fmtDay(STARTER.check.date)) +
+            (STARTER.check.result ? " it matched <b>" + esc(STARTER.check.result) + "</b>" : "") + (STARTER.check.symptoms.length ? ": " + esc(STARTER.check.symptoms.slice(0, 5).join(", ")) : "") +
+            '. Cura can fill in the first answers for you to check.</p></div><button type="button" class="btn btn-primary btn-sm" id="vp-use-check">Use it ✨</button></div>' : "") + "</div>";
         break;
       case "what":
         h = pills("reasons", C.reasons, true, A.reasons) + label("In your own words", "f-reason") + area("f-reason", A.reason_text, "e.g. Headaches most mornings for two weeks, worse after screens", 3);
@@ -135,14 +139,22 @@
           label("From this visit, I'd love…") + pills("expect", C.expect, true, A.expect) + area("f-expect", A.expect_text, "Anything else you hope for (optional)", 1).replace("<textarea ", '<textarea aria-label="Anything else you hope for" ');
         break;
       case "ask":
-        var sug = [];
-        ((PREP && PREP.question_groups) || []).forEach(function (g) { (g.questions || []).forEach(function (x) { if (sug.indexOf(x) < 0) sug.push(x); }); });
-        sug = sug.slice(0, 10);
-        A.questions.forEach(function (x) { if (sug.indexOf(x) < 0) sug.unshift(x); });
-        h = (sug.length ? '<div class="vp-qs">' + sug.map(function (x, i) {
-          var on = A.questions.indexOf(x) >= 0;
-          return '<label class="vp-q' + (on ? " on" : "") + '"><input type="checkbox" data-q="' + i + '"' + (on ? " checked" : "") + "><span>" + esc(x) + "</span></label>";
-        }).join("") + "</div>" : "") +
+        var items = askItems(), sug = items.map(function (x) { return x.q; });
+        if (PERSONAL === null) h = '<div class="vp-thinking" role="status"><span class="vp-dots3" aria-hidden="true"><i></i><i></i><i></i></span> Cura is writing questions from what you told it…</div>';
+        else {
+          var tops = items.filter(function (x) { return x.top; });
+          h = (tops.length ? '<div class="vp-picks"><div><b>⭐ Cura\'s picks for this visit</b><span>The three that matter most for what you told it.</span></div><button type="button" class="btn btn-sm" id="vp-add-top">Add all three</button></div>' : "");
+          [["you", "💬 From what you told me"], ["data", "📊 From your health data"], ["any", "📝 Good at any visit"]].forEach(function (grp) {
+            var rows = items.map(function (x, i) { return [x, i]; }).filter(function (p) { return p[0].src === grp[0]; });
+            if (!rows.length) return;
+            h += '<div class="vp-qgrp">' + grp[1] + '</div><div class="vp-qs">' + rows.map(function (p) {
+              var x = p[0], on = A.questions.indexOf(x.q) >= 0;
+              return '<label class="vp-q' + (on ? " on" : "") + (x.top ? " top" : "") + '"><input type="checkbox" data-q="' + p[1] + '"' + (on ? " checked" : "") + "><span>" + (x.top ? '<i class="vp-star" aria-label="Cura\'s pick">⭐</i> ' : "") + esc(x.q) +
+                (x.why ? '<small class="vp-why">' + esc(x.why) + "</small>" : "") + "</span></label>";
+            }).join("") + "</div>";
+          });
+        }
+        h = h +
           label("Your own questions") + '<div class="vp-own" id="f-own">' + A.own_questions.map(function (x, i) { return '<div class="vp-ownq"><span>' + esc(x) + '</span><button type="button" class="vp-x" data-rmq="' + i + '" aria-label="Remove">✕</button></div>'; }).join("") + "</div>" +
           '<div class="vp-addq"><input class="input" id="f-newq" maxlength="220" aria-label="Add your own question" placeholder="e.g. Can I keep going to the gym?"><button type="button" class="btn" id="f-addq">Add</button></div>';
         STEPS_SUG = sug;
@@ -154,7 +166,7 @@
     }
     return h;
   }
-  var STEPS_SUG = [];
+  var STEPS_SUG = [], LOADING_Q = false;
 
   function renderStep(dir) {
     var steps = live();
@@ -173,6 +185,8 @@
         (last ? "" : '<button type="button" class="btn btn-primary vp-next" id="vp-next">' + (first ? (A.reasons.length || A.reason_text ? "Carry on →" : "Let's begin →") : (s.id === "ask" ? "Finish 🌸" : "Next →")) + "</button>") + "</div>" +
       (!first && !last ? '<button type="button" class="vp-skip" id="vp-skip">Skip this one</button>' : "");
     wireStep(s);
+    if (s.id === "ask" && PERSONAL === null && !LOADING_Q) { LOADING_Q = true; loadPersonal(); }
+    if (s.id !== "ask") { LOADING_Q = false; if (PERSONAL !== null && s.id !== "done") PERSONAL = null; }
     if (s.id === "done") { P.confetti(["🌸", "🌼", "✨", "💛"], 26); A.done = true; queueSave(true); }
     var head = el("vp-q"); if (head && dir) try { head.focus({ preventScroll: true }); } catch (e) {}
   }
@@ -208,6 +222,8 @@
       if (b.id === "vp-next") return next(1);
       if (b.id === "vp-back") return next(-1);
       if (b.id === "f-addq") return addQ();
+      if (b.id === "vp-use-check") return useStarter(true);
+      if (b.id === "vp-add-top") { askItems().filter(function (x) { return x.top; }).forEach(function (x) { if (A.questions.indexOf(x.q) < 0) A.questions.push(x.q); }); queueSave(); renderStep(0); P.toast("Added Cura's three picks ⭐"); return; }
       if (b.id === "f-pdf2") return downloadPdf(b);
       if (b.hasAttribute("data-rmq")) { A.own_questions.splice(+b.getAttribute("data-rmq"), 1); queueSave(); renderStep(0); return; }
       if (b.hasAttribute("data-go")) return showTab(b.getAttribute("data-go"));
@@ -227,6 +243,30 @@
       });
     });
     var nq = el("f-newq"); if (nq) nq.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); addQ(); } });
+  }
+  // the questions for the "ask" step: written by the server from the answers so far, falling back to the general list
+  function askItems() {
+    var list = (PERSONAL || []).slice();
+    if (!list.length) ((PREP && PREP.question_groups) || []).forEach(function (g) { (g.questions || []).forEach(function (x) { list.push({ q: x, why: "", src: g.id === "visit" ? "any" : "data" }); }); });
+    var have = list.map(function (x) { return x.q; });
+    A.questions.forEach(function (x) { if (have.indexOf(x) < 0) list.unshift({ q: x, why: "You picked this earlier", src: "you" }); });
+    return list.slice(0, 16);
+  }
+  function loadPersonal() {
+    PERSONAL = null;
+    flush().then(function () { return api(q("/insights/visit-prep/questions")); }).then(function (r) {
+      PERSONAL = (r && r.ok && r.questions) || [];
+      var s = live()[STEP]; if (s && s.id === "ask") renderStep(0);
+    }, function () { PERSONAL = []; var s = live()[STEP]; if (s && s.id === "ask") renderStep(0); });
+  }
+  function useStarter(go) {
+    if (!STARTER) return;
+    var s = STARTER.answers;
+    ["reasons", "areas", "others"].forEach(function (k) { (s[k] || []).forEach(function (v) { if (A[k].indexOf(v) < 0) A[k].push(v); }); });
+    if (!A.reason_text && s.reason_text) A.reason_text = s.reason_text;
+    if (!A.onset && s.onset) A.onset = s.onset;
+    STARTER = null; queueSave(true);
+    if (go) { STEP = 1; renderStep(1); P.toast("Filled in from your symptom check. Change anything that's not right."); }
   }
   function addQ() {
     var i = el("f-newq"), t = i.value.trim();
@@ -286,11 +326,14 @@
     var h = '<article class="paper" aria-label="Doctor summary"><header><div class="ph-t">Visit summary for the clinician</div><div class="ph-who">' + esc(who) + '</div><div class="ph-meta">' +
       esc(v ? v.title + " · " + fmtWhen(v.when) : "No appointment in the calendar") + (s.since_last_visit && s.since_last_visit.date ? " · Last visit " + esc(fmtDay(s.since_last_visit.date)) : "") + "</div></header>";
     if (empty) h += '<div class="ph-nudge">🌱 Your own words are missing. <button type="button" class="linkish" data-go="prep">Answer a few questions</button> and they’ll appear here first.</div>';
-    h += sec("Presenting concern", s.concern ? "<p><b>" + esc(s.concern) + "</b></p>" : "");
-    h += sec("History, in my words", s.hpi.length ? "<p>" + s.hpi.map(esc).join(" ") + "</p>" : "");
-    h += sec("Ideas, concerns, expectations", s.ice.map(function (x) { return "<p><b>" + esc(x[0]) + ":</b> " + esc(x[1]) + "</p>"; }).join(""));
+    if (s.glance) h += '<div class="ph-glance"><div class="ph-gl-l">At a glance</div><p>' + esc(s.glance) + "</p></div>";
+    h += sec("Presenting concern", s.concern ? '<p class="ph-concern">' + esc(s.concern) + "</p>" : "");
+    var so = s.stands_out || [];
+    h += sec("Worth your attention", so.length ? '<ul class="ph-so">' + so.map(function (x) { return '<li class="t-' + esc(x.tone) + '"><span aria-hidden="true">' + esc(x.icon) + "</span><span>" + esc(x.text) + "</span></li>"; }).join("") + "</ul>" : "");
+    if (s.story && s.story.length) h += sec("In my own words", s.story.map(function (x) { return '<div class="ph-para"><div class="ph-ph">' + esc(x.h) + "</div><p>" + esc(x.p) + "</p></div>"; }).join(""));
+    else h += sec("History, in my words", s.hpi.length ? "<p>" + s.hpi.map(esc).join(" ") + "</p>" : "");
     var bg = (s.allergies.length ? '<p><b>Allergies:</b> <span class="ph-red">' + s.allergies.map(esc).join(", ") + "</span></p>" : "") + (s.conditions.length ? "<p><b>Known conditions:</b> " + s.conditions.map(esc).join(", ") + "</p>" : "") +
-      (s.context.length ? "<p><b>Also:</b> " + s.context.map(esc).join("; ") + "</p>" : "");
+      (s.context.length && !(s.story && s.story.length) ? "<p><b>Also:</b> " + s.context.map(esc).join("; ") + "</p>" : "");
     h += sec("Background", bg);
     var a = s.adherence || {};
     h += sec("Medicines", s.medicines.length || s.meds_note ? (s.medicines.length ? '<div class="table-scroll"><table><thead><tr><th>Medicine</th><th>How</th><th>I say</th></tr></thead><tbody>' + s.medicines.map(function (m) { return "<tr><td>" + esc(m.name) + '</td><td class="mut">' + esc(m.how) + "</td><td>" + esc(m.reported || "–") + "</td></tr>"; }).join("") + "</tbody></table></div>" : "") +
@@ -298,9 +341,13 @@
       (s.meds_note ? "<p><b>My note:</b> " + esc(s.meds_note) + "</p>" : "") : "");
     h += sec("Home readings", s.readings.length ? '<div class="table-scroll"><table><thead><tr><th>Reading</th><th>Latest</th><th>Range</th><th>Trend</th></tr></thead><tbody>' + s.readings.map(function (r) {
       return "<tr><td>" + esc(r.label) + (r.flag ? ' <span class="ph-flag">flagged</span>' : "") + "</td><td><b>" + esc(r.latest) + "</b> " + esc(r.unit) + "</td><td>" + esc(r.min) + "–" + esc(r.max) + "</td><td>" + esc(r.direction) + " (" + esc(r.count) + ")</td></tr>";
-    }).join("") + "</tbody></table></div>" : "");
+    }).join("") + "</tbody></table></div>" + ((s.related || []).length ? '<p class="ph-rel"><b>Bearing on this visit:</b> ' + s.related.map(function (r) { return esc(r.text); }).join(" ") + "</p>" : "") : "");
+    var cg = s.checks_grouped || {};
     var rec = (s.flagged_labs.length ? "<p><b>Lab values outside the usual range:</b> " + s.flagged_labs.map(esc).join(", ") + "</p>" : "") + (s.scans.length ? "<p><b>Scan reports:</b> " + s.scans.map(esc).join(", ") + "</p>" : "") +
-      (s.symptom_checks.length ? "<p><b>App symptom checks</b> <span class=\"mut\">(pattern matches, not diagnoses)</span>: " + s.symptom_checks.map(function (c) { return esc(fmtDay(c.date)) + " " + esc(c.result); }).join("; ") + "</p>" : "");
+      ((cg.groups || []).length ? '<p><b>App symptom checks</b> <span class="mut">(pattern matches, not diagnoses)</span>: ' + esc(cg.sentence || "") + '</p><div class="ph-chk">' + cg.groups.slice(0, 6).map(function (g) {
+        return '<span class="ph-cg' + (g.days >= 3 ? " rep" : "") + '"><b>' + esc(g.result) + "</b> " + (g.days > 1 ? g.days + " days" : "once") + ' · last ' + esc(fmtDay(g.last)) + "</span>";
+      }).join("") + "</div>" :
+      s.symptom_checks.length ? "<p><b>App symptom checks</b> <span class=\"mut\">(pattern matches, not diagnoses)</span>: " + s.symptom_checks.map(function (c) { return esc(fmtDay(c.date)) + " " + esc(c.result); }).join("; ") + "</p>" : "");
     h += sec("Records", rec);
     h += sec("I'd like to ask", s.questions.length ? "<ol>" + s.questions.map(function (x) { return "<li>" + esc(x) + "</li>"; }).join("") + "</ol>" : "");
     h += '<footer>' + esc(s.note) + " Prepared " + esc(s.generated) + ".</footer></article>";
@@ -319,14 +366,17 @@
   function asText(s) {
     var L = ["VISIT SUMMARY (" + s.generated + ")", [s.patient.name, s.patient.age ? s.patient.age + " yrs" : "", s.patient.sex].filter(Boolean).join(", ")];
     if (s.visit) L.push(s.visit.title + ", " + fmtWhen(s.visit.when));
+    if (s.glance) L.push("", "AT A GLANCE: " + s.glance);
     if (s.concern) L.push("", "CONCERN: " + s.concern);
-    if (s.hpi.length) L.push("", "HISTORY: " + s.hpi.join(" "));
-    s.ice.forEach(function (x) { L.push(x[0] + ": " + x[1]); });
+    if ((s.stands_out || []).length) { L.push("", "WORTH YOUR ATTENTION"); s.stands_out.forEach(function (x) { L.push("- " + x.text); }); }
+    if ((s.story || []).length) { L.push("", "IN MY OWN WORDS"); s.story.forEach(function (x) { L.push(x.h + ": " + x.p); }); }
+    else { if (s.hpi.length) L.push("", "HISTORY: " + s.hpi.join(" ")); s.ice.forEach(function (x) { L.push(x[0] + ": " + x[1]); }); }
     if (s.allergies.length) L.push("", "Allergies: " + s.allergies.join(", "));
     if (s.conditions.length) L.push("Conditions: " + s.conditions.join(", "));
     if (s.medicines.length) { L.push("", "MEDICINES"); s.medicines.forEach(function (m) { L.push("- " + m.name + (m.how ? " (" + m.how + ")" : "") + (m.reported ? ": " + m.reported : "")); }); }
     if (s.meds_note) L.push("Note: " + s.meds_note);
     if (s.readings.length) { L.push("", "READINGS"); s.readings.forEach(function (r) { L.push("- " + r.label + ": latest " + r.latest + " " + r.unit + ", range " + r.min + " to " + r.max + ", " + r.direction); }); }
+    if ((s.checks_grouped || {}).sentence) L.push("", "SYMPTOM CHECKS (pattern matches, not diagnoses): " + s.checks_grouped.sentence);
     if (s.questions.length) { L.push("", "QUESTIONS"); s.questions.forEach(function (x, i) { L.push(i + 1 + ". " + x); }); }
     L.push("", s.note);
     return L.join("\n");
@@ -425,13 +475,13 @@
     Promise.all([api(q("/insights/visit-prep")), api(q("/insights/visit-prep/answers")), api("/profile")]).then(function (r) {
       var d = r[0], a = r[1], pr = r[2];
       if (!d || !d.ok) { el("vp").innerHTML = '<div class="card"><p class="msg err">' + esc((d && (d.err || d.message)) || "Couldn't build your page.") + "</p></div>"; return; }
-      PREP = d; A = (a && a.ok && a.answers) || {}; MEDS = (a && a.medicines) || []; PROFILE = (pr && pr.profile) || {};
+      PREP = d; A = (a && a.ok && a.answers) || {}; MEDS = (a && a.medicines) || []; PROFILE = (pr && pr.profile) || {}; STARTER = (a && a.starter) || null;
       ["reasons", "areas", "feels", "affects", "others", "expect", "questions", "own_questions"].forEach(function (k) { if (!Array.isArray(A[k])) A[k] = []; });
       if (!A.meds || typeof A.meds !== "object") A.meds = {}; if (!A.context) A.context = {};
       if (!EVENT && d.visit && d.visit.id) EVENT = d.visit.id;
       STEP = A.done ? 0 : (A.step || 0);
       el("hero").innerHTML = hero(d);
-      renderStep(0);
+      if (STARTER && FROM_CHECK) useStarter(true); else renderStep(0);
       el("pane-bring").innerHTML = bring(d); wireShare();
       var h = location.hash.replace("#", "");
       if (h === "summary" || h === "bring") showTab(h);
