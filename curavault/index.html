@@ -277,6 +277,76 @@
   .pv-check { padding: 9px 0 2px; border-top: 1px solid rgba(255,255,255,0.07); margin-top: 8px; color: var(--ink-soft); line-height: 1.55; }
   .pv-check-top { display: flex; align-items: center; gap: 8px; color: var(--ink); }
   .pv-alt { color: var(--ink-faint); }
+  /* ---- medicines & records tidy-up (curavault-meds.js) ---- */
+  .mi-teaser-card[hidden] { display: none; }
+  .mi-teaser { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .mi-teaser-ic { font-size: 22px; }
+  .mi-teaser-text { flex: 1 1 200px; display: flex; flex-direction: column; gap: 2px; }
+  .mi-teaser-text span { font-size: 12.5px; color: var(--ink-soft); }
+  .hs-attn-text b { font-weight: 800; }
+  .mi-meds { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+  .mi-med { border-radius: 16px; padding: 14px 15px; background: rgba(255,255,255,0.045); border: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; gap: 6px; }
+  .mi-med.off { border-color: rgba(255,138,101,0.45); }
+  .mi-med-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+  .mi-med-name { font-weight: 800; font-size: 14.5px; }
+  .mi-med-name small { font-weight: 600; color: var(--ink-faint); font-size: 12px; }
+  .mi-med-ing { font-size: 11.5px; color: var(--ink-faint); margin-top: 2px; }
+  .mi-med-for { margin: 0; font-size: 13px; color: var(--ink-soft); }
+  .mi-med-meta { font-size: 12px; color: var(--ink-faint); line-height: 1.5; }
+  .mi-ad { display: flex; align-items: center; gap: 8px; font-size: 11.5px; color: var(--ink-soft); }
+  .mi-ad-bar { flex: 1 1 auto; height: 6px; border-radius: 999px; background: rgba(255,255,255,0.08); overflow: hidden; min-width: 60px; }
+  .mi-ad-bar i { display: block; height: 100%; border-radius: 999px; background: var(--cv-2); }
+  .mi-ad-bar i.low { background: #e8b64f; }
+  .mi-effs { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+  .mi-eff { border-radius: 16px; padding: 14px 15px; background: rgba(255,255,255,0.045); border: 1px solid rgba(255,255,255,0.1); }
+  .mi-eff-top { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; font-size: 14px; }
+  .mi-eff-top span:not(.hs-chip) { font-size: 12px; color: var(--ink-faint); flex: 1 1 auto; }
+  .mi-eff-vals { display: flex; align-items: center; gap: 14px; margin: 10px 0 6px; font-family: 'Fraunces', serif; font-size: 20px; }
+  .mi-eff-vals small { display: block; font-family: 'Manrope', sans-serif; font-size: 10.5px; color: var(--ink-faint); }
+  .mi-arrow { color: var(--cv-4); font-size: 18px; }
+  .mi-eff p { margin: 0; font-size: 12.5px; color: var(--ink-soft); line-height: 1.5; }
+  .mi-adh { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+  .mi-ring { flex: 0 0 auto; transform: rotate(-90deg); }
+  .mi-ring text { transform: rotate(90deg); transform-origin: 42px 42px; fill: var(--ink); font-size: 17px; font-weight: 800; font-family: 'Manrope', sans-serif; }
+  .mi-ring-bg { fill: none; stroke: rgba(255,255,255,0.1); stroke-width: 8; }
+  .mi-ring-fg { fill: none; stroke-width: 8; stroke-linecap: round; stroke: var(--cv-3); }
+  .mi-ring-fg.warn { stroke: #e8b64f; }
+  .mi-adh-big { margin: 0 0 4px; font-weight: 800; font-size: 14px; }
+  .mi-slots { margin-top: 12px; display: flex; flex-direction: column; gap: 6px; max-width: 420px; }
+  .mi-slot { display: grid; grid-template-columns: 52px 1fr 40px; align-items: center; gap: 10px; font-size: 12px; color: var(--ink-soft); }
+  .mi-slot b { text-align: right; }
+  .mi-mon { display: flex; flex-direction: column; gap: 8px; }
+  .mi-mon-row { display: flex; align-items: flex-start; gap: 10px; font-size: 13px; line-height: 1.5; color: var(--ink-soft); }
+  .mi-mon-row .hs-chip { margin-top: 2px; }
+  .mi-tl { position: relative; padding-top: 18px; }
+  .mi-tl-axis { position: relative; height: 14px; margin-left: 130px; font-size: 10.5px; color: var(--ink-faint); }
+  .mi-tl-axis span { position: absolute; transform: translateX(-50%); top: -16px; }
+  .mi-tl-row { display: grid; grid-template-columns: 120px 1fr; gap: 10px; align-items: center; margin: 5px 0; font-size: 12px; }
+  .mi-tl-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--ink-soft); }
+  .mi-tl-track { position: relative; height: 10px; border-radius: 999px; background: rgba(255,255,255,0.06); }
+  .mi-tl-track i { position: absolute; top: 0; bottom: 0; border-radius: 999px; background: var(--cv-2); }
+  .mi-tl-track i.past { background: rgba(255,255,255,0.3); }
+  .mi-tl-track i.upcoming { background: transparent; border: 1.5px dashed var(--cv-3); }
+  @media (max-width: 480px) { .mi-tl-row { grid-template-columns: 84px 1fr; } .mi-tl-axis { margin-left: 94px; } }
+  #cv-rec-tidy[hidden] { display: none; }
+  .rt-list { display: flex; flex-direction: column; gap: 8px; }
+  .rt-row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; padding: 12px 14px; border-radius: 14px; background: rgba(255,255,255,0.045); border: 1px solid rgba(255,255,255,0.1); }
+  .rt-main { flex: 1 1 240px; min-width: 0; }
+  .rt-from { font-size: 12px; color: var(--ink-faint); text-decoration: line-through; overflow-wrap: anywhere; }
+  .rt-to { font-weight: 800; font-size: 14px; margin-top: 2px; overflow-wrap: anywhere; }
+  .rt-bits { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+  .rt-bits span { font-size: 11.5px; padding: 2px 9px; border-radius: 999px; background: rgba(74,222,128,0.12); color: var(--cv-4); }
+  .rt-main small { display: block; margin-top: 6px; font-size: 11.5px; color: var(--ink-faint); }
+  .rt-act { display: flex; gap: 6px; flex-wrap: wrap; }
+  .rt-act .btn-ghost { font-size: 12px; padding: 6px 12px; }
+  .rt-dup { padding: 12px 14px; border-radius: 14px; background: rgba(232,182,79,0.08); border: 1px solid rgba(232,182,79,0.3); margin-bottom: 8px; }
+  .rt-dup p { margin: 0 0 8px; font-size: 13px; line-height: 1.5; }
+  .rt-visit { padding: 10px 0; border-top: 1px solid rgba(255,255,255,0.08); margin-top: 8px; }
+  .rt-visit-top { display: flex; gap: 10px; flex-wrap: wrap; align-items: baseline; font-size: 13px; }
+  .rt-visit-top span { color: var(--ink-faint); font-size: 12px; }
+  .rt-visit-items { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+  .rt-pill { font: inherit; font-size: 12px; padding: 4px 10px; border-radius: 999px; border: 1px solid rgba(255,255,255,0.14); background: rgba(255,255,255,0.05); color: var(--ink); cursor: pointer; }
+  .rt-pill:hover { border-color: var(--cv-tint-strong); }
   /* ---- symptom-check history cards ---- */
   .symptom-list { display: flex; flex-direction: column; gap: 10px; }
   .symptom-card { border: 1px solid rgba(255,255,255,0.1); border-radius: 14px; padding: 14px 16px; transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease; }
@@ -489,6 +559,7 @@
     <div class="vault-tabs" role="tablist">
       <button class="vtab active" data-tab="overview" role="tab"><span class="vt-ic">🏠</span>Overview</button>
       <button class="vtab" data-tab="records" role="tab"><span class="vt-ic">📄</span>Records</button>
+      <button class="vtab" data-tab="medicines" role="tab"><span class="vt-ic">💊</span>Medicines</button>
       <button class="vtab" data-tab="vitals" role="tab"><span class="vt-ic">❤️</span>Vitals</button>
       <button class="vtab" data-tab="symptoms" role="tab"><span class="vt-ic">🩺</span>Symptom History</button>
       <button class="vtab" data-tab="access" role="tab"><span class="vt-ic">🤝</span>Access<span class="vt-badge" id="qc-access-badge" style="display:none;">0</span></button>
@@ -497,7 +568,7 @@
     <!-- OVERVIEW -->
     <div class="tab-panel show" id="panel-overview">
       <section id="cv-story" class="card hs" aria-label="Your health story" aria-live="polite"><div class="hs-head"><h2>Your health story</h2></div><div class="skel skel-row"></div><div class="skel skel-row"></div></section>
-      <section id="cv-current-medications" class="card" aria-label="Current medications"><h2>Current medications</h2><p>Loading confirmed medicines…</p></section>
+      <section id="cv-med-teaser" class="card mi-teaser-card" aria-label="Medicines summary" hidden></section>
       <div class="idc-wrap">
         <div class="idc">
           <div class="idc-shine"></div>
@@ -598,12 +669,19 @@
           <button type="submit" class="save-btn" id="cv-upload-btn">Upload</button>
         </form>
       </div>
+      <section id="cv-rec-tidy" class="card" aria-live="polite" hidden></section>
       <div class="card">
         <div class="card-head"><div><h2>Your records</h2><p class="card-sub">Search finds words inside your reports too: a test name, a doctor, a hospital.</p></div></div>
         <div class="rec-search"><span aria-hidden="true">🔍</span><input type="search" id="cv-search" placeholder="Search your records, e.g. ferritin, MRI, Dr Rao" autocomplete="off" aria-label="Search your records"></div>
         <div id="cv-search-results" hidden aria-live="polite"></div>
         <div id="cv-records-wrap"><div class="skel skel-row"></div><div class="skel skel-row"></div></div>
       </div>
+    </div>
+
+    <!-- MEDICINES -->
+    <div class="tab-panel" id="panel-medicines">
+      <section id="cv-med-insights" class="card" aria-live="polite"><div class="hs-head"><h2>💊 Your medicines</h2></div><div class="skel skel-row"></div><div class="skel skel-row"></div></section>
+      <section id="cv-current-medications" class="card" aria-label="Medicine schedules and today's doses"><h2>Your medicines</h2><p>Loading confirmed medicines…</p></section>
     </div>
 
     <!-- VITALS -->
@@ -665,11 +743,12 @@
   <div class="toast-stack" id="qc-toast-stack"></div>
   <div id="cv-print" aria-hidden="true"></div>
 
-<script src="../assets/js/curavault-2.js?v=525cdbfe"></script>
+<script src="../assets/js/curavault-2.js?v=065e24fb"></script>
 <script src="../assets/js/curavault-3.js?v=8639d8cc"></script>
 <script src="../assets/js/curavault-4.js?v=7f11db26"></script>
 <script src="../assets/js/curavault-story.js?v=34379358"></script>
 <script src="../assets/js/curavault-patterns.js?v=2a04031a"></script>
+<script src="../assets/js/curavault-meds.js?v=95840b73"></script>
 <script src="../assets/js/curavault-5.js?v=911959b3"></script>
 <script src="../assets/qc-app.js?v=f264e7e4"></script>
 </body>

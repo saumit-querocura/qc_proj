@@ -35,7 +35,7 @@
     constructor(api,container,notify){this.api=api;this.container=container;this.notify=notify;this.busy=false;this.nudgesEnabled=false;this.lastNudge=new Map();this.timer=setInterval(()=>{if(!document.hidden&&this.container.getClientRects().length&&!document.querySelector('dialog[open]'))this.refresh();},60000);}
     async request(path,payload){const r=await fetch(this.api+path,{credentials:'include',cache:'no-store',...(payload?{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}:{})});const d=await r.json();if(!r.ok||!d.ok)throw Error(d.error||'Medication request failed.');return d;}
     async refresh(){if(this.busy)return;this.busy=true;try{const d=await this.request('/medications/current');this.render(d);}catch(e){this.container.replaceChildren(node('p','Current medicines could not be loaded.'));const retry=node('button','Try again');retry.onclick=()=>this.refresh();this.container.append(retry);}finally{this.busy=false;}}
-    render(data){this.container.replaceChildren(node('h2','Your medicines'));
+    render(data){this.container.replaceChildren(node('h2','Schedules and today’s doses'));
       const meds=data.medications||[],later=data.upcoming_medications||[];
       if(!meds.length&&!later.length){const p=node('p','No current medicines. When you check a prescription in Records, its medicines and dose reminders show up here.');p.className='cv-med-empty';this.container.append(p);}
       for(const medicine of meds)this.card(medicine);
