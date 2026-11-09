@@ -414,92 +414,22 @@ document.getElementById("cv-upload-form").addEventListener("submit", async (e) =
   }
 });
 
-// ---- vault vitals ----
+// ---- vault vitals and symptom history ----
+// Both tabs are drawn by curavault-patterns.js (readings over time, symptom episodes). This file only keeps the
+// symptom count and latest checks for the overview stats and activity feed.
 async function loadVaultVitals() {
-  const data = await cvGet("/vitals");
-  const wrap = document.getElementById("cv-vitals-wrap");
-  if (!data.ok || !data.vitals || !data.vitals.length) {
-    wrap.innerHTML = '<div class="empty-note">No vitals logged in your Vault yet.</div>';
-    return;
-  }
-  const rows = data.vitals.slice(0, 8).map(v => (
-    "<tr>" +
-      "<td>" + fmtDate(v.recorded_at) + "</td>" +
-      "<td>" + fmt(v.heart_rate) + "</td>" +
-      "<td>" + (v.systolic_bp != null && v.diastolic_bp != null ? v.systolic_bp + "/" + v.diastolic_bp : "—") + "</td>" +
-      "<td>" + fmt(v.spo2) + "</td>" +
-      "<td>" + fmt(v.temperature_c) + "</td>" +
-      "<td>" + fmt(v.weight_kg) + "</td>" +
-    "</tr>"
-  )).join("");
-  wrap.innerHTML = "<table><thead><tr><th>When</th><th>HR</th><th>BP</th><th>SpO₂</th><th>Temp</th><th>Weight</th></tr></thead><tbody>" + rows + "</tbody></table>";
+  if (window.CuraVaultPatterns) return window.CuraVaultPatterns.loadVitals();
 }
 
-document.getElementById("cv-vitals-form").addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const btn = document.getElementById("cv-vitals-btn");
-  btn.disabled = true;
-  btn.textContent = "Saving…";
-
-  const val = id => document.getElementById(id).value || null;
-  const payload = {
-    recorded_at: new Date().toISOString(),
-    source: "manual",
-    heart_rate: val("cv-v-hr"),
-    systolic_bp: val("cv-v-sys"),
-    diastolic_bp: val("cv-v-dia"),
-    spo2: val("cv-v-spo2"),
-    temperature_c: val("cv-v-temp"),
-    blood_glucose_mgdl: val("cv-v-glucose"),
-    weight_kg: val("cv-v-weight"),
-    respiratory_rate: val("cv-v-resp"),
-    notes: document.getElementById("cv-v-notes").value || "",
-  };
-
-  try {
-    const { ok, data } = await cvPost("/vitals", payload);
-    if (!ok || !data.ok) throw new Error(data.error || "Couldn't save that reading.");
-    toast("Saved to your Vault.", "ok");
-    document.getElementById("cv-vitals-form").reset();
-    fireConfetti();
-    await loadVaultVitals();
-  } catch (err) {
-    toast(err.message || "Something went wrong.", "err");
-  } finally {
-    btn.disabled = false;
-    btn.textContent = "Save to Vault";
-  }
-});
-
-// ---- symptom-check history (pulled from Insights) ----
 let lastSymptoms = [];
 async function loadSymptomHistory() {
-  const wrap = document.getElementById("cv-symptoms-wrap");
   try {
     const res = await fetch(API_BASE + "/insights/dashboard?days=365", { credentials: "include" });
     const data = await res.json();
     const history = (data && data.diagnosis_history) || [];
     lastSymptoms = history;
-    if (!history.length) {
-      wrap.innerHTML = '<div class="empty-note">No symptom checks yet — run one from the Symptoms tab and it\'ll show up here.</div>';
-      return { count: 0 };
-    }
-    wrap.innerHTML = '<div class="symptom-list">' + history.map(s => {
-      const pct = Math.round((Number(s.match_strength) || 0) * 100);
-      const tClass = triageClass(s.triage);
-      return '<div class="symptom-card">' +
-        '<div class="sym-top">' +
-          '<div><div class="sym-name">' + esc(s.condition_name || "Unknown") + '</div>' +
-          '<div class="sym-meta"><span>' + fmtDate(s.ts) + '</span>' + (s.confidence_band ? '<span>· ' + esc(s.confidence_band) + ' confidence</span>' : '') + '</div></div>' +
-          '<span class="pill ' + esc(tClass) + '">' + esc(s.triage || s.risk || "—") + '</span>' +
-        '</div>' +
-        (pct ? '<div class="sym-bar-wrap"><div class="sym-bar" style="width:' + pct + '%"></div></div>' : '') +
-        ((s.signals && s.signals.length) ? '<details class="sym-signals"><summary>' + s.signals.length + ' signal' + (s.signals.length > 1 ? 's' : '') + '</summary>' + s.signals.map(sig => esc(typeof sig === "string" ? sig : (sig.label || sig.name || JSON.stringify(sig)))).join(", ") + '</details>' : '') +
-      '</div>';
-    }).join("") + '</div>';
-    return { count: history.length };
+    return { count: Number(data && data.diagnosis_count) || history.length };
   } catch (e) {
-    wrap.innerHTML = '<div class="empty-note">Couldn\'t load your symptom history right now. <a href="#" data-retry="symptoms">Try again</a></div>';
     return { count: 0, ok: false };
   }
 }
@@ -634,7 +564,7 @@ document.addEventListener("click", (e) => {
   e.preventDefault();
   const kind = retry.getAttribute("data-retry");
   if (kind === "records") loadRecords();
-  else if (kind === "symptoms") loadSymptomHistory();
+  else if (kind === "symptoms" && window.CuraVaultPatterns) window.CuraVaultPatterns.loadSymptoms();
   else if (kind === "consent") loadConsentRequests();
   else if (kind === "logs") loadAccessLogs();
 });
@@ -671,8 +601,4 @@ document.getElementById("qc-signout-btn").addEventListener("click", async () => 
     toast("Some parts of your Vault didn't load — try refreshing.", "err");
   }
   renderIdCard(patient, name);
-
-  try { await loadVaultVitals(); } catch (e) {
-    document.getElementById("cv-vitals-wrap").innerHTML = '<div class="empty-note">Couldn\'t load your vitals right now.</div>';
-  }
 })();

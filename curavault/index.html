@@ -211,6 +211,72 @@
   .btn-ghost.danger:hover { background: rgba(255,138,101,0.08); }
   .btn-ghost:disabled { opacity: 0.55; cursor: default; }
 
+  /* ---- vitals & symptom history (curavault-patterns.js) ---- */
+  .hs-attn-row.urgent { border-color: rgba(255,120,95,0.5); background: rgba(255,110,85,0.12); }
+  .hs-attn-row.urgent .hs-attn-ic { background: #ff7a5f; color: #2a0b05; }
+  .hs-attn-row.watch .hs-attn-ic { background: rgba(232,182,79,0.35); color: #f0c464; }
+  .pv-tiles { margin-top: 14px; }
+  .sp-line.alt { stroke-dasharray: 3 3; opacity: 0.75; }
+  .sp-dot.alt { opacity: 0.75; }
+  .pv-key { display: inline-flex; align-items: center; gap: 5px; }
+  .pv-key i { display: inline-block; width: 14px; height: 0; border-top: 2px solid var(--cv-4); }
+  .pv-key i.alt { border-top-style: dashed; margin-left: 6px; }
+  .pv-habits { margin: 14px 0 0; padding-left: 18px; font-size: 12.5px; color: var(--ink-soft); line-height: 1.6; }
+  .pv-bp-row { display: flex; align-items: center; gap: 6px; }
+  .pv-bp-row input { min-width: 0; flex: 1 1 0; }
+  .pv-bp-row span { color: var(--ink-faint); font-weight: 700; }
+  .pv-bp, .pv-when-f { grid-column: span 2; }
+  @media (max-width: 420px) { .pv-bp, .pv-when-f { grid-column: 1 / -1; } }
+  #cv-vitals-form [aria-invalid="true"] { border-color: #ff8a65; box-shadow: 0 0 0 3px rgba(255,138,101,0.18); }
+  .pv-err { font-size: 11.5px; color: #ff9b7a; margin-top: 4px; line-height: 1.4; }
+  .pv-alert { margin: 0 0 14px; padding: 14px 16px; border-radius: 14px; border: 1px solid rgba(232,182,79,0.5); background: rgba(232,182,79,0.12); }
+  .pv-alert[hidden] { display: none; }
+  .pv-alert.urgent { border: 2px solid #ff7a5f; background: rgba(120,20,10,0.45); }
+  .pv-alert b { display: block; font-size: 14px; margin-bottom: 4px; }
+  .pv-alert p { margin: 0 0 10px; font-size: 13.5px; line-height: 1.55; }
+  .pv-table { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .pv-table table { min-width: 560px; }
+  .pv-when { white-space: nowrap; }
+  .pv-when small { display: block; color: var(--ink-faint); font-size: 11px; white-space: normal; max-width: 180px; }
+  .pv-none { color: var(--ink-faint); }
+  .pv-cell { display: inline-block; padding: 1px 7px; border-radius: 7px; font-weight: 700; }
+  .pv-cell.watch { background: rgba(232,182,79,0.16); color: #f0c464; }
+  .pv-cell.warn, .pv-cell.urgent { background: rgba(255,138,101,0.18); color: #ff9b7a; }
+  .pv-sum { margin: 0 0 12px; font-size: 13px; color: var(--ink-soft); }
+  .pv-sym-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; margin-top: 6px; }
+  .pv-panel { padding: 4px 14px 14px; border-radius: 16px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); }
+  .pv-panel .hs-sub { margin-top: 12px; }
+  .pv-months { display: grid; grid-template-columns: repeat(12, 1fr); gap: 4px; height: 96px; }
+  .pv-month { display: flex; flex-direction: column; align-items: center; gap: 4px; height: 100%; }
+  .pv-col { flex: 1 1 auto; width: 100%; display: flex; align-items: flex-end; border-radius: 4px; background: rgba(255,255,255,0.04); }
+  .pv-col i { display: flex; flex-direction: column; justify-content: flex-start; width: 100%; border-radius: 4px; background: var(--cv-2); overflow: hidden; }
+  .pv-col i b { display: block; width: 100%; background: #ff8a65; }
+  .pv-month span { font-size: 10px; color: var(--ink-faint); }
+  .pv-legend { display: flex; gap: 14px; margin-top: 8px; font-size: 11px; color: var(--ink-faint); }
+  .pv-legend i { display: inline-block; width: 9px; height: 9px; border-radius: 2px; background: var(--cv-2); margin-right: 5px; vertical-align: -1px; }
+  .pv-legend i.u { background: #ff8a65; }
+  .pv-rec { padding: 9px 0; border-top: 1px solid rgba(255,255,255,0.08); }
+  .pv-rec:first-of-type { border-top: none; }
+  .pv-rec-top { display: flex; justify-content: space-between; gap: 8px; font-size: 13.5px; }
+  .pv-rec-top span { font-size: 11.5px; color: var(--ink-faint); font-weight: 700; }
+  .pv-rec p { margin: 3px 0 0; font-size: 12.5px; color: var(--ink-soft); line-height: 1.5; }
+  .pv-eps { display: flex; flex-direction: column; gap: 10px; }
+  .pv-ep { border: 1px solid rgba(255,255,255,0.1); border-radius: 14px; padding: 13px 15px; background: rgba(255,255,255,0.03); }
+  .pv-ep.open { border-color: var(--cv-tint-strong); }
+  .pv-ep-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; flex-wrap: wrap; }
+  .pv-ep-when { font-size: 12px; color: var(--ink-faint); font-weight: 700; }
+  .pv-ep-cond { font-weight: 800; font-size: 14.5px; margin-top: 2px; }
+  .pv-ep-chips { display: flex; flex-wrap: wrap; gap: 5px; }
+  .pv-syms { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+  .pv-syms span { font-size: 12px; padding: 3px 10px; border-radius: 999px; background: rgba(255,255,255,0.07); color: var(--ink-soft); }
+  .pv-ep-facts { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 8px; font-size: 12px; color: var(--ink-soft); }
+  .pv-ask { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 12px; padding-top: 10px; border-top: 1px dashed rgba(255,255,255,0.12); }
+  .pv-ask span { font-size: 13px; font-weight: 700; margin-right: 4px; }
+  .pv-ep-detail { margin-top: 10px; font-size: 12.5px; }
+  .pv-ep-detail summary { cursor: pointer; color: var(--cv-4); font-weight: 700; }
+  .pv-check { padding: 9px 0 2px; border-top: 1px solid rgba(255,255,255,0.07); margin-top: 8px; color: var(--ink-soft); line-height: 1.55; }
+  .pv-check-top { display: flex; align-items: center; gap: 8px; color: var(--ink); }
+  .pv-alt { color: var(--ink-faint); }
   /* ---- symptom-check history cards ---- */
   .symptom-list { display: flex; flex-direction: column; gap: 10px; }
   .symptom-card { border: 1px solid rgba(255,255,255,0.1); border-radius: 14px; padding: 14px 16px; transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease; }
@@ -542,27 +608,29 @@
 
     <!-- VITALS -->
     <div class="tab-panel" id="panel-vitals">
+      <div class="card" id="cv-vitals-insights" aria-live="polite"><div class="skel skel-row"></div><div class="skel skel-row"></div></div>
       <div class="card">
         <div class="card-head">
-          <div><h2>❤️ Vitals in your Vault</h2><p class="card-sub">A longitudinal log kept with your records — separate from the quick daily check on the Vitals tab.</p></div>
+          <div><h2>Log a reading</h2><p class="card-sub">Fill in whatever you measured. Each number is checked as you save it, and anything worrying is flagged straight away.</p></div>
         </div>
-        <form id="cv-vitals-form">
+        <div id="cv-vitals-alert" class="pv-alert" role="alert" hidden></div>
+        <form id="cv-vitals-form" novalidate>
           <div class="vitals-grid">
-            <div class="field"><label for="cv-v-hr">Heart rate (bpm)</label><input type="number" id="cv-v-hr"></div>
-            <div class="field"><label for="cv-v-sys">Systolic BP</label><input type="number" id="cv-v-sys"></div>
-            <div class="field"><label for="cv-v-dia">Diastolic BP</label><input type="number" id="cv-v-dia"></div>
-            <div class="field"><label for="cv-v-spo2">SpO₂ (%)</label><input type="number" id="cv-v-spo2"></div>
-            <div class="field"><label for="cv-v-temp">Temperature (°C)</label><input type="number" step="0.1" id="cv-v-temp"></div>
-            <div class="field"><label for="cv-v-glucose">Glucose (mg/dL)</label><input type="number" step="0.1" id="cv-v-glucose"></div>
-            <div class="field"><label for="cv-v-weight">Weight (kg)</label><input type="number" step="0.1" id="cv-v-weight"></div>
-            <div class="field"><label for="cv-v-resp">Respiratory rate</label><input type="number" id="cv-v-resp"></div>
-            <div class="field notes-field"><label for="cv-v-notes">Notes</label><textarea id="cv-v-notes" rows="2"></textarea></div>
+            <div class="field pv-bp"><label for="cv-v-sys">Blood pressure (mmHg)</label><div class="pv-bp-row"><input type="number" inputmode="numeric" id="cv-v-sys" placeholder="120" aria-label="Top number (systolic)"><span aria-hidden="true">/</span><input type="number" inputmode="numeric" id="cv-v-dia" placeholder="80" aria-label="Bottom number (diastolic)"></div></div>
+            <div class="field"><label for="cv-v-hr">Pulse (bpm)</label><input type="number" inputmode="numeric" id="cv-v-hr" placeholder="60–100"></div>
+            <div class="field"><label for="cv-v-spo2">Oxygen SpO₂ (%)</label><input type="number" inputmode="numeric" id="cv-v-spo2" placeholder="95–100"></div>
+            <div class="field"><label for="cv-v-temp">Temperature (°C)</label><input type="number" inputmode="decimal" step="0.1" id="cv-v-temp" placeholder="36.1–37.4"></div>
+            <div class="field"><label for="cv-v-glucose">Blood sugar (mg/dL)</label><input type="number" inputmode="decimal" step="0.1" id="cv-v-glucose" placeholder="70–140"></div>
+            <div class="field"><label for="cv-v-weight">Weight (kg)</label><input type="number" inputmode="decimal" step="0.1" id="cv-v-weight"></div>
+            <div class="field"><label for="cv-v-resp">Breaths per minute</label><input type="number" inputmode="numeric" id="cv-v-resp" placeholder="12–20"></div>
+            <div class="field pv-when-f"><label for="cv-v-when">When</label><input type="datetime-local" id="cv-v-when"></div>
+            <div class="field notes-field"><label for="cv-v-notes">Notes</label><textarea id="cv-v-notes" rows="2" placeholder="e.g. after a walk, before breakfast, felt dizzy"></textarea></div>
           </div>
           <button type="submit" class="save-btn" id="cv-vitals-btn">Save to Vault</button>
         </form>
       </div>
       <div class="card">
-        <div class="card-head"><div><h2>Recent readings</h2></div></div>
+        <div class="card-head"><div><h2>Your readings</h2><p class="card-sub">Coloured numbers are outside the usual range. Hover or tap one for what it means.</p></div></div>
         <div id="cv-vitals-wrap"><div class="skel skel-row"></div><div class="skel skel-row"></div></div>
       </div>
     </div>
@@ -571,9 +639,9 @@
     <div class="tab-panel" id="panel-symptoms">
       <div class="card">
         <div class="card-head">
-          <div><h2>🩺 Symptom check history</h2><p class="card-sub">Every symptom check you've run, kept here so you and a doctor can see the pattern over time.</p></div>
+          <div><h2>🩺 Symptom history</h2><p class="card-sub">Every symptom check you've run, grouped by illness, so you and a doctor can see what keeps coming back.</p></div>
         </div>
-        <div id="cv-symptoms-wrap"><div class="skel skel-row"></div><div class="skel skel-row"></div><div class="skel skel-row"></div></div>
+        <div id="cv-symptoms-wrap" aria-live="polite"><div class="skel skel-row"></div><div class="skel skel-row"></div><div class="skel skel-row"></div></div>
       </div>
     </div>
 
@@ -599,8 +667,9 @@
 
 <script src="../assets/js/curavault-2.js?v=525cdbfe"></script>
 <script src="../assets/js/curavault-3.js?v=8639d8cc"></script>
-<script src="../assets/js/curavault-4.js?v=19f3c9c6"></script>
-<script src="../assets/js/curavault-story.js?v=a618810b"></script>
+<script src="../assets/js/curavault-4.js?v=7f11db26"></script>
+<script src="../assets/js/curavault-story.js?v=34379358"></script>
+<script src="../assets/js/curavault-patterns.js?v=2a04031a"></script>
 <script src="../assets/js/curavault-5.js?v=911959b3"></script>
 <script src="../assets/qc-app.js?v=f264e7e4"></script>
 </body>
