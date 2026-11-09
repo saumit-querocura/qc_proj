@@ -320,6 +320,7 @@ document.getElementById("qc-vitals-form").addEventListener("submit", async (e) =
     }
     await loadHistory();
     await loadLatest();
+    document.dispatchEvent(new Event("qc-vitals-saved"));
     if (window.QC && QC.refreshAlerts) QC.refreshAlerts({ force: true, toast: false });
   } catch (err) {
     msg.classList.add("err");

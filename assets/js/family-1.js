@@ -5,6 +5,21 @@
   var ANIMAL = QC.animals, TINT = QC.tints;
   var RELNICE = { child: "Child", parent: "Parent", grandparent: "Grandparent", partner: "Partner", sibling: "Sibling", relative: "Relative", friend: "Friend", other: "Someone special" };
 
+  var AREAS = [["summary", "🌿", "Health summary"], ["medicines", "💊", "Medicines"], ["vitals", "❤️", "Vitals"], ["records", "📁", "Records"], ["symptoms", "🔍", "Symptom checks"], ["appointments", "📅", "Appointments"], ["emergency", "🆘", "Emergency card"]];
+  function areaChips(perms, withLabels) {
+    var on = AREAS.filter(function (a) { return perms && perms[a[0]]; });
+    return on.length ? '<span class="area-chips">' + on.map(function (a) { return '<span class="area-chip" title="' + esc(a[2]) + '">' + a[1] + (withLabels ? " " + esc(a[2]) : "") + "</span>"; }).join("") + "</span>" : "";
+  }
+  function joinOr(xs) { return xs.length <= 1 ? (xs[0] || "") : xs.slice(0, -1).join(", ") + " and " + xs[xs.length - 1]; }
+  window.QCFamilyAreas = { chips: areaChips, join: joinOr };
+  var DOSE = { taken: ["✓", "taken"], skipped: ["–", "skipped"], late: ["!", "not marked yet"], due: ["•", "due now"], snoozed: ["z", "snoozed"], upcoming: ["", "later today"], overdue: ["!", "not marked yet"] };
+  function todayHtml(t, name) {
+    if (!t) return "";
+    var dots = (t.doses || []).map(function (d) { var k = DOSE[d.state] || ["", d.state]; return '<span class="dose ' + esc(d.state) + '" title="' + esc(d.time + " · " + d.name + " · " + k[1]) + '"><i>' + k[0] + '</i><small>' + esc(d.time) + "</small></span>"; }).join("");
+    return '<div class="today' + (t.late ? " late" : "") + '"><div class="today-top"><b>💊 Today</b><span>' + esc(t.line) + "</span></div>" + (dots ? '<div class="doses" aria-label="' + esc(name + "'s doses today") + '">' + dots + "</div>" : "") +
+      (t.week && t.week.percent != null ? '<div class="wk"><span class="wk-bar"><i style="width:' + t.week.percent + '%"></i></span>' + t.week.percent + "% of doses taken in the last 7 days</div>" : "") + "</div>";
+  }
+
   function tintOf(c) { return TINT[c] || "#e6dffa"; }
   function el(id) { return document.getElementById(id); }
 
@@ -23,6 +38,10 @@
       '<div class="stat"><b>' + (H.family_streak ? "🔥 " + H.family_streak : "—") + '</b>day family streak</div>' +
       '<div class="stat"><b>' + ((H.birthdays && H.birthdays[0]) ? "🎂 " + H.birthdays[0].in_days + "d" : "—") + '</b>' + ((H.birthdays && H.birthdays[0]) ? esc(H.birthdays[0].who) + "'s birthday" : "next birthday") + '</div>';
 
+    var qid = me.quero_id;
+    el("my-id").innerHTML = qid ? '<span class="myid-ic" aria-hidden="true">🪪</span><span class="myid-text"><small>Your QueroCura ID</small><b>' + esc(qid) + '</b><span>Family can add you with this. You still choose what they see.</span></span>' +
+      '<button class="btn btn-sm" type="button" data-copyid="' + esc(qid) + '">Copy</button>' + (navigator.share ? '<button class="btn btn-sm" type="button" data-shareid="' + esc(qid) + '">Share</button>' : "") : "";
+    el("my-id").hidden = !qid;
     var inv = (H.invites || []).map(function (i) {
       return '<div class="invite-banner"><span class="who">' + (ANIMAL[i.avatar] || "🙂") + '</span><span style="flex:1 1 220px"><b>' + esc(i.from_name) + '</b> invited you to help look after <b>' + esc(i.nickname) + '</b> (' + (i.role === "manager" ? "look & add" : "look only") + ').</span>' +
         '<button class="btn btn-sm btn-dark" data-inv="' + i.access_id + '" data-acc="1">Accept</button><button class="btn btn-sm" data-inv="' + i.access_id + '" data-acc="0">Not now</button></div>';
@@ -32,11 +51,15 @@
     var lin = (H.linked_to_me || []);
     el("links-in").innerHTML = lin.map(function (l) {
       if (l.status === "pending") {
-        return '<div class="invite-banner link-req"><span class="who">' + (ANIMAL[l.avatar] || "🙂") + '</span><span style="flex:1 1 260px"><b>' + esc(l.from_name) + '</b> wants to add ' + (l.on_behalf_of ? "<b>" + esc(l.on_behalf_of) + "</b> (whose account you look after)" : "you") + " to their family as their " + esc((RELNICE[l.relation] || l.relation).toLowerCase()) + '. Nothing is shared until you accept.</span>' +
-          '<button class="btn btn-sm btn-dark" data-lacc="' + l.link_id + '">Choose what to share</button><button class="btn btn-sm" data-ldec="' + l.link_id + '">Decline</button></div>';
+        var asked = areaChips(l.perms, true);
+        return '<div class="invite-banner link-req"><span class="who">' + (ANIMAL[l.avatar] || "🙂") + '</span><span style="flex:1 1 260px"><b>' + esc(l.from_name) + '</b>' + (l.from_account ? ' <span class="acct">(' + esc(l.from_account) + ')</span>' : "") + ' wants to add ' + (l.on_behalf_of ? "<b>" + esc(l.on_behalf_of) + "</b> (whose account you look after)" : "you") + " to their family as their " + esc((RELNICE[l.relation] || l.relation).toLowerCase()) + '. Nothing is shared until you accept.' +
+          (l.note ? '<span class="req-note">“' + esc(l.note) + '”</span>' : "") + (asked ? '<span class="req-asked"><small>They asked to see</small>' + asked + "</span>" : "") + '</span>' +
+          '<button class="btn btn-sm btn-dark" data-lacc="' + l.link_id + '">Review and choose</button><button class="btn btn-sm" data-ldec="' + l.link_id + '">Decline</button></div>';
       }
-      var areas = Object.keys(l.perms || {}).filter(function (k) { return l.perms[k] && k !== "add" && k !== "edit_profile"; }).length;
-      return '<div class="invite-banner link-on"><span class="who">🔗</span><span style="flex:1 1 260px"><b>' + esc(l.from_name) + '</b> is linked with ' + (l.on_behalf_of ? "<b>" + esc(l.on_behalf_of) + "</b>" : "you") + ' and can see ' + areas + ' area' + (areas === 1 ? "" : "s") + (l.perms && l.perms.add ? ", and help add things" : "") + '.</span>' +
+      var c = l.consent || {}, told = (c.told || []);
+      return '<div class="invite-banner link-on"><span class="who">🔗</span><span style="flex:1 1 260px"><b>' + esc(l.from_name) + '</b> is linked with ' + (l.on_behalf_of ? "<b>" + esc(l.on_behalf_of) + "</b>" : "you") + '. They can see:' + (areaChips(l.perms, true) || ' <i>nothing yet</i>') +
+        (l.perms && l.perms.add ? '<span class="req-line">✍️ They can also add things for you.</span>' : "") +
+        (told.length ? '<span class="req-line">🔔 They’re told ' + esc(joinOr(told)) + '.</span>' : "") + '</span>' +
         '<button class="btn btn-sm" data-fsettings="1">Change what they see</button><button class="btn btn-sm" data-lun="' + l.link_id + '">Unlink</button></div>';
     }).join("");
 
@@ -95,10 +118,18 @@
     else if (!shared && m.linked) actions += '<button class="btn" data-edit="' + id + '">✏️ Edit</button><button class="btn" data-lun="' + id + '">Unlink</button>';
     else if (!shared) actions += '<button class="btn" data-cheer="' + id + '">💌 Cheer</button><button class="btn" data-fsettings="1">🔑 Give them their own account</button><button class="btn" data-edit="' + id + '">✏️ Edit</button>';
     else actions += '<button class="btn" data-leave="' + (m.access_id || "") + '" style="display:none"></button>';
+    var shares = "";
+    if (!shared && m.linked && !m.guardian && m.perms) {
+      var fl = m.follow || {}, hear = [];
+      if (pm.medicines) { if (fl.dose_taken) hear.push("doses taken"); if (fl.dose_missed) hear.push("missed doses"); if (fl.dose_skipped) hear.push("skipped doses"); if (fl.dose_reminders) hear.push("their reminders"); }
+      shares = '<div class="shares"><small>Shares with you</small>' + (areaChips(pm, false) || '<span class="hint">Nothing yet</span>') +
+        (pm.medicines ? '<span class="hear">' + (hear.length ? "🔔 You hear about " + esc(joinOr(hear)) : "🔕 No medicine updates") + ' · <a href="#" data-fsettings="1">change</a></span>' : "") + "</div>";
+    }
+    var today = (!shared && m.today) ? todayHtml(m.today, m.nickname) : "";
     return '<div class="pot" style="--tint:' + tint + ';animation-delay:' + (idx * .06) + 's" data-mid="' + id + '">' +
       '<div class="pot-top"><div class="face" data-bounce>' + emoji + '</div><div><div class="nm">' + esc(m.nickname) + (m.linked ? (m.guardian ? ' <span class="chip" title="A child account you look after">👶 ' + esc(m.own_sign_in ? "their own account" : "you look after it") + "</span>" : ' <span class="chip" title="Their own QueroCura account">🔗 linked</span>') : "") + '</div><div class="rel">' + esc(RELNICE[m.relation] || m.relation) + (m.age != null ? ' · ' + m.age + (m.age === 1 ? ' yr' : ' yrs') : '') + (shared ? ' · ' + esc(m.owner_name || "") + "'s family" : "") + (viewer ? ' · view only' : '') + '</div></div><span class="mood" data-mood="' + id + '">·</span></div>' +
       '<div class="plant" data-plant="' + id + '"><span class="stage">🌱</span><span class="cap"><span class="skeleton"></span></span></div>' +
-      '<div class="scoreline" data-score="' + id + '">' + bday + streak + '</div><div class="badges">' + badges + '</div>' + ideas +
+      '<div class="scoreline" data-score="' + id + '">' + bday + streak + '</div><div class="badges">' + badges + '</div>' + today + shares + ideas +
       '<div class="actions">' + actions + '</div></div>';
   }
 
@@ -131,6 +162,8 @@
     var t = e.target;
     var b = t.closest && t.closest("[data-bounce]"); if (b) { b.classList.remove("bounce"); void b.offsetWidth; b.classList.add("bounce"); P.confetti(["💛", "✨"], 5); return; }
     if (t.closest("#add-top") || t.closest("#add-pot")) { openEdit(null); return; }
+    var cp = t.closest("[data-copyid]"); if (cp) { var v = cp.getAttribute("data-copyid"); (navigator.clipboard ? navigator.clipboard.writeText(v) : Promise.reject()).then(function () { P.toast("Copied " + v); }, function () { window.prompt("Your QueroCura ID", v); }); return; }
+    var sh = t.closest("[data-shareid]"); if (sh) { navigator.share({ title: "My QueroCura ID", text: "Add me to your family on QueroCura with my ID: " + sh.getAttribute("data-shareid") }).catch(function () {}); return; }
     var home = t.closest("[data-home]"); if (home) { e.preventDefault(); go("me", "../dashboard/"); return; }
     var o = t.closest("[data-open]"); if (o) { go(o.getAttribute("data-open"), "../dashboard/"); return; }
     var w = t.closest("[data-water]"); if (w) { go(w.getAttribute("data-water"), "../vitals/"); return; }
@@ -141,7 +174,7 @@
     var iv = t.closest("[data-inv]"); if (iv) { respond(iv.getAttribute("data-inv"), iv.getAttribute("data-acc") === "1"); return; }
     var ho = t.closest("[data-handover]"); if (ho) { handover(ho.getAttribute("data-handover")); return; }
     var la = t.closest("[data-lacc]"); if (la) { var id = la.getAttribute("data-lacc"), req = (HUB.linked_to_me || []).filter(function (x) { return x.link_id === id; })[0]; if (req) QCFamily2.choosePerms(req); return; }
-    if (t.closest("[data-fsettings]")) { QCFamily2.open(); return; }
+    if (t.closest("[data-fsettings]")) { e.preventDefault(); QCFamily2.open(); return; }
     var ld = t.closest("[data-ldec]"); if (ld) { linkPost("/family/links/" + ld.getAttribute("data-ldec") + "/respond", { accept: false }); return; }
     var ls = t.closest("[data-lswap]"); if (ls) { linkPost("/family/links/" + ls.getAttribute("data-lswap") + "/role", { role: ls.getAttribute("data-to") }); return; }
     var lu = t.closest("[data-lun]"); if (lu) { if (!window.confirm("Unlink? Nobody's records are deleted; you just stop seeing each other's.")) return; linkPost("/family/links/" + lu.getAttribute("data-lun") + "/unlink", {}); return; }
@@ -218,7 +251,7 @@
     if (!EDIT_ID) {
       body.account = el("e-account").value.trim(); body.perms = {};
       [].forEach.call(document.querySelectorAll("#e-scopes [data-ask]"), function (b) { body.perms[b.getAttribute("data-ask")] = b.classList.contains("sel"); });
-      if (!body.account) { el("e-msg").className = "msg err"; el("e-msg").textContent = "Enter the e-mail or username of their QueroCura account."; return; }
+      if (!body.account) { el("e-msg").className = "msg err"; el("e-msg").textContent = "Enter their QueroCura ID, or the e-mail or username of their QueroCura account."; return; }
     } else if (!body.nickname) { el("e-msg").className = "msg err"; el("e-msg").textContent = "Give them a name or nickname."; return; }
     var btn = el("e-save"); btn.disabled = true;
     api(EDIT_ID ? "/family/members/" + EDIT_ID : "/family/members", { method: EDIT_ID ? "PATCH" : "POST", body: body }).then(function (d) {

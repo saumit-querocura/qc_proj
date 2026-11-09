@@ -115,6 +115,56 @@
   .upd-ic { font-size: 22px; line-height: 1.2; } .upd-main { flex: 1; } .upd-main small { color: var(--muted); font-weight: 600; } .upd-acts { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
   #e-scopes .rp.sel { background: rgba(14,143,131,.14); border-color: #0e8f83; color: var(--teal); }
   @media (prefers-reduced-motion: reduce) { .upd.new { animation: none; } .fs-sw i, .fs-sw i::after { transition: none; } }
+  /* ---- linking, consent and today's doses ---- */
+  .myid { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 14px; padding: 10px 14px; border-radius: 16px; background: rgba(255,255,255,.62); color: #100e2a; max-width: 560px; }
+  .myid[hidden] { display: none; }
+  .myid-ic { font-size: 22px; }
+  .myid-text { flex: 1 1 220px; display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+  .myid-text small { font-size: 10.5px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; opacity: .6; }
+  .myid-text b { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 15px; letter-spacing: .04em; overflow-wrap: anywhere; }
+  .myid-text span { font-size: 12px; font-weight: 600; opacity: .7; }
+  .invite-banner .acct { font-weight: 600; opacity: .65; font-size: 12.5px; }
+  .req-note { display: block; margin-top: 6px; font-weight: 600; font-style: italic; opacity: .8; }
+  .req-asked { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+  .req-asked small { font-size: 11px; font-weight: 800; opacity: .6; }
+  .req-line { display: block; margin-top: 6px; font-weight: 600; font-size: 13px; }
+  .area-chips { display: inline-flex; flex-wrap: wrap; gap: 5px; margin-left: 4px; vertical-align: middle; }
+  .area-chip { background: rgba(255,255,255,.72); border-radius: 999px; padding: 2px 9px; font-size: 11.5px; font-weight: 800; color: #100e2a; }
+  .shares { position: relative; z-index: 1; display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin: 8px 0 2px; font-size: 12px; }
+  .shares small { font-weight: 800; opacity: .6; font-size: 11px; }
+  .shares .area-chips { margin-left: 0; }
+  .shares .hear { flex-basis: 100%; font-weight: 700; opacity: .8; }
+  .shares .hear a { color: inherit; text-decoration: underline; }
+  .today { position: relative; z-index: 1; margin: 10px 0 4px; padding: 10px 12px; border-radius: 16px; background: rgba(255,255,255,.62); }
+  .today.late { box-shadow: inset 3px 0 0 #c43d1c; }
+  .today-top { display: flex; gap: 8px; flex-wrap: wrap; align-items: baseline; font-size: 12.5px; }
+  .today-top span { font-weight: 600; opacity: .8; }
+  .doses { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+  .dose { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+  .dose i { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-style: normal; font-weight: 800; font-size: 12px; border: 2px dashed rgba(16,14,42,.3); color: #100e2a; }
+  .dose.taken i { background: #0e8f83; border: 2px solid #0e8f83; color: #fff; }
+  .dose.skipped i { background: rgba(16,14,42,.15); border-style: solid; border-color: transparent; }
+  .dose.late i, .dose.overdue i { background: #c43d1c; border: 2px solid #c43d1c; color: #fff; }
+  .dose.due i, .dose.snoozed i { border-style: solid; border-color: #a8700a; color: #a8700a; }
+  .dose small { font-size: 10px; font-weight: 700; opacity: .7; }
+  .wk { display: flex; align-items: center; gap: 8px; margin-top: 8px; font-size: 11.5px; font-weight: 700; opacity: .85; }
+  .wk-bar { flex: 0 0 70px; height: 6px; border-radius: 999px; background: rgba(16,14,42,.12); overflow: hidden; }
+  .wk-bar i { display: block; height: 100%; background: #0e8f83; border-radius: 999px; }
+  .pc-who { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+  .pc-who b { display: block; font-size: 15px; }
+  .pc-who small { display: block; color: var(--ink-soft, inherit); opacity: .75; font-size: 12px; }
+  .pc-note { margin: 4px 0 8px; font-style: italic; opacity: .85; }
+  .pc-asked { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin: 0 0 10px; }
+  .pc-asked small { font-weight: 800; font-size: 11px; opacity: .65; }
+  .pc-asked .area-chip { background: color-mix(in srgb, #0e8f83 14%, var(--card)); color: var(--ink); }
+  .pc-sum { display: flex; flex-direction: column; gap: 8px; margin-top: 14px; padding: 12px 14px; border-radius: 16px; border: 1px solid var(--line); background: color-mix(in srgb, var(--card) 85%, #0e8f83); }
+  .pc-row { display: grid; grid-template-columns: 130px 1fr; gap: 10px; font-size: 13px; line-height: 1.45; }
+  .pc-row b { font-size: 12.5px; }
+  .pc-row.ok b { color: #0e8f83; } .pc-row.no b { opacity: .6; } .pc-row.info b { color: #7c6fdb; }
+  html[data-theme="dark"] .pc-row.ok b { color: #7ee0d4; } html[data-theme="dark"] .pc-row.info b { color: #b3a9f5; }
+  @media (max-width: 520px) { .pc-row { grid-template-columns: 1fr; gap: 2px; } }
+  .fs-told { margin: 10px 0 0; font-size: 12.5px; font-weight: 600; line-height: 1.45; }
+  .fs-told.off { opacity: .7; }
 </style>
 <script src="../assets/qc-csp.js?v=77f89cc2"></script>
 <script src="../assets/qc-i18n.js?v=fb8e7449"></script>
@@ -156,6 +206,7 @@
         <div class="row" style="gap:8px"><button class="btn" id="fam-settings-btn" type="button">⚙️ Family settings</button><button class="btn btn-primary" id="add-top">🌱 Add a family member</button></div>
       </div>
       <div class="hero-stats" id="hero-stats"></div>
+<div class="myid" id="my-id" hidden></div>
     </div>
 
     <div id="invites"></div>
@@ -226,7 +277,7 @@
       <div class="field"><label for="k-user">Username (for when they sign in themselves)</label><input class="input" id="k-user" maxlength="30" autocomplete="off" placeholder="we'll suggest one"><span class="hint">Lowercase letters, numbers, dots or dashes. You can leave the suggestion.</span></div>
     </div>
     <div id="link-fields">
-      <div class="field"><label for="e-account">Their QueroCura e-mail or username</label><input class="input" id="e-account" maxlength="254" autocomplete="off" placeholder="e.g. mum@example.com"></div>
+      <div class="field"><label for="e-account">Their QueroCura ID, e-mail or username</label><input class="input" id="e-account" maxlength="254" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="e.g. CURA-7K3F-29QD or mum@example.com"><span class="hint">Their QueroCura ID is on their CuraVault card and at the top of their Family page.</span></div>
       <div class="field"><label>Ask to see</label><div class="pills" id="e-scopes" role="group" aria-label="Areas to ask for">
         <button type="button" class="rp sel" data-ask="summary" aria-pressed="true">🌿 Health summary</button><button type="button" class="rp sel" data-ask="medicines" aria-pressed="true">💊 Medicines</button>
         <button type="button" class="rp sel" data-ask="vitals" aria-pressed="true">❤️ Vitals</button><button type="button" class="rp" data-ask="records" aria-pressed="false">📁 Records</button>
@@ -307,7 +358,7 @@
 
 <script src="../assets/qc-app.js?v=f264e7e4"></script>
 <script src="../assets/qc-page.js?v=c34c97a9"></script>
-<script src="../assets/js/family-2.js?v=b1ada215"></script>
-  <script src="../assets/js/family-1.js?v=421c8a6b"></script>
+<script src="../assets/js/family-2.js?v=203d70b8"></script>
+  <script src="../assets/js/family-1.js?v=b4613459"></script>
 </body>
 </html>

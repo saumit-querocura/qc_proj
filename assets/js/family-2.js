@@ -37,6 +37,15 @@
     return on.length ? on.map(function (x) { return '<span class="fs-chip">' + x.icon + " " + esc(x.label) + "</span>"; }).join("") : '<span class="fs-chip off">Nothing shared yet</span>';
   }
 
+  /* For someone who can see you: whether they hear about your doses (their choice, shown to you so nothing is hidden). */
+  function toldLine(p) {
+    if (p.status !== "active") return "";
+    var told = (p.consent && p.consent.told) || [];
+    if (!p.perms.medicines) return '<p class="fs-told off">🔕 ' + esc(p.name) + " doesn’t see your medicines, so they get no dose updates.</p>";
+    return '<p class="fs-told">' + (told.length ? "🔔 " + esc(p.name) + " is told " + esc(joinAnd(told)) + "." : "🔕 " + esc(p.name) + " sees your medicines but has turned dose updates off.") +
+      " Switch Medicines off to stop all of it.</p>";
+  }
+
   function render() {
     var h = "";
     h += '<section class="fs-sec"><h3>👀 People who can see you</h3><p class="sub">Switch each area on or off. Changes take effect straight away.</p>';
@@ -45,7 +54,7 @@
         (p.status === "pending" ? " · waiting for your answer" : "") + (p.guardian ? " · your guardian" : "") + "</small></div>" +
         (p.status === "active" && !p.mutual ? '<button type="button" class="btn btn-sm" data-back="' + p.link_id + '">Ask to see theirs too</button>' : "") +
         (p.status === "active" && !p.guardian ? '<button type="button" class="btn btn-sm" data-unlink="' + p.link_id + '">Unlink</button>' : "") + "</div>" +
-        (p.guardian ? '<p class="hint">' + esc(p.name) + " looks after your account, so they can see and do everything. When you're ready, ask them to hand it over to you.</p>" : scopeRows(p.perms, 'data-link="' + p.link_id + '"', p.status !== "active")) + "</div>";
+        (p.guardian ? '<p class="hint">' + esc(p.name) + " looks after your account, so they can see and do everything. When you're ready, ask them to hand it over to you.</p>" : scopeRows(p.perms, 'data-link="' + p.link_id + '"', p.status !== "active") + toldLine(p)) + "</div>";
     }).join("") : '<div class="empty">Nobody yet. When someone links your account, you choose what they can see here.</div>';
     h += "</section>";
 
@@ -97,6 +106,7 @@
         P.toast(t.checked ? "Shared ✓" : "Hidden. They can’t see it any more.", "ok");
         // adding needs at least one area to add to; show what the server kept
         var box = t.closest(".fs-person"); Object.keys(r.link.perms).forEach(function (k) { var i = box.querySelector('[data-scope="' + k + '"]'); if (i) i.checked = !!r.link.perms[k]; });
+        if (t.getAttribute("data-scope") === "medicines") load();   // the dose-updates line depends on it
         changed();
       });
     }
@@ -110,6 +120,7 @@
     if (!b) return;
     if (b.id === "fam-settings-btn") return open();
     if (b.id === "pc-accept") return acceptChosen(b);
+    if (b.hasAttribute("data-review")) { var go = document.querySelector('[data-lacc="' + b.getAttribute("data-review") + '"]'); if (go) go.click(); return; }
     if (b.hasAttribute("data-back")) {
       b.disabled = true;
       api("/family/links/" + b.getAttribute("data-back") + "/link-back", { method: "POST" }).then(function (r) { P.toast(r.message || "Sent.", r.ok ? "ok" : "err"); load(); changed(); });
@@ -133,16 +144,47 @@
 
   /* ---------- choose what to share when accepting a link ---------- */
   var PENDING = null;
+  var WORDS = {
+    summary: "your health summary, score and alerts", medicines: "your medicines, schedules and whether each dose was taken",
+    records: "your reports, prescriptions and documents", vitals: "your readings (blood pressure, sugar, weight…)",
+    symptoms: "your symptom checks and results", appointments: "your calendar and clinic visits", emergency: "your emergency card (blood group, allergies, who to call)"
+  };
+  function joinAnd(xs) { return xs.length <= 1 ? (xs[0] || "") : xs.slice(0, -1).join(", ") + " and " + xs[xs.length - 1]; }
+  function pcSummary() {
+    if (!PENDING) return;
+    var who = PENDING.from_name || "They", p = {};
+    document.querySelectorAll("#pc-body [data-pc]").forEach(function (i) { p[i.getAttribute("data-scope")] = i.checked; });
+    var see = Object.keys(WORDS).filter(function (k) { return p[k]; }), not = Object.keys(WORDS).filter(function (k) { return !p[k]; });
+    var h = '<div class="pc-sum"><div class="pc-row ok"><b>' + esc(who) + " will see</b><span>" + (see.length ? esc(joinAnd(see.map(function (k) { return WORDS[k]; }))) + "." : "nothing yet. You can switch areas on later.") + "</span></div>";
+    if (not.length) h += '<div class="pc-row no"><b>Stays private</b><span>' + esc(joinAnd(not.map(function (k) { return WORDS[k]; }))) + ".</span></div>";
+    h += '<div class="pc-row ' + (p.add || p.edit_profile ? "ok" : "no") + '"><b>' + (p.add || p.edit_profile ? esc(who) + " can also" : "Changes") + "</b><span>" +
+      (p.add || p.edit_profile ? esc(joinAnd([p.add ? "add readings, records and doses for you (marked as added by them)" : "", p.edit_profile ? "edit your profile" : ""].filter(Boolean))) + "." : esc(who) + " can look but not add or change anything.") + "</span></div>";
+    h += '<div class="pc-row ' + (p.medicines ? "info" : "no") + '"><b>Medicine reminders</b><span>' + (p.medicines
+      ? esc(who) + " can choose to be told when you take, skip or miss a dose (an hour late), or get your reminders too" + (p.add ? " with a button to mark a dose taken" : "") + ". You’ll see exactly which in Family settings."
+      : "Off. " + esc(who) + " won’t see your medicines or hear about your doses.") + "</span></div></div>";
+    el("pc-summary").innerHTML = h;
+    var n = see.length;
+    el("pc-accept").textContent = n ? "Accept and share " + n + " area" + (n === 1 ? "" : "s") : "Accept without sharing yet";
+  }
   function choosePerms(link) {
     PENDING = link;
     var go = function () {
       var base = link.perms || {};
+      var asked = window.QCFamilyAreas ? QCFamilyAreas.chips(base, true) : "";
       el("pc-title").textContent = (link.from_name || "They") + " would like to link with " + (link.on_behalf_of ? link.on_behalf_of : "you");
-      el("pc-body").innerHTML = '<p class="sub">Choose what ' + esc(link.from_name || "they") + " can see. You can change this any time in Family settings.</p>" + scopeRows(base, 'data-pc="1"', false);
+      el("pc-body").innerHTML =
+        '<div class="pc-who"><span class="fs-face">' + face(link.avatar) + '</span><div><b>' + esc(link.from_name || "Someone") + "</b>" + (link.from_account ? " <small>" + esc(link.from_account) + "</small>" : "") +
+        "<small>Asked to add " + (link.on_behalf_of ? esc(link.on_behalf_of) : "you") + " as their " + esc((REL[link.relation] || "family").toLowerCase()) + "</small></div></div>" +
+        (link.note ? '<p class="pc-note">“' + esc(link.note) + "”</p>" : "") +
+        (asked ? '<div class="pc-asked"><small>They asked to see</small>' + asked + "</div>" : "") +
+        '<p class="sub">Switch on only what you’re happy to share. Nothing is shared until you accept, and you can change or unlink any time in Family settings. Unlinking never deletes your records.</p>' +
+        scopeRows(base, 'data-pc="1"', false) + '<div id="pc-summary" aria-live="polite"></div>';
+      pcSummary();
       P.openModal("m-perms");
     };
     if (S) go(); else api("/family/settings").then(function (d) { if (d && d.ok) { S = d; go(); } });
   }
+  document.addEventListener("change", function (e) { if (e.target.matches && e.target.matches("#pc-body [data-pc]")) pcSummary(); });
   function acceptChosen(btn) {
     if (!PENDING) return;
     var perms = {};
@@ -156,7 +198,7 @@
   }
 
   /* ---------- family updates ---------- */
-  var ICON = { dose_taken: "✅", dose_skipped: "⏭️", dose_missed: "⏰", dose_due: "💊" };
+  var ICON = { dose_taken: "✅", dose_skipped: "⏭️", dose_missed: "⏰", dose_due: "💊", link_request: "📨", link_accepted: "🔗", link_declined: "✉️" };
   function updates(force) {
     if (!el("upd-list")) return;
     api("/family/notices?limit=20").then(function (d) {
@@ -166,6 +208,7 @@
       el("upd-count").textContent = d.unseen ? d.unseen + " new" : "";
       el("upd-list").innerHTML = d.items.length ? d.items.map(function (n) {
         return '<div class="upd' + (n.seen ? "" : " new") + '"><span class="upd-ic" aria-hidden="true">' + (ICON[n.kind] || "🫶") + '</span><div class="upd-main"><b>' + esc(n.title) + "</b><div>" + esc(n.body) + '</div><small>' + esc(when(n.ts)) + "</small>" +
+          (n.kind === "link_request" && document.querySelector('[data-lacc="' + n.member_id + '"]') ? '<div class="upd-acts"><button type="button" class="btn btn-sm btn-primary" data-review="' + esc(n.member_id) + '">Review</button></div>' : "") +
           (n.kind === "dose_due" && n.token && !n.seen ? '<div class="upd-acts"><button type="button" class="btn btn-sm btn-primary" data-give="' + esc(n.token) + '" data-act="taken">✓ Given</button><button type="button" class="btn btn-sm" data-give="' + esc(n.token) + '" data-act="snooze">Snooze</button></div>' : "") +
           "</div></div>";
       }).join("") : '<div class="empty">Nothing yet. When someone who shares their medicines with you ticks a dose, you’ll see it here the moment it happens. 🌱</div>';
