@@ -160,8 +160,8 @@
         STEPS_SUG = sug;
         break;
       case "done":
-        h = '<div class="vp-hello vp-done"><div class="vp-sun big" aria-hidden="true">🌸</div><h2>You’re ready.</h2><p>Your summary is waiting. Download it, print it, or send your doctor a private link. You can come back and change anything until your visit.</p>' +
-          '<div class="vp-row center"><button class="btn btn-primary" type="button" data-go="summary">See my doctor summary</button><button class="btn" type="button" id="f-pdf2">⬇ Download PDF</button></div></div>';
+        h = '<div class="vp-hello vp-done"><div class="vp-sun big" aria-hidden="true">🌸</div><h2>You’re ready.</h2><p>Your summary is waiting. Share it with your doctor using a QR code and a PIN, download it, or print it. You can come back and change anything until your visit, and a shared link always shows the latest.</p>' +
+          '<div class="vp-row center"><button class="btn btn-primary" type="button" data-share="1">📲 Share with my doctor</button><button class="btn" type="button" data-go="summary">See my doctor summary</button><button class="btn" type="button" id="f-pdf2">⬇ Download PDF</button></div></div>';
         break;
     }
     return h;
@@ -307,7 +307,7 @@
     document.querySelectorAll("[data-tab]").forEach(function (b) { var on = b.getAttribute("data-tab") === t; b.classList.toggle("on", on); b.setAttribute("aria-selected", on); });
     el("pane-prep").hidden = t !== "prep"; el("pane-summary").hidden = t !== "summary"; el("pane-bring").hidden = t !== "bring";
     if (t === "summary") flush().then(loadSummary);
-    try { history.replaceState(null, "", location.pathname + location.search + "#" + t); } catch (e) {}
+    try { history.replaceState(null, "", location.pathname + location.search + "#" + (t === "summary" && FOCUS_SHARE ? "share" : t)); } catch (e) {}
   }
 
   function loadSummary() {
@@ -315,6 +315,7 @@
     api(q("/insights/visit-prep/summary")).then(function (r) {
       if (!r || !r.ok) { el("sum").innerHTML = '<div class="card"><p class="msg err">' + esc((r && (r.message || r.err)) || "Couldn't build the summary.") + "</p></div>"; return; }
       SUMMARY = r.summary; el("sum").innerHTML = paper(r.summary);
+      if (window.QCVisitShare) { QCVisitShare.render(el("vshare")); if (FOCUS_SHARE) { FOCUS_SHARE = false; setTimeout(QCVisitShare.focus, 60); } }
     });
   }
   var SUMMARY = null;
@@ -384,74 +385,22 @@
 
   /* ---------------- bring & share ---------------- */
   function bring(d) {
-    return '<div class="card"><h2>Bring with you</h2><ul class="ck">' + d.checklist.map(function (c) { return "<li>" + esc(c) + "</li>"; }).join("") + "</ul></div>" + shareCard(d);
+    return '<div class="card"><h2>Bring with you</h2><ul class="ck">' + d.checklist.map(function (c) { return "<li>" + esc(c) + "</li>"; }).join("") + "</ul></div>" +
+      '<div class="card no-print vs-mini"><div class="vs-badge" aria-hidden="true">📲</div><div><h2>Share with my doctor</h2><p class="sub">A private link and QR code that opens your full summary, protected by a 6-digit PIN. Your doctor needs no app or account.</p>' +
+      '<button class="btn btn-primary" type="button" data-share="1">Set it up</button></div></div>';
   }
-  var SECTIONS = [["summary", "Basics, allergies and conditions", true], ["vitals", "Vitals and trends", true], ["labs", "Lab results", true], ["imaging", "Scan reports", false],
-    ["medicines", "Current medicines", true], ["symptoms", "Recent symptom checks", true], ["questions", "My questions", true]];
-  function hoursOptions(d) {
-    var opts = [[24, "1 day"], [48, "2 days"], [72, "3 days"], [168, "7 days"]], pick = 48;
-    if (d.visit && d.visit.in_days != null) {
-      var need = (d.visit.in_days + 2) * 24;
-      pick = opts.reduce(function (b, o) { return o[0] >= need && (b === null || o[0] < b) ? o[0] : b; }, null) || 168;
-    }
-    return opts.map(function (o) { return '<option value="' + o[0] + '"' + (o[0] === pick ? " selected" : "") + ">" + o[1] + "</option>"; }).join("");
+  var FOCUS_SHARE = false;
+  function openShare() {
+    if (!el("pane-summary").hidden && SUMMARY && el("vs-card")) { QCVisitShare.focus(); return; }
+    FOCUS_SHARE = true; showTab("summary");
   }
-  function shareCard(d) {
-    return '<div class="card no-print" id="share-card"><h2>Send it to your doctor</h2>' +
-      '<p class="sub">A private link (and QR code) so your doctor can read a one-page brief before you walk in. You choose what is in it, it needs a PIN, it stops working on its own, and you can switch it off any time. Your answers above are included.</p>' +
-      '<div class="lbl">Include</div><div class="scopes">' + SECTIONS.map(function (x) { return '<label class="scope' + (x[2] ? " on" : "") + '"><input type="checkbox" data-sec="' + x[0] + '"' + (x[2] ? " checked" : "") + "> <span>" + esc(x[1]) + "</span></label>"; }).join("") + "</div>" +
-      '<div class="grid2"><div class="field"><label for="b-hours">Link works for</label><select class="input" id="b-hours">' + hoursOptions(d) + "</select></div></div>" +
-      '<div class="row"><button class="btn btn-primary" id="b-make" type="button">Create link and QR code</button></div>' +
-      '<div class="msg" id="b-msg" role="status"></div><div id="b-out" hidden></div></div>';
-  }
-  function wireShare() {
-    var card = el("share-card"); if (!card) return;
-    card.addEventListener("change", function (e) { var l = e.target.closest && e.target.closest(".scope"); if (l) l.classList.toggle("on", e.target.checked); });
-    el("b-make").addEventListener("click", function () {
-      var btn = this, msg = el("b-msg");
-      var scopes = ["brief"].concat(Array.prototype.map.call(card.querySelectorAll("[data-sec]:checked"), function (c) { return c.getAttribute("data-sec"); }));
-      var reason = A.reason_text || "", concerns = [A.concerns, A.ideas ? "Wonders if it is: " + A.ideas : ""].filter(Boolean).slice(0, 3);
-      btn.disabled = true; msg.className = "msg"; msg.textContent = "Making your link...";
-      flush().then(function () {
-        return api("/share/create", { method: "POST", body: { hours: +el("b-hours").value, scopes: scopes, label: "Visit prep", max_views: 10, brief: { reason: reason.slice(0, 300), concerns: concerns.map(function (c) { return c.slice(0, 160); }) } } });
-      }).then(function (r) {
-        btn.disabled = false;
-        if (!r.ok) { msg.className = "msg err"; msg.textContent = r.message || "Couldn't make the link."; return; }
-        msg.textContent = ""; showLink(r);
-        api("/share/qr", { method: "POST", body: { url: r.url } }).then(function (x) { if (x.ok && el("b-qr")) { el("b-qr").src = x.png; el("b-qr").hidden = false; } });
-      });
-    });
-  }
-  function showLink(r) {
-    var out = el("b-out"), until = new Date(r.expires_ts * 1000).toLocaleString([], { weekday: "short", day: "numeric", month: "short", hour: "numeric", minute: "2-digit" });
-    out.hidden = false;
-    out.innerHTML = '<div class="shared"><div class="qrbox"><img id="b-qr" alt="QR code for your doctor to scan" width="210" height="210" hidden></div><div class="grow">' +
-      '<div class="lbl">PIN (tell your doctor separately: say it, or send it in another message)</div><div class="pin">' + esc(r.pin || "") + '</div>' +
-      '<div class="lbl" style="margin-top:12px">Link</div><input class="input" id="b-url" readonly value="' + esc(r.url) + '">' +
-      '<div class="row" style="margin-top:10px"><button class="btn btn-sm" id="b-copy" type="button">Copy link</button>' +
-        (navigator.share ? '<button class="btn btn-sm" id="b-share" type="button">Share...</button>' : "") +
-        '<a class="btn btn-sm" target="_blank" rel="noopener noreferrer" href="https://wa.me/?text=' + encodeURIComponent("My health summary for our visit (private link, works until " + until + "): " + r.url + "\nI will send the PIN separately.") + '">WhatsApp</a></div>' +
-      '<p class="hint" style="margin-top:10px">Works until ' + esc(until) + ' · opens up to ' + esc(r.max_views) + ' times.</p>' +
-      '<div class="row"><button class="btn btn-sm" id="b-seen" type="button">Has my doctor opened it?</button><button class="btn btn-sm btn-danger" id="b-off" type="button">Turn the link off</button></div>' +
-      '<div class="msg" id="b-state" role="status"></div></div></div>';
-    el("b-copy").addEventListener("click", function () { QC.copy(r.url).then(function () { P.toast("Link copied. Send the PIN separately.", ""); }, function () { P.toast("Couldn't copy.", "err"); }); });
-    var sh = el("b-share");
-    if (sh) sh.addEventListener("click", function () { navigator.share({ title: "My health summary", text: "My health summary for our visit. I will send the PIN separately.", url: r.url }).catch(function () {}); });
-    el("b-seen").addEventListener("click", function () {
-      api("/share/" + r.id + "/log").then(function (l) {
-        var m = el("b-state"); m.className = "msg";
-        var seen = (l.log || []).filter(function (x) { return x.outcome === "viewed"; });
-        m.textContent = seen.length ? "Opened " + seen.length + " time" + (seen.length === 1 ? "" : "s") + ", most recently " + new Date(seen[0].ts * 1000).toLocaleString([], { day: "numeric", month: "short", hour: "numeric", minute: "2-digit" }) + " (" + seen[0].device + ")." : "Not opened yet.";
-      });
-    });
-    el("b-off").addEventListener("click", function () {
-      api("/share/" + r.id + "/revoke", { method: "POST" }).then(function (x) { var m = el("b-state"); m.className = "msg " + (x.ok ? "ok" : "err"); m.textContent = x.ok ? "The link is off. Nobody can open it now." : (x.message || "Couldn't turn it off."); });
-    });
-  }
-
   /* ---------------- start ---------------- */
   document.querySelectorAll("[data-tab]").forEach(function (b) { b.addEventListener("click", function () { showTab(b.getAttribute("data-tab")); }); });
-  document.addEventListener("click", function (e) { var g = e.target.closest && e.target.closest("#sum [data-go]"); if (g) showTab(g.getAttribute("data-go")); });
+  document.addEventListener("click", function (e) {
+    var g = e.target.closest && e.target.closest("#pane-summary [data-go]"); if (g) showTab(g.getAttribute("data-go"));
+    var sh = e.target.closest && e.target.closest("[data-share]"); if (sh) { e.preventDefault(); openShare(); }
+  });
+  if (window.QCVisitShare) QCVisitShare.init({ flush: function () { return flush(); }, summary: function () { return SUMMARY; }, event: function () { return EVENT || (PREP && PREP.visit && PREP.visit.id) || ""; }, prep: function () { return PREP; } });
   el("dl").addEventListener("click", function () { downloadPdf(el("dl")); });
   el("print").addEventListener("click", function () { if (el("pane-summary").hidden) { showTab("summary"); setTimeout(function () { window.print(); }, 900); } else window.print(); });
   el("copy").addEventListener("click", function () {
@@ -482,9 +431,9 @@
       STEP = A.done ? 0 : (A.step || 0);
       el("hero").innerHTML = hero(d);
       if (STARTER && FROM_CHECK) useStarter(true); else renderStep(0);
-      el("pane-bring").innerHTML = bring(d); wireShare();
+      el("pane-bring").innerHTML = bring(d);
       var h = location.hash.replace("#", "");
-      if (h === "summary" || h === "bring") showTab(h);
+      if (h === "share") openShare(); else if (h === "summary" || h === "bring") showTab(h);
     });
   });
 

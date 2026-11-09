@@ -80,6 +80,42 @@
     return h;
   }
 
+  function fmtWhen(s) { if (!s) return ""; var d = new Date(String(s).replace(" ", "T")); return isNaN(d) ? esc(s) : d.toLocaleString([], { weekday: "short", day: "numeric", month: "short", hour: "numeric", minute: "2-digit" }); }
+  function words(v) {
+    var t = [v.glance, (v.agenda || []).map(function (x) { return x.text; }).join(" "), (v.story || []).map(function (x) { return x.p; }).join(" "), (v.questions || []).map(function (x) { return x.q; }).join(" ")].join(" ");
+    return Math.max(1, Math.round(t.split(/\s+/).length / 200));
+  }
+  /* The visit summary the patient prepared: what to read first, what they want covered, their story, their questions. */
+  function visitCard(v) {
+    var h = [], nav = [];
+    function sec(id, icon, title, body, cls) { if (!body) return; nav.push([id, title]); h.push('<section class="card vsec' + (cls ? " " + cls : "") + '" id="' + id + '"><h2><span aria-hidden="true">' + icon + "</span>" + esc(title) + "</h2>" + body + "</section>"); }
+    var ap = v.appointment;
+    var top = '<div class="card vtop"><div class="vt-row"><div><div class="vt-k">Visit summary prepared by the patient</div>' +
+      (ap ? '<div class="vt-ap">' + esc(ap.title || "Visit") + (ap.when ? " · " + fmtWhen(ap.when) : "") + (ap.provider ? " · " + esc(ap.provider) : "") + "</div>" : "") +
+      '<div class="vt-m">About ' + words(v) + " min to read" + (v.updated ? " · updated " + esc(v.updated) : "") + "</div></div></div>" +
+      (v.glance ? '<div class="glance"><div class="gl-k">At a glance</div><p>' + esc(v.glance) + "</p></div>" : "") +
+      (!v.answered ? '<p class="hint" style="margin:12px 0 0">The patient hasn’t written their own answers yet. What follows is what QueroCura already holds.</p>' : "") + "</div>";
+    sec("v-attn", "⚠️", "Worth your attention", (v.stands_out || []).length ? '<ul class="so">' + v.stands_out.map(function (x) { return '<li class="t-' + esc(x.tone) + '"><span aria-hidden="true">' + esc(x.icon) + "</span><span>" + esc(x.text) + "</span></li>"; }).join("") + "</ul>" : "", "attn");
+    sec("v-agenda", "📝", "What the patient wants to cover", (v.agenda || []).length ? '<ol class="agenda">' + v.agenda.map(function (x) { return '<li><span class="ag-i" aria-hidden="true">' + esc(x.icon) + '</span><div><div class="ag-l">' + esc(x.label) + "</div><div>" + esc(x.text) + "</div></div></li>"; }).join("") + "</ol>" : "");
+    sec("v-story", "💬", "In the patient’s own words", (v.story || []).length ? v.story.map(function (x) { return '<div class="para"><div class="pa-h">' + esc(x.h) + "</div><p>" + esc(x.p) + "</p></div>"; }).join("") : "");
+    var qs = v.questions || [];
+    sec("v-q", "❓", "Questions the patient would like to ask", qs.length ? '<ol class="vq">' + qs.map(function (x) { return "<li>" + esc(x.q) + (x.top ? ' <span class="tag">top pick</span>' : "") + (x.own ? ' <span class="tag own">in their words</span>' : "") + "</li>"; }).join("") + '</ol><p class="hint" style="margin:8px 0 0">' + qs.length + " question" + (qs.length === 1 ? "" : "s") + ". Ticking through them together helps the patient leave with clear answers.</p>" : "");
+    var a = v.adherence || {};
+    sec("v-meds", "💊", "Medicines", (v.medicines || []).length || v.meds_note ? ((v.medicines || []).length ? '<div class="tscroll"><table><thead><tr><th>Medicine</th><th>How</th><th>Patient says</th></tr></thead><tbody>' + v.medicines.map(function (m) { return "<tr><td><b>" + esc(m.name) + "</b></td><td>" + esc(m.how || "") + "</td><td>" + esc(m.reported || "–") + "</td></tr>"; }).join("") + "</tbody></table></div>" : "") +
+      (a.has_data ? '<p class="hint" style="margin:8px 0 0">Doses marked taken in QueroCura over the last ' + esc(a.days) + " days: <b>" + esc(a.taken) + " of " + esc(a.scheduled) + " (" + esc(a.percent) + "%)</b>.</p>" : "") +
+      (v.meds_note ? "<p><b>Patient’s note:</b> " + esc(v.meds_note) + "</p>" : "") : "");
+    sec("v-read", "❤️", "Home readings", (v.readings || []).length ? '<div class="tscroll"><table><thead><tr><th>Reading</th><th>Latest</th><th>Range</th><th>Trend</th></tr></thead><tbody>' + v.readings.map(function (r) {
+      return "<tr><td>" + esc(r.label) + (r.flag ? ' <span class="st high">flagged</span>' : "") + "</td><td><b>" + esc(r.latest) + "</b> " + esc(r.unit || "") + "</td><td>" + esc(r.min) + "–" + esc(r.max) + "</td><td>" + esc(r.direction || "") + " (" + esc(r.count) + ")</td></tr>";
+    }).join("") + "</tbody></table></div>" + ((v.related || []).length ? '<p class="rel"><b>Bearing on this visit:</b> ' + v.related.map(function (r) { return esc(r.text); }).join(" ") + "</p>" : "") : "");
+    var cg = v.checks || {}, rec = "";
+    if ((v.flagged_labs || []).length) rec += "<p><b>Lab values outside the usual range:</b> " + v.flagged_labs.map(esc).join(", ") + "</p>";
+    if ((v.scans || []).length) rec += "<p><b>Scan reports:</b> " + v.scans.map(esc).join(", ") + "</p>";
+    if ((cg.groups || []).length) rec += '<p><b>Symptom checks in the app</b> <span class="hint">(automated pattern matches, not diagnoses)</span>: ' + esc(cg.sentence || "") + '</p><div class="chips">' + cg.groups.slice(0, 6).map(function (g) { return '<span class="chip' + (g.days >= 3 ? " amber" : "") + '">' + esc(g.result) + " · " + (g.days > 1 ? g.days + " days" : "once") + "</span>"; }).join("") + "</div>";
+    sec("v-rec", "📄", "Records and checks", rec);
+    var navh = nav.length > 2 ? '<nav class="jump no-print" aria-label="Jump to">' + nav.map(function (n) { return '<a href="#' + n[0] + '">' + esc(n[1]) + "</a>"; }).join("") + "</nav>" : "";
+    return top + navh + h.join("") + '<p class="hint vnote">' + esc(v.note || "") + "</p>";
+  }
+
   function render(resp) {
     var d = resp.data, p = d.patient || {}, s = d.summary, out = [];
     var exp = new Date(resp.expires_ts * 1000);
@@ -98,7 +134,8 @@
     }
     out.push('</div>');
 
-    if (d.brief) out.push(briefCard(d.brief));
+    if (d.visit) out.push(visitCard(d.visit));
+    else if (d.brief) out.push(briefCard(d.brief));
     if (d.ongoing && d.ongoing.length) out.push('<div class="card"><h2>🔁 Ongoing concerns</h2><div class="chips" style="margin-top:0">' + d.ongoing.map(function (o) { return '<span class="chip amber">' + esc(o.name) + (o.days_open != null ? " · " + o.days_open + " days" : "") + '</span>'; }).join("") + '</div></div>');
 
     if (d.vitals) {
@@ -133,7 +170,12 @@
     $("gate").style.display = "none";
     var r = $("report"); r.innerHTML = out.join(""); r.style.display = "";
     var pb = $("print-btn"); if (pb) pb.addEventListener("click", function () { window.print(); });
-    document.title = "Health summary — " + (p.name || "Patient");
+    document.title = (d.visit ? "Visit summary — " : "Health summary — ") + (p.name || "Patient");
+    r.addEventListener("click", function (e) {                       // jump links: smooth, and clear of the top
+      var a = e.target.closest && e.target.closest(".jump a"); if (!a) return;
+      var t = document.getElementById(a.getAttribute("href").slice(1)); if (!t) return;
+      e.preventDefault(); window.scrollTo({ top: t.getBoundingClientRect().top + window.scrollY - 12, behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+    });
   }
 
   post().then(function (d) { handle(d, false); });
