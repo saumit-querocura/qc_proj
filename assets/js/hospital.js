@@ -142,7 +142,7 @@
     btn.disabled = true; say(msg, "");
     api("/hospital/login", { method: "POST", body: { email: el("s-email").value.trim(), password: el("s-pw").value, code: el("s-code").value.trim() } }).then(function (r) {
       btn.disabled = false;
-      if (r.ok) { el("s-pw").value = ""; el("s-code").value = ""; return enterPortal(); }
+      if (r.ok) { el("s-pw").value = ""; el("s-code").value = ""; JUST_SIGNED_IN = true; return enterPortal(); }
       if (r.mfa_required) { show(el("s-code-wrap"), true); el("s-code").focus(); pendingCode = true; }
       say(msg, r.message || "That didn't work.", "err");
     });
@@ -194,6 +194,7 @@
   });
 
   /* ===================================================== signed in ===================================================== */
+  var JUST_SIGNED_IN = false;
   function enterPortal() {
     return api("/hospital/me").then(function (r) {
       if (!r.ok) { goPublic(); return; }
@@ -206,12 +207,18 @@
         var home = { "my-day": "overview", board: "overview" }[r.custom.prefs.home] || r.custom.prefs.home;
         tabNow = home;
       }
+      var first = !enterPortal.done;
       enterPortal.done = true;
-      if (window.QCCustom) window.QCCustom.apply(r.custom);
+      if (window.QCCustom) window.QCCustom.apply(r.custom, r);
       SITE = ((r.custom || {}).prefs || {}).site || "";
       loadSites();
       relabel(r.custom);
       render();
+      // the facility's own front door, while the work is built behind it
+      // the facility's front door on a sign-in; a plain reload mid-shift is not a sign-in
+      if (first && !r.mfa_setup_needed && window.QCLobby) {
+        try { QCLobby.maybeShow(r, JUST_SIGNED_IN); } catch (e) {}
+      }
     });
   }
   /* ---------- offline banner ---------- */
@@ -228,6 +235,8 @@
 
   function goPublic(message) {
     ME = null; PERMS = [];
+    if (window.QCLobby) QCLobby.close(true);
+    if (window.QCTheme) QCTheme.restore();
     show(el("public"), true); show(el("portal"), false); show(el("pub-nav"), true); show(el("app-nav"), false);
     if (message) { say(el("signin-msg"), message, "err"); }
   }
@@ -296,10 +305,11 @@
     var banner = el("banner"); banner.innerHTML = "";
     if (ME.mfa_setup_needed) { renderMfaSetup(); return; }
     show(el("workspace"), true);
-    el("org-name").textContent = org.name;
+    var own = window.QCTheme && QCTheme.on() ? QCTheme.name() : org.name;
+    el("org-name").textContent = own;
     var tag = document.querySelector(".hp-top .hp-tag"); if (tag) tag.textContent = org.practice === "solo" ? "for Doctors" : "for Hospitals";
-    el("org-meta").textContent = [org.org_type, org.city, org.state].filter(Boolean).join(" · ") + (org.registration_no ? " · Reg. " + org.registration_no : "");
-    el("org-status").innerHTML = org.status === "active" ? '<span class="pill ok">✓ Verified by QueroCura</span>' : org.status === "pending" ? '<span class="pill wait">⏳ Verification pending</span>' : '<span class="pill bad">' + esc(org.status) + '</span>';
+    el("org-meta").textContent = (own !== org.name ? org.name + " · " : "") + [org.org_type, org.city, org.state].filter(Boolean).join(" · ") + (org.registration_no ? " · Reg. " + org.registration_no : "");
+    el("org-status").innerHTML = org.status === "active" ? '<span class="pill ok">✓ Verified</span>' : org.status === "pending" ? '<span class="pill wait">⏳ Verification pending</span>' : '<span class="pill bad">' + esc(org.status) + '</span>';
     if (org.status === "pending") banner.innerHTML = '<div class="notice wait">Thanks for applying. Our team is verifying <b>' + esc(org.name) + '</b> (registration ' + esc(org.registration_no || "") + '). You can set up your team and security now. Patient connections switch on as soon as you\'re approved, and we\'ll e-mail you.</div>';
     if (org.status === "rejected" || org.status === "suspended") banner.innerHTML = '<div class="notice bad">This organisation isn\'t active. ' + esc(org.review_note || "Please contact QueroCura support.") + '</div>';
     // The hospital's working tabs (queue, beds, orders, handover, setup) come from hospital-ops.js, in the order a shift uses them.
@@ -864,7 +874,8 @@
     site: function () { return SITE; }, sites: function () { return SITES; }, reloadSites: loadSites,
     siteQ: function (sep) { return SITE ? (sep || "?") + "site=" + encodeURIComponent(SITE) : ""; },
     term: function (k, d) { return window.QCCustom ? window.QCCustom.term(k, d) : (d || k); },
-    refreshMe: function () { return api("/hospital/me").then(function (r) { if (r.ok) { ME = r; if (window.QCCustom) window.QCCustom.apply(r.custom); relabel(r.custom); render(); } }); },
+    lobby: function () { if (window.QCLobby && ME) QCLobby.show(ME); },
+    refreshMe: function () { return api("/hospital/me").then(function (r) { if (r.ok) { ME = r; if (window.QCCustom) window.QCCustom.apply(r.custom, r); relabel(r.custom); render(); } }); },
   };
 
   /* ---------- boot ---------- */

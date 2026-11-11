@@ -17,34 +17,12 @@
     beds: "Beds", imaging: "Scans", lab: "Lab", pharmacy: "Pharmacy", billing: "Billing", claims: "Claims", ot: "Theatres", setup: "Setup" };
 
   /* ---------------------------------------------------------------- applying the look */
-  function hexMix(hex, other, t) {
-    var a = [1, 3, 5].map(function (i) { return parseInt(hex.substr(i, 2), 16); }), b = [1, 3, 5].map(function (i) { return parseInt(other.substr(i, 2), 16); });
-    return "#" + a.map(function (v, i) { return ("0" + Math.round(v + (b[i] - v) * t).toString(16)).slice(-2); }).join("");
+  function apply(custom, me) {
+    C = custom || C;
+    if (!C || !window.QCTheme) return;
+    QCTheme.apply(C, me || (H() && H().me ? H().me() : null));
   }
-  function apply(custom) {
-    C = custom || C; if (!C) return;
-    var root = document.documentElement, b = C.branding || {}, acc = b.accent || "#0e8f83";
-    var dark = root.getAttribute("data-theme") === "dark";
-    root.style.setProperty("--brand", acc);
-    root.style.setProperty("--brand-d", hexMix(acc, "#000000", 0.18));
-    root.style.setProperty("--brand-soft", hexMix(acc, dark ? "#18162e" : "#ffffff", 0.88));
-    root.style.setProperty("--teal", dark ? hexMix(acc, "#ffffff", 0.45) : acc);
-    root.style.setProperty("--teal-d", dark ? hexMix(acc, "#ffffff", 0.6) : hexMix(acc, "#000000", 0.18));
-    root.classList.add("hp-branded");
-    root.classList.toggle("hp-compact", (C.prefs || {}).density === "compact");
-    root.classList.toggle("hp-calm", !!(C.prefs || {}).reduce_motion);
-    var name = el("org-name");
-    if (name) {
-      var old = document.getElementById("org-logo"); if (old) old.remove();
-      if (b.logo && H().me()) {
-        var img = new Image(); img.id = "org-logo"; img.alt = ""; img.className = "org-logo";
-        img.src = H().P.API + "/hospital/public/logo/" + encodeURIComponent(H().me().org.id) + "?t=" + (b.logo_ts || 0);
-        name.parentNode.parentNode.insertBefore(img, name.parentNode);
-      }
-    }
-  }
-  // dark mode switch: re-derive the tints
-  new MutationObserver(function () { if (C) apply(); }).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+
   function term(k, fallback) { return (C && C.terms && C.terms[k]) || fallback || TERM_LABEL[k] || k; }
 
   /* ---------------------------------------------------------------- the registration questions, as a form */
@@ -89,24 +67,62 @@
 
   function render(box, r) {
     var admin = H().can("org"), b = r.branding, h = "";
-    h += '<div class="cu-head"><div><h2>Make QueroCura yours</h2><p class="sub">' + (admin ? "How the portal looks, the words it uses, what it asks at registration and the times your facility holds itself to. Changes apply to everyone straight away." : "Your own layout. Your administrator sets how the portal looks for everyone.") + "</p></div></div>";
+    h += '<div class="cu-head"><div><h2>Make it yours</h2><p class="sub">' + (admin ? "How the portal looks, the words it uses, what it asks at registration and the times your facility holds itself to. Changes apply to everyone straight away." : "Your own layout. Your administrator sets how the portal looks for everyone.") + "</p></div></div>";
     // everyone: my layout
     h += '<div class="card cu-card"><h3>🧑‍💻 Your layout</h3><div class="grid2">' +
       '<div class="field"><label for="cu-home">Open on</label><select class="input" id="cu-home">' + r.tabs.map(function (t) { return '<option value="' + t + '"' + (r.prefs.home === t ? " selected" : "") + ">" + esc(TAB_LABEL[t] || t) + "</option>"; }).join("") + "</select></div>" +
       '<div class="field"><label>Density</label><div class="seg" role="radiogroup">' + [["comfortable", "Comfortable"], ["compact", "Compact"]].map(function (d) { return '<button type="button" role="radio" aria-checked="' + (r.prefs.density === d[0]) + '" class="' + (r.prefs.density === d[0] ? "on" : "") + '" data-density="' + d[0] + '">' + d[1] + "</button>"; }).join("") + "</div></div></div>" +
       '<div class="field"><label>Pinned to the top bar</label><div class="cu-pins">' + r.tabs.filter(function (t) { return t !== "my-day"; }).map(function (t) { var on = r.prefs.pinned.indexOf(t) >= 0; return '<button type="button" class="chipbtn' + (on ? " on" : "") + '" data-pin="' + t + '" aria-pressed="' + on + '">' + esc(TAB_LABEL[t] || t) + "</button>"; }).join("") + "</div></div>" +
-      '<label class="check"><input type="checkbox" id="cu-calm"' + (r.prefs.reduce_motion ? " checked" : "") + "> Fewer animations</label></div>";
+      '<label class="check"><input type="checkbox" id="cu-calm"' + (r.prefs.reduce_motion ? " checked" : "") + "> Fewer animations</label>" +
+      '<label class="check"><input type="checkbox" id="cu-lobme"' + (r.prefs.lobby !== false ? " checked" : "") + "> Open through the lobby when I sign in</label></div>";
     if (admin) {
       h += '<div class="cu-grid">';
-      // look
-      h += '<div class="card cu-card"><h3>🎨 Look and letterhead</h3><div class="cu-preview" id="cu-preview" style="--pv:' + esc(b.accent) + '"><div class="cu-pv-bar">' + (b.logo ? '<img alt="" src="' + H().P.API + "/hospital/public/logo/" + encodeURIComponent(H().me().org.id) + "?t=" + b.logo_ts + '">' : "") + "<b>" + esc(b.short_name || H().me().org.name) + '</b></div><div class="cu-pv-body"><span class="cu-pv-btn">Primary button</span><span class="cu-pv-chip">Chip</span><span class="cu-pv-link">A link</span></div></div>' +
-        '<div class="field"><label>Accent colour</label><div class="cu-swatches">' + r.accents.map(function (a) { return '<button type="button" class="cu-sw' + (a === b.accent ? " on" : "") + '" style="background:' + a + '" data-accent="' + a + '" aria-label="Colour ' + a + '"></button>'; }).join("") +
-        '<input type="color" id="cu-accent" value="' + esc(b.accent) + '" aria-label="Pick any colour"></div><small class="hint" id="cu-contrast"></small></div>' +
-        '<div class="grid2"><div class="field"><label for="cu-short">Short name</label><input class="input" id="cu-short" maxlength="24" value="' + esc(b.short_name) + '" placeholder="e.g. Sunrise"></div>' +
-        '<div class="field"><label for="cu-logo">Logo (PNG or JPEG)</label><input class="input" id="cu-logo" type="file" accept="image/png,image/jpeg">' + (b.logo ? '<button type="button" class="link" id="cu-nologo">Remove logo</button>' : "") + "</div></div>" +
-        '<div class="field"><label for="cu-letter">Letterhead (up to 4 lines on printed documents)</label><textarea class="input" id="cu-letter" rows="3" maxlength="500" placeholder="Sunrise Multispeciality Hospital&#10;12 MG Road, Pune 411001 · 020 1234 5678">' + esc((b.letterhead || []).join("\n")) + "</textarea></div>" +
-        '<div class="field"><label for="cu-footer">Footer line</label><input class="input" id="cu-footer" maxlength="200" value="' + esc(b.footer) + '" placeholder="e.g. NABH accredited · Emergency 24×7: 020 1234 5600"></div>' +
-        '<button class="btn btn-primary" type="button" id="cu-save-look">Save look</button></div>';
+      // look: two colours, a tone, a type, the marks — and what everyone will see
+      var lob = b.lobby || {}, orgNm = (H().me() && H().me().org && H().me().org.name) || "your hospital";
+      var sample = (b.short_name || b.app_name || orgNm).split(/\s+/)[0].slice(0, 11);
+      var sw = function (id, cur, list) {
+        return list.map(function (a2) { return '<button type="button" class="cu-sw' + (a2 === cur ? " on" : "") + '" style="background:' + a2 + '" data-sw="' + id + '" data-accent="' + a2 + '" aria-label="' + a2 + '"></button>'; }).join("");
+      };
+      h += '<div class="card cu-card cu-wide"><h3>🎨 Your look</h3>' +
+        '<p class="sub">Two colours and a mark, and every person at ' + esc(orgNm) + ' works inside your hospital, not inside ours — every screen, every printout, the browser tab. <b>Urgent, warning and good keep their own colours everywhere:</b> they mean something, so they are never branded.</p>' +
+        '<div class="cu-studio"><div>' +
+        '<div class="field"><label>Main colour</label><div class="cu-swatches">' + sw("accent", b.accent, r.accents) +
+          '<input type="color" id="cu-accent" value="' + esc(b.accent) + '" aria-label="Pick any colour"></div><small class="hint" id="cu-contrast"></small></div>' +
+        '<div class="field"><label for="cu-accent2">Second colour</label><small class="hint">Used in gradients, the lobby and the mark. Never for text.</small><div class="cu-swatches">' + sw("accent2", b.accent2, r.accents) +
+          '<input type="color" id="cu-accent2" value="' + esc(b.accent2 || b.accent) + '" aria-label="Pick a second colour">' +
+          '<button type="button" class="link" id="cu-auto2">Choose one for me</button></div></div>' +
+        '<div class="grid2"><div class="field"><label>Default tone</label><div class="cu-tones" role="radiogroup" id="cu-tones">' +
+          [["auto", "Each person chooses"], ["light", "Light"], ["dark", "Dark"]].map(function (t) {
+            return '<button type="button" class="cu-tone' + (b.tone === t[0] ? " on" : "") + '" role="radio" aria-checked="' + (b.tone === t[0]) + '" data-tone="' + t[0] + '">' + esc(t[1]) + "</button>";
+          }).join("") + "</div></div>" +
+        '<div class="field"><label>Type</label><div class="cu-type" role="radiogroup" id="cu-types">' +
+          [["modern", "Modern"], ["clean", "Clean"], ["classic", "Classic"]].map(function (t) {
+            return '<button type="button" class="t-' + t[0] + (b.type_style === t[0] ? " on" : "") + '" role="radio" aria-checked="' + (b.type_style === t[0]) + '" data-type="' + t[0] + '"><b>' + esc(sample) + "</b><small>" + t[1] + "</small></button>";
+          }).join("") + "</div></div></div>" +
+        '<div class="grid2"><div class="field"><label for="cu-app">What your team calls it</label><input class="input" id="cu-app" maxlength="40" value="' + esc(b.app_name) + '" placeholder="' + esc(orgNm) + '"><small class="hint">Shown in the top bar and the browser tab.</small></div>' +
+          '<div class="field"><label for="cu-tagline">Line under the name</label><input class="input" id="cu-tagline" maxlength="80" value="' + esc(b.tagline) + '" placeholder="e.g. Care that knows you"></div></div>' +
+        '<div class="grid2"><div class="field"><label for="cu-short">Short name</label><input class="input" id="cu-short" maxlength="24" value="' + esc(b.short_name) + '" placeholder="e.g. Sunrise"><small class="hint">For tight spaces and printed headers.</small></div>' +
+          '<div class="field"><label for="cu-footer">Footer line</label><input class="input" id="cu-footer" maxlength="200" value="' + esc(b.footer) + '" placeholder="e.g. NABH accredited · Emergency 24×7: 020 1234 5600"></div></div>' +
+        '<div class="grid2"><div class="field"><label for="cu-logo">Wide logo</label><small class="hint">The top bar and printed letterheads. If your name is drawn into it, we won\u2019t print the name beside it.</small>' +
+          (b.logo ? '<div class="cu-mark"><img alt="" src="' + H().P.API + "/hospital/public/logo/" + encodeURIComponent(H().me().org.id) + "?t=" + (b.logo_ts || 0) + '"><button type="button" class="link" id="cu-nologo">Remove</button></div>' : "") +
+          '<input class="input" id="cu-logo" type="file" accept="image/png,image/jpeg"></div>' +
+          '<div class="field"><label for="cu-markf">Square mark</label><small class="hint">The lobby and the browser tab.</small>' +
+          (b.mark ? '<div class="cu-mark"><img alt="" src="' + H().P.API + "/hospital/public/logo/" + encodeURIComponent(H().me().org.id) + "?v=mark&t=" + (b.mark_ts || 0) + '"><button type="button" class="link" id="cu-nomark">Remove</button></div>' : "") +
+          '<input class="input" id="cu-markf" type="file" accept="image/png,image/jpeg"></div></div>' +
+        '<div class="field"><label for="cu-letter">Letterhead (up to 4 lines on printed documents)</label><textarea class="input" id="cu-letter" rows="3" maxlength="500" placeholder="Sunrise Multispeciality Hospital&#10;12 MG Road, Pune 411001&#10;020 1234 5600">' + esc((b.letterhead || []).join("\n")) + "</textarea></div>" +
+        '<button class="btn btn-primary" type="button" id="cu-save-look">Save look</button>' +
+        "</div>" + liveBox() + "</div></div>";
+      // the lobby
+      h += '<div class="card cu-card"><h3>🚪 The lobby</h3><p class="sub">The first thing your team sees when they sign in: your mark, your colours, and this hour’s real numbers. They touch the mark to open their work.</p>' +
+        '<label class="check"><input type="checkbox" id="cu-lob-on"' + (lob.on !== false ? " checked" : "") + "> Show the lobby when people sign in</label>" +
+        '<div class="field"><label>Background</label><div class="cu-lobstyles" role="radiogroup" id="cu-lobstyles">' +
+          [["aurora", "Aurora"], ["orbit", "Orbit"], ["pulse", "Heartbeat"], ["calm", "Calm"]].map(function (t) {
+            return '<button type="button" class="' + (lob.style === t[0] ? "on" : "") + '" role="radio" aria-checked="' + (lob.style === t[0]) + '" data-lobstyle="' + t[0] + '">' + esc(t[1]) + "</button>";
+          }).join("") + "</div></div>" +
+        '<div class="field"><label for="cu-lob-motto">A line under your name, just here</label><input class="input" id="cu-lob-motto" maxlength="90" value="' + esc(lob.motto || "") + '" placeholder="' + esc(b.tagline || "e.g. Since 1974 · 400 beds · one record") + '"></div>' +
+        '<label class="check"><input type="checkbox" id="cu-lob-live"' + (lob.live !== false ? " checked" : "") + "> Let live numbers drift past</label>" +
+        '<small class="hint">Each person sees only the figures their role already allows.</small>' +
+        '<div class="row"><button class="btn" type="button" id="cu-lob-try">See it</button><span class="grow"></span><button class="btn btn-primary" type="button" id="cu-save-lobby">Save lobby</button></div></div>';
       // words
       h += '<div class="card cu-card"><h3>🗣️ Your words</h3><p class="sub">Rename things to what your staff already say. Leave a box empty to keep the default.</p><div class="grid2">' +
         Object.keys(TERM_LABEL).map(function (k) { var v = r.terms[k], def = { patient: "Patient", patients: "Patients", mrn: "MRN", visit: "Visit", opd: "OPD", ipd: "IPD", ward: "Ward", bed: "Bed", department: "Department", doctor: "Doctor", queue: "Queue", admission: "Admission", discharge: "Discharge", bill: "Bill" }[k];
@@ -213,7 +229,14 @@
       var t = e.target;
       var d = t.closest("[data-density]"); if (d) { box.querySelectorAll("[data-density]").forEach(function (x) { x.classList.toggle("on", x === d); x.setAttribute("aria-checked", x === d); }); return savePrefs({ density: d.getAttribute("data-density") }); }
       var p = t.closest("[data-pin]"); if (p) { p.classList.toggle("on"); p.setAttribute("aria-pressed", p.classList.contains("on")); return savePrefs({ pinned: [].map.call(box.querySelectorAll("[data-pin].on"), function (x) { return x.getAttribute("data-pin"); }) }); }
-      var a = t.closest("[data-accent]"); if (a) { el("cu-accent").value = a.getAttribute("data-accent"); preview(); return; }
+      var a = t.closest("[data-accent]"); if (a) { el(a.getAttribute("data-sw") === "accent2" ? "cu-accent2" : "cu-accent").value = a.getAttribute("data-accent"); preview(); return; }
+      var tn = t.closest("[data-tone]"); if (tn) { box.querySelectorAll("[data-tone]").forEach(function (x) { x.classList.toggle("on", x === tn); x.setAttribute("aria-checked", x === tn); }); return preview(); }
+      var ty2 = t.closest("[data-type]"); if (ty2) { box.querySelectorAll("[data-type]").forEach(function (x) { x.classList.toggle("on", x === ty2); x.setAttribute("aria-checked", x === ty2); }); return preview(); }
+      var ls = t.closest("[data-lobstyle]"); if (ls) { box.querySelectorAll("[data-lobstyle]").forEach(function (x) { x.classList.toggle("on", x === ls); x.setAttribute("aria-checked", x === ls); }); return; }
+      if (t.id === "cu-auto2") { var A = QCTheme.toOklch(el("cu-accent").value) || { L: 0.6, C: 0.12, h: 180 }; el("cu-accent2").value = QCTheme.oklch(Math.min(0.72, A.L + 0.08), Math.min(A.C, 0.16), A.h + 46); return preview(); }
+      if (t.id === "cu-nomark") { return api("/hospital/custom/branding", { method: "POST", body: { remove_mark: true } }).then(function (x) { if (x.ok) { C.branding = x.item; apply(C); load(); } }); }
+      if (t.id === "cu-lob-try") { return tryLobby(); }
+      if (t.id === "cu-save-lobby") { return saveLobby(); }
       if (t.id === "cu-add-field") { var l = readFieldRows(); l.push({ label: "", type: "text" }); drawFields(l); var last = box.querySelector("#cu-fields .cu-field:last-child input"); if (last) last.focus(); return; }
       var del = t.closest("[data-del]"); if (del) { var l2 = readFieldRows(); l2.splice(+del.getAttribute("data-del"), 1); drawFields(l2); return; }
       var up = t.closest("[data-up]"); if (up) { var l3 = readFieldRows(), i = +up.getAttribute("data-up"); l3.splice(i - 1, 0, l3.splice(i, 1)[0]); drawFields(l3); return; }
@@ -236,7 +259,7 @@
       if (t.id === "cu-save-look") { return saveLook(); }
     };
     box.oninput = function (e) {
-      if (e.target.id === "cu-accent") preview();
+      if (/^cu-(accent|accent2|app|tagline|lob-motto)$/.test(e.target.id)) preview();
       var tg = e.target.closest && e.target.closest("[data-target]"); if (tg && tg.getAttribute("data-target") !== "discharge_by_hour") tg.closest(".cu-target").querySelector("small").textContent = human(tg.value);
       var ty = e.target.closest && e.target.closest('[data-f="type"]');
       if (ty) ty.parentNode.querySelector('[data-f="options"]').hidden = ty.value !== "choice";
@@ -244,10 +267,26 @@
     box.onchange = function (e) {
       if (e.target.id === "cu-home") savePrefs({ home: e.target.value });
       if (e.target.id === "cu-calm") savePrefs({ reduce_motion: e.target.checked });
+      if (e.target.id === "cu-lobme") savePrefs({ lobby: e.target.checked });
       if (e.target.matches && e.target.matches('[data-f="type"]')) e.target.parentNode.querySelector('[data-f="options"]').hidden = e.target.value !== "choice";
     };
     if (el("cu-accent")) preview();
   }
+
+  function liveBox() {
+    return '<div class="cu-live" id="cu-live"><h4>What everyone will see</h4>' +
+      '<div class="cu-shot"><div class="s-blobs"><i></i><i></i></div><div class="s-mid">' +
+        '<div class="s-mark" id="cu-sh-mark"></div><div class="s-nm" id="cu-sh-name"></div><div class="s-tg" id="cu-sh-tag"></div>' +
+      "</div></div>" +
+      '<div class="cu-rows"><div class="s-bar"><span class="s-pill">Call in</span><span class="s-ghost">Patients</span><span class="s-ghost">Beds</span></div>' +
+        '<div class="s-card"><b id="cu-sh-kpi">12 waiting in OPD</b><small>average wait 18 min</small></div>' +
+        '<div class="s-state"><i class="st-good">Within target</i><i class="st-warn">Needs a look</i><i class="st-bad">Urgent</i></div></div>' +
+      '<p class="cu-note">Your lobby, then your screens. The three states keep their own colours so nobody has to learn new ones.</p></div>';
+  }
+  function tonePick() { var on = document.querySelector("#cu-tones .cu-tone.on"); return on ? on.getAttribute("data-tone") : "auto"; }
+  function typePick() { var on = document.querySelector("#cu-types button.on"); return on ? on.getAttribute("data-type") : "modern"; }
+  function lobPick() { var on = document.querySelector("#cu-lobstyles button.on"); return on ? on.getAttribute("data-lobstyle") : "aurora"; }
+  var FONTS = { modern: "'Space Grotesk'", clean: "'Manrope'", classic: "'Fraunces', Georgia" };
 
   function contrast(hex) {
     var l = function (h) { return [1, 3, 5].map(function (i) { var c = parseInt(h.substr(i, 2), 16) / 255; return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); }); };
@@ -255,28 +294,68 @@
     return (1.05) / (L + 0.05);
   }
   function preview() {
-    var v = el("cu-accent").value, pv = el("cu-preview"), ok = contrast(v) >= 3;
-    pv.style.setProperty("--pv", v);
-    document.querySelectorAll(".cu-sw").forEach(function (s) { s.classList.toggle("on", s.getAttribute("data-accent") === v); });
-    var c = el("cu-contrast"); c.textContent = ok ? "Contrast on white " + contrast(v).toFixed(1) + ":1 ✓" : "Too light: text on it would be hard to read (needs 3:1, this is " + contrast(v).toFixed(1) + ":1).";
+    var box = el("cu-live"); if (!box || !window.QCTheme) return;
+    var v = el("cu-accent").value, v2 = el("cu-accent2").value;
+    var tone = tonePick(), dark = tone === "dark" || (tone === "auto" && document.documentElement.getAttribute("data-theme") === "dark");
+    var P = QCTheme.palette(v, v2, dark);
+    [["--pv", P.brand], ["--pv2", P.alt], ["--pv-sand", P.sand], ["--pv-card", P.card], ["--pv-ink", P.ink],
+     ["--pv-on", P.brandInk], ["--pv-deep", P.onBrandSoft], ["--pv-font", FONTS[typePick()]]].forEach(function (kv) { box.style.setProperty(kv[0], kv[1]); });
+    document.querySelectorAll('[data-sw="accent"]').forEach(function (s) { s.classList.toggle("on", s.getAttribute("data-accent") === v); });
+    document.querySelectorAll('[data-sw="accent2"]').forEach(function (s) { s.classList.toggle("on", s.getAttribute("data-accent") === v2); });
+    var nm = el("cu-app").value.trim() || (H().me() && H().me().org ? H().me().org.name : "Hospital");
+    el("cu-sh-name").textContent = nm;
+    var tg = el("cu-lob-motto") && el("cu-lob-motto").value.trim();
+    el("cu-sh-tag").textContent = tg || el("cu-tagline").value.trim();
+    var mk = el("cu-sh-mark"), b = C.branding || {};
+    var url = b.mark || b.logo ? H().P.API + "/hospital/public/logo/" + encodeURIComponent(H().me().org.id) + (b.mark ? "?v=mark&t=" + (b.mark_ts || 0) : "?t=" + (b.logo_ts || 0)) : "";
+    mk.innerHTML = url ? '<img alt="" src="' + esc(url) + '">' : "";
+    if (!url) mk.textContent = nm.replace(/[^A-Za-z ]/g, " ").trim().split(/\s+/).slice(0, 2).map(function (w) { return w[0]; }).join("").toUpperCase() || "H";
+    var ok = contrast(v) >= 3, c = el("cu-contrast");
+    var deepened = P.brandBtn.toLowerCase() !== String(v).toLowerCase();
+    c.textContent = !ok ? "Too light to use: text on it would be hard to read (needs 3:1, this is " + contrast(v).toFixed(1) + ":1)."
+      : deepened ? "Good. Buttons and links use a slightly deeper shade of it so their words stay easy to read."
+      : "Good. Words read clearly on it everywhere.";
     c.className = "hint " + (ok ? "ok" : "bad");
   }
   function saveLook() {
-    var f = el("cu-logo").files[0], btn = el("cu-save-look");
+    var f = el("cu-logo").files[0], fm = el("cu-markf").files[0], btn = el("cu-save-look");
     btn.disabled = true;
-    var body = { accent: el("cu-accent").value, short_name: el("cu-short").value.trim(), letterhead: el("cu-letter").value.split("\n"), footer: el("cu-footer").value.trim() };
+    var body = { accent: el("cu-accent").value, accent2: el("cu-accent2").value, tone: tonePick(), type_style: typePick(),
+      app_name: el("cu-app").value.trim(), tagline: el("cu-tagline").value.trim(), short_name: el("cu-short").value.trim(),
+      letterhead: el("cu-letter").value.split("\n"), footer: el("cu-footer").value.trim() };
     var p;
-    if (f) {
-      var fd = new FormData(); fd.append("logo", f);
+    if (f || fm) {
+      var fd = new FormData();
+      if (f) fd.append("logo", f);
+      if (fm) fd.append("mark", fm);
       Object.keys(body).forEach(function (k) { fd.append(k, k === "letterhead" ? body[k].join("\n") : body[k]); });
       p = fetch(H().P.API + "/hospital/custom/branding", { method: "POST", credentials: "include", body: fd }).then(function (x) { return x.json(); });
     } else p = api("/hospital/custom/branding", { method: "POST", body: body });
     p.then(function (x) {
       btn.disabled = false;
       if (!x.ok) return toast(x.message || "Couldn’t save.", "err");
-      C.branding = x.item; apply(C); toast("Saved. Everyone sees the new look now."); load();
+      C.branding = x.item; apply(C);
+      if (H().me()) H().me().custom = C;
+      toast("Saved. Everyone at your hospital sees this now."); load();
     }, function () { btn.disabled = false; toast("Couldn’t save.", "err"); });
   }
+  function lobbyBody() {
+    return { lobby: { on: el("cu-lob-on").checked, style: lobPick(), motto: el("cu-lob-motto").value.trim(), live: el("cu-lob-live").checked } };
+  }
+  function saveLobby() {
+    api("/hospital/custom/branding", { method: "POST", body: lobbyBody() }).then(function (x) {
+      if (!x.ok) return toast(x.message || "Couldn’t save.", "err");
+      C.branding = x.item; apply(C);
+      if (H().me()) H().me().custom = C;
+      toast("Saved. Your team arrives here from now on."); load();
+    });
+  }
+  function tryLobby() {                                  // show it with the settings on screen, saved or not
+    if (!window.QCLobby || !H().me()) return;
+    var keep = C.branding.lobby;
+    C.branding.lobby = lobbyBody().lobby;
+    QCLobby.show(H().me()).then(function () { C.branding.lobby = keep; });
+  }
 
-  window.QCCustom = { apply: apply, term: term, tabs: tabs, loaders: loaders, fieldsForm: fieldsForm, readFields: readFields, data: function () { return C; } };
+  window.QCCustom = { apply: apply, term: term, preview: preview, tabs: tabs, loaders: loaders, fieldsForm: fieldsForm, readFields: readFields, data: function () { return C; } };
 })();
