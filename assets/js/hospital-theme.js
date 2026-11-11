@@ -272,6 +272,27 @@
     }, 0);
   });
 
+  /* the pill behind the open tab, carried across rather than redrawn */
+  function glide() {
+    var bar = document.getElementById("tabs");
+    if (!bar) return;
+    var g = bar.querySelector(".tb-glide"), on = bar.querySelector("button.on");
+    if (!g || !on) { if (g) g.style.opacity = 0; return; }
+    var b = bar.getBoundingClientRect(), r = on.getBoundingClientRect();
+    g.style.transform = "translate3d(" + (r.left - b.left + bar.scrollLeft).toFixed(1) + "px,0,0)";
+    g.style.width = r.width.toFixed(1) + "px";
+    g.style.height = r.height.toFixed(1) + "px";
+    g.style.top = (r.top - b.top).toFixed(1) + "px";
+    if (!g._seen) { g._seen = 1; g.style.transition = "none"; requestAnimationFrame(function () { g.style.transition = ""; }); }
+    g.style.opacity = 1;
+  }
+  window.addEventListener("resize", function () { setTimeout(glide, 60); });
+
+  function flow() {
+    var on = ((C && C.prefs) || {}).flow !== false;
+    document.documentElement.classList.toggle("hp-flowing", on && !((C && C.prefs) || {}).reduce_motion);
+  }
+
   function apply(custom, me) {
     if (custom) C = custom;
     if (me) ME = me;
@@ -279,6 +300,8 @@
     tone();
     paint();
     chrome();
+    flow();
+    setTimeout(glide, 40);
   }
 
   // a person switching light/dark re-derives the facility's colours for that side
@@ -287,7 +310,7 @@
 
   window.QCTheme = {
     apply: apply, paint: paint, palette: palette, lobbyPalette: lobbyPalette, oklch: oklch, toOklch: toOklch, contrast: contrast, rgba: rgba,
-    markUrl: markUrl, name: name, initials: initials, restore: restore,
+    markUrl: markUrl, name: name, initials: initials, restore: restore, glide: glide,
     data: function () { return C; }, me: function () { return ME; },
     on: function () { return !!C; }
   };

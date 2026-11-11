@@ -73,8 +73,15 @@
       '<div class="field"><label for="cu-home">Open on</label><select class="input" id="cu-home">' + r.tabs.map(function (t) { return '<option value="' + t + '"' + (r.prefs.home === t ? " selected" : "") + ">" + esc(TAB_LABEL[t] || t) + "</option>"; }).join("") + "</select></div>" +
       '<div class="field"><label>Density</label><div class="seg" role="radiogroup">' + [["comfortable", "Comfortable"], ["compact", "Compact"]].map(function (d) { return '<button type="button" role="radio" aria-checked="' + (r.prefs.density === d[0]) + '" class="' + (r.prefs.density === d[0] ? "on" : "") + '" data-density="' + d[0] + '">' + d[1] + "</button>"; }).join("") + "</div></div></div>" +
       '<div class="field"><label>Pinned to the top bar</label><div class="cu-pins">' + r.tabs.filter(function (t) { return t !== "my-day"; }).map(function (t) { var on = r.prefs.pinned.indexOf(t) >= 0; return '<button type="button" class="chipbtn' + (on ? " on" : "") + '" data-pin="' + t + '" aria-pressed="' + on + '">' + esc(TAB_LABEL[t] || t) + "</button>"; }).join("") + "</div></div>" +
+      '<div class="field"><label for="cu-sleep">Put my screen to sleep after</label><select class="input" id="cu-sleep">' +
+        [["", "Follow " + esc(orgShort()) + " (" + sleepWord(r.branding.sleep_min) + ")"], ["0", "Never"], ["1", "1 minute"], ["3", "3 minutes"], ["5", "5 minutes"], ["10", "10 minutes"], ["20", "20 minutes"]]
+          .map(function (o) { var v = r.prefs.sleep_min == null ? "" : String(r.prefs.sleep_min); return '<option value="' + o[0] + '"' + (o[0] === v ? " selected" : "") + ">" + o[1] + "</option>"; }).join("") +
+        '</select><small class="hint">It goes back to your hospital\u2019s mark, so what you were reading isn\u2019t left on show. Your session still ends after 20 quiet minutes.</small></div>' +
+      '<div class="cu-checks">' +
       '<label class="check"><input type="checkbox" id="cu-calm"' + (r.prefs.reduce_motion ? " checked" : "") + "> Fewer animations</label>" +
-      '<label class="check"><input type="checkbox" id="cu-lobme"' + (r.prefs.lobby !== false ? " checked" : "") + "> Open through the lobby when I sign in</label></div>";
+      '<label class="check"><input type="checkbox" id="cu-flow"' + (r.prefs.flow !== false ? " checked" : "") + "> Slow colour moving behind the pages</label>" +
+      '<label class="check"><input type="checkbox" id="cu-lobme"' + (r.prefs.lobby !== false ? " checked" : "") + "> Open through the lobby when I sign in</label></div>" +
+      '<div class="row"><button class="btn btn-sm" type="button" id="cu-sleep-now">\ud83c\udf19 Try it now</button></div></div>';
     if (admin) {
       h += '<div class="cu-grid">';
       // look: two colours, a tone, a type, the marks — and what everyone will see
@@ -122,6 +129,10 @@
         '<div class="field"><label for="cu-lob-motto">A line under your name, just here</label><input class="input" id="cu-lob-motto" maxlength="90" value="' + esc(lob.motto || "") + '" placeholder="' + esc(b.tagline || "e.g. Since 1974 · 400 beds · one record") + '"></div>' +
         '<label class="check"><input type="checkbox" id="cu-lob-live"' + (lob.live !== false ? " checked" : "") + "> Let live numbers drift past</label>" +
         '<small class="hint">Each person sees only the figures their role already allows.</small>' +
+        '<div class="field"><label for="cu-sleepdef">Screens go back to the mark after</label><select class="input" id="cu-sleepdef">' +
+          [["0", "Never"], ["1", "1 minute"], ["3", "3 minutes"], ["5", "5 minutes"], ["10", "10 minutes"], ["20", "20 minutes"]]
+            .map(function (o) { return '<option value="' + o[0] + '"' + (+o[0] === +b.sleep_min ? " selected" : "") + ">" + o[1] + "</option>"; }).join("") +
+          '</select><small class="hint">For shared computers on a ward. Anyone can set their own instead.</small></div>' +
         '<div class="row"><button class="btn" type="button" id="cu-lob-try">See it</button><span class="grow"></span><button class="btn btn-primary" type="button" id="cu-save-lobby">Save lobby</button></div></div>';
       // words
       h += '<div class="card cu-card"><h3>🗣️ Your words</h3><p class="sub">Rename things to what your staff already say. Leave a box empty to keep the default.</p><div class="grid2">' +
@@ -236,6 +247,7 @@
       if (t.id === "cu-auto2") { var A = QCTheme.toOklch(el("cu-accent").value) || { L: 0.6, C: 0.12, h: 180 }; el("cu-accent2").value = QCTheme.oklch(Math.min(0.72, A.L + 0.08), Math.min(A.C, 0.16), A.h + 46); return preview(); }
       if (t.id === "cu-nomark") { return api("/hospital/custom/branding", { method: "POST", body: { remove_mark: true } }).then(function (x) { if (x.ok) { C.branding = x.item; apply(C); load(); } }); }
       if (t.id === "cu-lob-try") { return tryLobby(); }
+      if (t.id === "cu-sleep-now") { return H().sleep(); }
       if (t.id === "cu-save-lobby") { return saveLobby(); }
       if (t.id === "cu-add-field") { var l = readFieldRows(); l.push({ label: "", type: "text" }); drawFields(l); var last = box.querySelector("#cu-fields .cu-field:last-child input"); if (last) last.focus(); return; }
       var del = t.closest("[data-del]"); if (del) { var l2 = readFieldRows(); l2.splice(+del.getAttribute("data-del"), 1); drawFields(l2); return; }
@@ -268,6 +280,8 @@
       if (e.target.id === "cu-home") savePrefs({ home: e.target.value });
       if (e.target.id === "cu-calm") savePrefs({ reduce_motion: e.target.checked });
       if (e.target.id === "cu-lobme") savePrefs({ lobby: e.target.checked });
+      if (e.target.id === "cu-flow") savePrefs({ flow: e.target.checked });
+      if (e.target.id === "cu-sleep") savePrefs({ sleep_min: e.target.value === "" ? null : +e.target.value });
       if (e.target.matches && e.target.matches('[data-f="type"]')) e.target.parentNode.querySelector('[data-f="options"]').hidden = e.target.value !== "choice";
     };
     if (el("cu-accent")) preview();
@@ -283,6 +297,11 @@
         '<div class="s-state"><i class="st-good">Within target</i><i class="st-warn">Needs a look</i><i class="st-bad">Urgent</i></div></div>' +
       '<p class="cu-note">Your lobby, then your screens. The three states keep their own colours so nobody has to learn new ones.</p></div>';
   }
+  function orgShort() {
+    var b = (C && C.branding) || {};
+    return b.short_name || b.app_name || ((H().me() && H().me().org && H().me().org.name) || "your hospital").split(/\s+/)[0];
+  }
+  function sleepWord(m) { return !+m ? "never" : +m === 1 ? "1 minute" : +m + " minutes"; }
   function tonePick() { var on = document.querySelector("#cu-tones .cu-tone.on"); return on ? on.getAttribute("data-tone") : "auto"; }
   function typePick() { var on = document.querySelector("#cu-types button.on"); return on ? on.getAttribute("data-type") : "modern"; }
   function lobPick() { var on = document.querySelector("#cu-lobstyles button.on"); return on ? on.getAttribute("data-lobstyle") : "aurora"; }
@@ -340,7 +359,8 @@
     }, function () { btn.disabled = false; toast("Couldn’t save.", "err"); });
   }
   function lobbyBody() {
-    return { lobby: { on: el("cu-lob-on").checked, style: lobPick(), motto: el("cu-lob-motto").value.trim(), live: el("cu-lob-live").checked } };
+    return { lobby: { on: el("cu-lob-on").checked, style: lobPick(), motto: el("cu-lob-motto").value.trim(), live: el("cu-lob-live").checked },
+             sleep_min: +el("cu-sleepdef").value };
   }
   function saveLobby() {
     api("/hospital/custom/branding", { method: "POST", body: lobbyBody() }).then(function (x) {

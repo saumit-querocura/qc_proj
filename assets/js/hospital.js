@@ -249,13 +249,37 @@
   });
 
   // 20 idle minutes: sign out. (The server enforces this too; this keeps the screen honest.)
-  ["click", "keydown", "mousemove", "touchstart", "scroll"].forEach(function (t) { document.addEventListener(t, function () { lastActive = Date.now(); }, { passive: true }); });
+  // While the screen is asleep nothing counts as activity, so sleeping never buys anyone more time.
+  function asleep() { return !!(window.QCLobby && QCLobby.asleep()); }
+  ["click", "keydown", "mousemove", "touchstart", "scroll"].forEach(function (t) {
+    document.addEventListener(t, function () { if (!asleep()) lastActive = Date.now(); }, { passive: true });
+  });
+  function sleepMs() {
+    var c = (ME || {}).custom || {}, mine = (c.prefs || {}).sleep_min, org = ((c.branding || {}).sleep_min);
+    var m = (mine === null || mine === undefined || mine === "") ? (org == null ? 5 : org) : mine;
+    return (+m > 0 ? +m : 0) * 60000;
+  }
+  function goSleep() {
+    if (!ME || asleep() || !window.QCLobby || QCLobby.open()) return;
+    closeAll();
+    QCLobby.sleep(ME, function () { return IDLE_MS - (Date.now() - lastActive); }).then(function () {
+      lastActive = Date.now();
+      switchTab(tabNow);                                // back to a fresh screen, not the one from before the break
+      flowIn();
+    });
+  }
   setInterval(function () {
     if (!ME) return;
     var rem = IDLE_MS - (Date.now() - lastActive);
     if (rem <= 0) { api("/hospital/logout", { method: "POST" }); closeAll(); goPublic("You were signed out after 20 minutes of inactivity."); return; }
+    var sm = sleepMs();
+    if (sm && !asleep() && Date.now() - lastActive >= sm) goSleep();
     el("idle").textContent = rem < 5 * 60 * 1000 ? "Signing out in " + Math.floor(rem / 60000) + ":" + ("0" + Math.floor(rem / 1000 % 60)).slice(-2) : "";
   }, 1000);
+  el("sleep").addEventListener("click", goSleep);
+  document.addEventListener("keydown", function (e) {
+    if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === "L" || e.key === "l")) { e.preventDefault(); goSleep(); }
+  });
   function closeAll() { P.closeModal("chart-modal"); P.closeModal("record-modal"); el("chart-body").innerHTML = ""; closeCmdk(); }
 
   // Any API reply that says the session ended sends us back to sign-in.
@@ -347,8 +371,10 @@
     el("tabs").innerHTML = bar.map(function (t) {
       var i = TAB_INFO[t[0]] || [];
       return '<button type="button" role="tab" data-tab="' + t[0] + '" class="' + (t[0] === tabNow ? "on" : "") + '"><span class="tb-ic" aria-hidden="true">' + (i[0] || "") + "</span>" + esc(tabName(t)) + "</button>";
-    }).join("") + (TABS_REST.length ? '<button type="button" class="tb-more" data-more aria-haspopup="true" aria-expanded="false">More <span aria-hidden="true">▾</span></button><div class="tb-menu" id="tb-menu" hidden></div>' : "");
+    }).join("") + '<span class="tb-glide" aria-hidden="true"></span>' + (TABS_REST.length ? '<button type="button" class="tb-more" data-more aria-haspopup="true" aria-expanded="false">More <span aria-hidden="true">▾</span></button><div class="tb-menu" id="tb-menu" hidden></div>' : "");
+    afterTabs();
   }
+  function afterTabs() { if (window.QCTheme) requestAnimationFrame(QCTheme.glide); }
   function openMore(btn) {
     var m = el("tb-menu"); if (!m) return;
     if (!m.hidden) { m.hidden = true; btn.setAttribute("aria-expanded", "false"); return; }
@@ -367,7 +393,13 @@
     var mo = e.target.closest("[data-more]"); if (mo) return openMore(mo);
     var b = e.target.closest("[data-tab]"); if (b) goTab(b.getAttribute("data-tab"));
   });
-  function goTab(t) { tabNow = t; drawTabs(); switchTab(t); window.scrollTo({ top: 0, behavior: "smooth" }); }
+  function goTab(t) { tabNow = t; drawTabs(); switchTab(t); flowIn(); window.scrollTo({ top: 0, behavior: "smooth" }); }
+  function flowIn() {
+    var p = document.querySelector("#workspace > section.tab:not([hidden]), #tab-board:not([hidden])");
+    if (!p || document.documentElement.classList.contains("hp-calm")) return;
+    p.classList.remove("tab-enter"); void p.offsetWidth; p.classList.add("tab-enter");
+    setTimeout(function () { p.classList.remove("tab-enter"); }, 900);
+  }
   function switchTab(t) {
     var own = { overview: loadOverview, patients: loadPatients, connect: renderConnect, team: loadTeam, activity: loadActivity, security: renderSecurity };
     var ops = window.QCOps ? window.QCOps.loaders() : {};
@@ -875,6 +907,7 @@
     siteQ: function (sep) { return SITE ? (sep || "?") + "site=" + encodeURIComponent(SITE) : ""; },
     term: function (k, d) { return window.QCCustom ? window.QCCustom.term(k, d) : (d || k); },
     lobby: function () { if (window.QCLobby && ME) QCLobby.show(ME); },
+    sleep: function () { goSleep(); },
     refreshMe: function () { return api("/hospital/me").then(function (r) { if (r.ok) { ME = r; if (window.QCCustom) window.QCCustom.apply(r.custom, r); relabel(r.custom); render(); } }); },
   };
 

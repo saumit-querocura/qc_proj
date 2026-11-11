@@ -33,7 +33,7 @@
 <link rel="preconnect" href="https://app.querocura.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700;800&family=Manrope:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500;1,9..144,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../assets/qc-base.css?v=7b9ea421">
-<link rel="stylesheet" href="../assets/qc-hospital.css?v=1998ba38">
+<link rel="stylesheet" href="../assets/qc-hospital.css?v=fce9b734">
 <script src="../assets/qc-csp.js?v=77f89cc2"></script>
 </head>
 <body class="hp">
@@ -50,6 +50,7 @@
     <div class="hp-nav" id="app-nav" hidden>
       <span class="hp-who" id="who"></span>
       <span class="hp-idle" id="idle" title="You're signed out automatically after 20 minutes without activity"></span>
+      <button class="btn btn-sm hp-sleep" id="sleep" type="button" title="Put the screen to sleep (Ctrl/⌘ + Shift + L)"><span aria-hidden="true">🌙</span> Sleep</button>
       <button class="btn btn-sm" id="signout" type="button">Sign out</button>
     </div>
     <button class="theme-toggle" data-theme-toggle aria-label="Toggle dark mode"><span id="theme-toggle-icon"></span></button>
@@ -274,6 +275,7 @@
 
   <!-- ===================== signed in ===================== -->
   <main id="portal" hidden>
+    <div class="hp-flow" aria-hidden="true"><i></i><i></i><i></i></div>
     <div class="hp-wrap">
       <div id="banner"></div>
       <div id="mfa-setup" hidden></div>
@@ -333,9 +335,9 @@
   <script src="../assets/js/hospital-mind.js?v=29f5752c"></script>
   <script src="../assets/js/hospital-doctor.js?v=48797314"></script>
   <script src="../assets/js/hospital-abdm.js?v=d3f456d8"></script>
-  <script src="../assets/js/hospital-theme.js?v=146d07dd"></script>
-  <script src="../assets/js/hospital-lobby.js?v=d491b9f8"></script>
-  <script src="../assets/js/hospital-custom.js?v=1be8f568"></script>
+  <script src="../assets/js/hospital-theme.js?v=0679dc8a"></script>
+  <script src="../assets/js/hospital-lobby.js?v=75651eb7"></script>
+  <script src="../assets/js/hospital-custom.js?v=74bde09d"></script>
   <script src="../assets/js/hospital-claims.js?v=e87612a2"></script>
   <script src="../assets/js/hospital-lab.js?v=e70dd35e"></script>
   <script src="../assets/js/hospital-gst.js?v=d8f7da90"></script>
@@ -347,6 +349,6 @@
   <script src="../assets/js/hospital-imaging.js?v=a31e9e2f"></script>
   <script type="module" src="../assets/js/hospital-hero3d.js?v=8843b893"></script>
   <script src="../assets/js/hospital-offline.js?v=f4232fdd"></script>
-  <script src="../assets/js/hospital.js?v=4146934e"></script>
+  <script src="../assets/js/hospital.js?v=70e67e21"></script>
 </body>
 </html>

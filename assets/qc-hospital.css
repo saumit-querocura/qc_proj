@@ -1569,3 +1569,70 @@ html.lob-open, html.lob-open body { overflow: hidden; }
 .cu-rows .s-state i.st-warn { background: color-mix(in srgb, var(--warn) 18%, transparent); color: var(--warn); }
 .cu-rows .s-state i.st-bad { background: color-mix(in srgb, var(--danger) 16%, transparent); color: var(--danger); }
 .cu-swatches .link { font-size: 12px; }
+
+/* ===================================================================================================
+   Flow: the facility's colour moving slowly behind the work, a mark that slides between tabs, screens
+   that arrive rather than appear.  All of it stops for "Fewer animations" and for reduced motion,
+   and none of it ever moves a figure a clinician is reading.
+   =================================================================================================== */
+.hp-flow { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; opacity: 0; transition: opacity 1.2s ease; }
+html.hp-flowing .hp-flow { opacity: 1; }
+.hp-flow i { position: absolute; display: block; border-radius: 50%; filter: blur(110px); opacity: .12; will-change: transform; }
+html[data-theme="dark"] .hp-flow i { opacity: .26; }
+.hp-flow i:nth-child(1) { width: 46vw; height: 46vw; left: -12vw; top: -14vw; background: var(--brand); animation: hpFlowA 54s ease-in-out infinite; }
+.hp-flow i:nth-child(2) { width: 38vw; height: 38vw; right: -10vw; top: 18vh; background: var(--alt); animation: hpFlowB 68s ease-in-out infinite; }
+.hp-flow i:nth-child(3) { width: 52vw; height: 52vw; left: 24vw; bottom: -26vw; background: var(--alt-2); animation: hpFlowC 82s ease-in-out infinite; }
+@keyframes hpFlowA { 0%, 100% { transform: translate3d(0,0,0) scale(1); } 50% { transform: translate3d(9vw, 7vh, 0) scale(1.14); } }
+@keyframes hpFlowB { 0%, 100% { transform: translate3d(0,0,0) scale(1.06); } 50% { transform: translate3d(-7vw, 11vh, 0) scale(.9); } }
+@keyframes hpFlowC { 0%, 100% { transform: translate3d(0,0,0) scale(1); } 50% { transform: translate3d(-10vw, -8vh, 0) scale(1.12); } }
+#portal .hp-wrap, #portal #banner, #portal #workspace { position: relative; z-index: 1; }
+
+/* a thread of the facility's colour under the top bar */
+html.hp-branded .hp-top { border-bottom-color: transparent; }
+html.hp-branded .hp-top::after { content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--brand) 18%, var(--alt) 50%, var(--brand) 82%, transparent); opacity: .5; background-size: 220% 100%; }
+html.hp-flowing .hp-top::after { animation: hpThread 26s linear infinite; opacity: .62; }
+@keyframes hpThread { to { background-position: 220% 0; } }
+
+/* the open tab carries its mark across instead of jumping */
+.hp-tabs .tb-glide { position: absolute; left: 0; top: 0; border-radius: 999px; opacity: 0; z-index: 0; pointer-events: none;
+  background: var(--brand-btn, var(--ink)); box-shadow: 0 8px 22px -12px var(--brand-glow, transparent);
+  transition: transform .42s cubic-bezier(.22,.9,.26,1), width .42s cubic-bezier(.22,.9,.26,1), opacity .25s ease; }
+.hp-tabs button { position: relative; z-index: 1; transition: color .25s ease; }
+html.hp-branded .hp-tabs button.on { background: transparent; color: var(--brand-ink); }
+html.hp-calm .hp-tabs .tb-glide { transition: opacity .2s ease; }
+
+/* a screen arrives */
+.tab-enter { animation: tabIn .5s cubic-bezier(.22,.9,.26,1) both; }
+@keyframes tabIn { from { opacity: 0; transform: translate3d(0, 14px, 0); } to { opacity: 1; transform: none; } }
+.tab-enter > .card, .tab-enter > div > .card, .tab-enter > .hms-head, .tab-enter > .ops-cc { animation: cardIn .55s cubic-bezier(.22,.9,.26,1) both; }
+.tab-enter > :nth-child(2) { animation-delay: .05s; } .tab-enter > :nth-child(3) { animation-delay: .1s; }
+.tab-enter > :nth-child(4) { animation-delay: .15s; } .tab-enter > :nth-child(n+5) { animation-delay: .2s; }
+@keyframes cardIn { from { opacity: 0; transform: translate3d(0, 18px, 0); } to { opacity: 1; transform: none; } }
+
+/* the sleep screen: the same front door, quieter */
+.hp-sleep { white-space: nowrap; }
+.lob-sleep .lob-mark { width: clamp(132px, 16vw, 180px); }
+.lob-sleep .lob-name { font-size: clamp(26px, 3.6vw, 40px); }
+.lob-sleep .lob-blobs { opacity: .4; }
+.lob-left { margin: 16px 0 0; font-size: 13px; font-weight: 700; color: var(--lb-muted); font-variant-numeric: tabular-nums;
+  padding: 7px 15px; border-radius: 999px; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.1); }
+.lob-sleep .lob-hint { margin-top: 20px; }
+
+/* the name catches the light as it arrives */
+.lob-in .lob-name { background-image: linear-gradient(100deg, var(--lb-ink) 36%, var(--lb-brand) 50%, var(--lb-ink) 64%); background-size: 260% 100%;
+  -webkit-background-clip: text; background-clip: text; animation: lobSheen 2.6s ease-out .35s 1 both; }
+@keyframes lobSheen { from { background-position: 150% 0; -webkit-text-fill-color: transparent; } 70% { -webkit-text-fill-color: transparent; } to { background-position: -40% 0; -webkit-text-fill-color: currentColor; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .hp-flow i, html.hp-flowing .hp-top::after { animation: none !important; }
+  .tab-enter, .tab-enter > * { animation: none !important; }
+  .lob-in .lob-name { animation: none !important; -webkit-text-fill-color: currentColor; }
+  .hp-tabs .tb-glide { transition: opacity .2s ease !important; }
+}
+html.hp-calm .hp-flow i, html.hp-calm .hp-top::after { animation: none !important; }
+html.hp-calm .lob-in .lob-name { animation: none !important; -webkit-text-fill-color: currentColor; }
+@media print { .hp-flow, .hp-sleep { display: none !important; } }
+
+.cu-checks { display: grid; gap: 7px; margin: 10px 0 2px; }
+.cu-checks .check { display: flex; align-items: center; gap: 9px; font-size: 13.5px; }

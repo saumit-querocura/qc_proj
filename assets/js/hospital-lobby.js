@@ -7,11 +7,15 @@
  * Nothing here is decoration over nothing: every figure that drifts past is a live number this person is allowed to
  * see, and the lobby never delays the work behind it (the portal is already built and waiting).
  *
- * window.QCLobby { maybeShow, show, close }
+ * The same screen is the sleep screen.  A computer nobody has touched for a few minutes goes back to the mark, so a
+ * ward machine left alone is showing a hospital's name and not somebody's record.  Sleeping does not buy more time:
+ * the session's own countdown carries on underneath, and the screen says how long is left.
+ *
+ * window.QCLobby { maybeShow, show, sleep, close, asleep }
  */
 (function () {
   "use strict";
-  var EL = null, RAF = 0, T0 = 0, SHOWN = false, RESOLVE = null, BOARD = null;
+  var EL = null, RAF = 0, T0 = 0, SHOWN = false, RESOLVE = null, BOARD = null, MODE = "arrive", TICK = 0;
   function $(s, r) { return (r || document).querySelector(s); }
   function esc(s) { return window.QCHosp ? QCHosp.esc(s) : String(s == null ? "" : s); }
   function calm() {
@@ -41,13 +45,13 @@
   function term(k, d) { return window.QCHosp && QCHosp.term ? QCHosp.term(k, d) : d; }
 
   /* ------------------------------------------------------------------ building it */
-  function build(me) {
+  function build(me, mode) {
     var b = (QCTheme.data().branding) || {}, lob = b.lobby || {}, mark = QCTheme.markUrl("mark");
     var who = ((me.staff || {}).name || "").split(" ").filter(function (w) { return !/^(dr|mr|mrs|ms|sr|prof)\.?$/i.test(w); })[0] || (me.staff || {}).name || "";
-    var d = new Date();
+    var d = new Date(), asleep = mode === "sleep";
     var when = d.toLocaleDateString([], { weekday: "long", day: "numeric", month: "long" });
     var wrap = document.createElement("div");
-    wrap.className = "lob lob-" + (lob.style || "aurora") + (calm() ? " lob-calm" : "");
+    wrap.className = "lob lob-" + (lob.style || "aurora") + (calm() ? " lob-calm" : "") + (asleep ? " lob-sleep" : "");
     wrap.id = "lob";
     wrap.setAttribute("role", "dialog");
     wrap.setAttribute("aria-modal", "true");
@@ -65,14 +69,17 @@
         '<h1 class="lob-name"></h1>' +
         '<p class="lob-tag"></p>' +
         '<p class="lob-hello"></p>' +
-        '<p class="lob-hint" id="lob-hint"><span class="lob-dot"></span>Tap the mark to open your day</p>' +
+        '<p class="lob-hint" id="lob-hint"><span class="lob-dot"></span>' + (asleep ? "Tap the mark to carry on" : "Tap the mark to open your day") + "</p>" +
+        (asleep ? '<p class="lob-left" id="lob-left" role="status"></p>' : "") +
       "</div>" +
       '<div class="lob-foot"><span class="lob-live" id="lob-live"></span></div>';
     $(".lob-name", wrap).textContent = QCTheme.name();
     var tag = lob.motto || b.tagline || "";
     $(".lob-tag", wrap).textContent = tag;
     if (!tag) $(".lob-tag", wrap).hidden = true;
-    $(".lob-hello", wrap).textContent = greet(d.getHours()) + (who ? ", " + who : "") + " · " + when;
+    $(".lob-hello", wrap).textContent = asleep
+      ? (who ? "Welcome back, " + who : "Welcome back") + " · your screen went to sleep"
+      : greet(d.getHours()) + (who ? ", " + who : "") + " · " + when;
     return wrap;
   }
 
@@ -238,6 +245,7 @@
   function close(fast) {
     var wrap = EL; if (!wrap) return;
     EL = null;
+    if (TICK) { clearInterval(TICK); TICK = 0; }
     wrap.classList.add("lob-out");
     if (wrap._size) window.removeEventListener("resize", wrap._size);
     document.documentElement.classList.remove("lob-open");
@@ -248,11 +256,13 @@
     }, fast ? 60 : 620);
   }
 
-  function show(me) {
+  function show(me, opts) {
     if (EL) return Promise.resolve();
+    opts = opts || {};
+    MODE = opts.mode === "sleep" ? "sleep" : "arrive";
     SHOWN = true;
-    try { sessionStorage.setItem("qc-lobby-seen", String(Date.now())); } catch (e) {}
-    var wrap = build(me);
+    if (MODE === "arrive") { try { sessionStorage.setItem("qc-lobby-seen", String(Date.now())); } catch (e) {} }
+    var wrap = build(me, MODE);
     document.body.appendChild(wrap);
     document.documentElement.classList.add("lob-open");
     EL = wrap;
@@ -269,10 +279,18 @@
       if (e.key === "Escape" || e.key === "Enter" || e.key === " ") { e.preventDefault(); close(); }
       if (e.key === "Tab") { e.preventDefault(); try { go.focus(); } catch (x) {} }
     });
+    if (MODE === "sleep" && typeof opts.left === "function") {
+      var left = $("#lob-left", wrap);
+      TICK = setInterval(function () {
+        if (!EL || !left) return clearInterval(TICK);
+        var ms = opts.left();
+        left.textContent = ms > 0 ? "Signing out in " + Math.floor(ms / 60000) + ":" + ("0" + Math.floor(ms / 1000 % 60)).slice(-2) + " unless you come back" : "";
+      }, 1000);
+    }
     // the hour's own numbers, if this person is allowed to see them
     var lob = ((QCTheme.data().branding) || {}).lobby || {};
     var can = (me.perms || []).some(function (p) { return p === "ops" || p === "read" || p === "structure"; });
-    if (lob.live !== false && can) {
+    if (lob.live !== false && can && MODE === "arrive") {
       (BOARD || (BOARD = QCHosp.api("/hospital/ops/board"))).then(function (r) {
         if (!EL) return;
         var cards = cardsFrom(r);
@@ -297,5 +315,14 @@
     return show(me);
   }
 
-  window.QCLobby = { show: show, maybeShow: maybeShow, close: close, seen: function () { return SHOWN; } };
+  /* the sleep screen: the same front door, in a quieter mood */
+  function sleep(me, leftMs) {
+    if (EL || !me || !me.staff || !(window.QCTheme && QCTheme.data())) return Promise.resolve();
+    BOARD = null;                                      // next time it wakes, the figures are fetched again
+    return show(me, { mode: "sleep", left: leftMs });
+  }
+
+  window.QCLobby = { show: show, maybeShow: maybeShow, sleep: sleep, close: close,
+    asleep: function () { return !!EL && MODE === "sleep"; }, open: function () { return !!EL; },
+    seen: function () { return SHOWN; } };
 })();
