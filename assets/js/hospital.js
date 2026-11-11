@@ -332,7 +332,8 @@
     var own = window.QCTheme && QCTheme.on() ? QCTheme.name() : org.name;
     el("org-name").textContent = own;
     var tag = document.querySelector(".hp-top .hp-tag"); if (tag) tag.textContent = org.practice === "solo" ? "for Doctors" : "for Hospitals";
-    el("org-meta").textContent = (own !== org.name ? org.name + " · " : "") + [org.org_type, org.city, org.state].filter(Boolean).join(" · ") + (org.registration_no ? " · Reg. " + org.registration_no : "");
+    el("org-meta").textContent = [org.org_type, org.city, org.state].filter(Boolean).join(" · ") +
+      (org.registration_no ? " · Reg. " + org.registration_no : "") + (own !== org.name ? " · registered as " + org.name : "");
     el("org-status").innerHTML = org.status === "active" ? '<span class="pill ok">✓ Verified</span>' : org.status === "pending" ? '<span class="pill wait">⏳ Verification pending</span>' : '<span class="pill bad">' + esc(org.status) + '</span>';
     if (org.status === "pending") banner.innerHTML = '<div class="notice wait">Thanks for applying. Our team is verifying <b>' + esc(org.name) + '</b> (registration ' + esc(org.registration_no || "") + '). You can set up your team and security now. Patient connections switch on as soon as you\'re approved, and we\'ll e-mail you.</div>';
     if (org.status === "rejected" || org.status === "suspended") banner.innerHTML = '<div class="notice bad">This organisation isn\'t active. ' + esc(org.review_note || "Please contact QueroCura support.") + '</div>';

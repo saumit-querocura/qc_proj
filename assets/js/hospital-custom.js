@@ -106,7 +106,7 @@
           [["modern", "Modern"], ["clean", "Clean"], ["classic", "Classic"]].map(function (t) {
             return '<button type="button" class="t-' + t[0] + (b.type_style === t[0] ? " on" : "") + '" role="radio" aria-checked="' + (b.type_style === t[0]) + '" data-type="' + t[0] + '"><b>' + esc(sample) + "</b><small>" + t[1] + "</small></button>";
           }).join("") + "</div></div></div>" +
-        '<div class="grid2"><div class="field"><label for="cu-app">What your team calls it</label><input class="input" id="cu-app" maxlength="40" value="' + esc(b.app_name) + '" placeholder="' + esc(orgNm) + '"><small class="hint">Shown in the top bar and the browser tab.</small></div>' +
+        '<div class="grid2"><div class="field"><label for="cu-app">What your team calls it</label><input class="input" id="cu-app" maxlength="40" value="' + esc(b.app_name) + '" placeholder="' + esc(orgNm) + '"><small class="hint">The name on every screen here, the browser tab and the lobby. Patients are still asked to share records with <b>' + esc(orgNm) + '</b>, your registered name.</small></div>' +
           '<div class="field"><label for="cu-tagline">Line under the name</label><input class="input" id="cu-tagline" maxlength="80" value="' + esc(b.tagline) + '" placeholder="e.g. Care that knows you"></div></div>' +
         '<div class="grid2"><div class="field"><label for="cu-short">Short name</label><input class="input" id="cu-short" maxlength="24" value="' + esc(b.short_name) + '" placeholder="e.g. Sunrise"><small class="hint">For tight spaces and printed headers.</small></div>' +
           '<div class="field"><label for="cu-footer">Footer line</label><input class="input" id="cu-footer" maxlength="200" value="' + esc(b.footer) + '" placeholder="e.g. NABH accredited · Emergency 24×7: 020 1234 5600"></div></div>' +
@@ -355,7 +355,8 @@
       if (!x.ok) return toast(x.message || "Couldn’t save.", "err");
       C.branding = x.item; apply(C);
       if (H().me()) H().me().custom = C;
-      toast("Saved. Everyone at your hospital sees this now."); load();
+      toast("Saved. Everyone at your hospital sees this now.");
+      if (H().refreshMe) H().refreshMe(); else load();
     }, function () { btn.disabled = false; toast("Couldn’t save.", "err"); });
   }
   function lobbyBody() {
@@ -367,7 +368,8 @@
       if (!x.ok) return toast(x.message || "Couldn’t save.", "err");
       C.branding = x.item; apply(C);
       if (H().me()) H().me().custom = C;
-      toast("Saved. Your team arrives here from now on."); load();
+      toast("Saved. Your team arrives here from now on.");
+      if (H().refreshMe) H().refreshMe(); else load();
     });
   }
   function tryLobby() {                                  // show it with the settings on screen, saved or not
