@@ -392,9 +392,28 @@
     }
 
     html += '<div class="vis-acts" style="margin-top:20px">' +
-      '<a class="bp" style="text-decoration:none;display:inline-block" href="' + esc(P.API + BASE + "/" + id + "/notes.pdf") + '" download>Download as a page you can keep</a>' +
+      '<button type="button" class="bp" data-keep="' + esc(id) + '">Download as a page you can keep</button>' +
       '<button type="button" class="bq" data-forget="' + esc(id) + '">Delete these notes</button></div>';
     el("nt-body").innerHTML = html;
+  }
+
+  /* The API lives on another host, so a plain download link is at the mercy of how the browser feels about
+   * cookies on a cross-site download.  Fetching it ourselves and handing over the bytes always works. */
+  function keep(id, btn) {
+    var was = btn.textContent;
+    btn.disabled = true; btn.textContent = "Making your page…";
+    fetch(P.API + BASE + "/" + id + "/notes.pdf", { credentials: "include" })
+      .then(function (r) { if (!r.ok) throw new Error(String(r.status)); return r.blob(); })
+      .then(function (b) {
+        var u = URL.createObjectURL(b), a = document.createElement("a");
+        a.href = u;
+        a.download = "QueroCura-visit-notes.pdf";
+        document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(function () { URL.revokeObjectURL(u); }, 20000);
+        toast("Saved to your downloads.");
+      })
+      .catch(function () { toast("We couldn't make that page just now. Try again in a moment.", "err"); })
+      .then(function () { btn.disabled = false; btn.textContent = was; });
   }
 
   function forget(id) {
@@ -424,6 +443,7 @@
       if ((x = t.closest("[data-join]"))) return join(x.getAttribute("data-join"));
       if ((x = t.closest("[data-cancel]"))) return cancelVisit(x.getAttribute("data-cancel"));
       if ((x = t.closest("[data-notes]"))) return openNotes(x.getAttribute("data-notes"));
+      if ((x = t.closest("[data-keep]"))) return keep(x.getAttribute("data-keep"), x);
       if ((x = t.closest("[data-forget]"))) return forget(x.getAttribute("data-forget"));
     });
 

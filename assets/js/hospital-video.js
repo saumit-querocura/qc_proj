@@ -14,6 +14,7 @@
   var S = { day: "", data: null, call: null, visit: null, poll: null, setup: null };
 
   function esc(s) { return H().esc(s); }
+  function say(msg, kind) { var P = H().P; if (P && P.toast) P.toast(msg, kind); }
   function el(id) { return document.getElementById(id); }
   function api(p, o) { return H().api(p, o); }
   function initials(n) {
@@ -98,7 +99,7 @@
   }
 
   function ping() {
-    H().toast("A patient has arrived in the video waiting room.");
+    say("A patient has arrived in the video waiting room.");
     try {
       var a = new (window.AudioContext || window.webkitAudioContext)();
       var o = a.createOscillator(), g = a.createGain();
@@ -178,10 +179,10 @@
         onSay: function (b) {
           if (b && b.event === "listen") {
             el("vr-ear").classList.toggle("on", !!b.on);
-            H().toast(b.on ? "This patient has asked QueroCura to take notes of the visit."
+            say(b.on ? "This patient has asked QueroCura to take notes of the visit."
                            : "The patient has turned note-taking off.");
           }
-          if (b && b.event === "joined") H().toast(((S.visit || {}).patient || "The patient") + " joined the call.");
+          if (b && b.event === "joined") say(((S.visit || {}).patient || "The patient") + " joined the call.");
         },
         onEnd: function (theirs) { if (!theirs) leave(); }
       }).then(function (c) { S.call = c; flag("vr-mic", true); flag("vr-cam", true); });
@@ -225,20 +226,71 @@
     var on = el("vset-on").checked;
     var docs = [].slice.call(document.querySelectorAll(".vset-d:checked")).map(function (x) { return x.value; });
     api(BASE + "/setup", { method: "POST", body: { enabled: on, doctors: docs, days_ahead: el("vset-days").value, note: el("vset-note").value } })
-      .then(function (d) { H().toast(d.message || (d.ok ? "Saved." : "We couldn't save that."), d.ok ? "" : "err"); });
+      .then(function (d) { say(d.message || (d.ok ? "Saved." : "We couldn't save that."), d.ok ? "" : "err"); });
   }
 
   document.addEventListener("click", function (e) {
     var x;
     if ((x = e.target.closest("[data-vjoin]"))) return join(x.getAttribute("data-vjoin"));
     if (e.target.closest("#vset-save")) return saveSetup();
+    if (e.target.closest("[data-more]") || e.target.closest("[data-tab]")) setTimeout(function () { dot(null); }, 60);
   });
   document.addEventListener("change", function (e) {
     if (e.target.id === "vd-day") { S.day = e.target.value; load(); }
   });
 
+  /* ------------------------------------------------------------------ being told from anywhere in the portal
+   *
+   * A patient sitting in the waiting room is no use to anybody if the only place it shows is the screen the doctor
+   * is not looking at.  This watches quietly from wherever they are, puts a dot on the Video clinic tab, and says
+   * so once per arrival -- once, not every time it checks, because a nag is worse than silence.
+   */
+  var W = { on: false, timer: null, seen: {}, waiting: 0 };
+
+  function watchAll() {
+    clearInterval(W.timer);
+    W.timer = setInterval(tick, 25000);
+    tick();
+  }
+
+  function tick() {
+    if (document.hidden || S.call) return;                 // not while they are already in a call
+    api(BASE + "/day").then(function (d) {
+      if (!d || !d.ok) return;
+      var waiting = d.waiting || [];
+      dot(waiting.length);
+      var fresh = waiting.filter(function (id) { return !W.seen[id]; });
+      waiting.forEach(function (id) { W.seen[id] = 1; });
+      Object.keys(W.seen).forEach(function (id) { if (waiting.indexOf(id) < 0) delete W.seen[id]; });
+      if (!fresh.length) return;
+      var who = (d.visits || []).filter(function (v) { return v.id === fresh[0]; })[0] || {};
+      say((who.patient || "A patient") + " is waiting in the video room.");
+      ping();
+      if (el("tab-video") && !el("tab-video").hidden) draw();
+    });
+  }
+
+  /* The Video clinic tab is usually tucked inside the More menu, which is only built when it is opened, so the
+     badge goes on whichever of the two is on screen -- and is put back whenever that menu is drawn. */
+  function dot(n) {
+    if (n != null) W.waiting = n;
+    n = W.waiting || 0;
+    var tab = document.querySelector('[data-tab="video"]');
+    var more = document.querySelector("[data-more]");
+    [tab, tab ? null : more].forEach(function (b) {
+      if (!b) return;
+      b.classList.toggle("tb-dot", n > 0);
+      b.setAttribute("data-count", n > 0 ? String(n) : "");
+    });
+    if (tab && more) { more.classList.remove("tb-dot"); more.removeAttribute("data-count"); }
+  }
+
   window.QCVideo = {
-    tabs: function (can) { return [["video", "Video clinic", can("rx") || can("appointments"), "flow"]]; },
+    tabs: function (can) {
+      var yes = can("rx") || can("appointments");
+      if (yes && !W.on) { W.on = true; setTimeout(watchAll, 4000); }
+      return [["video", "Video clinic", yes, "flow"]];
+    },
     loaders: function () { return { video: load }; },
     setupCard: setupCard,
     leave: function () { clearInterval(S.poll); },

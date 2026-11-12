@@ -1886,3 +1886,11 @@ body.vr-on { overflow: hidden; }
   .vq { flex-wrap: wrap; } .vq-t { flex-basis: 100%; }
   .vr-b { width: 50px; height: 50px; }
 }
+
+/* a tab with someone waiting behind it */
+.tb-dot { position: relative; }
+.tb-dot::after { content: attr(data-count); position: absolute; top: 2px; right: 2px; min-width: 16px; height: 16px;
+  padding: 0 4px; border-radius: 99px; background: #e0352b; color: #fff; font: 800 10px/16px 'Manrope', sans-serif;
+  text-align: center; box-shadow: 0 0 0 2px var(--card, #fff); animation: vqBeat 1.8s infinite; }
+.tbm-i.tb-dot::after { top: 10px; right: 10px; }
+@media (prefers-reduced-motion: reduce) { .tb-dot::after { animation: none; } }
