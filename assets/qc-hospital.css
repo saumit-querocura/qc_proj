@@ -1636,3 +1636,177 @@ html.hp-calm .lob-in .lob-name { animation: none !important; -webkit-text-fill-c
 
 .cu-checks { display: grid; gap: 7px; margin: 10px 0 2px; }
 .cu-checks .check { display: flex; align-items: center; gap: 9px; font-size: 13.5px; }
+
+/* The lobby takes the shape of the artwork: a disc for a square mark, a plaque for a wide logo,
+   and the other way round behind a logo drawn in white for a dark letterhead. */
+.lob-mark img ~ .lob-ini { display: none; }
+.lob-mark.wide { width: clamp(236px, 31vw, 392px); aspect-ratio: 2.7 / 1; border-radius: 40px; }
+.lob-mark.wide img { width: 80%; height: 68%; }
+.lob-mark.wide .lob-ring { border-radius: 48px; inset: -14px; }
+.lob-mark.wide .lob-ring.r2 { border-radius: 60px; inset: -32px; }
+.lob-mark img { width: 66%; height: 66%; }
+.lob-mark.pale { background: linear-gradient(150deg, var(--lb-deep), var(--lb-bg2) 120%);
+  box-shadow: 0 40px 90px -30px var(--lb-brand), 0 0 0 1px color-mix(in srgb, var(--lb-brand) 55%, transparent), 0 0 140px -30px var(--lb-brand); }
+.lob-mark.pale:hover { box-shadow: 0 48px 110px -26px var(--lb-brand), 0 0 0 2px var(--lb-brand), 0 0 170px -20px var(--lb-brand); }
+.lob-mark.pale .lob-ini { background: linear-gradient(140deg, #fff, var(--lb-brand)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.lob-mark.no-art { width: clamp(150px, 20vw, 216px); aspect-ratio: 1; border-radius: 50%; }
+.lob-mark.no-art .lob-ring { border-radius: 50%; inset: -18px; }
+.lob-mark.no-art .lob-ring.r2 { border-radius: 50%; inset: -44px; }
+
+/* a pale logo in the top bar needs something behind it on a light page */
+html:not([data-theme="dark"]) .logo-wrap.own-brand.pale-logo img.own-logo {
+  background: #16142c; padding: 5px 10px; border-radius: 11px; box-sizing: content-box; height: 30px; }
+
+/* ===================================================================================================
+   The portal on a phone.  One line of chrome at the top, the screens along the bottom where a thumb
+   reaches, and everything inside given room to breathe.  Nothing is hidden that a desk can see:
+   the same screens, reached a different way.
+   =================================================================================================== */
+.hp-you { display: none; }
+.mbar, .msheet-back { display: none; }
+
+@media (max-width: 760px) {
+  /* ---- one line at the top: their mark, and you ---- */
+  body.hp .hp-top { flex-wrap: nowrap; gap: 10px; padding: 8px 14px; min-height: 56px; padding-top: max(8px, env(safe-area-inset-top)); }
+  body.hp .hp-top .hp-nav#app-nav { display: flex; align-items: center; gap: 8px; margin-left: auto; flex: 0 0 auto; }
+  body.hp #app-nav .hp-who, body.hp #app-nav #idle, body.hp #app-nav #sleep, body.hp #app-nav #signout { display: none; }
+  body.hp:has(#portal:not([hidden])) .hp-top .theme-toggle { display: none; }
+  body.hp .logo-wrap.own-brand { max-width: calc(100vw - 108px); gap: 9px; }
+  body.hp .logo-wrap.own-brand img.own-logo { height: 32px; max-width: min(168px, 48vw); }
+  body.hp .own-name b { font-size: 15.5px; }
+  body.hp .own-name small { display: block; font-size: 10.5px; }
+  .hp-you { display: grid; place-items: center; flex: 0 0 auto; width: 40px; height: 40px; border-radius: 50%; border: 0; cursor: pointer;
+    font: 800 13px var(--font-head), 'Space Grotesk', sans-serif; letter-spacing: .01em;
+    color: var(--brand-ink, #fff); background: linear-gradient(140deg, var(--brand, #0e8f83), var(--alt, #7c6fdb));
+    box-shadow: 0 6px 18px -8px var(--brand-glow, rgba(0,0,0,.4)); }
+  .hp-you:active { transform: scale(.94); }
+
+  /* ---- the page itself ---- */
+  body.hp .hp-wrap { padding-left: 16px; padding-right: 16px; }
+  body.hp .hp-head { margin-bottom: 12px; gap: 8px; align-items: center; }
+  body.hp .hp-head h1 { font-size: 21px; letter-spacing: -.02em; }
+  body.hp #org-meta { font-size: 11.5px; line-height: 1.35; }
+  body.hp .hp-head-r { gap: 6px; }
+  body.hp .hp-tabs { display: none; }                      /* the bottom bar is the tab bar here */
+  html.has-mbar body.hp #portal { padding-bottom: calc(76px + env(safe-area-inset-bottom)); }
+  html.has-mbar body.hp .hp-foot { padding-bottom: calc(86px + env(safe-area-inset-bottom)); }
+
+  /* ---- the screens along the bottom ---- */
+  .mbar { display: flex; position: fixed; left: 0; right: 0; bottom: 0; z-index: 900; justify-content: space-around; align-items: stretch;
+    padding: 6px 4px calc(6px + env(safe-area-inset-bottom)); gap: 2px;
+    background: color-mix(in srgb, var(--card) 86%, transparent); backdrop-filter: blur(16px) saturate(1.3);
+    border-top: 1px solid var(--line); box-shadow: 0 -10px 30px -22px rgba(0,0,0,.6); }
+  .mb-i { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+    border: 0; background: transparent; cursor: pointer; padding: 7px 2px 5px; border-radius: 14px; min-height: 52px;
+    color: var(--muted); font: 700 10.5px 'Manrope', sans-serif; letter-spacing: .01em; position: relative; transition: color .2s ease; }
+  .mb-ic { font-size: 19px; line-height: 1; transition: transform .28s cubic-bezier(.2,.9,.25,1); }
+  .mb-l { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .mb-i.on { color: var(--brand); }
+  .mb-i.on .mb-ic { transform: translateY(-2px) scale(1.12); }
+  .mb-i.on::before { content: ""; position: absolute; top: 2px; width: 22px; height: 3px; border-radius: 3px; background: var(--brand);
+    box-shadow: 0 0 12px var(--brand-glow, transparent); animation: mbIn .32s cubic-bezier(.2,.9,.25,1) both; }
+  @keyframes mbIn { from { width: 6px; opacity: 0; } to { width: 22px; opacity: 1; } }
+  .mb-i:active { background: var(--brand-soft); }
+
+  /* ---- sheets that rise from the bottom ---- */
+  .msheet-back { display: block; position: fixed; inset: 0; z-index: 1600; background: rgba(8,7,22,0); transition: background .26s ease; }
+  .msheet-back.in { background: rgba(8,7,22,.5); }
+  .msheet { position: absolute; left: 0; right: 0; bottom: 0; max-height: 86vh; display: flex; flex-direction: column;
+    background: var(--card); color: var(--ink); border-radius: 26px 26px 0 0; border-top: 1px solid var(--line);
+    box-shadow: 0 -24px 60px -30px rgba(0,0,0,.7); transform: translateY(102%); transition: transform .3s cubic-bezier(.2,.9,.25,1);
+    padding-bottom: env(safe-area-inset-bottom); }
+  .msheet-back.in .msheet { transform: none; }
+  .ms-grab { width: 42px; height: 4px; border-radius: 4px; background: var(--line); margin: 9px auto 2px; flex: none; }
+  .ms-head { display: flex; align-items: center; gap: 10px; padding: 6px 18px 10px; flex: none; }
+  .ms-head b { font: 700 17px var(--font-head), 'Space Grotesk', sans-serif; flex: 1; }
+  .ms-x { border: 0; background: rgba(127,127,160,.14); color: var(--ink); width: 34px; height: 34px; border-radius: 50%; cursor: pointer; font-size: 14px; }
+  .ms-body { overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 0 14px 18px; }
+  .ms-tall .msheet { height: 86vh; }
+  .ms-g { margin-bottom: 14px; }
+  .ms-gh { font: 800 11px 'Manrope', sans-serif; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); padding: 8px 6px 6px; }
+  .ms-i, .ms-act { width: 100%; display: flex; align-items: center; gap: 13px; text-align: left; border: 0; cursor: pointer;
+    background: transparent; color: var(--ink); padding: 12px 10px; border-radius: 16px; min-height: 56px; }
+  .ms-i:active, .ms-act:active { background: var(--brand-soft); }
+  .ms-i.on { background: var(--brand-soft); color: var(--on-soft); }
+  .ms-ic, .ms-act > span:first-child { flex: 0 0 auto; width: 38px; height: 38px; border-radius: 12px; display: grid; place-items: center;
+    font-size: 18px; background: rgba(127,127,160,.12); }
+  .ms-i b, .ms-act b { display: block; font: 700 15px 'Manrope', sans-serif; }
+  .ms-i small, .ms-act small { display: block; font-size: 12px; color: var(--muted); line-height: 1.35; margin-top: 1px; }
+  .ms-act.danger b { color: var(--danger); }
+  .ms-you { display: flex; align-items: center; gap: 13px; padding: 4px 10px 14px; border-bottom: 1px solid var(--line); margin-bottom: 8px; }
+  .ms-av { width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; font: 800 16px var(--font-head), 'Space Grotesk', sans-serif;
+    color: var(--brand-ink, #fff); background: linear-gradient(140deg, var(--brand), var(--alt)); }
+  .ms-you b { display: block; font: 700 17px var(--font-head), 'Space Grotesk', sans-serif; }
+  .ms-you small { color: var(--muted); font-size: 12.5px; }
+  .ms-acts { display: grid; gap: 2px; }
+
+  /* ---- room to breathe inside the screens ---- */
+  body.hp .card { padding: 15px 15px; border-radius: 18px; }
+  body.hp .md-head, body.hp .hms-head, body.hp .ops-head { flex-direction: column; align-items: stretch; gap: 10px; }
+  body.hp .md-acts, body.hp .ops-bar .chips, body.hp .hms-filters { overflow-x: auto; flex-wrap: nowrap; scrollbar-width: none;
+    margin: 0 -16px; padding: 2px 16px; }
+  body.hp .md-acts::-webkit-scrollbar, body.hp .hms-filters::-webkit-scrollbar { display: none; }
+  body.hp .md-acts .btn, body.hp .hms-filters .chipbtn { flex: 0 0 auto; }
+  body.hp .btn { min-height: 40px; }
+  body.hp .grid2, body.hp .grid3, body.hp .cu-studio, body.hp .cu-grid, body.hp .ops-cc-cols { grid-template-columns: 1fr !important; }
+  /* anything laid out as side-by-side columns stacks rather than pushing the page sideways */
+  body.hp .bd { grid-auto-flow: row; grid-auto-columns: auto; min-width: 0; }
+  body.hp #portal, body.hp .hp-wrap { max-width: 100%; overflow-x: clip; }
+  body.hp .cu-live { position: static; }
+  body.hp .t, body.hp table { font-size: 12.5px; }
+  body.hp .table-scroll, body.hp .tscroll { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0 -15px; padding: 0 15px; }
+
+  /* the greeting gets the width; the tools become a row you can swipe */
+  body.hp .md-hello { flex-direction: column; align-items: stretch; gap: 10px; margin-bottom: 14px; }
+  body.hp .md-hello h2 { font-size: 24px; }
+  body.hp .md-tools { display: flex; flex-wrap: nowrap; overflow-x: auto; gap: 7px; scrollbar-width: none;
+    margin: 0 -16px; padding: 2px 16px 4px; }
+  body.hp .md-tools::-webkit-scrollbar { display: none; }
+  body.hp .md-tools .btn { flex: 0 0 auto; white-space: nowrap; }
+
+  /* a task reads across the full width, and its button sits under it where a thumb lands */
+  body.hp .md-task { flex-wrap: wrap; align-items: flex-start; row-gap: 10px; padding: 13px 14px; }
+  body.hp .md-task .grow { flex: 1 1 100%; min-width: 0; order: 2; }
+  body.hp .md-task .md-lvl { order: 1; }
+  body.hp .md-task > .btn { order: 3; margin-left: auto; min-height: 38px; }
+  body.hp .md-task b { font-size: 15px; }
+
+  /* rows of "thing … action": the name takes the width, the buttons land underneath it */
+  body.hp .md-item, body.hp .bill-row, body.hp .ops-dl { flex-wrap: wrap; }
+  body.hp .hms-row { flex-wrap: wrap; align-items: flex-start; row-gap: 9px; padding: 12px 14px; }
+  body.hp .hms-row .grow { flex: 1 1 calc(100% - 52px); }
+  body.hp .hms-row > .btn, body.hp .hms-row > .amt { margin-left: auto; }
+  body.hp .hms-row > .btn { min-height: 38px; }
+
+  /* a modal on a phone is a sheet: it comes up from the bottom and fills the screen */
+  body.hp .modal-back.open { align-items: flex-end; padding: 0; }
+  body.hp .modal-back.open .modal { width: 100%; max-height: 93vh; overflow-y: auto; -webkit-overflow-scrolling: touch;
+    border-radius: 24px 24px 0 0; padding: 20px 16px calc(22px + env(safe-area-inset-bottom)); animation: mUp .28s cubic-bezier(.2,.9,.25,1); }
+  @keyframes mUp { from { transform: translateY(26px); opacity: .5; } to { transform: none; opacity: 1; } }
+  body.hp .modal-x { top: 12px; right: 12px; width: 36px; height: 36px; }
+  body.hp .modal-back.open .modal::before { content: ""; display: block; width: 42px; height: 4px; border-radius: 4px;
+    background: var(--line); margin: -8px auto 12px; }
+  /* a sheet owns the screen: the bar slides out of its way and comes back when the sheet closes */
+  .mbar { transition: transform .26s cubic-bezier(.2,.9,.25,1); }
+  body.hp:has(.modal-back.open) .mbar, body.hp:has(.msheet-back) .mbar, body.hp:has(.lob) .mbar { transform: translateY(130%); }
+
+  /* the lobby and the sleep screen */
+  .lob-mark.wide { width: min(78vw, 330px); }
+  .lob-sleep .lob-mark.wide { width: min(72vw, 300px); }
+  .lob-name { padding: 0 6px; }
+  .lob-left { font-size: 12px; }
+}
+
+/* very small phones */
+@media (max-width: 380px) {
+  .mb-l { font-size: 9.5px; }
+  body.hp .own-name small { display: none; }
+  body.hp .hp-head h1 { font-size: 19px; }
+}
+
+/* a phone lying on its side: the bar would eat the screen, so it goes back to the top */
+@media (max-width: 900px) and (orientation: landscape) and (max-height: 460px) {
+  .mbar { position: static; }
+  html.has-mbar body.hp #portal { padding-bottom: 0; }
+}
+@media print { .mbar, .msheet-back, .hp-you { display: none !important; } }

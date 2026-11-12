@@ -46,7 +46,7 @@
 
   /* ------------------------------------------------------------------ building it */
   function build(me, mode) {
-    var b = (QCTheme.data().branding) || {}, lob = b.lobby || {}, mark = QCTheme.markUrl("mark");
+    var b = (QCTheme.data().branding) || {}, lob = b.lobby || {}, art = QCTheme.artwork();
     var who = ((me.staff || {}).name || "").split(" ").filter(function (w) { return !/^(dr|mr|mrs|ms|sr|prof)\.?$/i.test(w); })[0] || (me.staff || {}).name || "";
     var d = new Date(), asleep = mode === "sleep";
     var when = d.toLocaleDateString([], { weekday: "long", day: "numeric", month: "long" });
@@ -61,9 +61,10 @@
       '<canvas class="lob-cv" aria-hidden="true"></canvas>' +
       '<div class="lob-drift" id="lob-drift" aria-hidden="true"></div>' +
       '<div class="lob-mid">' +
-        '<button type="button" class="lob-mark" id="lob-go" aria-describedby="lob-hint">' +
+        '<button type="button" class="lob-mark' + (art.wide ? " wide" : "") + (art.light ? " pale" : "") + '" id="lob-go" aria-describedby="lob-hint">' +
           '<span class="lob-ring" aria-hidden="true"></span><span class="lob-ring r2" aria-hidden="true"></span>' +
-          (mark ? '<img src="' + esc(mark) + '" alt="">' : '<span class="lob-ini" aria-hidden="true">' + esc(QCTheme.initials()) + "</span>") +
+          (art.url ? '<img src="' + esc(art.url) + '" alt="" onerror="this.closest(\'.lob-mark\').classList.add(\'no-art\');this.remove()">' : "") +
+          '<span class="lob-ini" aria-hidden="true">' + esc(QCTheme.initials()) + "</span>" +
           '<span class="sr-only">Open ' + esc(QCTheme.name()) + "</span>" +
         "</button>" +
         '<h1 class="lob-name"></h1>' +

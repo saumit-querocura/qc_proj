@@ -162,6 +162,13 @@
     return (window.QCPage ? QCPage.API : "") + "/hospital/public/logo/" + encodeURIComponent(org.id) +
       (which === "mark" ? "?v=mark&t=" + (b.mark_ts || 0) : "?t=" + (b.logo_ts || 0));
   }
+  /* which artwork the lobby should wear, how wide it is, and whether it is drawn pale */
+  function artwork() {
+    var b = brand();
+    if (b.mark) return { url: markUrl("mark"), wide: false, light: !!b.mark_light };
+    if (b.logo) return { url: markUrl("logo"), wide: true, light: !!b.logo_light };
+    return { url: "", wide: false, light: false };
+  }
   function initials() {
     return name().replace(/[^A-Za-zऀ-ॿ ]/g, " ").trim().split(/\s+/).slice(0, 2)
       .map(function (w) { return w[0]; }).join("").toUpperCase() || "H";
@@ -204,6 +211,7 @@
     wrap.setAttribute("href", "./");
     wrap.classList.add("own-brand");
     wrap.classList.toggle("has-wide", !!wide);
+    wrap.classList.toggle("pale-logo", !!(wide ? b.logo_light : b.mark_light));
     wrap.innerHTML = (wide ? '<img class="own-logo" src="' + wide + '" alt="">' : mark ? '<img class="own-logo sq" src="' + mark + '" alt="">' : '<span class="own-mark">' + initials() + "</span>") +
       '<span class="own-name">' + (wide ? "" : "<b></b>") + (b.tagline ? "<small></small>" : "") + "</span>";
     if (!wide) wrap.querySelector(".own-name b").textContent = name();
@@ -310,7 +318,7 @@
 
   window.QCTheme = {
     apply: apply, paint: paint, palette: palette, lobbyPalette: lobbyPalette, oklch: oklch, toOklch: toOklch, contrast: contrast, rgba: rgba,
-    markUrl: markUrl, name: name, initials: initials, restore: restore, glide: glide,
+    markUrl: markUrl, artwork: artwork, name: name, initials: initials, restore: restore, glide: glide,
     data: function () { return C; }, me: function () { return ME; },
     on: function () { return !!C; }
   };

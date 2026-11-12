@@ -104,3 +104,29 @@ test("without a logo the hospital gets a mark made from its name", () => {
   assert.equal(w.QCTheme.initials(), "GV");
   assert.equal(w.document.querySelector(".own-mark").textContent, "GV");
 });
+
+test("the lobby is told what artwork to wear and which way round it is", () => {
+  const w = setup();
+  const put = (b) => w.QCTheme.apply({ branding: Object.assign({ accent: "#1e3a8a" }, b), prefs: {} }, { org: { id: "o1", name: "Lotus Hospital" }, staff: {} });
+  put({});
+  let a0 = w.QCTheme.artwork();
+  assert.equal(a0.url, "", "no artwork at all");
+  assert.equal(a0.wide, false);
+  assert.equal(a0.light, false);
+  put({ logo: true, logo_ts: 3, logo_light: true });
+  let a = w.QCTheme.artwork();
+  assert.equal(a.wide, true, "a wide logo is wide");
+  assert.equal(a.light, true, "and it is pale");
+  assert.match(a.url, /\/hospital\/public\/logo\/o1\?t=3/);
+  put({ logo: true, logo_ts: 3, logo_light: true, mark: true, mark_ts: 9, mark_light: false });
+  a = w.QCTheme.artwork();
+  assert.equal(a.wide, false, "a square mark wins, and is not wide");
+  assert.equal(a.light, false);
+  assert.match(a.url, /\?v=mark&t=9/);
+  // the top bar says so too, so a pale logo gets something dark behind it
+  assert.ok(w.document.querySelector(".logo-wrap").classList.contains("own-brand"));
+  put({ logo: true, logo_ts: 1, logo_light: true });
+  assert.ok(w.document.querySelector(".logo-wrap").classList.contains("pale-logo"));
+  put({ logo: true, logo_ts: 1, logo_light: false });
+  assert.ok(!w.document.querySelector(".logo-wrap").classList.contains("pale-logo"));
+});

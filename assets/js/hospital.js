@@ -375,7 +375,10 @@
     }).join("") + '<span class="tb-glide" aria-hidden="true"></span>' + (TABS_REST.length ? '<button type="button" class="tb-more" data-more aria-haspopup="true" aria-expanded="false">More <span aria-hidden="true">▾</span></button><div class="tb-menu" id="tb-menu" hidden></div>' : "");
     afterTabs();
   }
-  function afterTabs() { if (window.QCTheme) requestAnimationFrame(QCTheme.glide); }
+  function afterTabs() {
+    if (window.QCTheme) requestAnimationFrame(QCTheme.glide);
+    if (window.QCMobile) QCMobile.sync();
+  }
   function openMore(btn) {
     var m = el("tb-menu"); if (!m) return;
     if (!m.hidden) { m.hidden = true; btn.setAttribute("aria-expanded", "false"); return; }
@@ -903,7 +906,15 @@
     P: P, api: api, esc: esc, el: el, show: show, say: say, when: when, left: left, initials: initials, can: can, guard: guard,
     me: function () { return ME; }, opts: function () { return OPTS; }, roster: function () { return ROSTER; },
     loadRoster: function () { return api("/hospital/roster").then(function (r) { if (r && r.ok) ROSTER = r.items; return ROSTER; }); },
-    openChart: openChart, openRecord: openRecord, go: function (t) { tabNow = t; render(); },
+    openChart: openChart, openRecord: openRecord, go: function (t) { goTab(t); },
+    // what the phone shell needs: every screen this person may open, and the one they are on
+    tabs: function () {
+      return TABS_ALL.map(function (t) {
+        var i = TAB_INFO[t[0]] || [];
+        return { key: t[0], label: tabName(t), icon: i[0] || "", about: i[2] || "", group: i[3] || "Running the hospital" };
+      });
+    },
+    current: function () { return tabNow; },
     site: function () { return SITE; }, sites: function () { return SITES; }, reloadSites: loadSites,
     siteQ: function (sep) { return SITE ? (sep || "?") + "site=" + encodeURIComponent(SITE) : ""; },
     term: function (k, d) { return window.QCCustom ? window.QCCustom.term(k, d) : (d || k); },
