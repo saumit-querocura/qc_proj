@@ -1810,3 +1810,25 @@ html:not([data-theme="dark"]) .logo-wrap.own-brand.pale-logo img.own-logo {
   html.has-mbar body.hp #portal { padding-bottom: 0; }
 }
 @media print { .mbar, .msheet-back, .hp-you { display: none !important; } }
+
+/* A strip of tabs wider than its box: it fades where there is more to see, so the edge is not a hard cut that
+   looks like the end of the list.  The mask dims the tabs under it; they stay reachable. */
+.rec-tabs, .ch-tabs { position: relative; scroll-snap-type: x proximity; -webkit-overflow-scrolling: touch;
+  scrollbar-width: none; scroll-behavior: smooth; }
+.rec-tabs::-webkit-scrollbar, .ch-tabs::-webkit-scrollbar { display: none; }
+.rec-tabs > button, .ch-tabs > button { scroll-snap-align: center; }
+.rec-tabs.sx-r, .ch-tabs.sx-r { -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 38px), transparent 100%);
+  mask-image: linear-gradient(90deg, #000 calc(100% - 38px), transparent 100%); }
+.rec-tabs.sx-l, .ch-tabs.sx-l { -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 38px);
+  mask-image: linear-gradient(90deg, transparent 0, #000 38px); }
+.rec-tabs.sx-l.sx-r, .ch-tabs.sx-l.sx-r {
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 38px, #000 calc(100% - 38px), transparent 100%);
+  mask-image: linear-gradient(90deg, transparent 0, #000 38px, #000 calc(100% - 38px), transparent 100%); }
+.rec-tabs > button:focus-visible, .ch-tabs > button:focus-visible { outline: 2px solid var(--brand, var(--teal)); outline-offset: -3px; border-radius: 8px; }
+html.hp-branded .rec-tabs button.on { color: var(--brand); border-bottom-color: var(--brand); }
+@media (max-width: 760px) {
+  .rec-tabs { gap: 14px; margin-bottom: 12px; }
+  .rec-tabs > button, .ch-tabs > button { font-size: 13px; padding-top: 10px; padding-bottom: 10px; }
+  .ch-tabs > button { padding-left: 11px; padding-right: 11px; }
+}
+@media (prefers-reduced-motion: reduce) { .rec-tabs, .ch-tabs { scroll-behavior: auto; } }

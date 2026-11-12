@@ -229,9 +229,10 @@
     h += '<div class="rec-acts">' + acts.join("") + "</div>";
     h += '<div class="rec-tabs" role="tablist">' + tabs.map(function (t) { return '<button type="button" role="tab" data-rtab="' + t[0] + '" class="' + (t[0] === S.recTab ? "on" : "") + '">' + t[1] + "</button>"; }).join("") + '</div><div id="rec-body">' + recTab(r) + "</div>";
     var b = M.modal(h, true);
+    H().strip(b.querySelector(".rec-tabs"));
     b.onclick = function (e) {
       var t;
-      if ((t = e.target.closest("[data-rtab]"))) { S.recTab = t.getAttribute("data-rtab"); [].forEach.call(b.querySelectorAll("[data-rtab]"), function (x) { x.classList.toggle("on", x === t); }); el("rec-body").innerHTML = recTab(r); return; }
+      if ((t = e.target.closest("[data-rtab]"))) { S.recTab = t.getAttribute("data-rtab"); H().centreTab(t.parentNode, t); [].forEach.call(b.querySelectorAll("[data-rtab]"), function (x) { x.classList.toggle("on", x === t); }); el("rec-body").innerHTML = recTab(r); return; }
       if ((t = e.target.closest("[data-visit]"))) { M.close(); return window.QCOps && window.QCOps.openVisit(t.getAttribute("data-visit")); }
       if (e.target.closest("[data-checkin]")) { M.close(); return window.QCOps && window.QCOps.checkIn(p.id); }
       if (e.target.closest("[data-book]")) return book({ patient: p, layer: 2, after: function () { openRecord(p.id); } });

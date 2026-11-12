@@ -280,6 +280,40 @@
   document.addEventListener("keydown", function (e) {
     if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === "L" || e.key === "l")) { e.preventDefault(); goSleep(); }
   });
+  /* A strip of tabs that is wider than its box: show where there is more, keep the open one in view, and let the
+     arrow keys walk it, which role="tablist" leads people to expect. */
+  function strip(box) {
+    if (!box || box._strip) { if (box) centreTab(box); return box; }
+    box._strip = 1;
+    function edges() {
+      var max = box.scrollWidth - box.clientWidth;
+      box.classList.toggle("sx-l", box.scrollLeft > 2);
+      box.classList.toggle("sx-r", max > 2 && box.scrollLeft < max - 2);
+    }
+    box.addEventListener("scroll", edges, { passive: true });
+    if (window.ResizeObserver) new ResizeObserver(edges).observe(box);
+    box.addEventListener("keydown", function (e) {
+      if (e.key !== "ArrowLeft" && e.key !== "ArrowRight" && e.key !== "Home" && e.key !== "End") return;
+      var bs = [].slice.call(box.querySelectorAll('[role="tab"]')), i = bs.indexOf(document.activeElement);
+      if (i < 0 || !bs.length) return;
+      e.preventDefault();
+      var n = e.key === "Home" ? bs[0] : e.key === "End" ? bs[bs.length - 1]
+        : bs[(i + (e.key === "ArrowRight" ? 1 : bs.length - 1)) % bs.length];
+      n.focus(); n.click();
+    });
+    setTimeout(function () { edges(); centreTab(box); }, 0);
+    return box;
+  }
+  /* moved by hand rather than scrollIntoView, which would also scroll the sheet the strip sits in */
+  function centreTab(box, pick) {
+    var on = pick || (box && box.querySelector("button.on"));
+    if (!box || !on) return;
+    var want = on.offsetLeft - (box.clientWidth - on.offsetWidth) / 2;
+    box.scrollLeft = Math.max(0, Math.min(want, box.scrollWidth - box.clientWidth));
+    box.classList.toggle("sx-l", box.scrollLeft > 2);
+    box.classList.toggle("sx-r", box.scrollLeft < box.scrollWidth - box.clientWidth - 2);
+  }
+
   function closeAll() { P.closeModal("chart-modal"); P.closeModal("record-modal"); el("chart-body").innerHTML = ""; closeCmdk(); }
 
   // Any API reply that says the session ended sends us back to sign-in.
@@ -673,10 +707,12 @@
         (d.vitals ? '<div class="ch-pane" data-cpane="vitals" hidden>' + vt + "</div>" : "") + (d.labs || d.imaging ? '<div class="ch-pane" data-cpane="results" hidden>' + res + "</div>" : "") + '<div class="ch-pane" data-cpane="team" hidden>' + tr + "</div>";
       h += '<p class="mini" style="margin-top:14px">' + esc(d.disclaimer || "") + "</p>";
       body.innerHTML = h;
-      body.querySelector(".ch-tabs") && body.querySelector(".ch-tabs").addEventListener("click", function (e) {
+      var cht = strip(body.querySelector(".ch-tabs"));
+      cht && cht.addEventListener("click", function (e) {
         var b = e.target.closest("[data-ctab]"); if (!b) return;
         [].forEach.call(this.children, function (c) { c.classList.toggle("on", c === b); });
         [].forEach.call(body.querySelectorAll("[data-cpane]"), function (p) { p.hidden = p.getAttribute("data-cpane") !== b.getAttribute("data-ctab"); });
+        centreTab(this, b);
       });
       var pr = el("print-chart"); if (pr) pr.addEventListener("click", function () { [].forEach.call(body.querySelectorAll("[data-cpane]"), function (p) { p.hidden = false; }); window.print(); });
       var ad = el("chart-add"); if (ad) ad.addEventListener("click", function () { P.closeModal("chart-modal"); openRecord(grantId, p.name); });
@@ -918,6 +954,7 @@
     site: function () { return SITE; }, sites: function () { return SITES; }, reloadSites: loadSites,
     siteQ: function (sep) { return SITE ? (sep || "?") + "site=" + encodeURIComponent(SITE) : ""; },
     term: function (k, d) { return window.QCCustom ? window.QCCustom.term(k, d) : (d || k); },
+    strip: strip, centreTab: centreTab,
     lobby: function () { if (window.QCLobby && ME) QCLobby.show(ME); },
     sleep: function () { goSleep(); },
     refreshMe: function () { return api("/hospital/me").then(function (r) { if (r.ok) { ME = r; if (window.QCCustom) window.QCCustom.apply(r.custom, r); relabel(r.custom); render(); } }); },
