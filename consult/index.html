@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://app.querocura.com; connect-src 'self' https://app.querocura.com; media-src 'self' blob: mediastream:; object-src 'none'; base-uri 'self'; form-action 'self' https://app.querocura.com">
+<script src="../assets/qc-early.js?v=1f9411e7" async></script>
+<title>Video visits — QueroCura</title>
+<meta name="robots" content="noindex">
+<meta name="referrer" content="no-referrer">
+<link rel="icon" type="image/x-icon" href="../icons/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://app.querocura.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700;800&family=Manrope:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500;1,9..144,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/qc-base.css?v=7b9ea421">
+<style>
+  .shell { max-width: 1020px; }
+
+  /* ---- the two halves of the page ---- */
+  .seg { display: inline-flex; gap: 3px; padding: 4px; border-radius: 999px; background: rgba(16,14,42,.06); margin: 0 0 20px; }
+  html[data-theme="dark"] .seg { background: rgba(255,255,255,.07); }
+  .seg button { border: 0; background: none; cursor: pointer; padding: 9px 18px; border-radius: 999px; font: 800 13.5px 'Manrope', sans-serif; color: var(--muted); }
+  .seg button.on { background: var(--card, #fff); color: var(--ink); box-shadow: 0 6px 18px -12px rgba(16,14,42,.6); }
+  html[data-theme="dark"] .seg button.on { background: rgba(255,255,255,.14); color: #f2f0f8; }
+  .seg .pip { display: inline-block; min-width: 18px; margin-left: 6px; padding: 0 5px; border-radius: 99px; background: #0e8f83; color: #fff; font: 800 10.5px 'Manrope', sans-serif; line-height: 17px; }
+
+  /* ---- finding someone ---- */
+  .find { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+  .find input { flex: 1 1 240px; min-height: 46px; border-radius: 14px; border: 1.5px solid var(--line); background: var(--card, #fff); color: var(--ink); padding: 0 16px; font: 600 14.5px 'Manrope', sans-serif; }
+  .find input:focus { outline: none; border-color: #0e8f83; box-shadow: 0 0 0 4px rgba(14,143,131,.14); }
+  .chips { display: flex; gap: 7px; overflow-x: auto; padding-bottom: 4px; margin-bottom: 18px; scrollbar-width: none; }
+  .chips::-webkit-scrollbar { display: none; }
+  .chips button { flex: 0 0 auto; border: 1.5px solid var(--line); background: var(--card, #fff); color: var(--muted); border-radius: 999px; padding: 7px 14px; font: 800 12.5px 'Manrope', sans-serif; cursor: pointer; white-space: nowrap; }
+  .chips button.on { border-color: #0e8f83; background: rgba(14,143,131,.1); color: #0b6f66; }
+
+  .docs { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; }
+  .doc { display: flex; gap: 14px; align-items: flex-start; text-align: left; color: inherit; font-family: inherit; padding: 16px; border-radius: 20px; border: 1.5px solid var(--line); background: var(--card, #fff); cursor: pointer; transition: transform .18s cubic-bezier(.2,.9,.25,1), border-color .18s, box-shadow .18s; }
+  .doc-b > * { display: block; }
+  .doc-b .nx { display: inline-block; }
+  .doc:hover { transform: translateY(-2px); border-color: rgba(14,143,131,.5); box-shadow: 0 22px 42px -30px rgba(14,143,131,.8); }
+  .doc:focus-visible { outline: 3px solid rgba(14,143,131,.45); outline-offset: 2px; }
+  .av { flex: 0 0 auto; width: 50px; height: 50px; border-radius: 16px; display: grid; place-items: center; font: 800 16px 'Space Grotesk', sans-serif; color: #fff; background: linear-gradient(135deg, #0e8f83, #2f8fd1); }
+  .doc-b { min-width: 0; flex: 1; }
+  .doc-b h3 { margin: 0 0 1px; font-size: 16px; letter-spacing: -.01em; }
+  .doc-b .sp { font-size: 12.5px; font-weight: 800; color: #0e8f83; }
+  .doc-b .cl { font-size: 12.5px; font-weight: 600; color: var(--muted); margin-top: 3px; }
+  .doc-b .nx { display: inline-block; margin-top: 9px; font-size: 12px; font-weight: 800; padding: 4px 10px; border-radius: 999px; background: rgba(47,143,94,.14); color: #2f8f5e; }
+  .doc-b .nx.none { background: rgba(127,127,160,.16); color: var(--muted); }
+
+  /* ---- your visits ---- */
+  .vis { border: 1.5px solid var(--line); background: var(--card, #fff); border-radius: 22px; padding: 18px; margin-bottom: 14px; }
+  .vis.soon { border-color: rgba(14,143,131,.45); background: linear-gradient(135deg, rgba(14,143,131,.07), rgba(124,111,219,.06)); }
+  .vis.now { border-color: transparent; color: #fff; background: linear-gradient(135deg, #0e8f83, #2f8fd1 62%, #7c6fdb); box-shadow: 0 26px 52px -32px rgba(14,143,131,.9); }
+  .vis.now .mut, .vis.now .vis-w { color: rgba(255,255,255,.82); }
+  .vis-t { display: flex; align-items: flex-start; gap: 12px; flex-wrap: wrap; }
+  .vis-t h3 { margin: 0; font-size: 18px; flex: 1 1 180px; }
+  .vis-w { font: 800 13px 'Manrope', sans-serif; color: var(--muted); }
+  .mut { color: var(--muted); font-size: 13px; font-weight: 600; margin-top: 4px; }
+  .vis-acts { display: flex; gap: 9px; flex-wrap: wrap; margin-top: 14px; }
+  .bq { border: 1.5px solid var(--line); background: none; color: inherit; border-radius: 12px; padding: 9px 15px; font: 800 13px 'Manrope', sans-serif; cursor: pointer; }
+  .bq:hover { border-color: #0e8f83; color: #0e8f83; }
+  .vis.now .bq { border-color: rgba(255,255,255,.4); color: #fff; }
+  .vis.now .bq:hover { background: rgba(255,255,255,.16); }
+  .bp { border: 0; border-radius: 12px; padding: 10px 18px; font: 800 13.5px 'Manrope', sans-serif; cursor: pointer; background: #0e8f83; color: #fff; }
+  .bp:hover { background: #0b6f66; }
+  .vis.now .bp { background: #fff; color: #0b6f66; }
+  .bp[disabled] { opacity: .45; cursor: default; }
+  .live { display: inline-flex; align-items: center; gap: 6px; font: 800 11.5px 'Manrope', sans-serif; text-transform: uppercase; letter-spacing: .05em; }
+  .live i { width: 8px; height: 8px; border-radius: 50%; background: #39d98a; box-shadow: 0 0 0 0 rgba(57,217,138,.7); animation: beat 1.8s infinite; }
+  @keyframes beat { 70% { box-shadow: 0 0 0 9px rgba(57,217,138,0); } 100% { box-shadow: 0 0 0 0 rgba(57,217,138,0); } }
+  @media (prefers-reduced-motion: reduce) { .live i { animation: none; } }
+
+  /* ---- booking ---- */
+  .days { display: flex; gap: 8px; overflow-x: auto; padding: 2px 0 8px; scrollbar-width: none; }
+  .days::-webkit-scrollbar { display: none; }
+  .day { flex: 0 0 auto; width: 62px; border: 1.5px solid var(--line); background: var(--card, #fff); color: inherit; border-radius: 14px; padding: 9px 0; cursor: pointer; text-align: center; font-family: 'Manrope', sans-serif; }
+  .day b { display: block; font: 800 17px 'Space Grotesk', sans-serif; }
+  .day span { display: block; font-size: 10.5px; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+  .day em { display: block; font-style: normal; font-size: 10px; font-weight: 800; margin-top: 3px; color: #2f8f5e; }
+  .day.off { opacity: .4; cursor: default; } .day.off em { color: var(--muted); }
+  .day.on { border-color: #0e8f83; background: rgba(14,143,131,.12); }
+  .slots { display: grid; grid-template-columns: repeat(auto-fill, minmax(86px, 1fr)); gap: 8px; margin: 14px 0 4px; }
+  .slot { border: 1.5px solid var(--line); background: var(--card, #fff); color: inherit; border-radius: 12px; padding: 11px 0; font: 800 13.5px 'Manrope', sans-serif; cursor: pointer; }
+  .slot:hover { border-color: #0e8f83; } .slot.on { border-color: #0e8f83; background: #0e8f83; color: #fff; }
+  #bk-body .fld { display: block; }
+  #bk-body .fld label { display: block; margin: 0 0 6px; font: 800 13px 'Manrope', sans-serif; }
+  #bk-body textarea { display: block; width: 100%; border-radius: 14px; border: 1.5px solid var(--line); background: var(--card, #fff); color: var(--ink); padding: 11px 14px; font: 600 14px 'Manrope', sans-serif; resize: vertical; }
+  #bk-body textarea:focus { outline: none; border-color: #0e8f83; box-shadow: 0 0 0 4px rgba(14,143,131,.14); }
+
+  /* ---- the room ---- */
+  .room { position: fixed; inset: 0; z-index: 400; background: #06050f; color: #fff; display: none; flex-direction: column; }
+  .room.open { display: flex; }
+  .stage { position: relative; flex: 1; min-height: 0; background: radial-gradient(1200px 600px at 50% 0%, #15123a, #06050f 70%); overflow: hidden; }
+  .stage video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; background: #06050f; }
+  .stage .mine { inset: auto 16px calc(16px + env(safe-area-inset-bottom)) auto; width: clamp(96px, 26vw, 190px); height: auto; aspect-ratio: 3/4; border-radius: 16px; object-fit: cover; border: 2px solid rgba(255,255,255,.22); box-shadow: 0 20px 40px -18px rgba(0,0,0,.9); z-index: 3; transform: scaleX(-1); }
+  .stage .mine { display: none; }            /* nothing to show until there is something to show */
+  .stage .mine.live { display: block; }
+  .stage .mine.off { display: none; }
+  .waitbox { position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; gap: 14px; text-align: center; padding: 28px; z-index: 2; }
+  .waitbox.hide { display: none; }
+  .halo { width: 112px; height: 112px; border-radius: 50%; display: grid; place-items: center; font: 800 32px 'Space Grotesk', sans-serif; background: linear-gradient(135deg, #0e8f83, #7c6fdb); box-shadow: 0 0 0 0 rgba(14,143,131,.55); animation: halo 2.6s ease-out infinite; }
+  @keyframes halo { 70% { box-shadow: 0 0 0 34px rgba(14,143,131,0); } 100% { box-shadow: 0 0 0 0 rgba(14,143,131,0); } }
+  @media (prefers-reduced-motion: reduce) { .halo { animation: none; } }
+  .waitbox h2 { margin: 2px 0 0; font-size: 22px; }
+  .waitbox p { margin: 0; max-width: 34ch; font-size: 14px; font-weight: 600; color: rgba(255,255,255,.72); line-height: 1.5; }
+  .pill { font: 800 11.5px 'Manrope', sans-serif; text-transform: uppercase; letter-spacing: .06em; padding: 5px 12px; border-radius: 999px; background: rgba(255,255,255,.12); }
+
+  .rtop { position: absolute; top: 0; left: 0; right: 0; z-index: 5; display: flex; align-items: center; gap: 10px; padding: calc(12px + env(safe-area-inset-top)) 16px 12px; background: linear-gradient(#06050fcc, transparent); }
+  .rtop b { font: 700 15px 'Space Grotesk', sans-serif; }
+  .rtop .mini { font-size: 11.5px; font-weight: 700; color: rgba(255,255,255,.62); }
+  .net { margin-left: auto; display: flex; align-items: center; gap: 5px; font: 800 11px 'Manrope', sans-serif; color: rgba(255,255,255,.7); }
+  .net i { width: 7px; height: 7px; border-radius: 50%; background: #7f7fa0; }
+  .net.good i { background: #39d98a; } .net.ok i { background: #e8a23a; } .net.poor i { background: #ff6b4a; }
+
+  .bar { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 14px 14px calc(14px + env(safe-area-inset-bottom)); background: #0b0a1d; flex-wrap: wrap; }
+  .rb { width: 54px; height: 54px; border-radius: 50%; border: 0; cursor: pointer; background: rgba(255,255,255,.12); color: #fff; font-size: 20px; display: grid; place-items: center; transition: background .16s, transform .16s; }
+  .rb:hover { background: rgba(255,255,255,.2); transform: translateY(-2px); }
+  .rb.off { background: #fff; color: #06050f; }
+  .rb.end { width: 68px; background: #e0352b; } .rb.end:hover { background: #c22a21; }
+  .rb small { display: none; }
+
+  /* the consent panel: the one thing in the room that must never be mistaken for a decoration */
+  .earbox { position: absolute; left: 50%; transform: translateX(-50%); bottom: 16px; z-index: 6; width: min(520px, calc(100vw - 32px)); background: rgba(10,9,26,.92); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,.14); border-radius: 20px; padding: 15px 17px; }
+  .earbox.hide { display: none; }
+  .earbox h4 { margin: 0 0 4px; font-size: 14.5px; }
+  .earbox p { margin: 0 0 11px; font-size: 12.5px; font-weight: 600; line-height: 1.5; color: rgba(255,255,255,.7); }
+  .earbox .row { display: flex; gap: 9px; flex-wrap: wrap; }
+  .earbox button { border: 0; border-radius: 11px; padding: 9px 15px; font: 800 12.5px 'Manrope', sans-serif; cursor: pointer; }
+  .earbox .yes { background: #0e8f83; color: #fff; } .earbox .no { background: rgba(255,255,255,.12); color: #fff; }
+  .earon { position: absolute; top: calc(56px + env(safe-area-inset-top)); left: 50%; transform: translateX(-50%); z-index: 6; display: none; align-items: center; gap: 8px; padding: 7px 14px; border-radius: 999px; background: rgba(224,53,43,.16); border: 1px solid rgba(255,107,74,.5); font: 800 11.5px 'Manrope', sans-serif; }
+  .earon.on { display: inline-flex; }
+  .earon i { width: 8px; height: 8px; border-radius: 50%; background: #ff6b4a; animation: beat 1.8s infinite; }
+  .earon button { border: 0; background: none; color: #ffb9a6; font: 800 11.5px 'Manrope', sans-serif; cursor: pointer; text-decoration: underline; padding: 0; }
+
+  /* ---- what the doctor said ---- */
+  .sec { border-radius: 18px; overflow: hidden; margin-bottom: 14px; border: 1.5px solid var(--line); }
+  .sec > h4 { margin: 0; padding: 11px 15px; font-size: 14px; color: #fff; }
+  .sec ul { list-style: none; margin: 0; padding: 4px 0; background: var(--card, #fff); }
+  .sec li { display: flex; gap: 12px; padding: 9px 15px; font-size: 14px; font-weight: 600; line-height: 1.5; border-bottom: 1px solid var(--line); }
+  .sec li:last-child { border-bottom: 0; }
+  .sec li time { flex: 0 0 auto; font: 800 11px 'Manrope', sans-serif; color: var(--muted); padding-top: 3px; min-width: 30px; }
+  .sec .aside { padding: 8px 15px 11px; background: var(--card, #fff); font-size: 11.5px; font-weight: 600; color: var(--muted); line-height: 1.5; }
+  .tr { max-height: 300px; overflow: auto; border: 1.5px solid var(--line); border-radius: 16px; padding: 4px 14px; background: var(--card, #fff); }
+  .tr div { display: flex; gap: 12px; padding: 8px 0; border-bottom: 1px dashed var(--line); font-size: 13.5px; font-weight: 600; line-height: 1.5; }
+  .tr div:last-child { border-bottom: 0; }
+  .tr time { flex: 0 0 52px; font: 800 11px 'Manrope', sans-serif; color: var(--muted); }
+  .tr .d time { color: #0e8f83; }
+
+  .note { border-left: 3px solid #0e8f83; background: rgba(14,143,131,.07); border-radius: 0 12px 12px 0; padding: 11px 14px; font-size: 13px; font-weight: 600; line-height: 1.55; margin-bottom: 16px; }
+  .note.warn { border-left-color: #e8a23a; background: rgba(232,162,58,.1); }
+  .empty { color: var(--muted); font-size: 14px; font-weight: 600; padding: 28px 0; text-align: center; }
+  .sk { height: 92px; border-radius: 20px; background: linear-gradient(90deg, rgba(127,127,160,.1), rgba(127,127,160,.2), rgba(127,127,160,.1)); background-size: 200% 100%; animation: sh 1.3s linear infinite; margin-bottom: 14px; }
+  @keyframes sh { to { background-position: -200% 0; } }
+
+  @media (max-width: 640px) {
+    .doc { padding: 14px; }
+    .bar { gap: 8px; } .rb { width: 50px; height: 50px; }
+    .vis-acts .bp, .vis-acts .bq { flex: 1 1 auto; text-align: center; }
+  }
+</style>
+<script src="../assets/qc-csp.js?v=77f89cc2"></script>
+<script src="../assets/qc-i18n.js?v=fb8e7449"></script>
+</head>
+<body>
+  <div class="topbar">
+    <a class="logo-wrap" href="../">
+      <img src="../assets/d4f7acc01b9438e998c9e7b9676584b0.png" alt="QueroCura">
+      <span class="logo-text"><span class="ink">Quero</span><span class="teal">Cura</span></span>
+    </a>
+    <nav class="tab-nav">
+      <a class="tab-link" href="../symptoms/"><span class="tl-ic">🔍</span>Symptoms</a>
+      <a class="tab-link active" href="#"><span class="tl-ic">🎥</span>Video visits</a>
+      <a class="tab-link" href="../vitals/"><span class="tl-ic">❤️</span>Vitals</a>
+      <a class="tab-link" href="../calendar/"><span class="tl-ic">📅</span>Calendar</a>
+      <a class="tab-link" href="../curavault/"><span class="tl-ic">🔒</span>CuraVault</a>
+      <a class="tab-link" href="../dashboard/"><span class="tl-ic">🏠</span>Dashboard</a>
+      <a class="tab-link" href="../profile/"><span class="tl-ic">👤</span>Profile</a>
+    </nav>
+    <div class="topbar-right">
+      <span class="user-pill" id="qc-user-chip"><span class="up-dot" id="qc-user-dot">?</span><span id="qc-user-name"></span></span>
+      <button class="theme-toggle" data-theme-toggle aria-label="Toggle dark mode"><span id="theme-toggle-icon"></span></button>
+      <button class="signout-btn" id="qc-signout-btn">Sign out</button>
+    </div>
+  </div>
+
+  <div class="shell">
+    <div class="page-head">
+      <span class="page-eyebrow">Video visits</span>
+      <h1 class="page-title">See a doctor, wherever you are</h1>
+      <p class="page-sub">Book a real appointment in a real clinic&rsquo;s diary and talk face to face in your browser. The call goes straight between the two of you &mdash; QueroCura never sees or keeps the picture or the sound.</p>
+    </div>
+
+    <div class="seg" role="tablist">
+      <button type="button" class="on" data-pane="find" role="tab" aria-selected="true">Find a doctor</button>
+      <button type="button" data-pane="mine" role="tab" aria-selected="false">Your visits<span class="pip" id="pip" hidden>0</span></button>
+    </div>
+
+    <section id="pane-find">
+      <div class="find">
+        <input type="search" id="q" placeholder="Search by name, speciality, clinic or city" autocomplete="off" aria-label="Search doctors">
+      </div>
+      <div class="chips" id="specs"></div>
+      <div class="docs" id="docs"><div class="sk"></div><div class="sk"></div><div class="sk"></div><div class="sk"></div></div>
+    </section>
+
+    <section id="pane-mine" hidden>
+      <div id="mine"><div class="sk"></div><div class="sk"></div></div>
+    </section>
+  </div>
+
+  <!-- booking -->
+  <div class="modal-back" id="m-book">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="bk-who" style="max-width:600px">
+      <div class="modal-head"><h2 id="bk-who">Book</h2><button class="modal-x" data-close="m-book" aria-label="Close">&times;</button></div>
+      <div class="modal-body" id="bk-body"></div>
+    </div>
+  </div>
+
+  <!-- what the doctor said -->
+  <div class="modal-back" id="m-notes">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="nt-h" style="max-width:720px">
+      <div class="modal-head"><h2 id="nt-h">What your doctor told you</h2><button class="modal-x" data-close="m-notes" aria-label="Close">&times;</button></div>
+      <div class="modal-body" id="nt-body"></div>
+    </div>
+  </div>
+
+  <!-- the call -->
+  <div class="room" id="room" role="dialog" aria-modal="true" aria-label="Video visit">
+    <div class="stage" id="stage">
+      <video id="them" autoplay playsinline></video>
+      <video id="me" class="mine" autoplay playsinline muted></video>
+      <div class="rtop">
+        <div><b id="r-who">&nbsp;</b><div class="mini" id="r-sub">&nbsp;</div></div>
+        <div class="net" id="r-net"><i></i><span>&nbsp;</span></div>
+      </div>
+      <div class="earon" id="earon"><i></i><span>QueroCura is taking notes</span><button type="button" id="ear-stop">Stop</button></div>
+      <div class="waitbox" id="waitbox">
+        <div class="halo" id="r-ini">&nbsp;</div>
+        <span class="pill" id="r-pill">Connecting</span>
+        <h2 id="r-title">Getting you connected</h2>
+        <p id="r-msg"></p>
+      </div>
+      <div class="earbox hide" id="earbox">
+        <h4>Would you like QueroCura to take notes?</h4>
+        <p>We listen to the call and afterwards write up the important things the doctor said &mdash; in their own words &mdash; as a page you can keep. The sound is turned into words on QueroCura&rsquo;s own machine, never sent anywhere else, and the recording is deleted as soon as the notes are written. Your doctor is told if you say yes, and you can stop at any moment.</p>
+        <div class="row">
+          <button type="button" class="yes" id="ear-yes">Yes, take notes</button>
+          <button type="button" class="no" id="ear-no">No thanks</button>
+        </div>
+      </div>
+    </div>
+    <div class="bar">
+      <button type="button" class="rb" id="b-mic" aria-pressed="false" title="Microphone">🎙️</button>
+      <button type="button" class="rb" id="b-cam" aria-pressed="false" title="Camera">🎥</button>
+      <button type="button" class="rb" id="b-flip" title="Switch camera">🔄</button>
+      <button type="button" class="rb" id="b-ear" title="Notes">📝</button>
+      <button type="button" class="rb end" id="b-end" title="Leave the call">📞</button>
+    </div>
+  </div>
+
+  <script src="../assets/qc-app.js?v=329f5b34"></script>
+  <script src="../assets/js/qc-mobile.js?v=55e469c2"></script>
+  <script src="../assets/qc-page.js?v=c34c97a9"></script>
+  <script src="../assets/qc-push.js?v=d4eb1548"></script>
+  <script src="../assets/js/qc-call.js?v=97f14bce"></script>
+  <script src="../assets/js/qc-consult.js?v=6a106fbe"></script>
+</body>
+</html>

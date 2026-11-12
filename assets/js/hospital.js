@@ -335,6 +335,7 @@
     imaging: ["🩻", "Scans", "Upload scans, review AI-assisted drafts and sign reports.", "Patients and visits"],
     insights: ["📈", "Insights", "How your practice is doing: busy days and hours, real consultation times, no-shows, common reasons for visits and who is due a follow-up.", "Patients and visits"],
     ot: ["🔪", "Theatres", "Today's operation list and the surgical safety checklist for each case.", "Patients and visits"],
+    video: ["🎥", "Video clinic", "The people who booked an online consultation today. Whoever is already waiting comes to the top; press Join and you are in the room with them.", "Patients and visits"],
     connect: ["📲", "Connect app users", "Link patients who use the QueroCura app, with their consent.", "Patients and visits"],
     pharmacy: ["💊", "Pharmacy", "Prescriptions waiting to be dispensed, and medicine stock.", "Pharmacy and billing"],
     claims: ["🛡️", "Claims", "Insurance, TPA and government-scheme claims from pre-auth to settlement, and what’s waiting on whom.", "Pharmacy and billing"],
@@ -375,7 +376,8 @@
     // Management tabs (patients, appointments, pharmacy, billing, duty, reports) come from hospital-hms*.js.
     var OPS = window.QCOps ? window.QCOps.tabs(can) : [];
     var HMS = window.QCHms ? window.QCHms.tabs(can) : [];
-    var DOC = (window.QCDoc ? window.QCDoc.tabs(can) : []).concat(window.QCClaims ? window.QCClaims.tabs(can) : []);
+    var DOC = (window.QCDoc ? window.QCDoc.tabs(can) : []).concat(window.QCClaims ? window.QCClaims.tabs(can) : [])
+      .concat(window.QCVideo ? window.QCVideo.tabs(can) : []);
     var CUS = window.QCCustom ? window.QCCustom.tabs(can) : [];
     var grp = function (list, g) { return list.filter(function (t) { return t[3] === g; }); };
     var tabs = [["overview", "My day", true]].concat(HMS.length ? grp(HMS, "front") : [["patients", "Patients", can("roster")]]).concat(grp(OPS, "flow")).concat(grp(HMS, "flow")).concat(DOC).concat(grp(HMS, "back"))
@@ -442,7 +444,8 @@
     var own = { overview: loadOverview, patients: loadPatients, connect: renderConnect, team: loadTeam, activity: loadActivity, security: renderSecurity };
     var ops = window.QCOps ? window.QCOps.loaders() : {};
     if (window.QCHms) { delete own.patients; var hm = window.QCHms.loaders(); Object.keys(hm).forEach(function (k) { ops[k] = hm[k]; }); window.QCHms.leave(); }
-    [window.QCDoc, window.QCClaims, window.QCCustom].forEach(function (mod) { if (mod) { var dl = mod.loaders(); Object.keys(dl).forEach(function (k) { ops[k] = dl[k]; }); } });
+    if (window.QCVideo) window.QCVideo.leave();
+    [window.QCDoc, window.QCClaims, window.QCCustom, window.QCVideo].forEach(function (mod) { if (mod) { var dl = mod.loaders(); Object.keys(dl).forEach(function (k) { ops[k] = dl[k]; }); } });
     [].forEach.call(document.querySelectorAll("#workspace > section.tab"), function (sec) { show(sec, sec.id === "tab-" + t); });
     if (window.QCOps) window.QCOps.leave();
     show(el("tab-board"), t === "overview" && ME.org.practice !== "solo" && (can("ops") || can("structure") || can("reports") || can("orders")));
