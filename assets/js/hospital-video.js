@@ -36,7 +36,9 @@
   }
 
   function draw() {
-    var d = S.data, v = d.visits || [], box = el("tab-video");
+    var d = S.data, box = el("tab-video");
+    if (!d || !box) return;            // the watcher can tick before the first load has answered
+    var v = d.visits || [];
     var waiting = v.filter(function (x) { return x.here && x.here.patient && x.here.patient.here && !x.over; });
     var rest = v.filter(function (x) { return waiting.indexOf(x) < 0; });
     var notes = d.notes_here || {};
@@ -90,7 +92,8 @@
       if (!document.getElementById("tab-video") || el("tab-video").hidden || S.visit) return;
       api(BASE + "/day" + (S.day ? "?day=" + S.day : "")).then(function (d) {
         if (!d.ok) return;
-        var before = JSON.stringify((S.data.visits || []).map(function (x) { return [x.id, !!(x.here.patient && x.here.patient.here)]; }));
+        var was = (S.data || {}).visits || [];
+        var before = JSON.stringify(was.map(function (x) { return [x.id, !!(x.here.patient && x.here.patient.here)]; }));
         S.data = d;
         var after = JSON.stringify((d.visits || []).map(function (x) { return [x.id, !!(x.here.patient && x.here.patient.here)]; }));
         if (before !== after) { draw(); if (after.indexOf("true") >= 0 && before.indexOf("true") < 0) ping(); }
