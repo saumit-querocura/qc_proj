@@ -88,51 +88,6 @@
   #bk-body textarea { display: block; width: 100%; border-radius: 14px; border: 1.5px solid var(--line); background: var(--card, #fff); color: var(--ink); padding: 11px 14px; font: 600 14px 'Manrope', sans-serif; resize: vertical; }
   #bk-body textarea:focus { outline: none; border-color: #0e8f83; box-shadow: 0 0 0 4px rgba(14,143,131,.14); }
 
-  /* ---- the room ---- */
-  .room { position: fixed; inset: 0; z-index: 400; background: #06050f; color: #fff; display: none; flex-direction: column; }
-  .room.open { display: flex; }
-  .stage { position: relative; flex: 1; min-height: 0; background: radial-gradient(1200px 600px at 50% 0%, #15123a, #06050f 70%); overflow: hidden; }
-  .stage video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; background: #06050f; }
-  .stage .mine { inset: auto 16px calc(16px + env(safe-area-inset-bottom)) auto; width: clamp(96px, 26vw, 190px); height: auto; aspect-ratio: 3/4; border-radius: 16px; object-fit: cover; border: 2px solid rgba(255,255,255,.22); box-shadow: 0 20px 40px -18px rgba(0,0,0,.9); z-index: 3; transform: scaleX(-1); }
-  .stage .mine { display: none; }            /* nothing to show until there is something to show */
-  .stage .mine.live { display: block; }
-  .stage .mine.off { display: none; }
-  .waitbox { position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; gap: 14px; text-align: center; padding: 28px; z-index: 2; }
-  .waitbox.hide { display: none; }
-  .halo { width: 112px; height: 112px; border-radius: 50%; display: grid; place-items: center; font: 800 32px 'Space Grotesk', sans-serif; background: linear-gradient(135deg, #0e8f83, #7c6fdb); box-shadow: 0 0 0 0 rgba(14,143,131,.55); animation: halo 2.6s ease-out infinite; }
-  @keyframes halo { 70% { box-shadow: 0 0 0 34px rgba(14,143,131,0); } 100% { box-shadow: 0 0 0 0 rgba(14,143,131,0); } }
-  @media (prefers-reduced-motion: reduce) { .halo { animation: none; } }
-  .waitbox h2 { margin: 2px 0 0; font-size: 22px; }
-  .waitbox p { margin: 0; max-width: 34ch; font-size: 14px; font-weight: 600; color: rgba(255,255,255,.72); line-height: 1.5; }
-  .pill { font: 800 11.5px 'Manrope', sans-serif; text-transform: uppercase; letter-spacing: .06em; padding: 5px 12px; border-radius: 999px; background: rgba(255,255,255,.12); }
-
-  .rtop { position: absolute; top: 0; left: 0; right: 0; z-index: 5; display: flex; align-items: center; gap: 10px; padding: calc(12px + env(safe-area-inset-top)) 16px 12px; background: linear-gradient(#06050fcc, transparent); }
-  .rtop b { font: 700 15px 'Space Grotesk', sans-serif; }
-  .rtop .mini { font-size: 11.5px; font-weight: 700; color: rgba(255,255,255,.62); }
-  .net { margin-left: auto; display: flex; align-items: center; gap: 5px; font: 800 11px 'Manrope', sans-serif; color: rgba(255,255,255,.7); }
-  .net i { width: 7px; height: 7px; border-radius: 50%; background: #7f7fa0; }
-  .net.good i { background: #39d98a; } .net.ok i { background: #e8a23a; } .net.poor i { background: #ff6b4a; }
-
-  .bar { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 14px 14px calc(14px + env(safe-area-inset-bottom)); background: #0b0a1d; flex-wrap: wrap; }
-  .rb { width: 54px; height: 54px; border-radius: 50%; border: 0; cursor: pointer; background: rgba(255,255,255,.12); color: #fff; font-size: 20px; display: grid; place-items: center; transition: background .16s, transform .16s; }
-  .rb:hover { background: rgba(255,255,255,.2); transform: translateY(-2px); }
-  .rb.off { background: #fff; color: #06050f; }
-  .rb.end { width: 68px; background: #e0352b; } .rb.end:hover { background: #c22a21; }
-  .rb small { display: none; }
-
-  /* the consent panel: the one thing in the room that must never be mistaken for a decoration */
-  .earbox { position: absolute; left: 50%; transform: translateX(-50%); bottom: 16px; z-index: 6; width: min(520px, calc(100vw - 32px)); background: rgba(10,9,26,.92); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,.14); border-radius: 20px; padding: 15px 17px; }
-  .earbox.hide { display: none; }
-  .earbox h4 { margin: 0 0 4px; font-size: 14.5px; }
-  .earbox p { margin: 0 0 11px; font-size: 12.5px; font-weight: 600; line-height: 1.5; color: rgba(255,255,255,.7); }
-  .earbox .row { display: flex; gap: 9px; flex-wrap: wrap; }
-  .earbox button { border: 0; border-radius: 11px; padding: 9px 15px; font: 800 12.5px 'Manrope', sans-serif; cursor: pointer; }
-  .earbox .yes { background: #0e8f83; color: #fff; } .earbox .no { background: rgba(255,255,255,.12); color: #fff; }
-  .earon { position: absolute; top: calc(56px + env(safe-area-inset-top)); left: 50%; transform: translateX(-50%); z-index: 6; display: none; align-items: center; gap: 8px; padding: 7px 14px; border-radius: 999px; background: rgba(224,53,43,.16); border: 1px solid rgba(255,107,74,.5); font: 800 11.5px 'Manrope', sans-serif; }
-  .earon.on { display: inline-flex; }
-  .earon i { width: 8px; height: 8px; border-radius: 50%; background: #ff6b4a; animation: beat 1.8s infinite; }
-  .earon button { border: 0; background: none; color: #ffb9a6; font: 800 11.5px 'Manrope', sans-serif; cursor: pointer; text-decoration: underline; padding: 0; }
-
   /* ---- what the doctor said ---- */
   .sec { border-radius: 18px; overflow: hidden; margin-bottom: 14px; border: 1.5px solid var(--line); }
   .sec > h4 { margin: 0; padding: 11px 15px; font-size: 14px; color: #fff; }
@@ -225,45 +180,12 @@
     </div>
   </div>
 
-  <!-- the call -->
-  <div class="room" id="room" role="dialog" aria-modal="true" aria-label="Video visit">
-    <div class="stage" id="stage">
-      <video id="them" autoplay playsinline></video>
-      <video id="me" class="mine" autoplay playsinline muted></video>
-      <div class="rtop">
-        <div><b id="r-who">&nbsp;</b><div class="mini" id="r-sub">&nbsp;</div></div>
-        <div class="net" id="r-net"><i></i><span>&nbsp;</span></div>
-      </div>
-      <div class="earon" id="earon"><i></i><span>QueroCura is taking notes</span><button type="button" id="ear-stop">Stop</button></div>
-      <div class="waitbox" id="waitbox">
-        <div class="halo" id="r-ini">&nbsp;</div>
-        <span class="pill" id="r-pill">Connecting</span>
-        <h2 id="r-title">Getting you connected</h2>
-        <p id="r-msg"></p>
-      </div>
-      <div class="earbox hide" id="earbox">
-        <h4>Would you like QueroCura to take notes?</h4>
-        <p>We listen to the call and afterwards write up the important things the doctor said &mdash; in their own words &mdash; as a page you can keep. The sound is turned into words on QueroCura&rsquo;s own machine, never sent anywhere else, and the recording is deleted as soon as the notes are written. Your doctor is told if you say yes, and you can stop at any moment.</p>
-        <div class="row">
-          <button type="button" class="yes" id="ear-yes">Yes, take notes</button>
-          <button type="button" class="no" id="ear-no">No thanks</button>
-        </div>
-      </div>
-    </div>
-    <div class="bar">
-      <button type="button" class="rb" id="b-mic" aria-pressed="false" title="Microphone">🎙️</button>
-      <button type="button" class="rb" id="b-cam" aria-pressed="false" title="Camera">🎥</button>
-      <button type="button" class="rb" id="b-flip" title="Switch camera">🔄</button>
-      <button type="button" class="rb" id="b-ear" title="Notes">📝</button>
-      <button type="button" class="rb end" id="b-end" title="Leave the call">📞</button>
-    </div>
-  </div>
-
   <script src="../assets/qc-app.js?v=329f5b34"></script>
   <script src="../assets/js/qc-mobile.js?v=55e469c2"></script>
   <script src="../assets/qc-page.js?v=c34c97a9"></script>
   <script src="../assets/qc-push.js?v=d4eb1548"></script>
-  <script src="../assets/js/qc-call.js?v=97f14bce"></script>
-  <script src="../assets/js/qc-consult.js?v=55592b81"></script>
+  <script src="../assets/js/qc-call.js?v=97e334e1"></script>
+  <script src="../assets/js/qc-room.js?v=4c914cd0"></script>
+  <script src="../assets/js/qc-consult.js?v=9c9e1fcf"></script>
 </body>
 </html>

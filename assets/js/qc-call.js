@@ -99,7 +99,10 @@
     pc.ontrack = function (e) {
       C.remote = e.streams[0] || new MediaStream([e.track]);
       if (C.cfg.onRemote) C.cfg.onRemote(C.remote);
-      if (C.taping && e.track.kind === "audio") C.tapeSide("d", C.remote);
+      if (e.track.kind === "audio") {
+        C.meter(C.remote, "them");
+        if (C.taping) C.tapeSide("d", C.remote);
+      }
     };
     pc.onicecandidate = function (e) { if (e.candidate) C.say("ice", e.candidate.toJSON()); };
     pc.onnegotiationneeded = function () {
@@ -109,9 +112,13 @@
     };
     pc.oniceconnectionstatechange = function () {
       var s = pc.iceConnectionState;
-      if (s === "failed") { try { pc.restartIce(); } catch (e) {} C.tell("trouble", "The connection dropped. Trying again…"); }
-      else if (s === "disconnected") C.tell("trouble", "The connection is unsteady…");
-      else if (s === "connected" || s === "completed") C.tell("live", "");
+      if (s === "failed") C.recover();
+      else if (s === "disconnected") {
+        C.tell("trouble", "The connection is unsteady…");
+        // give it a few seconds to right itself before forcing a restart; most blips do
+        clearTimeout(C._wobble);
+        C._wobble = setTimeout(function () { if (pc.iceConnectionState === "disconnected") C.recover(); }, 5000);
+      } else if (s === "connected" || s === "completed") { clearTimeout(C._wobble); C.tell("live", ""); }
     };
     pc.onconnectionstatechange = function () {
       if (pc.connectionState === "failed") C.tell("failed", C.cfg.ice && C.cfg.ice.length
@@ -179,13 +186,37 @@
     C.watch = setInterval(function () { C.grade(); }, 4000);
   };
 
-  /* How good is this call, in words a person can act on ("your connection is weak"). */
+  /* How good is this call, in words a person can act on -- and then do something about it.
+   *
+   * A video call that quietly turns to slush is worse than one that says "your connection is weak, I've dropped
+   * the picture quality".  So the same reading that lights the indicator also drives the encoder: when the line
+   * is struggling the outgoing video is cut back a step, and when it recovers it is let back up.  Below the
+   * point where video is hopeless, video is dropped entirely rather than losing the words too -- a consultation
+   * can be had on sound alone and cannot be had on a frozen picture.
+   */
+  var STEPS = [{ bps: 1200000, scale: 1, says: "" },
+               { bps: 600000, scale: 1.5, says: "" },
+               { bps: 280000, scale: 2, says: "Your connection is weak, so the picture is a little softer." },
+               { bps: 120000, scale: 3, says: "Your connection is poor. The picture is as small as it goes." }];
+
   Call.prototype.grade = function () {
     var C = this;
     if (!C.pc || !C.pc.getStats) return;
     C.pc.getStats(null).then(function (rep) {
-      var inb = null;
-      rep.forEach(function (s) { if (s.type === "inbound-rtp" && s.kind === "video") inb = s; });
+      var inb = null, out = null, pair = null, local = {}, remote = {};
+      rep.forEach(function (s) {
+        if (s.type === "inbound-rtp" && s.kind === "video") inb = s;
+        if (s.type === "outbound-rtp" && s.kind === "video") out = s;
+        if (s.type === "candidate-pair" && (s.selected || s.state === "succeeded" && s.nominated)) pair = s;
+        if (s.type === "local-candidate") local[s.id] = s;
+        if (s.type === "remote-candidate") remote[s.id] = s;
+      });
+      if (pair) {
+        var mine = local[pair.localCandidateId] || {}, theirs = remote[pair.remoteCandidateId] || {};
+        C.stats.via = (mine.candidateType === "relay" || theirs.candidateType === "relay") ? "relay"
+          : (mine.candidateType === "srflx" || theirs.candidateType === "srflx") ? "internet" : "local";
+        if (pair.currentRoundTripTime != null) C.stats.ms = Math.round(pair.currentRoundTripTime * 1000);
+      }
       if (!inb) return;
       var lost = inb.packetsLost || 0, got = inb.packetsReceived || 1;
       var loss = Math.min(1, lost / Math.max(1, lost + got));
@@ -196,14 +227,75 @@
       }
       C._last = { t: now, b: bytes };
       C.stats.loss = Math.round(loss * 100);
+      C.stats.frozen = !!(inb.framesPerSecond != null && inb.framesPerSecond < 1 && C.stats.kbps > 0);
       // the first readings of a call are always low while the encoder finds its feet; calling that "weak" would be
       // alarming and wrong, so nothing is said until there are a few seconds of it to go on
       C._seen = (C._seen || 0) + 1;
       C.stats.grade = C._seen < 3 ? ""
         : (C.stats.kbps > 250 && loss < 0.04) ? "good"
         : (C.stats.kbps > 60 && loss < 0.12) ? "ok" : "poor";
+      if (C._seen >= 4) C.adapt(loss, out);
       if (C.cfg.onStats) C.cfg.onStats(C.stats);
     }).catch(function () {});
+  };
+
+  Call.prototype.adapt = function (loss, out) {
+    var C = this;
+    if (C.shown) return;                              // a shared screen is text; shrinking it defeats the point
+    var bad = loss > 0.08 || C.stats.kbps < 90 || (out && out.qualityLimitationReason === "bandwidth");
+    var good = loss < 0.02 && C.stats.kbps > 400;
+    var at = C.step || 0;
+    if (bad && at < STEPS.length - 1 && Date.now() - (C._moved || 0) > 8000) at += 1;
+    else if (good && at > 0 && Date.now() - (C._moved || 0) > 25000) at -= 1;   // climb back slowly, drop fast
+    else return;
+    C.step = at; C._moved = Date.now();
+    var send = C.pc.getSenders().filter(function (x) { return x.track && x.track.kind === "video"; })[0];
+    if (send && send.getParameters) {
+      try {
+        var p = send.getParameters();
+        p.encodings = p.encodings && p.encodings.length ? p.encodings : [{}];
+        p.encodings[0].maxBitrate = STEPS[at].bps;
+        p.encodings[0].scaleResolutionDownBy = STEPS[at].scale;
+        p.degradationPreference = "maintain-framerate";
+        send.setParameters(p);
+      } catch (e) {}
+    }
+    C.stats.says = STEPS[at].says;
+    if (C.cfg.onStats) C.cfg.onStats(C.stats);
+    // the floor: keep the consultation, lose the picture
+    if (at === STEPS.length - 1 && loss > 0.25 && C.cam && !C.droppedVideo) {
+      C.droppedVideo = true;
+      C.setCam(false);
+      C.stats.says = "Your connection can't carry video, so we've turned your camera off to keep the sound clear.";
+      if (C.cfg.onStats) C.cfg.onStats(C.stats);
+    }
+  };
+
+  /* ---------------------------------------------------------------- staying up
+   *
+   * Phones change networks mid-sentence -- wi-fi to mobile data as someone walks out of the house -- and the
+   * connection does not come back on its own.  An ICE restart renegotiates over the new path without ending the
+   * call, and the person sees "reconnecting" rather than a frozen doctor.
+   */
+  Call.prototype.recover = function (why) {
+    var C = this;
+    if (!C.pc || !C.alive || C.ending) return;
+    if (Date.now() - (C._tried || 0) < 4000) return;
+    C._tried = Date.now();
+    C.tell("trouble", why || "The connection dropped. Getting it back…");
+    try { C.pc.restartIce(); } catch (e) {}
+    if (!C.cfg.polite) {                               // only one side should drive the new offer
+      try { C.pc.onnegotiationneeded(); } catch (e) {}
+    }
+  };
+
+  Call.prototype.watchNetwork = function () {
+    var C = this;
+    C._net = function () { C.recover("Your network changed. Reconnecting…"); };
+    window.addEventListener("online", C._net);
+    try {
+      if (navigator.connection && navigator.connection.addEventListener) navigator.connection.addEventListener("change", C._net);
+    } catch (e) {}
   };
 
   /* ---------------------------------------------------------------- taking notes (the patient's side only) */
@@ -236,6 +328,131 @@
       }).catch(function () { /* a lost slice is a gap in the notes, not a broken call */ });
     };
     try { r.start(SLICE); C.rec[who] = r; } catch (e) {}
+  };
+
+  /* ---------------------------------------------------------------- which camera, which microphone
+   *
+   * Half of all "they couldn't hear me" calls are the wrong device selected: a webcam's microphone instead of a
+   * headset, or a laptop lid closed over the only camera.  So the devices are listed, switchable, and switchable
+   * in the middle of a call without dropping it -- replaceTrack swaps what is being sent without renegotiating.
+   */
+  Call.prototype.devices = function () {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) return Promise.resolve({ cam: [], mic: [], out: [] });
+    return navigator.mediaDevices.enumerateDevices().then(function (list) {
+      var out = { cam: [], mic: [], out: [] };
+      list.forEach(function (d, i) {
+        var box = d.kind === "videoinput" ? out.cam : d.kind === "audioinput" ? out.mic : d.kind === "audiooutput" ? out.out : null;
+        // the label is empty until permission has been given once; a number is better than a blank row
+        if (box) box.push({ id: d.deviceId, label: d.label || (box === out.cam ? "Camera " : box === out.mic ? "Microphone " : "Speaker ") + (box.length + 1) });
+      });
+      return out;
+    }).catch(function () { return { cam: [], mic: [], out: [] }; });
+  };
+
+  Call.prototype.use = function (pick) {
+    var C = this;
+    pick = pick || {};
+    var want = {};
+    if (pick.cam) want.video = { deviceId: { exact: pick.cam }, width: { ideal: 1280 }, height: { ideal: 720 } };
+    if (pick.mic) want.audio = { deviceId: { exact: pick.mic }, echoCancellation: true, noiseSuppression: true, autoGainControl: true };
+    if (!want.video && !want.audio) return Promise.resolve();
+    return navigator.mediaDevices.getUserMedia(want).then(function (s) {
+      ["video", "audio"].forEach(function (kind) {
+        var fresh = (kind === "video" ? s.getVideoTracks() : s.getAudioTracks())[0];
+        if (!fresh) return;
+        var send = C.pc && C.pc.getSenders().filter(function (x) { return x.track && x.track.kind === kind; })[0];
+        var old = (kind === "video" ? C.local.getVideoTracks() : C.local.getAudioTracks())[0];
+        fresh.enabled = kind === "video" ? C.cam : C.mic;
+        if (send) send.replaceTrack(fresh);
+        if (old) { C.local.removeTrack(old); old.stop(); }
+        C.local.addTrack(fresh);
+        if (kind === "audio") { C.meter(C.local, "me"); C.retape(); }
+      });
+      C.chose = { cam: pick.cam || (C.chose || {}).cam, mic: pick.mic || (C.chose || {}).mic };
+      if (C.cfg.onLocal) C.cfg.onLocal(C.local, C.audioOnly);
+    }).catch(function () { /* the device went away; the old one is still running */ });
+  };
+
+  /* A microphone swapped mid-call must keep being recorded, or the notes lose the rest of the visit. */
+  Call.prototype.retape = function () {
+    if (!this.taping) return;
+    try { if (this.rec.p) this.rec.p.stop(); } catch (e) {}
+    delete this.rec.p;
+    this.tapeSide("p", this.local);
+  };
+
+  /* ---------------------------------------------------------------- showing something
+   *
+   * A patient holding up a prescription, or a doctor walking through a scan.  Screen share replaces the outgoing
+   * video track rather than adding a second one, so nothing has to be renegotiated and the other side just sees
+   * the picture change.
+   */
+  Call.prototype.share = function () {
+    var C = this;
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getDisplayMedia) return Promise.reject(new Error("no"));
+    return navigator.mediaDevices.getDisplayMedia({ video: { frameRate: { ideal: 8, max: 15 } }, audio: false }).then(function (s) {
+      var fresh = s.getVideoTracks()[0], send = C.pc && C.pc.getSenders().filter(function (x) { return x.track && x.track.kind === "video"; })[0];
+      if (!fresh || !send) throw new Error("no");
+      C.shown = fresh;
+      C.wasCam = (C.local.getVideoTracks() || [])[0];
+      send.replaceTrack(fresh);
+      fresh.onended = function () { C.unshare(); };          // the browser's own "stop sharing" bar
+      C.say("state", { event: "share", on: true });
+      if (C.cfg.onShare) C.cfg.onShare(true, new MediaStream([fresh]));
+      return true;
+    });
+  };
+
+  Call.prototype.unshare = function () {
+    var C = this;
+    if (!C.shown) return Promise.resolve();
+    var send = C.pc && C.pc.getSenders().filter(function (x) { return x.track && x.track.kind === "video"; })[0];
+    try { C.shown.stop(); } catch (e) {}
+    C.shown = null;
+    if (send && C.wasCam && C.wasCam.readyState === "live") send.replaceTrack(C.wasCam);
+    else if (send) return C.use({ cam: (C.chose || {}).cam }).then(function () { C.say("state", { event: "share", on: false }); });
+    C.say("state", { event: "share", on: false });
+    if (C.cfg.onShare) C.cfg.onShare(false, null);
+    return Promise.resolve();
+  };
+
+  /* ---------------------------------------------------------------- who is talking
+   *
+   * With a camera off, or two people both saying "sorry, go ahead", a ring around whoever is actually speaking
+   * is worth more than any amount of layout.  Read from the audio itself, not from whether the mic is unmuted.
+   */
+  Call.prototype.meter = function (stream, tag) {
+    var C = this;
+    if (!stream || !stream.getAudioTracks().length) return;
+    try {
+      C.ears = C.ears || new (window.AudioContext || window.webkitAudioContext)();
+      if (C.ears.state === "suspended") C.ears.resume();
+      var old = (C.taps || {})[tag];
+      if (old) { try { old.src.disconnect(); } catch (e) {} }
+      var src = C.ears.createMediaStreamSource(stream);
+      var an = C.ears.createAnalyser();
+      an.fftSize = 512; an.smoothingTimeConstant = 0.75;
+      src.connect(an);
+      C.taps = C.taps || {};
+      C.taps[tag] = { src: src, an: an, buf: new Uint8Array(an.frequencyBinCount) };
+      if (!C.listening) {
+        C.listening = true;
+        (function loop() {
+          if (!C.alive) return;
+          var out = {};
+          Object.keys(C.taps).forEach(function (k) {
+            var t = C.taps[k];
+            t.an.getByteFrequencyData(t.buf);
+            var sum = 0;
+            for (var i = 2; i < 40; i++) sum += t.buf[i];        // the band speech actually lives in
+            out[k] = Math.min(1, (sum / 38) / 90);
+          });
+          C.loud = out;
+          if (C.cfg.onLoud) C.cfg.onLoud(out);
+          requestAnimationFrame(loop);
+        })();
+      }
+    } catch (e) { /* no Web Audio: the call is fine, there is just no ring */ }
   };
 
   /* ---------------------------------------------------------------- the buttons */
@@ -271,7 +488,14 @@
     var C = this;
     if (C.ending) return Promise.resolve();
     C.ending = true; C.alive = false;
-    clearInterval(C.beat); clearInterval(C.watch);
+    clearInterval(C.beat); clearInterval(C.watch); clearTimeout(C._wobble);
+    if (C._net) {
+      window.removeEventListener("online", C._net);
+      try { if (navigator.connection && navigator.connection.removeEventListener) navigator.connection.removeEventListener("change", C._net); } catch (e) {}
+    }
+    try { if (C.shown) C.shown.stop(); } catch (e) {}
+    try { if (C.ears && C.ears.state !== "closed") C.ears.close(); } catch (e) {}
+    C.ears = null;
     C.tape(false);
     try { if (C.pc) C.pc.close(); } catch (e) {}
     (C.local ? C.local.getTracks() : []).forEach(function (t) { try { t.stop(); } catch (e) {} });
@@ -285,7 +509,12 @@
     var C = new Call(cfg);
     C.tell("starting", "");
     api.current = C;                   // the call in progress, for anyone who has to ask what it is doing
-    return C.media().then(function () {
+    var first = cfg.stream ? Promise.resolve((C.local = cfg.stream)) : C.media();
+    return first.then(function () {
+      C.chose = cfg.chose || {};
+      if (cfg.stream && C.cfg.onLocal) C.cfg.onLocal(C.local, !C.local.getVideoTracks().length);
+      C.meter(C.local, "me");
+      C.watchNetwork();
       C.here = cfg.here || {};
       C.listen();
       if (C.both()) C.ensure();

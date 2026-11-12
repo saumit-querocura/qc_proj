@@ -1854,38 +1854,30 @@ html.hp-branded .rec-tabs button.on { color: var(--brand); border-bottom-color: 
 .vq-live .btn { background: #fff; color: var(--brand-d, #0b6f66); }
 .vq-len { font: 800 12px 'Manrope', sans-serif; opacity: .6; }
 
-.vroom { position: fixed; inset: 0; z-index: 420; background: #06050f; color: #fff; display: none; flex-direction: column; }
-.vroom.open { display: flex; }
-body.vr-on { overflow: hidden; }
-.vr-stage { position: relative; flex: 1; min-height: 0; overflow: hidden; background: radial-gradient(1200px 600px at 50% 0%, #15123a, #06050f 70%); }
-.vr-stage video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; background: #06050f; }
-.vr-stage #vr-me { display: none; }
-.vr-stage #vr-me.live { display: block; inset: auto 16px calc(16px + env(safe-area-inset-bottom)) auto; width: clamp(96px, 24vw, 180px); height: auto; aspect-ratio: 3/4; border-radius: 16px; border: 2px solid rgba(255,255,255,.22); box-shadow: 0 20px 40px -18px rgba(0,0,0,.9); z-index: 3; transform: scaleX(-1); }
-.vr-top { position: absolute; inset: 0 0 auto 0; z-index: 5; display: flex; align-items: center; gap: 10px; padding: calc(12px + env(safe-area-inset-top)) 16px 12px; background: linear-gradient(#06050fcc, transparent); }
-.vr-top b { font: 700 15px var(--font-head, 'Space Grotesk'), sans-serif; }
-.vr-sub { font-size: 11.5px; font-weight: 700; color: rgba(255,255,255,.62); }
-.vr-net { margin-left: auto; display: flex; align-items: center; gap: 5px; font: 800 11px 'Manrope', sans-serif; color: rgba(255,255,255,.7); }
-.vr-net i { width: 7px; height: 7px; border-radius: 50%; background: #7f7fa0; }
-.vr-net.good i { background: #39d98a; } .vr-net.ok i { background: #e8a23a; } .vr-net.poor i { background: #ff6b4a; }
-.vr-ear { display: none; position: absolute; top: calc(56px + env(safe-area-inset-top)); left: 50%; transform: translateX(-50%); z-index: 6; align-items: center; gap: 8px; padding: 7px 14px; border-radius: 999px; background: rgba(224,53,43,.16); border: 1px solid rgba(255,107,74,.5); font: 800 11.5px 'Manrope', sans-serif; }
-.vr-ear.on { display: inline-flex; }
-.vr-ear i { width: 8px; height: 8px; border-radius: 50%; background: #ff6b4a; animation: vqBeat 1.8s infinite; }
-.vr-wait { position: absolute; inset: 0; z-index: 2; display: grid; place-content: center; justify-items: center; gap: 13px; text-align: center; padding: 28px; }
-.vr-wait.hide { display: none; }
-.vr-halo { width: 108px; height: 108px; border-radius: 50%; display: grid; place-items: center; font: 800 31px var(--font-head, 'Space Grotesk'), sans-serif; background: linear-gradient(135deg, var(--brand, #0e8f83), var(--violet, #7c6fdb)); box-shadow: 0 0 0 0 var(--brand-glow, rgba(14,143,131,.55)); animation: vrHalo 2.6s ease-out infinite; }
-@keyframes vrHalo { 70% { box-shadow: 0 0 0 34px rgba(14,143,131,0); } 100% { box-shadow: 0 0 0 0 rgba(14,143,131,0); } }
-.vr-wait h2 { margin: 0; font-size: 21px; }
-.vr-wait p { margin: 0; max-width: 34ch; font-size: 14px; font-weight: 600; color: rgba(255,255,255,.72); line-height: 1.5; }
-.vr-bar { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 14px 14px calc(14px + env(safe-area-inset-bottom)); background: #0b0a1d; }
-.vr-b { width: 54px; height: 54px; border-radius: 50%; border: 0; cursor: pointer; background: rgba(255,255,255,.12); color: #fff; font-size: 20px; display: grid; place-items: center; transition: background .16s, transform .16s; }
-.vr-b:hover { background: rgba(255,255,255,.2); transform: translateY(-2px); }
-.vr-b.off { background: #fff; color: #06050f; }
-.vr-end { width: 68px; background: #e0352b; } .vr-end:hover { background: #c22a21; }
-@media (prefers-reduced-motion: reduce) { .vq-dot, .vr-halo, .vr-ear i { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .vq-dot { animation: none; } }
 @media (max-width: 620px) {
   .vq { flex-wrap: wrap; } .vq-t { flex-basis: 100%; }
-  .vr-b { width: 50px; height: 50px; }
 }
+
+/* how calls are getting through, on the setup screen */
+.vrelay { display: flex; align-items: flex-start; gap: 12px; padding: 13px 15px; border-radius: 16px; margin: 10px 0 14px;
+  border: 1.5px solid var(--line); background: var(--card); }
+.vrelay.on { border-color: rgba(47,143,94,.45); background: rgba(47,143,94,.07); }
+.vrelay.off { border-color: rgba(232,162,58,.5); background: rgba(232,162,58,.09); }
+.vrelay.bad { border-color: rgba(210,79,40,.5); background: rgba(210,79,40,.08); }
+.vrelay-i { flex: 0 0 auto; width: 10px; height: 10px; border-radius: 50%; margin-top: 5px; background: var(--muted); }
+.vrelay.on .vrelay-i { background: #2f8f5e; }
+.vrelay.off .vrelay-i { background: #e8a23a; }
+.vrelay.bad .vrelay-i { background: var(--danger, #d24f28); }
+.vrelay-b { flex: 1; min-width: 0; }
+.vrelay-b b { display: block; font-size: 14px; }
+.vrelay-b p { margin: 3px 0 0; font-size: 12.5px; font-weight: 600; color: var(--muted); line-height: 1.5; }
+.vrelay-b code { font-size: 11.5px; background: rgba(127,127,160,.14); padding: 1px 5px; border-radius: 5px; }
+.vrelay-legs { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+.vrelay-leg { font: 800 11px 'Manrope', sans-serif; padding: 3px 9px; border-radius: 999px;
+  background: rgba(127,127,160,.16); color: var(--muted); }
+.vrelay-leg.yes { background: rgba(47,143,94,.16); color: #2f8f5e; }
+.vrelay-leg.no { background: rgba(210,79,40,.14); color: var(--danger, #d24f28); }
 
 /* a tab with someone waiting behind it */
 .tb-dot { position: relative; }

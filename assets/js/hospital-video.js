@@ -11,7 +11,7 @@
   "use strict";
   var H = function () { return window.QCHosp; };
   var BASE = "/hospital/video";
-  var S = { day: "", data: null, call: null, visit: null, poll: null, setup: null };
+  var S = { day: "", data: null, visit: null, poll: null, setup: null };
 
   function esc(s) { return H().esc(s); }
   function say(msg, kind) { var P = H().P; if (P && P.toast) P.toast(msg, kind); }
@@ -87,7 +87,7 @@
   function watch() {
     clearInterval(S.poll);
     S.poll = setInterval(function () {
-      if (!document.getElementById("tab-video") || el("tab-video").hidden || S.call) return;
+      if (!document.getElementById("tab-video") || el("tab-video").hidden || S.visit) return;
       api(BASE + "/day" + (S.day ? "?day=" + S.day : "")).then(function (d) {
         if (!d.ok) return;
         var before = JSON.stringify((S.data.visits || []).map(function (x) { return [x.id, !!(x.here.patient && x.here.patient.here)]; }));
@@ -112,94 +112,85 @@
     } catch (e) {}
   }
 
-  /* ------------------------------------------------------------------ the room */
-  function room() {
-    if (el("vroom")) return el("vroom");
-    var d = document.createElement("div");
-    d.id = "vroom";
-    d.className = "vroom";
-    d.innerHTML =
-      '<div class="vr-stage"><video id="vr-them" autoplay playsinline></video><video id="vr-me" autoplay playsinline muted></video>' +
-      '<div class="vr-top"><div><b id="vr-who"></b><div class="vr-sub" id="vr-sub"></div></div>' +
-      '<div class="vr-net" id="vr-net"><i></i><span></span></div></div>' +
-      '<div class="vr-ear" id="vr-ear"><i></i><span>This patient has asked QueroCura to take notes</span></div>' +
-      '<div class="vr-wait" id="vr-wait"><div class="vr-halo" id="vr-ini"></div><h2 id="vr-title"></h2><p id="vr-msg"></p></div></div>' +
-      '<div class="vr-bar">' +
-      '<button type="button" class="vr-b" id="vr-mic" title="Microphone">🎙️</button>' +
-      '<button type="button" class="vr-b" id="vr-cam" title="Camera">🎥</button>' +
-      '<button type="button" class="vr-b vr-end" id="vr-end" title="End the call">📞</button>' +
-      "</div>";
-    document.body.appendChild(d);
-    d.querySelector("#vr-mic").addEventListener("click", function () { if (S.call) flag("vr-mic", S.call.setMic(!S.call.mic)); });
-    d.querySelector("#vr-cam").addEventListener("click", function () { if (S.call) flag("vr-cam", S.call.setCam(!S.call.cam)); });
-    d.querySelector("#vr-end").addEventListener("click", function () { if (window.confirm("End this call?")) leave(); });
-    return d;
-  }
-
-  function flag(id, on) { el(id).classList.toggle("off", !on); }
-
-  function say(pill, msg) {
-    el("vr-wait").classList.remove("hide");
-    el("vr-title").textContent = pill;
-    el("vr-msg").textContent = msg || "";
-  }
-
+  /* ------------------------------------------------------------------ the room
+   *
+   * The same room the patient's app opens (`qc-room.js`).  This side only says who is on the other end and is
+   * the impolite one in the negotiation: when both reconfigure at once the doctor carries on, because the doctor
+   * has a list of people waiting and the patient has one appointment.
+   */
   function join(id) {
-    var R = room();
-    R.classList.add("open");
-    document.body.classList.add("vr-on");
-    say("Opening the room", "");
     api(BASE + "/" + id + "/join", { method: "POST" }).then(function (d) {
-      if (!d.ok) { say("Not yet", d.message || "We couldn't open that room."); setTimeout(leave, 2600); return; }
+      if (!d.ok) { say(d.message || "We couldn't open that room.", "err"); return; }
       S.visit = d.visit;
-      el("vr-who").textContent = d.visit.patient || "Patient";
-      el("vr-sub").textContent = [d.visit.patient_age ? d.visit.patient_age + "y" : "", d.visit.patient_sex || "", d.visit.start].filter(Boolean).join(" · ");
-      el("vr-ini").textContent = initials(d.visit.patient);
-      el("vr-ear").classList.toggle("on", !!d.visit.listen);
-      return window.QCCall.start({
+      var who = d.visit.patient || "Patient";
+      var sub = [d.visit.patient_age ? d.visit.patient_age + "y" : "", d.visit.patient_sex || "",
+                 d.visit.start, d.visit.reason ? "“" + d.visit.reason + "”" : ""].filter(Boolean).join(" · ");
+      return window.QCRoom.open({
         base: BASE, id: id, polite: false, ice: d.ice || [], since: d.since, here: d.visit.here,
-        onLocal: function (s) {
-          el("vr-me").srcObject = s;
-          el("vr-me").classList.toggle("live", s.getVideoTracks().length > 0);
-        },
-        onRemote: function (s) { el("vr-them").srcObject = s; el("vr-wait").classList.add("hide"); },
-        onState: function (s, why) {
-          if (s === "starting") say("Turning on your camera", "Your browser will ask for the camera and microphone.");
-          else if (s === "blocked" || s === "failed") say("We couldn't start", why);
-          else if (s === "waiting") say("Waiting for " + ((S.visit || {}).patient || "the patient"), "They have been told you are here.");
-          else if (s === "joining") say("Connecting", "A few seconds…");
-          else if (s === "live") el("vr-wait").classList.add("hide");
-          else if (s === "gone") say(((S.visit || {}).patient || "They") + " left the call", why);
-        },
-        onStats: function (x) {
-          var n = el("vr-net");
-          n.className = "vr-net " + (x.grade || "");
-          n.lastChild.textContent = x.grade === "good" ? "Good" : x.grade === "ok" ? "Fair" : x.grade === "poor" ? "Weak" : "";
-        },
-        onSay: function (b) {
-          if (b && b.event === "listen") {
-            el("vr-ear").classList.toggle("on", !!b.on);
-            say(b.on ? "This patient has asked QueroCura to take notes of the visit."
-                           : "The patient has turned note-taking off.");
+        side: "doctor", them: { name: who, sub: sub },
+        onConnected: function (room) { if (d.visit.listen) room.notes("on"); },
+        onSay: function (b, room) {
+          if (b.event === "listen") {
+            room.notes(b.on ? "on" : "off");
+            say(b.on ? who + " has asked QueroCura to take notes of this visit."
+                     : who + " has turned note-taking off.");
           }
-          if (b && b.event === "joined") say(((S.visit || {}).patient || "The patient") + " joined the call.");
+          if (b.event === "joined") say(who + " joined the call.");
         },
-        onEnd: function (theirs) { if (!theirs) leave(); }
-      }).then(function (c) { S.call = c; flag("vr-mic", true); flag("vr-cam", true); });
+        onEnd: leave,
+        onCallEnd: function (theirs) { if (!theirs) leave(); }
+      }).then(function (room) {
+        // the patient's own note-taking flag belongs on the doctor's screen too, from the moment they walk in
+        if (room && d.visit.listen) room.notes("on");
+        return room;
+      });
     }).catch(function () {});
   }
 
   function leave() {
-    var c = S.call;
-    S.call = null; S.visit = null;
-    if (c) c.stop(false);
-    var R = el("vroom");
-    if (R) { R.classList.remove("open"); R.querySelector("#vr-them").srcObject = null; R.querySelector("#vr-me").srcObject = null; }
-    document.body.classList.remove("vr-on");
+    var r = window.QCRoom.current();
+    if (r) { if (r.call) r.call.stop(false); r.close(); }
+    S.visit = null;
     load();
   }
 
   /* ------------------------------------------------------------------ switching it on (Setup) */
+  /* Whether calls can actually get through from a mobile network, in a line an administrator can act on. */
+  function relayCard(r) {
+    var cls = r.on ? "on" : r.kind === "broken" ? "bad" : "off";
+    var title = r.on ? "Calls can reach anyone" : r.kind === "broken" ? "The relay is half set up" : "Some calls will not connect";
+    return '<div class="vrelay ' + cls + '" id="vrelay"><span class="vrelay-i"></span><div class="vrelay-b">' +
+      "<b>" + esc(title) + "</b><p>" + esc(r.says || "") + "</p>" +
+      (r.host ? '<p><code>' + esc(r.host) + "</code></p>" : "") +
+      (r.on ? "" : '<p>A relay carries the calls that cannot connect directly — mobile data, strict hospital ' +
+        "wi‑fi, some home routers. Setting one up is about twenty minutes: see <code>deploy/coturn/README.md</code>.</p>") +
+      '<div id="vrelay-legs"></div>' +
+      '<button type="button" class="btn btn-sm btn-ghost" id="vrelay-go" style="margin-top:10px">Check it now</button>' +
+      "</div></div>";
+  }
+
+  function relayCheck() {
+    var btn = el("vrelay-go");
+    if (btn) { btn.disabled = true; btn.textContent = "Checking…"; }
+    api(BASE + "/turn/check").then(function (d) {
+      if (btn) { btn.disabled = false; btn.textContent = "Check it now"; }
+      if (!d.ok) { say(d.message || "We couldn't check the relay.", "err"); return; }
+      var c = d.check || {}, box = el("vrelay-legs");
+      var leg = function (k, label) {
+        var ms = c[k];
+        return '<span class="vrelay-leg ' + (ms != null ? "yes" : "no") + '">' + label +
+          (ms != null ? " · " + ms + " ms" : " · no answer") + "</span>";
+      };
+      if (box) {
+        box.innerHTML = '<div class="vrelay-legs">' + leg("udp", "UDP") + leg("tcp", "TCP") + leg("tls", "TLS") +
+          (c.seen_as ? '<span class="vrelay-leg">seen as ' + esc(c.seen_as) + "</span>" : "") + "</div>";
+      }
+      var card = el("vrelay");
+      if (card) card.className = "vrelay " + (c.ok ? "on" : "bad");
+      say(c.why || "");
+    });
+  }
+
   function setupCard() {
     return api(BASE + "/setup").then(function (d) {
       if (!d.ok) return "";
@@ -208,8 +199,7 @@
       return '<div class="card" id="vset"><h3>Video consultations</h3>' +
         '<p class="muted">Patients book a slot from the same diary as any other appointment and talk to the doctor in their browser. ' +
         "The call goes straight between the two devices; QueroCura carries nothing but the handshake.</p>" +
-        (d.ice ? "" : '<div class="notice wait">No relay server is configured, so calls work when both sides are on ordinary home or office internet. ' +
-          "On some mobile networks they will not connect. Set <code>TELEVISIT_ICE</code> on the server to your own STUN/TURN to cover those.</div>") +
+        relayCard(d.relay || {}) +
         '<label class="row gap"><input type="checkbox" id="vset-on"' + (s.enabled ? " checked" : "") + "> <b>Take video bookings</b></label>" +
         '<div class="muted" style="margin:10px 0 6px">Which doctors see people online</div>' +
         '<div class="chips">' + s.doctors.map(function (x) {
@@ -233,6 +223,7 @@
     var x;
     if ((x = e.target.closest("[data-vjoin]"))) return join(x.getAttribute("data-vjoin"));
     if (e.target.closest("#vset-save")) return saveSetup();
+    if (e.target.closest("#vrelay-go")) return relayCheck();
     if (e.target.closest("[data-more]") || e.target.closest("[data-tab]")) setTimeout(function () { dot(null); }, 60);
   });
   document.addEventListener("change", function (e) {
@@ -254,7 +245,7 @@
   }
 
   function tick() {
-    if (document.hidden || S.call) return;                 // not while they are already in a call
+    if (document.hidden || S.visit) return;                // not while they are already in a call
     api(BASE + "/day").then(function (d) {
       if (!d || !d.ok) return;
       var waiting = d.waiting || [];

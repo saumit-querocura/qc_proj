@@ -206,98 +206,43 @@
     });
   }
 
-  /* ================================================================== the room */
+  /* ================================================================== the room
+   *
+   * The room itself is `qc-room.js`, the same one the doctor's portal opens.  This page only says who is on the
+   * other end, hands over the consent switch, and tidies up afterwards.
+   */
   function join(id) {
-    var R = el("room");
-    R.classList.add("open");
-    document.body.style.overflow = "hidden";
-    paintRoom("Connecting", "Getting you into the room", "", "");
     api(BASE + "/" + id + "/join", { method: "POST" }).then(function (d) {
-      if (!d.ok) {
-        paintRoom("Not yet", d.message || "We couldn't open that room.", "", "");
-        setTimeout(leave, 2600);
-        return;
-      }
+      if (!d.ok) { toast(d.message || "We couldn't open that room.", "err"); return; }
       S.visit = d.visit;
-      el("r-who").textContent = d.visit.doctor;
-      el("r-sub").textContent = (d.visit.specialty ? d.visit.specialty + " · " : "") + (d.visit.clinic || "");
-      el("r-ini").textContent = initials(d.visit.doctor);
-      return QCCall.start({
+      return QCRoom.open({
         base: BASE, id: id, polite: true, ice: d.ice || [], since: d.since, here: d.visit.here,
-        onLocal: function (s, audioOnly) {
-          el("me").srcObject = s;
-          el("me").classList.toggle("off", !!audioOnly);
-          el("me").classList.toggle("live", !audioOnly && s.getVideoTracks().length > 0);
+        side: "patient",
+        them: { name: d.visit.doctor, sub: [d.visit.specialty, d.visit.clinic].filter(Boolean).join(" · ") },
+        notes: !(S.notesHere && S.notesHere.ok === false),
+        onListen: setEar,
+        onConnected: function (room) { offerNotes(room); },
+        onSay: function (b) {
+          if (b.event === "joined") toast(((S.visit || {}).doctor || "Your doctor") + " joined the call.");
+          if (b.event === "cam" && !b.on) toast(((S.visit || {}).doctor || "They") + " turned their camera off.");
         },
-        onRemote: function (s) { el("them").srcObject = s; el("waitbox").classList.add("hide"); maybeAsk(); },
-        onHere: here,
-        onState: state,
-        onStats: stats,
-        onSay: said,
-        onEnd: function (theirs) { finish(theirs); }
-      }).then(function (c) {
-        S.call = c;
-        button("b-mic", true); button("b-cam", true);
-      }).catch(function () { /* onState has already explained why */ });
-    });
+        onEnd: leave,
+        onCallEnd: function (theirs) { if (!theirs) leave(); }
+      });
+    }).catch(function () {});
   }
 
-  function paintRoom(pill, title, msg, who) {
-    el("waitbox").classList.remove("hide");
-    el("r-pill").textContent = pill;
-    el("r-title").textContent = title;
-    el("r-msg").textContent = msg || "";
-    if (who) el("r-ini").textContent = who;
-  }
-
-  function state(s, why) {
-    if (s === "starting") paintRoom("Starting", "Turning on your camera", "Your browser will ask to use the camera and microphone. QueroCura only sees them while you are in this room.");
-    else if (s === "blocked") paintRoom("Can't start", "We need your camera", why);
-    else if (s === "waiting") paintRoom("In the room", "Waiting for " + ((S.visit || {}).doctor || "your doctor"),
-      "They have been told you are here. Stay on this screen — the call starts by itself the moment they join.");
-    else if (s === "joining") paintRoom("Connecting", "Connecting you both", "This takes a few seconds.");
-    else if (s === "live") { el("waitbox").classList.add("hide"); maybeAsk(); }
-    else if (s === "trouble") { el("r-pill").textContent = "Unsteady"; }
-    else if (s === "failed") paintRoom("No connection", "We couldn't connect the two of you", why);
-    else if (s === "gone") paintRoom("Alone", ((S.visit || {}).doctor || "They") + " left the call", why);
-  }
-
-  function here(h) {
-    var d = h && h.doctor && h.doctor.here;
-    if (d && el("waitbox").classList.contains("hide") === false && S.call && !S.call.remote) {
-      paintRoom("Connecting", ((S.visit || {}).doctor || "Your doctor") + " has joined", "Connecting you both now…");
-    }
-  }
-
-  function stats(x) {
-    var n = el("r-net");
-    n.className = "net " + (x.grade || "");
-    n.lastChild.textContent = x.grade === "good" ? "Good" : x.grade === "ok" ? "Fair" : x.grade === "poor" ? "Weak" : "";
-  }
-
-  function said(b) {
-    if (!b) return;
-    if (b.event === "joined") toast(((S.visit || {}).doctor || "Your doctor") + " joined the call.");
-    if (b.event === "mic") toast(b.on ? "" : ((S.visit || {}).doctor || "They") + " muted their microphone.");
-    if (b.event === "cam" && !b.on) toast(((S.visit || {}).doctor || "They") + " turned their camera off.");
-  }
-
-  /* ---- the consent panel: offered once the call is actually live, never before */
-  function maybeAsk() {
-    if (S.asked || !S.call || !S.visit) return;
-    if (S.visit.listen) { earOn(true); return; }
-    var h = S.notesHere;
-    if (h && h.ok === false) return;                  // nothing to offer if this server cannot do it
+  /* Offered once the call is really going, never while they are still waiting, and never at all on a server
+     that could not take notes anyway -- an offer we cannot honour is worse than no offer. */
+  function offerNotes(room) {
+    if (S.asked || !S.visit) return;
+    if (S.visit.listen) { room.notes("on"); return; }
+    if (S.notesHere && S.notesHere.ok === false) return;
     S.asked = true;
-    setTimeout(function () { if (S.call && S.call.alive && !S.visit.listen) el("earbox").classList.remove("hide"); }, 2500);
-  }
-
-  function earOn(on) {
-    el("earon").classList.toggle("on", !!on);
-    el("earbox").classList.add("hide");
-    var b = el("b-ear");
-    b.classList.toggle("off", !!on);
-    b.title = on ? "QueroCura is taking notes" : "Ask QueroCura to take notes";
+    setTimeout(function () {
+      var r = QCRoom.current();
+      if (r && S.visit && !S.visit.listen) r.notes("offer");
+    }, 2500);
   }
 
   function setEar(on) {
@@ -305,31 +250,16 @@
     api(BASE + "/" + S.visit.id + "/listen", { method: "POST", body: { on: !!on } }).then(function (d) {
       if (!d.ok) { toast(d.message || "We couldn't change that.", "err"); return; }
       S.visit.listen = !!on;
-      earOn(!!on);
-      if (S.call) S.call.tape(!!on);
+      var r = QCRoom.current();
+      if (r) { r.notes(on ? "on" : "off"); if (r.call) r.call.tape(!!on); }
       toast(d.message);
     });
   }
 
-  function button(id, on) {
-    var b = el(id);
-    b.classList.toggle("off", !on);
-    b.setAttribute("aria-pressed", on ? "false" : "true");
-  }
-
-  function finish(theirs) {
-    if (theirs) return;
-    leave();
-  }
-
   function leave() {
-    var c = S.call;
-    S.call = null; S.asked = false;
-    if (c) c.stop(false);
-    el("room").classList.remove("open");
-    el("them").srcObject = null; el("me").srcObject = null;
-    el("earbox").classList.add("hide"); earOn(false);
-    document.body.style.overflow = "";
+    var r = QCRoom.current();
+    if (r) { if (r.call) r.call.stop(false); r.close(); }
+    S.asked = false;
     document.title = "Video visits — QueroCura";
     var id = S.visit && S.visit.id;
     S.visit = null;
@@ -453,26 +383,9 @@
       timer = setTimeout(function () { S.q = q.value.trim(); loadDocs(); }, 260);
     });
 
-    el("b-mic").addEventListener("click", function () { if (S.call) button("b-mic", S.call.setMic(!S.call.mic)); });
-    el("b-cam").addEventListener("click", function () { if (S.call) button("b-cam", S.call.setCam(!S.call.cam)); });
-    el("b-flip").addEventListener("click", function () { if (S.call) S.call.flip(); });
-    el("b-ear").addEventListener("click", function () {
-      if (!S.visit) return;
-      if (S.visit.listen) return setEar(false);
-      el("earbox").classList.toggle("hide");
-    });
-    el("ear-yes").addEventListener("click", function () { setEar(true); });
-    el("ear-no").addEventListener("click", function () { el("earbox").classList.add("hide"); });
-    el("ear-stop").addEventListener("click", function () { setEar(false); });
-    el("b-end").addEventListener("click", function () {
-      if (window.confirm("Leave the call?")) leave();
-    });
-    document.addEventListener("keydown", function (e) {
-      if (e.key === "Escape" && el("room").classList.contains("open")) { e.stopPropagation(); }
-    }, true);
     // a closed laptop or a swiped-away tab should not leave the other side waiting on an empty room
     window.addEventListener("pagehide", function () {
-      if (S.call && navigator.sendBeacon) {
+      if (S.visit && navigator.sendBeacon) {
         try { navigator.sendBeacon(P.API + BASE + "/" + S.visit.id + "/leave", new Blob(["{}"], { type: "application/json" })); } catch (e) {}
       }
     });
