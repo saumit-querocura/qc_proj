@@ -32,6 +32,8 @@ from pages_more import CALC_HUB, GLOSSARY, GLOSSARY_TERMS, GUIDES, HINDI, PRESS,
 from pages_topics import CLUSTER, HMS_CLUSTER, PILLARS  # noqa: E402
 from pages_boost import COMPARE, HINDI_HMS, HINDI_TOOLS, SPECIALTY  # noqa: E402
 import extras  # noqa: E402
+import visuals  # noqa: E402
+import polish  # noqa: E402
 
 LOGO = "assets/d4f7acc01b9438e998c9e7b9676584b0.png"
 OG = SITE + "/assets/og-image.png"
@@ -50,7 +52,8 @@ TODAY = dt.date.today().isoformat()
 UI = {
     "en": {"nav": [("Hospitals", "hospital-management-system/"), ("Clinics", "clinic-management-software/"), ("Health app", "health-app/"), ("Calculators", "calculators/"), ("Blog", "blog/"), ("हिन्दी", "hi/")],
            "signin": "Sign in", "start": "Get started free", "home": "Home", "faq": "Frequently asked questions", "related": "Related", "updated": "Last updated",
-           "menu": "Menu", "theme": "Switch theme", "skip": "Skip to content",
+           "menu": "Menu", "theme": "Switch theme", "skip": "Skip to content", "contents": "On this page",
+           "tagline": "Connected healthcare for India: a free health app for families and a hospital management system for clinics and hospitals.",
            "trust": {"business": ["Built for India: UPI, PM-JAY, CGHS", "ABHA ready", "Consent first", "Audit log of every access"],
                      "consumer": ["Free", "English &amp; हिन्दी", "Never medicine advice", "You choose what is shared"],
                      "both": ["Made in India", "Consent first", "English &amp; हिन्दी"]},
@@ -61,7 +64,8 @@ UI = {
            "tool_note": "Runs in your browser: nothing you type is sent anywhere. For information only, not a diagnosis."},
     "hi": {"nav": [("हेल्थ ऐप", "hi/"), ("दवा रिमाइंडर", "hi/medicine-reminder-app/"), ("परिवार", "hi/family-health-app/"), ("लक्षण जाँच", "hi/symptom-checker/"), ("English", "")],
            "signin": "साइन इन", "start": "मुफ़्त शुरू करें", "home": "होम", "faq": "अक्सर पूछे जाने वाले सवाल", "related": "और पढ़ें", "updated": "आख़िरी बदलाव",
-           "menu": "मेन्यू", "theme": "थीम बदलें", "skip": "सीधे सामग्री पर जाएँ",
+           "menu": "मेन्यू", "theme": "थीम बदलें", "skip": "सीधे सामग्री पर जाएँ", "contents": "इस पेज पर",
+           "tagline": "भारत के लिए जुड़ी हुई स्वास्थ्य सेवा: परिवारों के लिए मुफ़्त हेल्थ ऐप और अस्पतालों के लिए मैनेजमेंट सिस्टम।",
            "trust": {"consumer": ["मुफ़्त", "हिन्दी और English", "दवा की सलाह कभी नहीं", "आप तय करें क्या साझा हो"],
                      "business": ["भारत के लिए: UPI, PM-JAY, CGHS", "ABHA के लिए तैयार", "मरीज़ की सहमति पहले", "हर पहुँच का ऑडिट लॉग"]},
            "band": {"consumer": ["आपकी सेहत की पूरी कहानी, एक शांत जगह।", "मुफ़्त, हिन्दी और अंग्रेज़ी में। क्या साझा हो, आप तय करें।"],
@@ -176,11 +180,12 @@ def anchor(term: str) -> str:
     return re.sub(r"[^a-z0-9]+", "-", term.lower().split(" (")[0]).strip("-")
 
 
-def nav(root: str, lang: str) -> str:
+def nav(root: str, lang: str, slug: str = "") -> str:
     ui = UI[lang]
-    links = "".join('<a href="%s%s"%s>%s</a>' % (root, u, ' lang="hi"' if t == "हिन्दी" else ' lang="en"' if t == "English" else "", e(t)) for t, u in ui["nav"])
+    here = lambda u: ' aria-current="page"' if u and u.rstrip("/") == slug else ""
+    links = "".join('<a href="%s%s"%s%s>%s</a>' % (root, u, ' lang="hi"' if t == "हिन्दी" else ' lang="en"' if t == "English" else "", here(u), e(t)) for t, u in ui["nav"])
     mob = "".join('<a href="%s%s">%s</a>' % (root, u, e(t)) for t, u in ui["nav"] + [(ui["signin"], "login/"), (ui["start"], "register/")])
-    return ('<a class="skip" href="#main">%s</a><header class="nav"><div class="wrap">'
+    return ('<a class="skip" href="#main">%s</a><div class="progress" aria-hidden="true"></div><div class="aurora" aria-hidden="true"></div><header class="nav"><div class="wrap">'
             '<a class="brand" href="%s%s"><img src="%s%s" alt="" width="38" height="35"><span>Quero<b>Cura</b></span></a>'
             '<nav class="nav-links" aria-label="Main">%s</nav>'
             '<div class="nav-r"><button class="icon-btn" id="theme-btn" type="button" aria-label="%s">☾</button>'
@@ -195,28 +200,43 @@ def footer(root: str, lang: str) -> str:
     biz = col("For hospitals &amp; clinics", ["hospital-management-system", "clinic-management-software", "doctor-appointment-booking", "ai-medical-imaging", "guides/how-to-choose-a-hospital-management-system"])
     con = col("For you &amp; your family", ["health-app", "symptom-checker", "medicine-reminder-app", "personal-health-records", "family-health-app"])
     calc = col("Free calculators", [t["slug"] for t in TOOLS][:6])
-    hi = col("हिन्दी में", [p["slug"] for p in HINDI])
+    hi = col("हिन्दी में", [p["slug"] for p in HINDI] + [HINDI_HMS["slug"]])
     topics = col("Topics", [p["slug"] for p in PILLARS] + ["healthcare-software"])
     company = ('<div><h3>Company</h3><a href="%sabout/">About QueroCura</a><a href="%spress/">Press kit</a><a href="%sfaq/">FAQ</a><a href="%sglossary/">Glossary</a><a href="%sguides/">Guides</a>'
                '<a href="%sspecialties/">By specialty</a><a href="%sblog/">Blog</a><a href="%sprivacy-notice/">Privacy notice</a><a href="mailto:hello@querocura.com">hello@querocura.com</a></div>') % ((root,) * 8)
-    return '<footer><div class="wrap"><div class="foot-grid">%s%s%s%s%s%s</div><p class="foot-legal">© %d QueroCura · %s</p></div></footer>' % (
-        biz, con, topics, calc, hi, company, dt.date.today().year, UI[lang]["legal"])
+    top = '<div class="foot-top"><a class="brand" href="%s%s"><img src="%s%s" alt="" width="38" height="35" loading="lazy"><span>Quero<b>Cura</b></span></a><p>%s</p></div>' % (
+        root, "hi/" if lang == "hi" else "", root, LOGO, UI[lang]["tagline"])
+    return '<footer><div class="wrap">%s<div class="foot-grid">%s%s%s%s%s%s</div><p class="foot-legal">© %d QueroCura · %s</p></div></footer>' % (
+        top, biz, con, topics, calc, hi, company, dt.date.today().year, UI[lang]["legal"])
+
+
+def sec(head: str, body: str, split: bool, sid: str = "", cls: str = "") -> str:
+    """One section: its heading in a side column on wide screens (split) or above a full-width grid."""
+    return '<section%s class="%s%s"><div class="sec-h rv"><h2>%s</h2></div><div class="sec-b">%s</div></section>' % (
+        ' id="%s"' % sid if sid else "", "split" if split else "wide", " " + cls if cls else "", head, body)
 
 
 def section_html(s: dict, root: str) -> str:
     fix = lambda x: x.replace("{root}", root)
-    h = '<section id="%s"><h2>%s</h2>' % (anchor(s["h2"]), e(s["h2"]))
+    h, wide = "", False
     for para in s.get("p", []):
-        h += "<p>%s</p>" % fix(para)
-    if s.get("ul"):
-        h += "<ul>%s</ul>" % "".join("<li>%s</li>" % fix(x) for x in s["ul"])
+        h += '<p class="rv">%s</p>' % fix(para)
+    ul = s.get("ul")
+    if ul:
+        bold, link = all(x.startswith("<b>") for x in ul), all(x.startswith("<a ") for x in ul)
+        if (bold or link) and len(ul) > 1:      # a title and a line each: cards
+            wide = True
+            h += '<ul class="cards%s%s">%s</ul>' % (" links" if link else "", " dense" if len(ul) > 9 else "", "".join('<li class="glow rv">%s</li>' % fix(x) for x in ul))
+        else:
+            h += '<ul class="checks">%s</ul>' % "".join('<li class="rv">%s</li>' % fix(x) for x in ul)
     t = s.get("table")
     if t:
         blank = not any(t["head"])
-        h += '<div class="table-wrap"><table><thead%s><tr>%s</tr></thead><tbody>%s</tbody></table></div>' % (
+        wide = wide or len(t["head"]) > 2
+        h += '<div class="table-wrap rv"><table><thead%s><tr>%s</tr></thead><tbody>%s</tbody></table></div>' % (
             ' class="blank"' if blank else "", "".join("<th scope=\"col\">%s</th>" % e(c) for c in t["head"]),
             "".join("<tr>%s</tr>" % "".join("<td>%s</td>" % fix(c) for c in r) for r in t["rows"]))
-    return h + "</section>"
+    return sec(e(s["h2"]), h, not wide, anchor(s["h2"]))
 
 
 def tool_html(p: dict) -> str:
@@ -240,8 +260,8 @@ def tool_html(p: dict) -> str:
 
 
 def glossary_html() -> str:
-    return '<section><dl class="gloss">%s</dl></section>' % "".join(
-        '<div id="%s"><dt>%s</dt><dd>%s</dd></div>' % (anchor(t), e(t), e(d)) for t, d in GLOSSARY_TERMS)
+    return '<dl class="gloss">%s</dl>' % "".join(
+        '<div id="%s" class="rv"><dt>%s</dt><dd>%s</dd></div>' % (anchor(t), e(t), e(d)) for t, d in GLOSSARY_TERMS)
 
 
 def alternates(p: dict) -> str:
@@ -254,6 +274,14 @@ def alternates(p: dict) -> str:
             % (url_of(en), url_of(hi), url_of(en)))
 
 
+def short_title(t: str) -> str:
+    """At most ~60 characters show in a search result; the brand suffix is the part to give up."""
+    for suffix in (" | QueroCura", " | QueroCura हिन्दी"):
+        if len(t) > 60 and t.endswith(suffix):
+            return t[:-len(suffix)]
+    return t
+
+
 def render(p: dict) -> str:
     lang = lang_of(p)
     ui = UI[lang]
@@ -263,30 +291,33 @@ def render(p: dict) -> str:
     cr = crumbs_of(p)
     crumb = " › ".join(('<a href="%s%s">%s</a>' % (root, s + "/" if s else "", e(ui["home"] if not s else n))) for n, s in cr[:-1]) + " › " + e(cr[-1][0])
     aud = p["audience"] if p["audience"] in ui["trust"] else "consumer"
-    body = ""
+    body, embed = "", ""
     if p.get("kind") == "pillar":
-        body += '<nav class="toc" aria-label="Contents"><b>%s</b><ol>%s</ol></nav>' % ("Contents", "".join('<li><a href="#%s">%s</a></li>' % (anchor(x["h2"]), e(x["h2"])) for x in p["sections"]))
+        body += '<nav class="toc" aria-label="%s"><b>%s</b><ol>%s</ol></nav>' % (e(ui["contents"]), e(ui["contents"]), "".join('<li><a href="#%s">%s</a></li>' % (anchor(x["h2"]), e(x["h2"])) for x in p["sections"]))
     if p.get("kind") == "tool":
         body += tool_html(p)
         if lang == "en" and p["tool"] != "meds":
             name = p["slug"].split("/")[-1]
             snip = extras.embed_snippet("%s/embed/%s/" % (SITE, name), url, plain(p["h1"]))
-            body += ('<section id="embed"><h2>Add this calculator to your website</h2><p>Free for clinics, hospitals, schools and health writers. Paste this where you want it to appear; '
-                     'it runs on our site, keeps nothing and needs no sign-up.</p><textarea class="tool-in embed-code" readonly rows="4" aria-label="Embed code">%s</textarea></section>') % e(snip)
+            embed = sec("Add this calculator to your website", ('<p>Free for clinics, hospitals, schools and health writers. Paste this where you want it to appear; '
+                        'it runs on our site, keeps nothing and needs no sign-up.</p><textarea class="tool-in embed-code" readonly rows="4" aria-label="Embed code">%s</textarea>') % e(snip), True, "embed")
     if p.get("kind") == "glossary":
         body += glossary_html()
-    body += "".join(section_html(s, root) for s in p["sections"])
+    body += "".join(section_html(s, root) for s in p["sections"]) + embed
     if p["faq"]:
-        body += '<section class="faq"><h2>%s</h2>%s</section>' % (e(ui["faq"]), "".join(
-            "<details><summary>%s</summary><p>%s</p></details>" % (e(q), a.replace("{root}", root)) for q, a in p["faq"]))
+        body += sec(e(ui["faq"]), "".join('<details class="rv"><summary>%s</summary><p>%s</p></details>' % (e(q), a.replace("{root}", root)) for q, a in p["faq"]), True, "faq", "faq")
     rel = [BY_SLUG[r] for r in p.get("related", []) if r in BY_SLUG]
     if rel:
-        body += '<section><h2>%s</h2><div class="related">%s</div></section>' % (e(ui["related"]), "".join(
-            '<a href="%s%s/"><b>%s</b><span>%s</span></a>' % (root, r["slug"], e(plain(r["eyebrow"])), e(r["description"][:120].rsplit(" ", 1)[0] + "…")) for r in rel))
+        body += sec(e(ui["related"]), '<div class="related">%s</div>' % "".join(
+            '<a class="glow rv" href="%s%s/"><b>%s</b><span>%s</span></a>' % (root, r["slug"], e(plain(r["eyebrow"])), e(r["description"][:120].rsplit(" ", 1)[0] + "…")) for r in rel), False, "related")
     bt, bx = ui["band"][aud]
-    band = '<div class="band"><h2>%s</h2><p>%s</p><a class="btn btn-p" href="%s">%s</a></div>' % (bt, bx, href(root, p["cta"][1]), e(p["cta"][0]))
+    band = '<div class="band rv"><h2>%s</h2><p>%s</p><div class="ctas"><a class="btn btn-p" href="%s">%s</a><a class="btn btn-g" href="%s">%s</a></div></div>' % (
+        bt, bx, href(root, p["cta"][1]), e(p["cta"][0]), href(root, p["cta2"][1]), e(p["cta2"][0]))
+    viz = visuals.pick(p)
     ld = "".join('<script type="application/ld+json">%s</script>' % json.dumps(x, ensure_ascii=False, separators=(",", ":")) for x in schema(p))
-    scripts = '<script src="%sassets/js/qc-seo.js"></script>' % root + ('\n<script src="%sassets/js/qc-tools.js"></script>' % root if p.get("kind") == "tool" else "")
+    # one tiny script before paint (the saved theme); everything else waits for the page
+    scripts = ('<script src="%sassets/js/qc-theme.js"></script>\n<script src="%sassets/js/qc-seo.js" defer></script>\n<script src="%sassets/js/qc-fx.js" defer></script>' % (root, root, root)
+               + ('\n<script src="%sassets/js/qc-tools.js" defer></script>' % root if p.get("kind") == "tool" else ""))
     modified = dt.date.fromisoformat(p.get("_modified", TODAY))
     og = SITE + "/" + extras.og_image(ROOT, LOGO, p["slug"], plain(p["eyebrow"]), plain(p["h1"]), lang)
     return """<!doctype html>
@@ -317,7 +348,8 @@ def render(p: dict) -> str:
 {ld}
 <link rel="icon" type="image/png" sizes="32x32" href="{root}icons/favicon-32x32.png">
 <link rel="apple-touch-icon" sizes="180x180" href="{root}icons/apple-touch-icon.png">
-<meta name="theme-color" content="#0e8f83">
+<meta name="theme-color" content="#f6f5f1" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0b0a1c" media="(prefers-color-scheme: dark)">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -329,12 +361,15 @@ def render(p: dict) -> str:
 <main id="main">
 <div class="wrap">
 <div class="crumbs">{crumb}</div>
-<div class="hero">
+<div class="hero{hasviz}">
+<div class="hero-t">
 <span class="eyebrow">{eyebrow}</span>
 <h1>{h1}</h1>
 <p class="lead">{lead}</p>
 <div class="ctas"><a class="btn btn-p" href="{cta1u}">{cta1}</a><a class="btn btn-g" href="{cta2u}">{cta2}</a></div>
 <div class="trust">{trust}</div>
+</div>
+{viz}
 </div>
 {body}
 {band}
@@ -345,9 +380,9 @@ def render(p: dict) -> str:
 <!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{{"token": "cf10cc866a9f4ffeb50a6ce35a72e773"}}'></script><!-- End Cloudflare Web Analytics -->
 </body>
 </html>
-""".format(htmllang="hi-IN" if lang == "hi" else "en-IN", csp=CSP, title=e(p["title"]), desc=e(p["description"]), url=url, alts=alternates(p), og=og, site=SITE,
+""".format(htmllang="hi-IN" if lang == "hi" else "en-IN", csp=CSP, title=e(short_title(p["title"])), desc=e(p["description"]), url=url, alts=alternates(p), og=og, site=SITE,
            ogtype="article" if p.get("kind") in ("guide", "pillar") else "website", oglocale="hi_IN" if lang == "hi" else "en_IN", ld=ld, root=root, scripts=scripts,
-           nav=nav(root, lang), crumb=crumb, eyebrow=e(plain(p["eyebrow"])), h1=e(p["h1"]), lead=p["lead"].replace("{root}", root),
+           nav=nav(root, lang, p["slug"]), crumb=crumb, viz=viz, hasviz=" has-viz" if viz else "", eyebrow=e(plain(p["eyebrow"])), h1=e(p["h1"]), lead=p["lead"].replace("{root}", root),
            cta1u=href(root, p["cta"][1]), cta1=e(p["cta"][0]), cta2u=href(root, p["cta2"][1]), cta2=e(p["cta2"][0]),
            trust="".join("<span>%s</span>" % t for t in ui["trust"][aud]), body=body, band=band, updated=ui["updated"],
            modified=modified.isoformat() if lang == "hi" else modified.strftime("%d %B %Y"), footer=footer(root, lang))
@@ -364,7 +399,7 @@ def faq_hub() -> dict:
         items = ['<b>%s</b> %s <a href="{root}%s/">More →</a>' % (e(q), e(plain(a)), p["slug"]) for p in ps for q, a in p["faq"]]
         if items:
             secs.append({"h2": title, "ul": items})
-    return {"slug": "faq", "kind": "hub", "audience": "both", "title": "QueroCura FAQ: Hospital Software, Health App & Healthcare Questions",
+    return {"slug": "faq", "kind": "hub", "audience": "both", "title": "QueroCura FAQ: Hospital Software, Health App & Healthcare",
             "description": "Answers to common questions about hospital management systems, connected healthcare, medicine reminders, family health, health records and QueroCura.",
             "eyebrow": "FAQ", "h1": "Frequently asked questions", "lead": "Short answers to the questions people ask about running hospitals and clinics, looking after family health, and QueroCura. Each links to a full page.",
             "cta": ["Get started free", "register/"], "cta2": ["For hospitals", "hospital-management-system/"], "sections": secs, "faq": [], "related": []}
@@ -479,6 +514,7 @@ def write_llms(blog: list) -> None:
 def main() -> int:
     print("existing pages updated:", update_existing())
     print("blog posts linked:", extras.blog_related(ROOT))
+    print("hand-written pages polished:", polish.run(ROOT, SITE))
     all_pages = ALL + [guides_index(), faq_hub()]
     drafts = {p["slug"]: render(p) for p in all_pages}                 # first pass: content hashes
     lm = lastmods(drafts)
@@ -515,8 +551,8 @@ def main() -> int:
 # ---------------------------------------------------------------- the existing hand-written pages: titles and the managed head block
 
 EXISTING = {
-    "": {"title": "QueroCura: Connected Healthcare App & Hospital Management System",
-         "description": "Connected healthcare for India: a free family health app (symptom checker in English and Hindi, medicine reminders, health records) and a hospital management system for clinics and hospitals.",
+    "": {"title": "QueroCura: Connected Healthcare App & Hospital Software",
+         "description": "Connected healthcare for India: a free family health app with a symptom checker, medicine reminders and health records, plus a hospital management system.",
          "type": "home"},
     "hospital/": {"title": "Hospital Management System for Hospitals & Clinics | QueroCura",
                   "description": "QueroCura hospital portal: appointments with real wait times, OPD tokens, triage, beds, theatres, pharmacy and billing with UPI, PM-JAY and CGHS. Apply to onboard.",
@@ -534,6 +570,13 @@ EXISTING = {
               "description": "Practical writing on symptoms, family health, health records and running hospitals in India, from the QueroCura team.", "type": "keep-ld"},
 }
 START, END = "<!-- seo:start (tools/seo/build_seo.py) -->", "<!-- seo:end -->"
+TRAILS = {"hospital/": [("Hospital portal", "hospital/")], "doctor/": [("For doctors", "doctor/")], "book/": [("Book a visit", "book/")], "blog/": [("Blog", "blog/")],
+          "hospital/setup/": [("Hospital portal", "hospital/"), ("Plan your setup", "hospital/setup/")]}
+
+
+def trail_ld(rel: str) -> dict:
+    items = [("QueroCura", "")] + TRAILS[rel]
+    return {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": i + 1, "name": n, "item": SITE + "/" + u} for i, (n, u) in enumerate(items)]}
 
 
 def _faq_from_html(s: str) -> list:
@@ -564,6 +607,11 @@ def managed_head(rel: str, cfg: dict, s: str) -> str:
         graph.append({"@type": "SoftwareApplication", "@id": url + "#software", "name": cfg["name"], "url": url, "applicationCategory": "BusinessApplication",
                       "operatingSystem": "Web browser", "description": cfg["description"], "publisher": {"@id": ORG_ID}, "areaServed": "India"})
     blocks = []
+    if rel in TRAILS:
+        if cfg["type"] == "keep-ld":
+            blocks.append(dict({"@context": "https://schema.org"}, **trail_ld(rel)))
+        else:
+            graph.append(trail_ld(rel))
     if cfg["type"] != "keep-ld":
         blocks.append({"@context": "https://schema.org", "@graph": graph})
         faq = _faq_from_html(s)

@@ -38,7 +38,7 @@ details { border: 1px solid var(--line); border-radius: 16px; background: var(--
 
 /* workspace */
 #portal { padding: 26px 0 80px; }
-.hp-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 14px; flex-wrap: wrap; margin-bottom: 18px; } .hp-head h1 { margin: 0 0 4px; font-size: clamp(22px, 3.4vw, 30px); }
+.hp-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 14px; flex-wrap: wrap; margin-bottom: 18px; } .hp-head :is(h1, h2) { margin: 0 0 4px; font-size: clamp(22px, 3.4vw, 30px); }
 .pill { display: inline-flex; align-items: center; gap: 6px; padding: 5px 13px; border-radius: 999px; font: 800 12px 'Manrope', sans-serif; }
 .pill.ok { background: rgba(47, 143, 94, .15); color: var(--good); } .pill.wait { background: rgba(201, 138, 16, .16); color: var(--warn); } .pill.bad { background: rgba(210, 79, 40, .15); color: var(--danger); }
 .hp-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 18px; border-bottom: 1px solid var(--line); padding-bottom: 12px; }
@@ -1684,7 +1684,7 @@ html:not([data-theme="dark"]) .logo-wrap.own-brand.pale-logo img.own-logo {
   /* ---- the page itself ---- */
   body.hp .hp-wrap { padding-left: 16px; padding-right: 16px; }
   body.hp .hp-head { margin-bottom: 12px; gap: 8px; align-items: center; }
-  body.hp .hp-head h1 { font-size: 21px; letter-spacing: -.02em; }
+  body.hp .hp-head :is(h1, h2) { font-size: 21px; letter-spacing: -.02em; }
   body.hp #org-meta { font-size: 11.5px; line-height: 1.35; }
   body.hp .hp-head-r { gap: 6px; }
   body.hp .hp-tabs { display: none; }                      /* the bottom bar is the tab bar here */
@@ -1801,7 +1801,7 @@ html:not([data-theme="dark"]) .logo-wrap.own-brand.pale-logo img.own-logo {
 @media (max-width: 380px) {
   .mb-l { font-size: 9.5px; }
   body.hp .own-name small { display: none; }
-  body.hp .hp-head h1 { font-size: 19px; }
+  body.hp .hp-head :is(h1, h2) { font-size: 19px; }
 }
 
 /* a phone lying on its side: the bar would eat the screen, so it goes back to the top */

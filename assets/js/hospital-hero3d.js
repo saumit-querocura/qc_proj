@@ -280,7 +280,7 @@ function heroScene(THREE, mount) {
       attribute vec3 aPosB; attribute vec3 aColor; attribute vec3 aColB; attribute float aSize; attribute float aSeed; attribute float aDelay;
       uniform float uTime; uniform float uMorph; uniform float uPx; uniform float uBase; uniform float uLifeA; uniform float uLifeB;
       uniform float uPulse; uniform float uBreath;
-      varying vec3 vColor; varying float vAlpha;
+      varying vec3 vColor; varying float vAlpha; varying float vHot;
       float life(float mode, vec3 p) {
         if (mode < 0.5) return 0.0;
         if (mode < 1.5) return uPulse * (0.6 + 0.4 * sin(p.y * 2.0 - uTime * 6.0));                     // a beat sweeping through
@@ -295,27 +295,38 @@ function heroScene(THREE, mount) {
         float glow = life(uLifeA, p) * (1.0 - m) + life(uLifeB, p) * m;
         vec4 mv = modelViewMatrix * vec4(p, 1.0);
         float tw = 0.72 + 0.28 * sin(uTime * (0.7 + aSeed * 1.8) + aSeed * 40.0);
-        vAlpha = tw * (0.3 + 0.7 * smoothstep(-11.5, -6.5, mv.z)) * (1.0 + glow);
+        // light catches the edge of the form: points whose outward direction is side-on to the camera glow more
+        vec3 nrm = normalize(normalMatrix * normalize(p + vec3(0.0001)));
+        float rim = pow(1.0 - abs(nrm.z), 2.0);
+        float spark = step(0.95, aSeed) * (0.5 + 0.5 * sin(uTime * (1.5 + aSeed * 3.0) + aSeed * 70.0));
+        vAlpha = tw * (0.3 + 0.7 * smoothstep(-11.5, -6.5, mv.z)) * (1.0 + glow) * (0.8 + 0.55 * rim);
+        vHot = clamp(glow * 0.5 + spark * 0.8 + rim * 0.25, 0.0, 1.0);
         vColor = mix(mix(aColor, aColB, m), vec3(1.0, 0.93, 0.78), clamp(glow * 0.25, 0.0, 0.6));
-        gl_PointSize = aSize * uBase * uPx * (6.0 / -mv.z) * (1.0 + 0.4 * mid);
+        gl_PointSize = aSize * uBase * uPx * (6.9 / -mv.z) * (1.0 + 0.4 * mid) * (1.0 + spark * 1.1);
         gl_Position = projectionMatrix * mv;
       }`,
     fragmentShader: `
-      varying vec3 vColor; varying float vAlpha;
+      varying vec3 vColor; varying float vAlpha; varying float vHot;
       void main() {
         vec2 q = gl_PointCoord - 0.5; float d = length(q);
         if (d > 0.5) discard;
-        float k = smoothstep(0.5, 0.0, d);
-        gl_FragColor = vec4(vColor, (0.35 * k + 0.65 * k * k) * vAlpha);
+        float halo = exp(-d * d * 20.0) * smoothstep(0.5, 0.36, d), core = smoothstep(0.17, 0.0, d);
+        vec3 col = mix(vColor, vec3(1.0, 0.97, 0.9), core * (0.3 + 0.5 * vHot));
+        gl_FragColor = vec4(col, (0.5 * halo + 0.62 * core) * vAlpha);
       }`,
   });
   world.add(new THREE.Points(g, mat));
+
+  /* a soft light behind the form, in the form's own colour; it swells with the heartbeat and the breath */
+  const mean = SHAPES.map((sh) => { let r = 0, gg = 0, b = 0; for (let i = 0; i < N; i++) { r += sh.c[i * 3]; gg += sh.c[i * 3 + 1]; b += sh.c[i * 3 + 2]; } return new THREE.Color(r / N, gg / N, b / N); });
+  const auraMat = new THREE.MeshBasicMaterial({ map: softDisc(THREE, "rgba(255,255,255,1)", "rgba(255,255,255,0)"), color: mean[0].clone(), transparent: true, opacity: 0.12, blending: THREE.AdditiveBlending, depthWrite: false });
+  const aura = new THREE.Mesh(new THREE.PlaneGeometry(8.4, 8.4), auraMat); aura.position.z = -1.2; aura.renderOrder = -1;
 
   /* gold orbits and distant dust */
   const ringMat = new THREE.MeshBasicMaterial({ color: GOLD, transparent: true, opacity: 0.32, blending: THREE.AdditiveBlending, depthWrite: false });
   const ring1 = new THREE.Mesh(new THREE.TorusGeometry(3.15, 0.006, 8, 256), ringMat), ring2 = new THREE.Mesh(new THREE.TorusGeometry(3.55, 0.004, 8, 256), ringMat.clone());
   ring1.rotation.set(1.2, 0.2, 0.3); ring2.material.opacity = 0.16; ring2.rotation.set(1.75, -0.4, 0);
-  const orbits = new THREE.Group(); orbits.add(ring1, ring2); scene.add(orbits);
+  const orbits = new THREE.Group(); orbits.add(ring1, ring2, aura); scene.add(orbits);
   const D = small ? 350 : 700, dg = new THREE.BufferGeometry(), dp = new Float32Array(D * 3), dc = new Float32Array(D * 3);
   for (let i = 0; i < D; i++) {
     const r = 7 + rnd() * 10, th = rnd() * Math.PI * 2, ph = Math.acos(2 * rnd() - 1);
@@ -383,6 +394,9 @@ function heroScene(THREE, mount) {
     const ph = (t * BPM / 60) % 1;
     mat.uniforms.uPulse.value = Math.exp(-Math.pow((ph - 0.31) / 0.035, 2)) + 0.6 * Math.exp(-Math.pow((ph - 0.52) / 0.05, 2));
     mat.uniforms.uBreath.value = 0.5 - 0.5 * Math.cos(t * Math.PI * 2 / 4.2);          // about 14 breaths a minute
+    auraMat.color.copy(mean[cur]).lerp(mean[next], morph);
+    const lifeNow = SHAPES[next].life === 1 ? mat.uniforms.uPulse.value : SHAPES[next].life === 2 ? mat.uniforms.uBreath.value : 0.35 + 0.15 * Math.sin(t * 0.8);
+    auraMat.opacity = 0.1 + 0.07 * Math.min(1, lifeNow); aura.scale.setScalar(1 + 0.05 * Math.min(1, lifeNow));
     if (morph < 1) { morph = Math.min(1, morph + dt / 2.4); mat.uniforms.uMorph.value = morph; if (morph >= 1) { cur = next; holdUntil = t + 5.5; } }
     else if (auto && t > holdUntil && !reduce) morphTo((next + 1) % SHAPES.length);
     // flat shapes (heart, cross, brain, lungs) sway to face you; round ones spin
