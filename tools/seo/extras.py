@@ -129,9 +129,10 @@ def atom_feed(site: str, entries: list, updated: str) -> str:
 BLOG_LINKS = {
     "blog/abha-health-id-explained/": [("Personal health records", "personal-health-records/"), ("Digital health in India", "digital-health-india/"), ("Connected healthcare", "connected-healthcare/")],
     "blog/cold-flu-or-something-else/": [("Symptom checker in English and Hindi", "symptom-checker/"), ("Family health app", "family-health-app/"), ("Free health calculators", "calculators/")],
-    "blog/fever-body-ache-monsoon-dengue-malaria/": [("Symptom checker", "symptom-checker/"), ("Family health app", "family-health-app/"), ("बुख़ार? हिन्दी में लक्षण जाँच", "hi/symptom-checker/")],
+    "blog/fever-body-ache-monsoon-dengue-malaria/": [("Cold, flu or something else?", "blog/cold-flu-or-something-else/"), ("Symptom checker", "symptom-checker/"), ("Family health app", "family-health-app/"), ("बुख़ार? हिन्दी में लक्षण जाँच", "hi/symptom-checker/")],
     "blog/health-data-in-an-emergency/": [("Personal health records", "personal-health-records/"), ("Connected healthcare", "connected-healthcare/"), ("The future of healthcare in India", "future-of-healthcare/")],
-    "blog/when-is-a-headache-serious/": [("Symptom checker", "symptom-checker/"), ("Blood pressure checker", "calculators/blood-pressure-checker/"), ("Health app", "health-app/")],
+    "blog/when-is-a-headache-serious/": [("Symptom checker", "symptom-checker/"), ("Blood pressure checker", "calculators/blood-pressure-checker/"), ("Health app", "health-app/"),
+                                         ("Cold, flu or something else?", "blog/cold-flu-or-something-else/")],
 }
 B_START, B_END = "<!-- seo:related -->", "<!-- seo:related-end -->"
 

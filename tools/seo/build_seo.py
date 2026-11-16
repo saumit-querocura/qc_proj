@@ -75,7 +75,7 @@ UI = {
 }
 
 SPECIALTY_HUB = {"slug": "specialties", "kind": "hub", "audience": "business", "title": "Hospital Software by Specialty | QueroCura",
-                 "description": "What eye hospitals, dental clinics, maternity hospitals, diagnostic centres, orthopaedic hospitals and dialysis centres need from hospital software, and what QueroCura covers.",
+                 "description": "What eye, dental, maternity, diagnostic, orthopaedic and dialysis centres need from hospital software, and what QueroCura covers for each.",
                  "eyebrow": "By specialty", "h1": "Hospital software by specialty",
                  "lead": "Every specialty runs a little differently. Each page below says what that kind of hospital needs from its software, what QueroCura covers, and what to pair it with.",
                  "cta": ["Plan my setup", "hospital/setup/"], "cta2": ["Hospital management system", "hospital-management-system/"],
@@ -555,7 +555,7 @@ EXISTING = {
          "description": "Connected healthcare for India: a free family health app with a symptom checker, medicine reminders and health records, plus a hospital management system.",
          "type": "home"},
     "hospital/": {"title": "Hospital Management System for Hospitals & Clinics | QueroCura",
-                  "description": "QueroCura hospital portal: appointments with real wait times, OPD tokens, triage, beds, theatres, pharmacy and billing with UPI, PM-JAY and CGHS. Apply to onboard.",
+                  "description": "QueroCura hospital portal: appointments with real wait times, OPD tokens, triage, beds, theatres, pharmacy and billing with UPI, PM-JAY and CGHS.",
                   "type": "business", "name": "QueroCura Hospital Management System"},
     "doctor/": {"title": "Clinic & Practice Management Software for Doctors | QueroCura",
                 "description": "For doctors practising on their own or with a clinic: hours and bookings, today's patients, prescriptions with safety checks, billing and practice insights.",

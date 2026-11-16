@@ -43,6 +43,9 @@ TITLES = {  # <title> only; 60 characters or fewer so the whole of it shows in a
     "blog/when-is-a-headache-serious/": "When Is a Headache Serious? A Symptom-by-Symptom Guide",
 }
 DESCRIPTIONS = {
+    'blog/abha-health-id-explained/': "ABHA is India's push toward one digital health record per person. What it actually does, why it matters in an emergency, and how it fits with CuraVault.",
+    'blog/fever-body-ache-monsoon-dengue-malaria/': 'Every monsoon, fever cases spike across India. How to tell a routine viral fever from dengue or malaria, and when to stop waiting and get a blood test.',
+    'blog/when-is-a-headache-serious/': 'Most headaches are harmless. A few are emergencies. How to tell a tension headache from a migraine from one that needs immediate medical attention.',
     "blog/health-data-in-an-emergency/": "When you can't speak for yourself, your medical history either vanishes into paperwork or is instantly, securely there. How the Emergency Glass Door works.",
 }
 
@@ -102,6 +105,7 @@ def run(root: str, site: str) -> int:
             if reveal and "data-fx-reveal" not in s:
                 s = s.replace("<body", '<body data-fx-reveal="%s"' % html.escape(reveal), 1)
         s = re.sub(r"<img\b[^>]*>", _img, s)
+        s = re.sub(r'(<script src="[^"]*/blog-(?:[a-z0-9-]+-)?h\.js[^"]*")(></script>)', r"\1 defer\2", s)
         if rel in TITLES:
             s = re.sub(r"<title>.*?</title>", "<title>%s</title>" % html.escape(TITLES[rel], quote=False), s, count=1, flags=re.S)
         if rel in DESCRIPTIONS:

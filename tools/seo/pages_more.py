@@ -83,7 +83,7 @@ TOOLS = [
     {
         "slug": "calculators/medicine-schedule-maker", "tool": "meds", "audience": "consumer", "kind": "tool",
         "title": "Free Printable Medicine Schedule Chart Maker | QueroCura",
-        "description": "Make a printable daily medicine chart for a parent or yourself: medicines, doses and times of day in a clear table. Free, in your browser, nothing is sent anywhere.",
+        "description": "Make a printable daily medicine chart for a parent or yourself: medicines, doses and times of day in a clear table. Free, and nothing is sent anywhere.",
         "eyebrow": "Medicine schedule maker", "h1": "Make a printable medicine schedule",
         "lead": "Write down each medicine exactly as your doctor prescribed it, tick the times of day, and print a clear chart to stick on the fridge. Everything stays in your browser. For reminders on your phone with a Taken button and family alerts, use the QueroCura app.",
         "fields": [],
@@ -112,7 +112,7 @@ TOOLS = [
     {
         "slug": "calculators/bed-occupancy-rate", "tool": "beds", "audience": "business", "kind": "tool",
         "title": "Bed Occupancy Rate, ALOS & Bed Turnover Calculator | QueroCura",
-        "description": "Free hospital KPI calculator: bed occupancy rate, average length of stay (ALOS), bed turnover rate and turnover interval from beds, inpatient days and discharges.",
+        "description": "Free hospital KPI calculator: bed occupancy rate, average length of stay (ALOS), bed turnover rate and turnover interval from beds, days and discharges.",
         "eyebrow": "Bed occupancy calculator", "h1": "Bed occupancy rate and length-of-stay calculator",
         "lead": "Four numbers hospital managers watch every month. Enter your bed count, the period, inpatient days and discharges to get bed occupancy rate, average length of stay (ALOS), bed turnover rate and turnover interval.",
         "fields": [F("b", "Staffed beds", "", mn=1), F("p", "Days in the period", "days", mn=1, value="30"), F("i", "Inpatient days in the period", "days", mn=0), F("x", "Discharges in the period", "", mn=0)],
@@ -146,7 +146,7 @@ TOOLS = [
 CALC_HUB = {
     "slug": "calculators", "audience": "both", "kind": "hub",
     "title": "Free Health & Hospital Calculators | QueroCura",
-    "description": "Free calculators: BMI with Indian cut-offs, blood pressure checker, HbA1c to average glucose, due date, medicine chart maker, QTc, bed occupancy and OPD capacity.",
+    "description": "Free calculators: BMI with Indian cut-offs, blood pressure checker, HbA1c to average glucose, due date, medicine chart, QTc, bed occupancy and OPD capacity.",
     "eyebrow": "Free calculators", "h1": "Free health and hospital calculators",
     "lead": "Quick, private calculators that run in your browser: nothing you type is sent anywhere. For people and families, and for the doctors and managers who run clinics and hospitals.",
     "cta": ["Try the QueroCura app", "register/"], "cta2": ["For hospitals", "hospital-management-system/"],

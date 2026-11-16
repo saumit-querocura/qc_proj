@@ -76,7 +76,7 @@ PAGES = [
     {
         "slug": "clinic-management-software",
         "title": "Clinic Management Software for Doctors & Clinics | QueroCura",
-        "description": "Clinic management software for doctors and small clinics in India: appointments with real wait times, OPD tokens, e-prescriptions, billing with UPI, and practice insights.",
+        "description": "Clinic management software for doctors and small clinics in India: appointments with real wait times, OPD tokens, e-prescriptions, UPI billing and insights.",
         "audience": "business",
         "eyebrow": "Clinic & practice management",
         "h1": "Clinic management software for doctors who would rather see patients than paperwork",
@@ -132,7 +132,7 @@ PAGES = [
     {
         "slug": "ai-medical-imaging",
         "title": "AI Medical Imaging: X-ray, CT & ECG Reads, On-Premise | QueroCura",
-        "description": "AI-assisted draft reads for chest X-ray, CT and ECG that your radiologist accepts and signs. Runs on your own server so images never leave the hospital. Decision support.",
+        "description": "AI-assisted draft reads for chest X-ray, CT and ECG that your radiologist accepts and signs. Runs on your own server, so images never leave the hospital.",
         "audience": "business",
         "eyebrow": "AI-assisted imaging",
         "h1": "AI-assisted imaging reads that your radiologist stays in charge of",
@@ -165,7 +165,7 @@ PAGES = [
     {
         "slug": "medicine-reminder-app",
         "title": "Medicine Reminder App with Family Alerts (Free) | QueroCura",
-        "description": "A free medicine reminder app: dose reminders timed to your prescriptions, a Taken button right on the notification, and alerts to family when a dose is taken. English & Hindi.",
+        "description": "A free medicine reminder app: dose reminders timed to your prescriptions, a Taken button on the notification, and family alerts. English & Hindi.",
         "audience": "consumer",
         "eyebrow": "Medicine reminders",
         "h1": "A medicine reminder app that keeps the whole family in the loop",
@@ -194,7 +194,7 @@ PAGES = [
     {
         "slug": "family-health-app",
         "title": "Family Health App: Manage Your Family's Health | QueroCura",
-        "description": "Manage your family's health in one place: connect parents and children, choose what each person can see (medicines, records, vitals), and get instant updates. Free.",
+        "description": "Manage your family's health in one place: connect parents and children, choose what each person can see (medicines, records, vitals) and get updates. Free.",
         "audience": "consumer",
         "eyebrow": "Family health",
         "h1": "Manage your family's health together, with everyone's permission",
@@ -229,7 +229,7 @@ PAGES = [
     {
         "slug": "personal-health-records",
         "title": "Personal Health Records App: Store & Understand Reports | QueroCura",
-        "description": "CuraVault keeps your reports, prescriptions and scans in one encrypted place, reads them (even handwritten ones) and explains each value in plain language. Free.",
+        "description": "CuraVault keeps your reports, prescriptions and scans in one encrypted place, reads them (even handwritten ones) and explains each value in plain words.",
         "audience": "consumer",
         "eyebrow": "CuraVault health records",
         "h1": "Your medical reports, in one place, explained in plain language",
@@ -257,7 +257,7 @@ PAGES = [
     {
         "slug": "symptom-checker",
         "title": "AI Symptom Checker in English & Hindi (Free) | QueroCura",
-        "description": "Describe how you feel in your own words, in English or Hindi. QueroCura asks the follow-up questions a doctor would and tells you how urgent it is. Never medicine advice.",
+        "description": "Describe how you feel in your own words, in English or Hindi. QueroCura asks the follow-up questions a doctor would and tells you how urgent it is.",
         "audience": "consumer",
         "eyebrow": "Symptom checker",
         "h1": "A symptom checker that asks the questions a doctor would",
@@ -284,7 +284,7 @@ PAGES = [
     {
         "slug": "healthcare-software",
         "title": "Healthcare Software that Connects Patients & Hospitals | QueroCura",
-        "description": "QueroCura is organised healthcare software for India: a hospital management system for providers and a free health app for patients and families, connected by consent.",
+        "description": "QueroCura is healthcare software for India: a hospital management system for providers and a free health app for patients and families, joined by consent.",
         "audience": "both",
         "eyebrow": "Healthcare software",
         "h1": "Organised healthcare software, for the people who give care and the people who receive it",
@@ -318,7 +318,7 @@ PAGES = [
     {
         "slug": "health-app",
         "title": "QueroCura Health App: Symptoms, Reminders, Records & Family",
-        "description": "One free health app for symptom checks in English and Hindi, medicine reminders, personal health records, visit prep and your family's health. Never medicine advice.",
+        "description": "One free health app for symptom checks in English and Hindi, medicine reminders, health records, visit prep and your family's health. Never medicine advice.",
         "audience": "consumer",
         "eyebrow": "The QueroCura app",
         "h1": "One health app for your symptoms, medicines, records and family",
@@ -349,7 +349,7 @@ PAGES = [
         "slug": "guides/how-to-choose-a-hospital-management-system",
         "kind": "guide",
         "title": "How to Choose a Hospital Management System: 2026 Checklist",
-        "description": "A practical checklist for choosing the best hospital management system for your hospital or clinic in India: modules, billing, ABHA, security, setup time and cost.",
+        "description": "A practical checklist for choosing the best hospital management system for your hospital or clinic in India: modules, billing, ABHA, security and cost.",
         "audience": "business",
         "eyebrow": "Buyer's guide",
         "h1": "How to choose a hospital management system: a practical checklist",
@@ -388,7 +388,7 @@ PAGES = [
         "slug": "about",
         "kind": "about",
         "title": "About QueroCura: Healthcare Software Made in India",
-        "description": "QueroCura builds a hospital management system and a free family health app, connected by patient consent. Founded by Udantika Dhar (CEO) and Saumit Pradhan (CTO).",
+        "description": "QueroCura builds a hospital management system and a free family health app, connected by patient consent. Founded by Udantika Dhar and Saumit Pradhan.",
         "audience": "both",
         "eyebrow": "About us",
         "h1": "About QueroCura",
