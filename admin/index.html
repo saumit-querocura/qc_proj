@@ -21,12 +21,12 @@
   .tabs button { border: 1.5px solid var(--line); background: var(--card); border-radius: 999px; padding: 6px 14px; font: 800 12.5px 'Manrope', sans-serif; cursor: pointer; color: var(--muted); } .tabs button.on { background: var(--ink); color: var(--sand); border-color: var(--ink); }
   [hidden] { display: none !important; }
 </style>
-<script src="../assets/qc-csp.js?v=77f89cc2"></script>
+<script src="../assets/qc-csp.js?v=15e3e6dc"></script>
 </head>
 <body>
   <div class="topbar"><a class="logo-wrap" href="../"><img src="../assets/d4f7acc01b9438e998c9e7b9676584b0.png" alt="QueroCura"><span class="logo-text"><span class="ink">Quero</span><span class="teal">Cura</span> admin</span></a></div>
   <main class="wrap">
-    <form id="key-form" class="card" novalidate>
+    <form method="post" id="key-form" class="card" novalidate>
       <h2>Admin key</h2>
       <p class="sub">Kept in this tab's memory only. It is never saved, and closing or reloading the tab forgets it.</p>
       <div class="field"><label for="key">CURAVAULT_ADMIN_KEY</label><input class="input" id="key" type="password" autocomplete="off"></div>

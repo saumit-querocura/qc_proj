@@ -4,14 +4,19 @@
 (function () {
   "use strict";
 
-  // Never let another site frame the app.
+  // Never let another site frame the app (clickjacking guard). A <meta> CSP cannot carry frame-ancestors and a
+  // static host cannot send X-Frame-Options, so this is the enforcement: if we are framed, hide the page *first*
+  // (so nothing can be clicked through even for an instant), then try to break out of the frame. If the breakout
+  // is blocked (a sandboxed iframe) the page simply stays hidden and unusable, which is the safe outcome.
   try {
-    if (window.top !== window.self) {
-      document.documentElement.style.display = "none";
-      window.top.location = window.self.location;
+    var ao = window.location.ancestorOrigins;
+    var framed = window.top !== window.self || (ao && ao.length > 0);
+    if (framed) {
+      document.documentElement.style.setProperty("display", "none", "important");
+      try { window.top.location = window.self.location; } catch (e) { /* sandboxed: stay hidden */ }
     }
   } catch (e) {
-    document.documentElement.style.display = "none";
+    try { document.documentElement.style.setProperty("display", "none", "important"); } catch (_e) {}
   }
 
   var H = (window.QCH = window.QCH || {});

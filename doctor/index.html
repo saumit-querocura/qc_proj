@@ -33,7 +33,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700;800&family=Manrope:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500;1,9..144,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../assets/qc-base.css?v=7b9ea421">
 <link rel="stylesheet" href="../assets/qc-hospital.css?v=4cd8f46b">
-<script src="../assets/qc-csp.js?v=77f89cc2"></script>
+<script src="../assets/qc-csp.js?v=15e3e6dc"></script>
 <!-- fx:start (tools/seo/polish.py) -->
 <style>@view-transition { navigation: auto; }</style>
 <!-- fx:end -->
@@ -107,7 +107,7 @@
             <button type="button" role="tab" data-dr-tab="signin">Sign in</button>
           </div>
 
-          <form id="dr-solo" class="dr-form" novalidate autocomplete="on">
+          <form method="post" id="dr-solo" class="dr-form" novalidate autocomplete="on">
             <h3>Start your practice</h3>
             <p class="sub">We check your registration with your council before patients can connect. You can sign in and set up straight away.</p>
             <div class="grid2">
@@ -131,7 +131,7 @@
             <div class="msg" id="ds-msg" role="status"></div>
           </form>
 
-          <form id="dr-join" class="dr-form" novalidate autocomplete="on" hidden>
+          <form method="post" id="dr-join" class="dr-form" novalidate autocomplete="on" hidden>
             <h3>Join your clinic or hospital</h3>
             <p class="sub">Ask your clinic's administrator for its 8-character code. It's on their Team page.</p>
             <div class="field"><label for="dj-code">Clinic code *</label><input class="input dj-code" id="dj-code" maxlength="9" autocomplete="off" spellcheck="false" placeholder="ABCD 2345" required></div>
@@ -154,7 +154,7 @@
             <div class="msg" id="dj-msg" role="status"></div>
           </form>
 
-          <form id="dr-signin" class="dr-form narrow" novalidate hidden>
+          <form method="post" id="dr-signin" class="dr-form narrow" novalidate hidden>
             <h3>Sign in</h3>
             <p class="sub">The same sign-in as the hospital portal.</p>
             <div class="field"><label for="dn-email">E-mail</label><input class="input" id="dn-email" type="email" autocomplete="username" required></div>

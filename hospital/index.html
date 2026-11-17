@@ -34,7 +34,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700;800&family=Manrope:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500;1,9..144,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../assets/qc-base.css?v=7b9ea421">
 <link rel="stylesheet" href="../assets/qc-hospital.css?v=4cd8f46b">
-<script src="../assets/qc-csp.js?v=77f89cc2"></script>
+<script src="../assets/qc-csp.js?v=15e3e6dc"></script>
 <!-- fx:start (tools/seo/polish.py) -->
 <style>@view-transition { navigation: auto; }</style>
 <!-- fx:end -->
@@ -202,7 +202,7 @@
           <h2>Apply to onboard</h2>
           <p class="sub">We review every application. Use a work e-mail you can receive mail at.</p>
           <div id="apply-plan"></div>
-          <form id="apply-form" novalidate autocomplete="on">
+          <form method="post" id="apply-form" novalidate autocomplete="on">
             <div class="grid2">
               <div class="field"><label for="a-org">Organisation name *</label><input class="input" id="a-org" maxlength="160" required></div>
               <div class="field"><label for="a-type">Type</label><select class="input" id="a-type"></select></div>
@@ -231,7 +231,7 @@
         <div class="hp-panel" id="signin">
           <h2 id="signin-title">Hospital sign in</h2>
           <p class="sub" id="signin-sub">For approved and pending organisations.</p>
-          <form id="signin-form" novalidate>
+          <form method="post" id="signin-form" novalidate>
             <div class="field"><label for="s-email">Work e-mail</label><input class="input" id="s-email" type="email" autocomplete="username" required></div>
             <div class="field"><label for="s-pw">Password</label><input class="input" id="s-pw" type="password" autocomplete="current-password" required></div>
             <div class="field" id="s-code-wrap" hidden><label for="s-code">6-digit code from your authenticator (or a recovery code)</label><input class="input" id="s-code" inputmode="numeric" autocomplete="one-time-code" maxlength="20"></div>
@@ -245,13 +245,13 @@
             <button class="btn btn-ghost" id="forgot-back" type="button">Back</button>
             <div class="msg" id="forgot-msg" role="status"></div>
           </form>
-          <form id="invite-form" hidden novalidate>
+          <form method="post" id="invite-form" hidden novalidate>
             <p class="sub" id="invite-who"></p>
             <div class="field"><label for="i-pw">Create a password</label><input class="input" id="i-pw" type="password" minlength="8" autocomplete="new-password" required></div>
             <button class="btn btn-primary" type="submit">Join the team</button>
             <div class="msg" id="invite-msg" role="status"></div>
           </form>
-          <form id="reset-form" hidden novalidate>
+          <form method="post" id="reset-form" hidden novalidate>
             <div class="field"><label for="r-pw">New password</label><input class="input" id="r-pw" type="password" minlength="8" autocomplete="new-password" required></div>
             <button class="btn btn-primary" type="submit">Save new password</button>
             <div class="msg" id="reset-msg" role="status"></div>

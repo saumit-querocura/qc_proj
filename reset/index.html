@@ -13,7 +13,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700;800&family=Manrope:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../assets/qc-base.css?v=7b9ea421">
 <link rel="stylesheet" href="../assets/qc-account.css?v=9558c384">
-<script src="../assets/qc-csp.js?v=77f89cc2"></script>
+<script src="../assets/qc-csp.js?v=15e3e6dc"></script>
 <script src="../assets/qc-i18n.js?v=fb8e7449"></script>
 </head>
 <body>
@@ -29,7 +29,7 @@
       <div class="solo-emoji" aria-hidden="true">🔐</div>
       <h1 class="page-title">Choose a new password</h1>
       <p class="page-sub" id="sub">Pick something you don't use anywhere else. After this, every device that was signed in will be signed out.</p>
-      <form id="reset-form" novalidate>
+      <form method="post" id="reset-form" novalidate>
         <div class="field"><label for="pw">New password</label><input class="input" id="pw" type="password" autocomplete="new-password" minlength="8" required>
           <div class="meter" aria-hidden="true"><i id="meter"></i></div><span class="hint" id="strength">At least 8 characters. A few random words works well.</span></div>
         <div class="field"><label for="pw2">Type it again</label><input class="input" id="pw2" type="password" autocomplete="new-password" required></div>
